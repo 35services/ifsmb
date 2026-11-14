@@ -7,8 +7,9 @@ Website des „Institut für spontane Makespace Buildung“. Jekyll 4, GitHub Pa
 ```bash
 bundle exec jekyll build    # → _site/
 bundle exec jekyll serve    # http://localhost:4000
-ruby _scripts/check_site.rb # nach dem Build: tote Links, verwaiste Seiten (--extern: externe Links)
+ruby _scripts/check_site.rb # nach dem Build: tote Links, verwaiste Seiten, Geokoordinaten (--extern: externe Links)
 ruby _scripts/check_galerien.rb # Galerien müssen Markdown sein (keine HTML-Galerien)
+ruby _scripts/check_geodaten.rb # Fotos dürfen keine Geokoordinaten (EXIF-GPS/XMP) enthalten
 ruby _scripts/test_formulare.rb # Formulare (➕, Todos) ↔ Vorlagen ↔ Pages CMS (.pages.yml); braucht Node
 ```
 
@@ -73,7 +74,7 @@ Immer **Makespace** schreiben, nie „Makerspace“. Grund: „Maker“ ist im D
   ```
   Das Plugin baut daraus `<div class="gallery">` mit `a.lightbox` und nimmt automatisch das Vorschaubild `NN-600w.jpg`, wenn es existiert. Ein einzelnes Bild wird automatisch groß (`gallery-single`), kleine Vorschaubilder mit `{: .gallery .gallery-small}`. Jedes Bild braucht einen Alt-Text, sonst bricht der Build ab. Videos: `![Kurze Beschreibung](/assets/video/…/01.mp4)` als eigener Absatz wird zum `<video class="post-video">` mit `01.jpg` als Vorschaubild. Kein HTML für Galerien mehr schreiben – `_scripts/check_galerien.rb` meldet HTML-Galerien (`div.gallery`, `a.lightbox`, WordPress-Galerien) mit Datei und Zeile; der Workflow `.github/workflows/pruefen.yml` lässt damit jeden Pull Request durchfallen, `pages.yml` stoppt das Deployment.
 - Keine externen Einbettungen (YouTube-iframes, fremde Videos/Bilder): Videos lokal als 720p-MP4 in `assets/video/`, YouTube nur als Link mit lokalem Vorschaubild
-- Fotos immer ohne Metadaten ausliefern (Handyfotos enthalten GPS-Daten): mit Pillow neu speichern, Originale von Personenfotos nicht committen
+- **Fotos niemals mit Geokoordinaten hochladen oder veröffentlichen**: Fotos immer ohne Metadaten ausliefern (Handyfotos enthalten GPS-Koordinaten) – vor dem Ablegen unter `assets/` immer mit Pillow ohne EXIF-/XMP-Metadaten neu speichern, Originale von Personenfotos nicht committen. `_scripts/check_geodaten.rb` (wird auch von `check_site.rb`, `pruefen.yml` und `pages.yml` ausgeführt) prüft alle Bilder auf EXIF-GPS- und XMP-Geodaten und bricht den Build bzw. das Deployment ab, sobald Koordinaten enthalten sind.
 - Fotos mit Kindern: Gesichter (auch Profile und Hinterköpfe) unkenntlich machen, bevor sie auf die Seite kommen. Die macOS-Vision-Gesichtserkennung findet nicht alle Gesichter – Ergebnis immer selbst in voller Größe prüfen und fehlende Köpfe von Hand ergänzen. Originale bleiben in `_logo/news/`, `_logo/kalender/`, `_logo/team/` (in `.gitignore`)
 
 ## Beiträge von 35services.de übernehmen
@@ -111,6 +112,7 @@ Falko schreibt Beiträge zuerst auf https://35services.de. Soll ein Beitrag hier
 ## Privatsphäre bei Inhalten
 
 - Keine Wohnadressen/Wohnstraßen von Personen, keine fremden E-Mail-Adressen veröffentlichen (auch wenn sie in Quellen stehen).
+- **Fotos nie mit Geokoordinaten hochladen oder veröffentlichen**: Vor dem Ablegen in `assets/` immer alle EXIF-/XMP-Metadaten entfernen (`ruby _scripts/check_geodaten.rb` prüft das automatisch).
 - Auf Fotos auch handschriftliche Namen, Zugangscodes (z. B. Classroom-Links) und Autokennzeichen unkenntlich machen.
 - Fremde Videos (TikTok, YouTube, Instagram) nur verlinken, nie einbetten.
 

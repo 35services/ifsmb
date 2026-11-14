@@ -52,6 +52,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 ### Gelände, Ketten und Traktoren
 
 - **Thumper** – ein 1:8-Rock-Crawler im Jeep-CJ7-Stil ([Printables](https://www.printables.com/model/323433-thumper-18-scale-rc-car-cj7-rock-crawler-by-blackc))
+- **4x4 Mini-RC-Crawler mit eigener Fernsteuerung** – 3D-gedruckter Crawler mit kleinen N20-Getriebemotoren und selbstgebautem RC-Controller von Pro Know ([Video](https://www.youtube.com/watch?v=nN-Kt9q44bw))
 - **Kettenfahrzeuge** ([Video 1](https://www.youtube.com/watch?v=q3XNYwNZ97w), [Video 2](https://youtu.be/6lUlWxRsPhI))
 - **RC Avatar Scorpion V2** ([Cults](https://cults3d.com/en/3d-model/game/rc-avatar-scorpion-v2), [Video](https://youtu.be/UkFCE25-XTs))
 - **OpenRC Tractor** – empfohlen von Opa ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))

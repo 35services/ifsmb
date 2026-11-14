@@ -22,6 +22,8 @@ jobs:
           bundler-cache: true
       - name: Galerien in Markdown prüfen
         run: ruby _scripts/check_galerien.rb
+      - name: Fotos auf Geokoordinaten prüfen
+        run: ruby _scripts/check_geodaten.rb
       - name: Seiten-Kennungen (uuid) prüfen
         run: ruby _scripts/uuids_ergaenzen.rb --pruefen
       - name: Formulare und Pages-CMS-Felder testen

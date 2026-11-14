@@ -4,11 +4,13 @@
 # Prüft die fertig gebaute Seite in _site/:
 #   1. Tote interne Links (href, src, poster, srcset) und fehlende #Anker
 #   2. Verwaiste Seiten: HTML-Seiten, die von der Startseite aus über Links nicht erreichbar sind
-#   3. Optional (--extern): externe Links per HTTP prüfen
+#   3. Keine Geokoordinaten (EXIF-GPS/XMP) in Bildern unter assets/ (_scripts/check_geodaten.rb)
+#   4. Optional (--extern): externe Links per HTTP prüfen
 #
 # Aufruf:  bundle exec jekyll build && ruby _scripts/check_site.rb [--extern]
-# Exit-Code 1, wenn tote interne Links oder verwaiste Seiten gefunden wurden.
+# Exit-Code 1, wenn tote interne Links, verwaiste Seiten oder Fotos mit Geokoordinaten gefunden wurden.
 
+require "rbconfig"
 require "set"
 require "uri"
 require "cgi"
@@ -143,6 +145,8 @@ else
     puts "  #{url_path_for(f)}#{note}"
   end
 end
+
+ok = false unless system(RbConfig.ruby, File.expand_path("check_geodaten.rb", __dir__))
 
 if CHECK_EXTERNAL
   marked = external.keys.select { |u| known_dead.include?(u) }
