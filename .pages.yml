@@ -96,6 +96,10 @@ content:
         label: Kurzbeschreibung
         description: Erscheint in der Terminliste und im iCal-Kalender.
         type: text
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das erste Seitenbild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
+        type: image
       - name: body
         label: Beschreibung
         type: rich-text
@@ -175,6 +179,10 @@ content:
       - name: original_site
         label: Name der Originalseite
         type: string
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das erste Beitragsbild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
+        type: image
       - name: body
         label: Text
         type: rich-text
@@ -255,6 +263,10 @@ content:
       - name: image
         label: Bild
         type: image
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Projektbild, das erste Galeriebild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
+        type: image
       - name: team
         label: Team (Kürzel, z. B. falko-richter)
         type: string
@@ -318,6 +330,10 @@ content:
       - name: photo_icon
         label: Mini-Foto für den Kalender (quadratisch, 48 px, optional)
         description: Rundes Gesicht auf der Kalenderseite. Ohne Mini-Foto wird das normale Foto verkleinert.
+        type: image
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen des Profils (og:image). Ohne Angabe wird das Profilfoto oder das Standardbild genutzt.
         type: image
       - name: links
         label: Links
@@ -410,6 +426,10 @@ content:
         label: Foto ist eine eigene Illustration (SVG)
         description: Ohne freies Foto eine eigene SVG-Illustration nehmen – keine Hersteller- oder Shopfotos.
         type: boolean
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Gerätefoto oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
+        type: image
       - name: verlinkt
         label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
@@ -494,6 +514,10 @@ content:
       - name: loesung
         label: Lösung (wenn gelöst, Markdown)
         type: text
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen (og:image). Ohne Angabe wird das Standardbild genutzt.
+        type: image
       - name: body
         label: Beschreibung
         type: rich-text
@@ -547,6 +571,10 @@ content:
       - name: contact_email_anzeige
         label: Anzeigetext der E-Mail (z. B. name [at] example.org)
         type: string
+      - name: social_media_preview_image
+        label: Social-Media-Vorschaubild (1200×630 px, optional)
+        description: Vorschaubild beim Teilen der Pressemitteilung (og:image). Ohne Angabe wird das erste Bild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
+        type: image
       - name: body
         label: Text
         type: rich-text

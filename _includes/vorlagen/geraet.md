@@ -26,6 +26,7 @@ videos:   # Videos, Liste aus src, poster, caption (720p-MP4 in assets/video/)
 #  - src: /assets/video/ausstattung/name/01.mp4
 #    poster: /assets/video/ausstattung/name/01.jpg
 #    caption: Was im Video passiert
+social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
 uuid: UUID-NEU   # zufällige Kennung für die Gelesen-Markierung – wird beim Klick erzeugt, nicht ändern
 ---
 

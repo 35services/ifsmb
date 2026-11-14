@@ -18,6 +18,7 @@ team: [{{ include.team }}]   # Team-Kürzel der Beteiligten
 partners: [{{ include.partners }}]   # Namen aus _data/partners.yml, in Anführungszeichen
 verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/kalender/…/, /news/…/]
 image:   # Titelbild für die Projektkarte, z. B. /assets/images/projekte/<name>/01.jpg – ohne Metadaten, Kindergesichter unkenntlich
+social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
 updates:   # kurze Notizen aus der Projektzeit, neueste zuerst – längere Berichte lieber als Beitrag mit dem event_tag
 #  - datum: 2025-12-01
 #    text: Was passiert ist, in Markdown.

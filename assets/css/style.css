@@ -985,6 +985,15 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
 .neu-pfad code { font-size: .8rem; white-space: nowrap; }
 .neu-pfad input { font-family: var(--mono); font-size: .85rem; }
 .neu-vorschau { margin: 0; padding: .6rem; font-size: .78rem; line-height: 1.45; background: var(--bg); border: 2px solid var(--ink); border-radius: 8px; white-space: pre-wrap; word-break: break-word; flex: 1; min-height: 8rem; overflow: auto; }
+.neu-social { border: 2px solid var(--line); border-radius: var(--radius); padding: .45rem .6rem; background: var(--bg); }
+.neu-social summary { cursor: pointer; font-size: .8rem; font-weight: 700; color: var(--ink-soft); }
+.neu-social[open] summary { margin-bottom: .45rem; }
+.neu-social-karte { border: 1.5px solid var(--ink); border-radius: 8px; overflow: hidden; background: var(--paper); }
+.neu-social-bild { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; background: var(--bg-alt); border-bottom: 1.5px solid var(--ink); }
+.neu-social-text { padding: .45rem .6rem; display: flex; flex-direction: column; gap: .12rem; font-size: .78rem; line-height: 1.3; }
+.neu-social-domain { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; color: var(--muted); }
+.neu-social-titel { font-size: .85rem; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.neu-social-beschr { color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .neu-schritte { margin: 0; padding-left: 1.2rem; color: var(--ink-soft); }
 .neu-form > .form-fuss { margin: 0; padding: .6rem 1rem; border-top: 2px solid var(--ink); background: var(--paper); }
 .neu-btn[aria-busy=true] { opacity: .6; cursor: progress; }

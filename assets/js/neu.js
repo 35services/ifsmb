@@ -34,6 +34,7 @@ var NeuFormular = (function () {
   var partner = function (name, label, x) { return chips(name, label, "partner", Object.assign({ platzhalter: "Partner suchen …" }, x)); };
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
   var persoenlich = function (hilfe) { return haken("persoenlich", "Persönlich", { hilfe: hilfe }); };
+  var socialBild = function () { return text("social_media_preview_image", "Social-Media-Vorschaubild (1200×630 px)", { mehr: true, platzhalter: "/assets/images/og-….jpg – leer = erstes Bild oder Standard" }); };
 
   // ---------- values ----------
   function jetzt(stunde) {
@@ -78,7 +79,8 @@ var NeuFormular = (function () {
       verlinkt(),
       persoenlich("Privates Projekt aus dem Team: nur im Teamprofil, nicht in den Listen des Instituts"),
       inhalt("Ziel, Stand, was gebraucht wird …"),
-      text("image", "Titelbild", { mehr: true, platzhalter: "/assets/images/projekte/<name>/01.jpg – ohne Metadaten" })
+      text("image", "Titelbild", { mehr: true, platzhalter: "/assets/images/projekte/<name>/01.jpg – ohne Metadaten" }),
+      socialBild()
     ];
   }
   var TYPEN = {
@@ -94,7 +96,8 @@ var NeuFormular = (function () {
         verlinkt(),
         inhalt("Text in Markdown. Fotos als Galerie: ![Was zu sehen ist](/assets/images/news/<dateiname>/01.jpg) und darunter {: .gallery}"),
         adresse("original_url", "Original-Adresse", { mehr: true, hilfe: "nur bei übernommenen Beiträgen" }),
-        text("original_site", "Original-Website", { mehr: true, platzhalter: "z. B. 35services.de" })
+        text("original_site", "Original-Website", { mehr: true, platzhalter: "z. B. 35services.de" }),
+        socialBild()
       ]
     },
     termin: {
@@ -115,7 +118,8 @@ var NeuFormular = (function () {
         [persoenlich("Privater Termin aus dem Team (braucht „Dabei“): nur im Teamprofil"),
           haken("nur_projekt", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
         inhalt("Was passiert, wer kann kommen, was mitbringen …"),
-        text("date_label", "Text statt Datum", { mehr: true, platzhalter: "z. B. „Januar 2027 – genauer Termin folgt“" })
+        text("date_label", "Text statt Datum", { mehr: true, platzhalter: "z. B. „Januar 2027 – genauer Termin folgt“" }),
+        socialBild()
       ]
     },
     projekt: {
@@ -150,7 +154,8 @@ var NeuFormular = (function () {
         inhalt("Was das Gerät kann, Erfahrungen, Tipps …"),
         text("image", "Foto", { mehr: true, platzhalter: "eigenes Foto ohne Metadaten – keine Hersteller- oder Shopfotos" }),
         text("image_alt", "Beschreibung des Fotos", { mehr: true }),
-        haken("image_is_illustration", "Foto ist eine eigene SVG-Illustration", { mehr: true })
+        haken("image_is_illustration", "Foto ist eine eigene SVG-Illustration", { mehr: true }),
+        socialBild()
       ],
       pruefe: function (w) {
         if (!(w.owner_team || []).length && !(w.owner_partner || []).length && !w.owner_name) return "Wem gehört das Gerät? Bitte mindestens eine Besitzer*in eintragen – das Institut besitzt selbst nichts.";
@@ -172,7 +177,8 @@ var NeuFormular = (function () {
         persoenlich("Aus einem privaten Projekt im Team"),
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
         datum("geloest_am", "Gelöst am", { mehr: true }),
-        feld("langtext", "loesung", "Lösung (Markdown)", { mehr: true, zeilen: 4 })
+        feld("langtext", "loesung", "Lösung (Markdown)", { mehr: true, zeilen: 4 }),
+        socialBild()
       ]
     },
     team: {
@@ -184,7 +190,8 @@ var NeuFormular = (function () {
         verlinkt(),
         inhalt("Was die Person macht und womit sie im Makespace hilft – keine Wohnadresse, keine privaten E-Mail-Adressen"),
         text("photo", "Foto", { mehr: true, platzhalter: "/assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis" }),
-        text("photo_credit", "Bildnachweis", { mehr: true, hilfe: "Pflicht bei Fremdfotos (Presse, Agentur)" })
+        text("photo_credit", "Bildnachweis", { mehr: true, hilfe: "Pflicht bei Fremdfotos (Presse, Agentur)" }),
+        socialBild()
       ]
     },
     presse: {
@@ -196,7 +203,8 @@ var NeuFormular = (function () {
         stichworte(),
         verlinkt(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
-        text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/presse.yml" })
+        text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/presse.yml" }),
+        socialBild()
       ]
     },
     partner: {
@@ -227,7 +235,7 @@ var NeuFormular = (function () {
 
   // ---------- state ----------
   var STORE = "ifsmb-neu:";
-  var d = null, form, links, mehrBox, vorschau, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
+  var d = null, form, links, mehrBox, vorschau, socialBox, socialImg, socialTitel, socialBeschr, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
   var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder }
 
   function alleFelder(schema) {
@@ -305,6 +313,9 @@ var NeuFormular = (function () {
       + '<details class="neu-mehr"><summary>Weitere Felder</summary><div class="neu-felder"></div></details></div>'
       + '<aside class="neu-rechts"><label class="form-feld"><span>Neue Datei</span><span class="neu-pfad"><code></code><input name="datei" type="text" required spellcheck="false"></span></label>'
       + '<pre class="neu-vorschau" aria-label="Vorschau der Datei"></pre>'
+      + '<details class="neu-social" open><summary>Social-Media-Vorschau (WhatsApp, Signal, X …)</summary>'
+      + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
+      + '<div class="neu-social-text"><span class="neu-social-domain">ifsmb.de</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
       + '<ol class="neu-schritte small"><li>„Auf GitHub anlegen“ kopiert die Datei und öffnet GitHub mit dem fertigen Inhalt.</li>'
       + "<li>Dort „Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
       + "<li>Nach dem Merge erscheint die Seite nach ein paar Minuten auf der Website.</li></ol></aside></div>"
@@ -315,6 +326,10 @@ var NeuFormular = (function () {
     links = d.querySelector(".neu-links > .neu-felder");
     mehrBox = d.querySelector(".neu-mehr");
     vorschau = d.querySelector(".neu-vorschau");
+    socialBox = d.querySelector(".neu-social");
+    socialImg = d.querySelector(".neu-social-bild");
+    socialTitel = d.querySelector(".neu-social-titel");
+    socialBeschr = d.querySelector(".neu-social-beschr");
     dateiInput = form.elements.datei;
     ordnerEl = d.querySelector(".neu-pfad code");
     status = d.querySelector("[data-status]");
@@ -408,7 +423,25 @@ var NeuFormular = (function () {
     aktiv.gesendet = false;
     status.textContent = "";
   }
-  function zeigeVorschau() { vorschau.textContent = dateiInhalt(); }
+  function erstesMarkdownBild(md) {
+    var m = String(md || "").match(/!\[[^\]]*\]\(([^)\s]+)\)/);
+    return m && !/\.svg$/i.test(m[1]) ? m[1] : "";
+  }
+  function ersteTextzeile(md) {
+    return String(md || "").replace(/!\[[^\]]*\]\([^)]*\)|\{:[^}]*\}/g, "").replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+      .replace(/[#*_>`~]/g, "").split("\n").map(function (z) { return z.trim(); }).filter(Boolean)[0] || "";
+  }
+  function zeigeVorschau() {
+    vorschau.textContent = dateiInhalt();
+    if (!socialBox) return;
+    var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
+    socialBox.hidden = !istSeite;
+    if (!istSeite) return;
+    var bild = w.social_media_preview_image || (!w.image_is_illustration && !/\.svg$/i.test(w.image || "") && w.image) || w.photo || erstesMarkdownBild(w.text) || "/assets/images/og-preview.jpg";
+    if (socialImg.getAttribute("src") !== bild) socialImg.src = bild;
+    socialTitel.textContent = w.title || aktiv.schema.titel;
+    socialBeschr.textContent = (w.summary || w.subtitle || w.role || ersteTextzeile(w.text) || "Institut für spontane Makespace Buildung").slice(0, 160);
+  }
 
   function fehlt() {
     var leer = aktiv.felder.filter(function (f) { return f.pflicht && f.typ === "chips" && !aktiv.w[f.name].length; })[0];
