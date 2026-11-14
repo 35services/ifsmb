@@ -10,6 +10,7 @@ tags: [rc-modellbau, lulzbot-mini, flexibles-filament, u1, 3d-drucker]
 verlinkt:
   - /ausstattung/lulzbot-mini/
   - /ausstattung/snapmaker-u1-falko/
+  - /projekte/ideen/
 team:
   - falko-richter
 uuid: ad801b9d-159d-4685-b77d-80b2bea331fa
