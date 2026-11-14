@@ -8,6 +8,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ### Hinzugefügt
 
+- **Geokoordinaten-Prüfung für Fotos:** `_scripts/check_geodaten.rb` (auch eingebunden in `check_site.rb`, `pruefen.yml` und `pages.yml`) prüft alle Bilder unter `assets/` auf eingebettete EXIF-GPS- und XMP-Geodaten und bricht Pull Requests und das Deployment ab, falls Fotos noch Standortkoordinaten enthalten.
 - **Gelesen-Markierung:** Wer eine Seite geöffnet hat, sieht Links dorthin danach mit einem kleinen ✓ – in Listen, auf Projektkarten, bei „Verbindungen“ und im Text. Neuigkeiten und Projekte zeigen oben, wie viele schon gelesen sind („3 von 28 gelesen“). Gespeichert wird nur im eigenen Browser (localStorage, kein Cookie, nichts wird übertragen); im Impressum unter Datenschutz beschrieben, dort lassen sich die Markierungen auch löschen.
 - Jede Inhaltsseite hat dafür eine feste Kennung `uuid` im Front Matter, die auch beim Umbenennen der Datei gleich bleibt. Formulare und Vorlagen der ➕-Buttons erzeugen sie automatisch; `_scripts/uuids_ergaenzen.rb` ergänzt fehlende (z. B. bei Seiten aus Pages CMS) und meldet doppelte – doppelte stoppen Pull Requests und Deployment.
 
