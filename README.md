@@ -77,6 +77,15 @@ Inhalte lassen sich ohne Git im Browser pflegen:
 Jede Änderung ist ein Commit auf `main`, GitHub Pages veröffentlicht sie automatisch. Uploads landen in `assets/uploads/`.
 **Achtung:** Fotos, die über das CMS hochgeladen werden, werden nicht automatisch von GPS-Daten befreit.
 
+### Social-Media-Vorschau (Open Graph / Twitter Card)
+
+Jede Seite liefert Open-Graph- und Twitter/X-Card-Metadaten (`summary_large_image`, 1200 × 630 px) für WhatsApp, Signal, Mastodon, LinkedIn, Discord und X:
+
+- **Standardbild:** `assets/images/og-preview.jpg` (1200 × 630 px, Instituts-Karte)
+- **Automatisch aus dem Inhalt:** Hat ein Beitrag, Projekt, Termin, Gerät oder Teamprofil ein eigenes Foto (Titelbild, Profilfoto, Galerie oder erstes Foto im Text), wird es automatisch als Vorschaubild genutzt.
+- **Eigenes Vorschaubild pro Seite:** Im Front Matter (oder in Pages CMS sowie in den ➕-Formularen auf der Website unter „Mehr Optionen“) lässt sich `social_media_preview_image: /assets/images/...` setzen; die ➕-Formulare zeigen rechts außerdem live eine Social-Media-Vorschaukarte.
+- **Lokale Vorschau-Seite:** `_logo/social-preview.html` im Browser öffnen, um die Darstellung für Facebook/LinkedIn, X/Twitter und WhatsApp/Signal zu prüfen.
+
 ## E-Mail-Adressen
 
 E-Mail-Adressen nie im Klartext ins HTML schreiben, sondern base64-kodiert:

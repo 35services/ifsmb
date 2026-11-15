@@ -15,6 +15,7 @@ tags: [{{ include.tags }}]   # Stichworte; das event_tag eines Projekts verbinde
 verlinkt: [{{ include.verlinkt }}]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/kalender/…/]
 persoenlich: {{ include.persoenlich | default: false }}   # true = aus einem privaten Projekt im Team
 loesung:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
+social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
 uuid: UUID-NEU   # zufällige Kennung für die Gelesen-Markierung – wird beim Klick erzeugt, nicht ändern
 ---
 
