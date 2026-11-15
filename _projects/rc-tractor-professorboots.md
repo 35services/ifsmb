@@ -1,6 +1,6 @@
 ---
 title: "RC Tractor von ProfessorBoots bauen"
-summary: "Falko baut den 3D-gedruckten RC Tractor von ProfessorBoots für #septembersister – mit modifizierter Motorhaube (später mit Namen und Panda-Logo) und NinjaFlex-Reifen aus dem LulzBot Mini."
+summary: "Falko und Opa Andi bauen gemeinsam den 3D-gedruckten RC Tractor von ProfessorBoots für #septembersister – mit modifizierter Motorhaube (später mit Namen und Panda-Logo) und NinjaFlex-Reifen aus dem LulzBot Mini."
 status: aktuell
 persoenlich: true
 start: 2026-11-14
@@ -13,12 +13,21 @@ verlinkt:
   - /projekte/ideen/
 team:
   - falko-richter
+  - opa-andi
+updates:
+  - datum: 2026-11-15
+    text: |-
+      **Die ersten Teile sind fertig gedruckt:** Karosserie, Führerhaus, die modifizierte Motorhaube und eine Felge sind aus dem Drucker gekommen – einmal noch mit den Baum-Stützstrukturen direkt vom Druckbett und einmal schon zusammengesteckt. Um weitere Teile kümmert sich jetzt [Opa Andi](/team/opa-andi/).
+
+      ![Die ersten rotbraunen PLA-Teile des RC Tractor (modifizierte Motorhaube, Führerhaus mit strukturiertem Dach, Karosserie mit Kotflügeln und Hinterradfelge) probeweise zusammengesteckt](/assets/images/projekte/rc-tractor-professorboots/04.jpg)
+      ![Die frisch gedruckten Teile des RC Tractor noch mit den Baum-Stützstrukturen: Motorhaube, Führerhaus, Felge und Karosserie](/assets/images/projekte/rc-tractor-professorboots/05.jpg)
+      {: .gallery}
 uuid: ad801b9d-159d-4685-b77d-80b2bea331fa
 ---
 
-Falko baut für **#septembersister** einen ferngesteuerten Traktor aus dem 3D-Drucker: den **[RC Tractor](https://www.printables.com/model/1714813-rc-tractor)** von **[ProfessorBoots](https://www.printables.com/@ProfJohnny_823077)**.
+Falko und [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) bauen gemeinsam für **#septembersister** einen ferngesteuerten Traktor aus dem 3D-Drucker: den **[RC Tractor](https://www.printables.com/model/1714813-rc-tractor)** von **[ProfessorBoots](https://www.printables.com/@ProfJohnny_823077)**.
 
-Heute haben wir das Filament ausgesucht und auf [Falkos Snapmaker U1]({{ '/ausstattung/snapmaker-u1-falko/' | relative_url }}) direkt den ersten großen Druck (`1-body_PLA`) gestartet.
+Am Starttag haben wir das Filament ausgesucht und auf [Falkos Snapmaker U1]({{ '/ausstattung/snapmaker-u1-falko/' | relative_url }}) direkt den ersten großen Druck (`1-body_PLA`) gestartet. Um weitere Teile kümmert sich [Opa Andi]({{ '/team/opa-andi/' | relative_url }}).
 
 ## Geplante Anpassungen
 
