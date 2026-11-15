@@ -12,7 +12,7 @@ verlinkt:
 uuid: 4bc4f850-4053-4273-8327-79d380388892
 ---
 
-Alexander entwirft und fertigt unter **[augenrahmen.de](https://augenrahmen.de/)** im 3D-Druck-Kiez Moabit **3D-gedruckte Brillen**.
+Alexander entwirft und fertigt unter **[augenrahmen.de](https://augenrahmen.de/)** im 3D-Druck-Kiez Moabit **3D-gedruckte ~~Brillen~~ Augenrahmen**.
 
 Im Oktober 2026 war er zu Gast in unseren Schul-AGs und hat den Kindern und Jugendlichen gezeigt, wie aus dem 3D-Drucker echte, tragbare Brillenfassungen entstehen:
 
