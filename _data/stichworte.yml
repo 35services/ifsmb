@@ -11,6 +11,7 @@ elegoo-orangestorm-giga: Elegoo OrangeStorm Giga
 waermebildkamera: Wärmebildkamera
 ki-cad: KI-Tools für CAD
 ki-server: KI-Server von Anton
+nonplanar: Nonplanarer Druck
 windiy: WinDIY
 flsun-v400: FLSUN V400
 prusa-mk4: Prusa MK4
@@ -21,6 +22,7 @@ heartlabs: HeartLabs
 fabmaker: Fabmaker
 3dmakerpro-lynx: 3DMakerpro Lynx
 creality-ferret-se: Creality Ferret SE
+creality-cr-6-max: Creality CR-6 Max
 lulzbot: LulzBot
 lulzbot-taz-6: LulzBot TAZ 6
 lulzbot-mini: LulzBot Mini
@@ -37,6 +39,7 @@ corexy: CoreXY
 openscan: OpenScan
 tarmo5: Tarmo5
 rc-modellbau: RC-Modellbau
+modellbau-ag-ktg: Modellbau-AG an der KTG
 ktg-ag-jahr-1: KTG-AG Jahr 1 (2023/24)
 ktg-ag-jahr-2: KTG-AG Jahr 2 (2024/25)
 lessing-gymnasium: Lessing-Gymnasium
@@ -63,7 +66,6 @@ ipad-stifte: iPad-Stifte
 ipad-stifte-rfg: iPad-Stifte am Rosalind-Franklin-Gymnasium
 taschenstation: Taschenstation (ReUseMe)
 moldlay: Moldlay
-mogster-pc-blend: "Mogster: PC-Blend"
 netzwerk: Netzwerk
 infinite-cube: Infinite Cube
 notebook-ktg: Notebook der KTG

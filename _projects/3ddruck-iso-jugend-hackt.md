@@ -9,6 +9,8 @@ event_tag: 3ddruck-iso
 tags: [3ddruck-iso, jugend-hackt, heartlabs, laptops, ktg]
 team:
   - falko-richter
+verlinkt:
+  - /team/opa-andi/
 partners:
   - Jugend hackt
   - HeartLabs
@@ -26,6 +28,7 @@ updates:
     text: >-
       Experiment mit **MX Linux** auf einem alten 12″-MacBook: läuft spürbar besser auf
       alter Hardware. Vielleicht wird eine spätere Version des Sticks darauf aufbauen.
+uuid: 694d0a72-9d71-45f3-b2ea-ffcf892b60e9
 ---
 
 Falko baut ein **Linux-System für USB-Sticks**, das ganz auf **CAD, 3D-Druck und Plotten** ausgerichtet ist. Stick rein, Laptop starten – und schon ist alles da, was ein Kind in der AG braucht. Die Grundlage ist das Live-System von [Jugend hackt]({{ '/partner/jugend-hackt/' | relative_url }}), mit dem auch auf ihren Veranstaltungen gearbeitet wird.
@@ -45,7 +48,7 @@ Programme, die die AG nicht braucht (Entwicklungsumgebungen, Spiele-Engines …)
 
 ## Die Laptops
 
-Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **Falkos Vater**, ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partner/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**. Viele kamen ohne Festplatte – mit dem Stick ist das egal. Mehr dazu im Beitrag [„Linux-Laptops für die 3D-Druck AG“]({{ '/news/2026/10/13/linux-laptops-fuer-die-3d-druck-ag/' | relative_url }}) und auf der Seite [Laptops & Druck-Sticks]({{ '/ausstattung/laptops-druck-sticks/' | relative_url }}).
+Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **[Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }})**, ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partner/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**. Viele kamen ohne Festplatte – mit dem Stick ist das egal. Mehr dazu im Beitrag [„Linux-Laptops für die 3D-Druck AG“]({{ '/news/2026/10/13/linux-laptops-fuer-die-3d-druck-ag/' | relative_url }}) und auf der Seite [Laptops & Druck-Sticks]({{ '/ausstattung/laptops-druck-sticks/' | relative_url }}).
 
 **Danke an [HeartLabs]({{ '/partner/' | relative_url }}#heartlabs)** für den Laptop, auf dem Falko die Images baut und die Sticks beschreibt!
 
@@ -53,7 +56,7 @@ Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **Falkos Va
 
 - **Nichts wegwerfen:** Aus Laptops, die im Müll gelandet wären, werden Werkzeuge für Kinder.
 - **Auf den Schultern von anderen:** Wir erfinden nichts neu, sondern bauen auf der Arbeit von Jugend hackt auf – und geben unsere Änderungen offen zurück.
-- **Viele Hände:** Jugend hackt liefert die Grundlage, HeartLabs den Bau-Laptop, Falkos Vater und die KTG die Geräte, 35services die AG. Das Institut bringt alles zusammen.
+- **Viele Hände:** Jugend hackt liefert die Grundlage, HeartLabs den Bau-Laptop, [Falkos Vater]({{ '/team/opa-andi/' | relative_url }}) und die KTG die Geräte, 35services die AG. Das Institut bringt alles zusammen.
 - **Spontan:** Kein Antrag, keine Ausschreibung – Falko hat einfach angefangen und die USB-Sticks erstmal selbst bezahlt.
 - **Zum Nachmachen:** Andere Schulen und Makespaces können den Stick genauso bauen.
 

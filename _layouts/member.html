@@ -66,6 +66,15 @@ layout: default
       {% for h in member_ch %}{% include herausforderung-karte.html h=h %}{% endfor %}
     </div>
     {% endif %}
+    {%- comment -%}This person's todos (todos/todo-<slug>.md) – loaded by JS on click.{%- endcomment -%}
+    {%- assign todo_file = "/todos/todo-" | append: page.slug | append: ".md" -%}
+    {%- assign has_todo_file = site.static_files | where: "path", todo_file | first -%}
+    {% if page.nicht_im_team != true or has_todo_file %}
+    <h2 id="todos">Todos</h2>
+    {%- assign tk_titel = "Todos von " | append: page.title -%}
+    {%- assign tk_label = "Todos von " | append: page.title -%}
+    {% include todos-knopf.html person=page.slug titel=tk_titel label=tk_label %}
+    {% endif %}
     {%- include termine-auswahl.html res=page art="team" -%}
     {%- assign member_events = termine_auswahl -%}
     {%- if member_events.size > 0 -%}

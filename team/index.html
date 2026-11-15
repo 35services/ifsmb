@@ -4,7 +4,7 @@ layout: page
 title: Team
 lead: Die Menschen hinter dem Institut.
 ---
-{% assign members = site.team | sort: "order" %}
+{% assign members = site.team | where_exp: "m", "m.nicht_im_team != true" | sort: "order" %}
 <div class="grid-3">
   {% for m in members %}
   <a class="card card-link member-card" href="{{ m.url | relative_url }}">

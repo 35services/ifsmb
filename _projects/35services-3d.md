@@ -7,7 +7,7 @@ start: 2023-11-12
 zeitraum: seit November 2023
 ort: 35services e.V., Moabit
 event_tag: 35services-3d
-tags: [3d-drucker, prusa-mk4, u1, bambu-lab-a1-mini, 3d-scanner, onshape, ktg]
+tags: [3d-drucker, prusa-mk4, u1, bambu-lab-a1-mini, creality-cr-6-max, 3d-scanner, onshape, ktg]
 verwandt:
   - 35services-2d
   - 3d-druck-ag-ktg
@@ -16,8 +16,12 @@ verwandt:
 team:
   - falko-richter
   - jan
+verlinkt:
+  - /team/opa-andi/
+  - /ausstattung/creality-cr-6-max/
 partners:
   - 35 services e. V.
+uuid: 50fc05ca-0cf9-465d-9d64-4acf456f3de1
 ---
 
 Im offenen GitHub-Repository **[35services/3d](https://github.com/35services/3d)** sammeln [Falko]({{ '/team/falko-richter/' | relative_url }}) und [Jan]({{ '/team/jan/' | relative_url }}) seit **November 2023** die 3D-Druck-Projekte rund um die Nachbarschaftswerkstatt [35services e. V.]({{ '/partner/35services/' | relative_url }}): eigene Konstruktionen, Druckdateien (`.stl`, `.step`, `.3mf`), Slicer-Profile und Notizen. Was in der Werkstatt entsteht, soll für alle nachdruckbar bleiben – und das Repo dient gleichzeitig als Gedächtnis, wann welches Projekt entstanden ist.
@@ -52,14 +56,14 @@ Im Ordner [`grids/`](https://github.com/35services/3d/tree/main/grids) (November
 
 Viele Projekte im Repo verbinden die Werkstatt direkt mit der [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) und Nachbarschaftsaktionen:
 
-- **Skiddi v3 & RC Excavator** ([`Skiddi/`](https://github.com/35services/3d/tree/main/Skiddi), Juni 2024): Für das [erste Jahr der KTG-AG]({{ '/projekte/ktg-ag-jahr-1/' | relative_url }}) haben Falko und [Jan]({{ '/team/jan/' | relative_url }}) hier die fertigen Druckplatten und G-Codes (PLA und flexibles TPU) für den [Prusa MK4]({{ '/ausstattung/prusa-mk4-mmu/' | relative_url }}) und den [Bambu Lab A1 mini]({{ '/ausstattung/bambu-lab-a1-mini/' | relative_url }}) abgelegt.
+- **Skiddi v3 & RC Excavator** ([`Skiddi/`](https://github.com/35services/3d/tree/main/Skiddi), Juni 2024): Für das [erste Jahr der KTG-AG]({{ '/projekte/ktg-ag-jahr-1/' | relative_url }}) haben Falko und [Jan]({{ '/team/jan/' | relative_url }}) hier die fertigen Druckplatten und G-Codes (PLA und flexibles TPU) für den [Prusa MK4]({{ '/ausstattung/prusa-mk4-mmu/' | relative_url }}) und den [Bambu Lab A1 mini]({{ '/ausstattung/35services-bambu-lab-a1-mini/' | relative_url }}) abgelegt.
 - **Druckplatten & Sammlungen der AG** ([`3d-druck-ag/`](https://github.com/35services/3d/tree/main/3d-druck-ag), ab November 2025): Vorbereitete `.3mf`-Dateien aus der AG (Print-in-Place-Bagger, Drachenreiter, Minecraft-Werkzeuge) und Links zu den Sammlungen auf [MakerWorld](https://makerworld.com/en/collections/35898265-ktg) und [Printables](https://www.printables.com/@falkorichter_1026034/collections/3703977).
 - **Medaillen für die Grundschule** ([`medals/`](https://github.com/35services/3d/tree/main/medals), Mai 2026): Entwürfe für Sportfest-Medaillen (Weitsprung, Lauf, Wurf) – die Piktogramme wurden per KI entworfen und anschließend als SVG für den 3D-Druck vektorisiert.
 - **Mehrfarbdruck & Schilder** ([`2d-3d-multicolor-prints/`](https://github.com/35services/3d/tree/main/2d-3d-multicolor-prints), Oktober 2025, und [`weihnachten/`](https://github.com/35services/3d/tree/main/weihnachten), November 2026): Experimente mit HueForge/FlatForge, [svg2solid](https://svg2solid.rknt.de/) und [MakeMySign](https://makerworld.com/en/makerlab/makeMySign) für Namensschilder und das Logo der Spreewölfe sowie eine volle Platte mehrfarbiger Schneemänner ([Printables Make](https://www.printables.com/make/2226416)) auf dem [Snapmaker U1]({{ '/ausstattung/snapmaker-u1/' | relative_url }}).
 
 ## Drucker, 3D-Scanner & Workshops
 
-- **Creality CR-6 Max** ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max), Mai–Juli 2024): [Jan]({{ '/team/jan/' | relative_url }}) hat das PrusaSlicer-Profil für den großen CR-6 Max (400 × 400 mm Bauraum) beigesteuert; dazu stehen dort die Unterlagen für das Upgrade auf den Bondtech LGX Lite Arrow Extruder. Der Drucker wurde später an Falkos Vater weiterverkauft.
+- **[Creality CR-6 Max]({{ '/ausstattung/creality-cr-6-max/' | relative_url }})** ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max), Mai–Juli 2024): [Jan]({{ '/team/jan/' | relative_url }}) hat das PrusaSlicer-Profil für den großen CR-6 Max (400 × 400 mm Bauraum) beigesteuert; dazu stehen dort die Unterlagen für das Upgrade auf den Bondtech LGX Lite Arrow Extruder. Der Drucker wurde später an [Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }}) weiterverkauft.
 - **3D-Scannen** ([`wandpanel/`](https://github.com/35services/3d/tree/main/wandpanel), Februar 2024 – Februar 2026): Erste 3D-Scan-Versuche eines Wandpaneels – daraus ist später das Projekt [3D-Scanner evaluieren]({{ '/projekte/3d-scanner-evaluieren/' | relative_url }}) gewachsen.
 - **CAD-Workshop & OctoPrint** ([`cad-workshop/`](https://github.com/35services/3d/tree/main/cad-workshop), Januar 2026, sowie `octoprint/` in der Git-Historie vom September 2026): Ideen für gemeinsame Konstruktions-Workshops und ein Docker-Compose-Setup für OctoPrint samt `ipOnConnect`-Plugin.
 

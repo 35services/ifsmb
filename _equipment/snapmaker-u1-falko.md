@@ -4,14 +4,19 @@ kategorie: 3D-Drucker (FDM, Mehrfarbe, Werkzeugwechsler)
 summary: Falkos privater Snapmaker U1 – damit im Keller endlich zuverlässig gedruckt wird. Hier darf gebastelt werden.
 owner_team: falko-richter
 standort: Bei Falko (Keller)
-image: /assets/images/ausstattung/illustration-drucker.svg
-image_is_illustration: true
-image_alt: "Illustration eines 3D-Druckers"
+image: /assets/images/ausstattung/snapmaker-u1-falko/01.jpg
+thumb: /assets/images/ausstattung/snapmaker-u1-falko/01-600w.jpg
+image_alt: "Falkos Snapmaker U1 mit transparenter Haube und zwei seitlich montierten Filamentspulen auf seinem Karton im Kellerabteil"
+gallery:
+  - image: /assets/images/ausstattung/snapmaker-u1-falko/02.jpg
+    thumb: /assets/images/ausstattung/snapmaker-u1-falko/02-600w.jpg
+    alt: "Erster mehrfarbiger Testdruck im Bauraum des Snapmaker U1: der rot-gelb-schwarze Drache entsteht Schicht für Schicht auf der strukturierten PEI-Druckplatte"
 tags: [u1, 3d-drucker, mehrfarbdruck]
 verlinkt: [/ausstattung/snapmaker-u1/]
+uuid: d52eb86e-cca5-42bb-b594-f1ea25a9f680
 ---
 
-Falko hat sich **privat einen Snapmaker U1 mit Deckel** zugelegt – den gleichen Drucker, der auch in der [3D-Druck AG an der KTG]({{ '/ausstattung/snapmaker-u1/' | relative_url }}) steht. Damit kann er im Keller endlich **zuverlässig drucken**. Vielleicht unterstützt er damit auch AGs, die er ja kommerziell anbietet. Er wird am 12.11.2026 geliefert.
+Falko hat sich **privat einen Snapmaker U1 mit Deckel** zugelegt – den gleichen Drucker, der auch in der [3D-Druck AG an der KTG]({{ '/ausstattung/snapmaker-u1/' | relative_url }}) steht. Damit kann er im Keller endlich **zuverlässig drucken**. Vielleicht unterstützt er damit auch AGs, die er kommerziell anbietet – wie die [Modellbau-AG an der KTG]({{ '/projekte/modellbau-ag-ktg/' | relative_url }}). Inzwischen ist er angekommen, steht im Keller und druckt schon fleißig – nach dem mehrfarbigen Test-Drachen läuft darauf bereits der [RC Tractor von ProfessorBoots]({{ '/projekte/rc-tractor-professorboots/' | relative_url }}).
 
 ### Die U1-Community wächst
 

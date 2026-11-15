@@ -3,10 +3,11 @@ layout: page
 title: Projekt-Ideen
 lead: Was man alles mit einem 3D-Drucker bauen kann – unsere Sammlung zum Stöbern und Nachbauen.
 permalink: /projekte/ideen/
+uuid: b3745d30-8b69-4c76-b404-53a480f39aae
 ---
 <div class="prose ideas" markdown="1">
 
-Hier sammeln wir Projekte, die uns begeistern – für AGs, Workshops oder einfach zum Nachbauen. ✅ heißt: Haben wir schon gebaut. Die meisten Links führen zu [YouTube](https://www.youtube.com/), [Printables](https://www.printables.com/), [Thingiverse](https://www.thingiverse.com/) oder [Instructables](https://www.instructables.com/); wir binden nichts davon direkt ein.
+Hier sammeln wir Projekte, die uns begeistern – für AGs, Workshops oder einfach zum Nachbauen. ✅ heißt: Haben wir schon gebaut; 🕒 heißt: Bauen wir gerade. Die meisten Links führen zu [YouTube](https://www.youtube.com/), [Printables](https://www.printables.com/), [Thingiverse](https://www.thingiverse.com/) oder [Instructables](https://www.instructables.com/); wir binden nichts davon direkt ein.
 
 Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte/' | relative_url }}) vorbei oder [meldet euch]({{ '/angebot/' | relative_url }}).
 
@@ -51,9 +52,11 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 ### Gelände, Ketten und Traktoren
 
 - **Thumper** – ein 1:8-Rock-Crawler im Jeep-CJ7-Stil ([Printables](https://www.printables.com/model/323433-thumper-18-scale-rc-car-cj7-rock-crawler-by-blackc))
+- **4x4 Mini-RC-Crawler mit eigener Fernsteuerung** – 3D-gedruckter Crawler mit kleinen N20-Getriebemotoren und selbstgebautem RC-Controller von Pro Know ([Video](https://www.youtube.com/watch?v=nN-Kt9q44bw))
 - **Kettenfahrzeuge** ([Video 1](https://www.youtube.com/watch?v=q3XNYwNZ97w), [Video 2](https://youtu.be/6lUlWxRsPhI))
 - **RC Avatar Scorpion V2** ([Cults](https://cults3d.com/en/3d-model/game/rc-avatar-scorpion-v2), [Video](https://youtu.be/UkFCE25-XTs))
-- **OpenRC Tractor** – empfohlen von Opa ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
+- 🕒 **RC Tractor von ProfessorBoots** – wird gerade gebaut: [RC Tractor von ProfessorBoots bauen]({{ '/projekte/rc-tractor-professorboots/' | relative_url }}) ([Printables](https://www.printables.com/model/1714813-rc-tractor), [John Deere Hood Mod](https://www.printables.com/model/1813353-john-deere-hood-mod-for-the-rc-tractor/files))
+- **OpenRC Tractor** – empfohlen von [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
 - **Pistenraupe** ([youmagine](https://youmagine.com/designs/34c46679-cdef-402c-94d7-eb25388172c3)) und [Bambu Labs „Santa's Snowcat“](https://www.youtube.com/watch?v=45_44t7ZurE) ([Video](https://youtu.be/nZYnPq2CSUg))
 
 ### Roboter

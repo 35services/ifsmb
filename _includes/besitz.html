@@ -12,8 +12,10 @@
   {%- if op and include.plain == nil -%}{%- capture o %}<a href="{{ op.page | default: '/partner/' | relative_url }}{% unless op.page %}#{{ op.name | slugify }}{% endunless %}">{{ op.name }}</a>{% endcapture -%}{%- else -%}{%- assign o = n -%}{%- endif -%}
   {%- assign owners = owners | push: o -%}
 {%- endfor -%}
+{%- assign team_in_list = false -%}
 {%- for s in o_team -%}
   {%- assign om = site.team | where: "slug", s | first -%}
+  {%- if om and om.nicht_im_team != true -%}{%- assign team_in_list = true -%}{%- endif -%}
   {%- if om and include.plain == nil -%}{%- capture o %}<a href="{{ om.url | relative_url }}">{{ om.title }}</a>{% endcapture -%}{%- elsif om -%}{%- assign o = om.title -%}{%- else -%}{%- assign o = s -%}{%- endif -%}
   {%- assign owners = owners | push: o -%}
 {%- endfor -%}
@@ -24,5 +26,5 @@
   {%- if it.status == "in-aussicht" %}Vielleicht von {% else %}Gehört {% endif -%}
   {%- if o_partners.size > 0 and owners.size == 1 %}unserem Partner {% endif -%}
   {%- for o in owners -%}{{ o }}{% if forloop.rindex == 2 %} und {% elsif forloop.last == false %}, {% endif %}{%- endfor -%}
-  {%- if o_team.size > 0 and owners.size == 1 %} aus unserem Team{% endif -%}
+  {%- if team_in_list and owners.size == 1 %} aus unserem Team{% endif -%}
 {%- endif -%}
