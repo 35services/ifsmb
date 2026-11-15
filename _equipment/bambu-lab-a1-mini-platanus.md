@@ -13,4 +13,4 @@ uuid: c38abf23-2604-4d3d-91b4-ad79ca567d7d
 
 Dieser Bambu Lab A1 mini **gehört der Platanus Schule**. Auf ihm druckt die [3D-Druck AG an der Platanus Schule]({{ '/projekte/3d-druck-ag-platanus-schule/' | relative_url }}), die sich seit September 2026 einmal pro Woche trifft.
 
-Der A1 mini ist kompakt (Bauraum 18 × 18 × 18 cm), kalibriert sich weitgehend selbst und ist deshalb ideal für die Arbeit mit Kindern. Den gleichen Drucker gibt es auch bei [35services]({{ '/ausstattung/bambu-lab-a1-mini/' | relative_url }}).
+Der A1 mini ist kompakt (Bauraum 18 × 18 × 18 cm), kalibriert sich weitgehend selbst und ist deshalb ideal für die Arbeit mit Kindern. Den gleichen Drucker gibt es auch bei [35services]({{ '/ausstattung/35services-bambu-lab-a1-mini/' | relative_url }}).
