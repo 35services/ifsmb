@@ -1,12 +1,14 @@
 // Todo app on /todos/ – an experiment next to the Herausforderungen collection, without libraries.
-// One Markdown file per person (todos/<person>.md, see the comment at the top of each file):
+// The page part needs assets/js/formular.js (dialog, chip fields with autocomplete, avatars, GitHub step);
+// TodoFormat below has no dependencies and also runs in Node.
+// One Markdown file per person (todos/todo-<person>.md, see the comment at the top of each file):
 //   ## <quadrant heading>      → Eisenhower quadrant (q1 … q4) or "Erledigt"
 //   ### <title> {#id}          → one challenge; order inside a quadrant = priority
 //   ```yaml … ```              → fields (kurz, art, status, seit, faellig, helfer, projekte, tags, verlinkt …)
 //   free Markdown text
 // Files are fetched lazily per person. Every change is written to localStorage right away;
 // "Pull Request" shows a diff, copies the new file and opens the GitHub editor.
-// Format of todos/<person>.md: parse ⇄ serialize. Pure functions, also usable from Node for tests.
+// Format of todos/todo-<person>.md: parse ⇄ serialize. Pure functions, also usable from Node for tests.
 var TodoFormat = (function () {
   "use strict";
   var BUCKETS = [
@@ -136,13 +138,30 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
   var dataEl = document.getElementById("todos-daten");
   if (!dataEl) return;
   var F = TodoFormat, BUCKETS = F.BUCKETS, BUCKET = F.BUCKET, LISTEN_KEYS = F.LISTEN_KEYS;
-  var parse = F.parse, serialize = F.serialize, normal = F.normal, slugify = F.slugify, norm = F.norm;
+  var parse = F.parse, serialize = F.serialize, normal = F.normal, slugify = F.slugify;
   var CFG = JSON.parse(dataEl.textContent);
 
+  // Page mode on /todos/ (#todos-app exists) or embedded mode: a button on project pages and team profiles
+  // (_includes/todos-knopf.html) loads this script on click and calls TodoApp.start(); everything lives in the pop-up.
   var app = document.getElementById("todos-app");
+  var EINGEBETTET = !app;
+  var FX = Formular;
+  if (!document.getElementById("todos-dialog")) {
+    FX.dialog({ id: "todos-dialog", klasse: "todos-dialog", titel: "Todo bearbeiten",
+      kopf: '<a class="todos-alle" id="todos-alle" href="' + CFG.basis + '" hidden>Alle Todos ↗</a>' })
+      .insertAdjacentHTML("beforeend", '<div class="todos-dialog-body"><div class="todos-dialog-links" id="todos-dialog-links"></div>'
+        + '<form class="todos-editor" id="todos-editor" autocomplete="off"></form></div>');
+    FX.dialog({ id: "todos-diff", klasse: "todos-diff-dialog", titel: "Änderungen speichern" })
+      .insertAdjacentHTML("beforeend", '<div class="todos-diff-body" id="todos-diff-body"></div>');
+  }
+  if (EINGEBETTET) {
+    document.getElementById("todos-dialog-links").insertAdjacentHTML("afterbegin",
+      '<nav class="todos-personen" id="todos-personen" aria-label="Person wählen"></nav><div class="todos-leiste" id="todos-leiste" hidden></div>');
+  }
   var personenNav = document.getElementById("todos-personen");
   var leiste = document.getElementById("todos-leiste");
-  var matrixPlatz = document.getElementById("todos-matrix-platz");
+  var matrixPlatz = EINGEBETTET ? document.getElementById("todos-dialog-links") : document.getElementById("todos-matrix-platz");
+  var alleLink = document.getElementById("todos-alle");
   var dialog = document.getElementById("todos-dialog");
   var dialogLinks = document.getElementById("todos-dialog-links");
   var editor = document.getElementById("todos-editor");
@@ -150,31 +169,38 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
   var diffBody = document.getElementById("todos-diff-body");
 
   var STORE = "ifsmb-todos:";
+  // File of a person: todos/todo-<person>.md (the prefix keeps it apart from the profile _team/<person>.md)
+  function dateiname(person) { return "todo-" + person + ".md"; }
+  function pfad(person) { return "todos/" + dateiname(person); }
   var ART = { aufgabe: "📋", problem: "⚠️", frage: "❓" };
-  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
-  function heute() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
-  function datumDE(d) { var p = String(d || "").split("-"); return p.length === 3 ? p[2] + "." + p[1] + "." + p[0] : d; }
+  var esc = FX.esc, heute = FX.heute, datumDE = FX.datumDE, el = FX.el, avatar = FX.avatar;
   function storeGet(k) { try { return JSON.parse(localStorage.getItem(STORE + k) || "null"); } catch (e) { return null; } }
-  function storeSet(k, v) { try { if (v) localStorage.setItem(STORE + k, JSON.stringify(v)); else localStorage.removeItem(STORE + k); } catch (e) { /* storage blocked */ } }
-  function el(html) { var t = document.createElement("template"); t.innerHTML = html.trim(); var n = t.content.firstChild; t.content.removeChild(n); return n; }
+  // ROH remembers the raw localStorage value this tab last wrote or saw per person, to notice changes from other tabs.
+  var ROH = {};
+  function storeRoh(k) { try { return localStorage.getItem(STORE + k); } catch (e) { return null; } }
+  function storeSet(k, v) {
+    var roh = v ? JSON.stringify(v) : null;
+    ROH[k] = roh;
+    try { if (roh) localStorage.setItem(STORE + k, roh); else localStorage.removeItem(STORE + k); } catch (e) { /* storage blocked */ }
+  }
   var liveEl = el('<p class="visually-hidden" aria-live="polite"></p>');
-  app.appendChild(liveEl);
+  document.body.appendChild(liveEl);
   function sagen(text) { liveEl.textContent = text; }
 
   // ---------- people ----------
   var PERSON = {};
   CFG.personen.forEach(function (p) { PERSON[p.id] = p; });
   CFG.dateien.forEach(function (id) { if (!PERSON[id]) { PERSON[id] = { id: id, name: id, bild: "" }; CFG.personen.push(PERSON[id]); } });
-  function initialen(name) { return String(name || "?").split(/[\s-]+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join(""); }
-  function avatar(id, cls) {
-    var p = PERSON[id] || { id: id, name: id };
-    return p.bild
-      ? '<img class="todo-avatar ' + (cls || "") + '" src="' + esc(p.bild) + '" alt="" title="' + esc(p.name) + '" width="24" height="24" loading="lazy">'
-      : '<span class="todo-avatar todo-avatar-text ' + (cls || "") + '" title="' + esc(p.name) + '" aria-hidden="true">' + esc(initialen(p.name)) + "</span>";
-  }
+  FX.personen(CFG.personen);
 
   // ---------- state per person ----------
   var DOCS = {};   // person → { server: text|null, doc, konflikt }
+  var FILTER = null; // embedded on a project page: { projekt, tag } – only matching todos are shown
+  var NAV = null;    // person ids in the navigation (null = everyone)
+  function sichtbar(t) {
+    if (!FILTER) return true;
+    return (t.felder.projekte || []).indexOf(FILTER.projekt) >= 0 || !!FILTER.tag && (t.felder.tags || []).indexOf(FILTER.tag) >= 0;
+  }
   var aktuell = null;
   var auswahl = null; // id of the challenge in the editor
 
@@ -182,9 +208,10 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     if (DOCS[person]) return Promise.resolve(DOCS[person]);
     var hatDatei = CFG.dateien.indexOf(person) >= 0;
     var p = hatDatei
-      ? fetch(CFG.basis + encodeURIComponent(person) + ".md", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      ? fetch(CFG.basis + encodeURIComponent(dateiname(person)), { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
       : Promise.resolve(null);
     return p.then(function (server) {
+      ROH[person] = storeRoh(person);
       var entwurf = storeGet(person);
       var st = { server: server, doc: null, konflikt: false };
       if (entwurf && normal(entwurf.text) === normal(server)) { storeSet(person, null); entwurf = null; }
@@ -230,17 +257,29 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
 
   // ---------- people navigation ----------
   function renderPersonen() {
-    var html = CFG.personen.map(function (p) {
-      var n = DOCS[p.id] ? DOCS[p.id].doc.todos.filter(function (t) { return t.q !== "done"; }).length : null;
+    var liste = NAV ? NAV.map(function (id) { return PERSON[id] || { id: id, name: id }; }) : CFG.personen;
+    var html = liste.map(function (p) {
+      var n = DOCS[p.id] ? DOCS[p.id].doc.todos.filter(function (t) { return t.q !== "done" && sichtbar(t); }).length : null;
       var hat = CFG.dateien.indexOf(p.id) >= 0 || DOCS[p.id] && DOCS[p.id].doc.todos.length;
-      return '<a href="#' + esc(p.id) + '" class="todos-person' + (p.id === aktuell ? " aktiv" : "") + (hat ? "" : " leer") + '"' + (p.id === aktuell ? ' aria-current="page"' : "") + ">"
-        + avatar(p.id, "todo-avatar-gross") + "<span>" + esc(p.name) + "</span>"
+      var innen = avatar(p.id, "person-avatar-gross") + "<span>" + esc(p.name) + "</span>"
         + (n ? '<sup class="todos-zahl">' + n + "</sup>" : "")
-        + (geaendert(p.id) ? '<span class="todos-punkt" title="Ungespeicherte Änderungen">●</span>' : "")
-        + "</a>";
+        + (geaendert(p.id) ? '<span class="todos-punkt" title="Ungespeicherte Änderungen">●</span>' : "");
+      var cls = "todos-person" + (p.id === aktuell ? " aktiv" : "") + (hat ? "" : " leer");
+      return EINGEBETTET
+        ? '<button type="button" class="' + cls + '" data-person="' + esc(p.id) + '"' + (p.id === aktuell ? ' aria-pressed="true"' : ' aria-pressed="false"') + ">" + innen + "</button>"
+        : '<a href="#' + esc(p.id) + '" class="' + cls + '"' + (p.id === aktuell ? ' aria-current="page"' : "") + ">" + innen + "</a>";
     }).join("");
     personenNav.innerHTML = html;
+    personenNav.hidden = EINGEBETTET && liste.length < 2;
+    if (alleLink && aktuell) alleLink.href = CFG.basis + "#" + encodeURIComponent(aktuell);
   }
+
+  personenNav.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-person]");
+    if (!b) return;
+    auswahl = null;
+    zeige(b.getAttribute("data-person")).then(function () { renderEditor(); });
+  });
 
   // ---------- save bar ----------
   function renderLeiste() {
@@ -249,10 +288,10 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     if (!offen.length && !(st && st.konflikt)) { leiste.hidden = true; leiste.innerHTML = ""; return; }
     leiste.hidden = false;
     leiste.innerHTML = offen.map(function (p) {
-      return '<div class="todos-leiste-zeile">' + avatar(p.id) + ' <span>Änderungen in <code>todos/' + esc(p.id) + '.md</code> – im Browser gespeichert, noch nicht auf der Website.</span>'
+      return '<div class="todos-leiste-zeile">' + avatar(p.id) + ' <span>Änderungen in <code>' + esc(pfad(p.id)) + '</code> – im Browser gespeichert, noch nicht auf der Website.</span>'
         + '<span class="todos-leiste-knoepfe"><button type="button" class="btn btn-small" data-pr="' + esc(p.id) + '">🔀 Ansehen &amp; Pull Request</button>'
         + '<button type="button" class="btn btn-small btn-ghost" data-verwerfen="' + esc(p.id) + '">↩️ Verwerfen</button></span></div>';
-    }).join("") + (st && st.konflikt ? '<p class="todos-konflikt">⚠️ <code>todos/' + esc(aktuell) + '.md</code> hat sich auf der Website geändert, seit du hier angefangen hast. Im Diff siehst du deine Fassung gegen die aktuelle – fremde Änderungen gehen beim Einfügen verloren.</p>' : "");
+    }).join("") + (st && st.konflikt ? '<p class="todos-konflikt">⚠️ <code>' + esc(pfad(aktuell)) + '</code> hat sich auf der Website geändert, seit du hier angefangen hast. Im Diff siehst du deine Fassung gegen die aktuelle – fremde Änderungen gehen beim Einfügen verloren.</p>' : "");
   }
   leiste.addEventListener("click", function (e) {
     var pr = e.target.closest("[data-pr]"), vw = e.target.closest("[data-verwerfen]");
@@ -279,7 +318,7 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
       + '<span class="todo-griff" aria-hidden="true">⠿</span>'
       + '<span class="todo-inhalt"><span class="todo-titel">' + (ART[f.art] ? '<span aria-hidden="true">' + ART[f.art] + "</span> " : "") + esc(t.titel) + "</span>"
       + (meta.length || helfer.length ? '<span class="todo-meta">' + meta.join(" ")
-        + (helfer.length ? '<span class="todo-helfer" title="Helfende Hände">' + helfer.slice(0, 4).map(function (h) { return avatar(h); }).join("") + (helfer.length > 4 ? '<span class="todo-avatar todo-avatar-text">+' + (helfer.length - 4) + "</span>" : "") + "</span>" : "")
+        + (helfer.length ? '<span class="todo-helfer" title="Helfende Hände">' + helfer.slice(0, 4).map(function (h) { return avatar(h); }).join("") + (helfer.length > 4 ? '<span class="person-avatar person-avatar-text">+' + (helfer.length - 4) + "</span>" : "") + "</span>" : "")
         + "</span>" : "")
       + "</span></li>";
   }
@@ -287,7 +326,7 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
   function renderMatrix() {
     var st = DOCS[aktuell];
     if (!st) return;
-    var todos = st.doc.todos;
+    var todos = st.doc.todos.filter(sichtbar);
     var zelle = function (b) {
       var liste = todos.filter(function (t) { return t.q === b.q; });
       return '<section class="todos-zelle todos-' + b.q + '" data-q="' + b.q + '">'
@@ -312,25 +351,26 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     renderPersonen();
     renderLeiste();
     renderMatrix();
-    if (!matrix.parentNode) { matrixPlatz.innerHTML = ""; matrixPlatz.appendChild(matrix); }
+    if (!matrix.parentNode) { if (!EINGEBETTET) matrixPlatz.innerHTML = ""; matrixPlatz.appendChild(matrix); }
   }
 
   // Read the order from the DOM after a move and write it back into the document.
   function ausDom() {
     var st = DOCS[aktuell], byId = {};
     st.doc.todos.forEach(function (t) { byId[t.id] = t; });
-    var neu = [];
+    var dom = [];
     matrix.querySelectorAll(".todos-liste").forEach(function (ul) {
       var q = ul.getAttribute("data-q");
       ul.querySelectorAll(":scope > .todo-karte").forEach(function (li) {
         var t = byId[li.getAttribute("data-id")];
         if (!t) return;
         setzeFeld(t, q);
-        neu.push(t);
-        delete byId[t.id];
+        dom.push(t);
       });
     });
-    Object.keys(byId).forEach(function (k) { neu.push(byId[k]); });
+    // Shown todos fill the array slots they occupied before, in their new order; hidden ones (filter) stay put.
+    var neu = st.doc.todos.slice(), k = 0;
+    st.doc.todos.forEach(function (t, i) { if (dom.indexOf(t) >= 0) neu[i] = dom[k++]; });
     st.doc.todos = neu;
   }
   // Moving into/out of "Erledigt" also sets the status.
@@ -432,7 +472,7 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     if (!richtung) return;
     e.preventDefault();
     var st = DOCS[aktuell], t = finde(id);
-    var gleiche = st.doc.todos.filter(function (x) { return x.q === t.q; });
+    var gleiche = st.doc.todos.filter(function (x) { return x.q === t.q && sichtbar(x); });
     var i = gleiche.indexOf(t), alle = st.doc.todos;
     if (richtung === "hoch" && i > 0) { tausche(alle, t, gleiche[i - 1]); }
     else if (richtung === "runter" && i < gleiche.length - 1) { tausche(alle, t, gleiche[i + 1]); }
@@ -441,14 +481,14 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
       if (!ziel) return;
       alle.splice(alle.indexOf(t), 1);
       setzeFeld(t, ziel);
-      var zielListe = alle.filter(function (x) { return x.q === ziel; });
+      var zielListe = alle.filter(function (x) { return x.q === ziel && sichtbar(x); });
       if (richtung === "runter" && zielListe.length) alle.splice(alle.indexOf(zielListe[0]), 0, t); else alle.push(t);
     }
     speichern(aktuell);
     renderMatrix();
     var neuLi = matrix.querySelector('.todo-karte[data-id="' + CSS.escape(id) + '"]');
     if (neuLi) { if (t.q === "done") matrix.querySelector(".todos-erledigt").open = true; neuLi.focus(); }
-    var pos = st.doc.todos.filter(function (x) { return x.q === t.q; }).indexOf(t) + 1;
+    var pos = st.doc.todos.filter(function (x) { return x.q === t.q && sichtbar(x); }).indexOf(t) + 1;
     sagen("„" + t.titel + "“: " + BUCKET[t.q].name + ", Platz " + pos + ".");
     if (auswahl) renderEditor();
   });
@@ -456,7 +496,8 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
 
   function neueAufgabe(q) {
     var st = DOCS[aktuell];
-    var t = { id: eindeutig(st.doc, "neue-herausforderung"), titel: "", q: q, felder: { art: "aufgabe", status: q === "done" ? "geloest" : "offen", seit: heute() }, text: "", autoId: true };
+    var t = { id: eindeutig(st.doc, "neues-todo"), titel: "", q: q, felder: { art: "aufgabe", status: q === "done" ? "geloest" : "offen", seit: heute() }, text: "", autoId: true };
+    if (FILTER) { t.felder.projekte = [FILTER.projekt]; if (FILTER.tag) t.felder.tags = [FILTER.tag]; }
     st.doc.todos.push(t);
     speichern(aktuell);
     renderMatrix();
@@ -472,8 +513,8 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     }
     renderMatrix();
     renderEditor(neu);
-    ladeIndex();
-    location.replace("#" + aktuell + "/" + id);
+    FX.ladeIndex();
+    if (!EINGEBETTET) location.replace("#" + aktuell + "/" + id);
   }
   function schliessen() {
     auswahl = null;
@@ -481,12 +522,9 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
   }
   dialog.addEventListener("close", function () {
     auswahl = null;
-    matrixPlatz.appendChild(matrix);
+    if (!EINGEBETTET) { matrixPlatz.appendChild(matrix); if (aktuell) location.replace("#" + aktuell); }
     renderMatrix();
-    if (aktuell) location.replace("#" + aktuell);
   });
-  document.getElementById("todos-dialog-zu").addEventListener("click", schliessen);
-  dialog.addEventListener("click", function (e) { if (e.target === dialog) schliessen(); });
 
   var ART_NAMEN = { aufgabe: "📋 Aufgabe", problem: "⚠️ Problem", frage: "❓ Frage" };
   var STATUS_NAMEN = { offen: "Offen", "in-arbeit": "In Arbeit", geloest: "Gelöst" };
@@ -494,58 +532,52 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
 
   function renderEditor(neu) {
     var t = auswahl && finde(auswahl);
-    if (!t) { editor.innerHTML = '<p class="muted">Wähle links eine Karte.</p>'; return; }
+    if (!t) { editor.innerHTML = '<p class="muted">Wähle links eine Karte – oder lege mit ➕ in einem Feld ein neues Todo an.</p>'; return; }
     var f = t.felder;
     var felder = {}; BUCKETS.forEach(function (b) { felder[b.q] = b.icon + " " + b.name; });
     var personen = {}; CFG.personen.forEach(function (p) { personen[p.id] = p.name; });
     editor.innerHTML =
-      '<label class="todos-feld todos-feld-titel"><span>Titel</span><input name="titel" type="text" required value="' + esc(t.titel) + '" placeholder="Kurz, gern als Frage"></label>'
+      '<label class="form-feld form-feld-titel"><span>Titel</span><input name="titel" type="text" required value="' + esc(t.titel) + '" placeholder="Kurz, gern als Frage"></label>'
       + '<p class="todos-id muted small">#' + esc(t.id) + "</p>"
-      + '<label class="todos-feld"><span>Kurz (ein Satz für die Karte)</span><input name="kurz" type="text" value="' + esc(f.kurz || "") + '"></label>'
-      + '<div class="todos-reihe">'
-      + '<label class="todos-feld"><span>Art</span><select name="art">' + optionen(ART_NAMEN, f.art || "aufgabe") + "</select></label>"
-      + '<label class="todos-feld"><span>Status</span><select name="status">' + optionen(STATUS_NAMEN, f.status || "offen") + "</select></label>"
-      + '<label class="todos-feld"><span>Feld</span><select name="q">' + optionen(felder, t.q) + "</select></label>"
-      + '<label class="todos-feld"><span>Fällig</span><input name="faellig" type="date" value="' + esc(f.faellig || "") + '"></label>'
+      + '<label class="form-feld"><span>Kurz (ein Satz für die Karte)</span><input name="kurz" type="text" value="' + esc(f.kurz || "") + '"></label>'
+      + '<div class="form-reihe">'
+      + '<label class="form-feld"><span>Art</span><select name="art">' + optionen(ART_NAMEN, f.art || "aufgabe") + "</select></label>"
+      + '<label class="form-feld"><span>Status</span><select name="status">' + optionen(STATUS_NAMEN, f.status || "offen") + "</select></label>"
+      + '<label class="form-feld"><span>Feld</span><select name="q">' + optionen(felder, t.q) + "</select></label>"
+      + '<label class="form-feld"><span>Fällig</span><input name="faellig" type="date" value="' + esc(f.faellig || "") + '"></label>'
       + "</div>"
-      + '<label class="todos-feld"><span>Hauptzuständig</span><select name="person">' + optionen(personen, aktuell) + "</select></label>"
-      + chipFeld("helfer", "🙌 Helfende Hände", "Name aus dem Team …")
-      + chipFeld("projekte", "🔧 Projekte", "Projekt suchen …")
-      + chipFeld("tags", "🏷️ Stichworte", "Stichwort suchen oder neu …")
-      + chipFeld("verlinkt", "🔗 Verknüpft (Termine, Beiträge, Geräte, Seiten …)", "Seite suchen …")
-      + '<label class="todos-feld"><span>Beschreibung (Markdown)</span><textarea name="text" rows="7">' + esc(t.text || "") + "</textarea></label>"
-      + '<div class="todos-editor-fuss"><button type="button" class="btn btn-small btn-ghost" data-loeschen>🗑️ Löschen</button>'
+      + '<label class="form-feld"><span>Hauptzuständig</span><select name="person">' + optionen(personen, aktuell) + "</select></label>"
+      + '<div data-chips="helfer"></div><div data-chips="projekte"></div><div data-chips="tags"></div><div data-chips="verlinkt"></div>'
+      + '<label class="form-feld"><span>Beschreibung (Markdown)</span><textarea name="text" rows="7">' + esc(t.text || "") + "</textarea></label>"
+      + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-loeschen>🗑️ Löschen</button>'
       + '<span class="muted small">Jede Änderung ist sofort im Browser gespeichert.</span>'
       + '<button type="button" class="btn btn-small" data-fertig>Fertig</button></div>';
-    LISTEN_KEYS.forEach(function (k) { renderChips(k); });
+    Object.keys(CHIPS).forEach(function (k) { editor.querySelector('[data-chips="' + k + '"]').replaceWith(chipFeld(k)); });
     if (neu) { var i = editor.querySelector('[name="titel"]'); i.focus(); }
   }
 
-  function chipFeld(key, label, ph) {
-    return '<div class="todos-feld todos-chips-feld" data-chips="' + key + '"><span id="lbl-' + key + '">' + label + "</span>"
-      + '<div class="todos-chips"><ul class="todos-chip-liste"></ul>'
-      + '<div class="todos-ac"><input type="text" class="todos-ac-input" aria-labelledby="lbl-' + key + '" placeholder="' + ph + '" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="ac-' + key + '">'
-      + '<ul class="todos-ac-liste" id="ac-' + key + '" role="listbox" hidden></ul></div></div></div>';
+  // Chip fields of the editor (widget from formular.js): key → label, autocomplete source, options.
+  var CHIPS = {
+    helfer: { label: "🙌 Helfende Hände", quelle: "personen", placeholder: "Name aus dem Team …", ausser: function () { return [aktuell]; } },
+    projekte: { label: "🔧 Projekte", quelle: "projekte", placeholder: "Projekt suchen …", gewaehlt: projektTag },
+    tags: { label: "🏷️ Stichworte", quelle: "stichworte", placeholder: "Stichwort suchen oder neu …" },
+    verlinkt: { label: "🔗 Verknüpft (Termine, Beiträge, Geräte, Seiten …)", quelle: "seiten", placeholder: "Seite suchen …" }
+  };
+  var chipFelder = {};
+  function chipFeld(key) {
+    chipFelder[key] = FX.chipFeld(Object.assign({
+      werte: function () { var t = finde(auswahl); return (t && t.felder[key]) || []; },
+      setze: function (a) { var t = finde(auswahl); if (!t) return; t.felder[key] = a; speichern(aktuell); renderMatrix(); }
+    }, CHIPS[key]));
+    return chipFelder[key];
   }
-
-  function renderChips(key) {
-    var t = finde(auswahl), box = editor.querySelector('[data-chips="' + key + '"] .todos-chip-liste');
-    if (!t || !box) return;
-    box.innerHTML = (t.felder[key] || []).map(function (v, i) {
-      var info = beschreibe(key, v);
-      return '<li class="todos-chip' + (key === "helfer" ? " todos-chip-person" : "") + '">' + (key === "helfer" ? avatar(v) : "")
-        + (info.url ? '<a href="' + esc(info.url) + '" target="_blank" rel="noopener">' + esc(info.name) + "</a>" : "<span>" + esc(info.name) + "</span>")
-        + '<button type="button" data-weg="' + key + '" data-i="' + i + '" aria-label="' + esc(info.name) + ' entfernen">✕</button></li>';
-    }).join("");
-  }
-
-  function beschreibe(key, v) {
-    var I = INDEX || {};
-    if (key === "helfer") { var p = PERSON[v]; return { name: p ? p.name : v, url: p && (I.personen || []).filter(function (x) { return x.id === v; }).map(function (x) { return x.url; })[0] }; }
-    if (key === "projekte") { var pr = (I.projekte || []).filter(function (x) { return x.id === v; })[0]; return { name: pr ? pr.name : v, url: pr && pr.url }; }
-    if (key === "tags") { var tg = (I.stichworte || []).filter(function (x) { return x.id === v; })[0]; return { name: tg ? tg.name : v, url: null }; }
-    var s = (I.seiten || []).filter(function (x) { return x.url === v; })[0];
-    return { name: s ? s.name : v, url: /^(\/|https?:)/.test(v) ? v : null };
+  // a project's event_tag comes along as tag, so the todo shows up via tags as well
+  function projektTag(id) {
+    var p = ((FX.index() || {}).projekte || []).filter(function (x) { return x.id === id; })[0], t = finde(auswahl);
+    if (!p || !p.tag || !t || (t.felder.tags || []).indexOf(p.tag) >= 0) return;
+    t.felder.tags = (t.felder.tags || []).concat([p.tag]);
+    speichern(aktuell);
+    chipFelder.tags.aktualisiere();
   }
 
   // Editor input → document → localStorage, at once.
@@ -555,7 +587,7 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     var v = e.target.value;
     if (n === "titel") {
       t.titel = v;
-      if (t.autoId && v.trim()) { t.id = eindeutig(DOCS[aktuell].doc, slugify(v), t); auswahl = t.id; editor.querySelector(".todos-id").textContent = "#" + t.id; location.replace("#" + aktuell + "/" + t.id); }
+      if (t.autoId && v.trim()) { t.id = eindeutig(DOCS[aktuell].doc, slugify(v), t); auswahl = t.id; editor.querySelector(".todos-id").textContent = "#" + t.id; if (!EINGEBETTET) location.replace("#" + aktuell + "/" + t.id); }
     } else if (n === "text") t.text = v;
     else if (n === "kurz" || n === "faellig") { if (v) t.felder[n] = v; else delete t.felder[n]; }
     else return;
@@ -579,14 +611,6 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     renderEditor();
   });
   editor.addEventListener("click", function (e) {
-    var weg = e.target.closest("[data-weg]");
-    if (weg) {
-      var t = finde(auswahl), k = weg.getAttribute("data-weg");
-      t.felder[k].splice(+weg.getAttribute("data-i"), 1);
-      speichern(aktuell); renderChips(k); renderMatrix();
-      editor.querySelector('[data-chips="' + k + '"] .todos-ac-input').focus();
-      return;
-    }
     if (e.target.closest("[data-fertig]")) { schliessen(); return; }
     var lo = e.target.closest("[data-loeschen]");
     if (lo) {
@@ -601,6 +625,7 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
   function uebergeben(t, person) {
     var von = aktuell;
     laden(person).then(function (ziel) {
+      if (NAV && NAV.indexOf(person) < 0) NAV.push(person);
       var st = DOCS[von];
       st.doc.todos = st.doc.todos.filter(function (x) { return x !== t; });
       t.id = eindeutig(ziel.doc, t.id, t);
@@ -613,127 +638,7 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     });
   }
 
-  // ---------- autocomplete (search index, lazily loaded; Pagefind as extra source where it exists) ----------
-  var INDEX = null, indexPromise = null, pagefind = null, pagefindVersucht = false;
-  function ladeIndex() {
-    if (!indexPromise) {
-      indexPromise = fetch(CFG.suchindex).then(function (r) { return r.json(); }).then(function (j) {
-        INDEX = j;
-        (j.personen || []).forEach(function (p) { if (!PERSON[p.id]) PERSON[p.id] = p; });
-        if (auswahl) LISTEN_KEYS.forEach(renderChips);
-        return j;
-      }).catch(function () { INDEX = { personen: [], projekte: [], stichworte: [], seiten: [] }; return INDEX; });
-    }
-    return indexPromise;
-  }
-  function ladePagefind() {
-    if (pagefindVersucht) return Promise.resolve(pagefind);
-    pagefindVersucht = true;
-    return import(CFG.pagefind).then(function (m) { pagefind = m; return m; }).catch(function () { return null; });
-  }
-
-  function treffer(key, q) {
-    var I = INDEX || {}, nq = norm(q).trim(), t = finde(auswahl), schon = (t && t.felder[key]) || [];
-    function passt(s) { return !nq || norm(s).indexOf(nq) >= 0; }
-    var r = [];
-    if (key === "helfer") r = CFG.personen.filter(function (p) { return p.id !== aktuell && (passt(p.name) || passt(p.id)); }).map(function (p) { return { wert: p.id, name: p.name, person: p.id }; });
-    if (key === "projekte") r = (I.projekte || []).filter(function (p) { return passt(p.name) || passt(p.id); }).map(function (p) { return { wert: p.id, name: p.name, typ: p.status === "abgeschlossen" ? "Archiv" : "Projekt", tag: p.tag }; });
-    if (key === "tags") {
-      r = (I.stichworte || []).filter(function (s) { return passt(s.name) || passt(s.id); }).map(function (s) { return { wert: s.id, name: s.name, typ: s.id }; });
-      if (nq && !r.some(function (x) { return x.wert === slugify(q); })) r.push({ wert: slugify(q), name: "Neues Stichwort „" + slugify(q) + "“", typ: "neu" });
-    }
-    if (key === "verlinkt") {
-      r = (I.seiten || []).filter(function (s) { return nq && (passt(s.name) || passt(s.url)); }).map(function (s) { return { wert: s.url, name: s.name, typ: s.typ + (s.datum ? " · " + datumDE(s.datum) : "") }; });
-      if (/^(\/|https?:\/\/)\S+$/.test(q.trim())) r.unshift({ wert: q.trim(), name: q.trim(), typ: "Adresse" });
-    }
-    return r.filter(function (x) { return schon.indexOf(x.wert) < 0; }).slice(0, 8);
-  }
-
-  var acTimer = null;
-  function zeigeTreffer(input, extra) {
-    var feld = input.closest("[data-chips]"), key = feld.getAttribute("data-chips"), liste = feld.querySelector(".todos-ac-liste");
-    var r = treffer(key, input.value);
-    if (extra) extra.forEach(function (x) { if (!r.some(function (y) { return y.wert === x.wert; })) r.push(x); });
-    r = r.slice(0, 10);
-    if (!input.value.trim() && key !== "helfer" && key !== "projekte") r = r.slice(0, key === "tags" ? 8 : 0);
-    liste.innerHTML = r.map(function (x, i) {
-      return '<li role="option" id="ac-' + key + "-" + i + '" data-wert="' + esc(x.wert) + '"' + (i === 0 ? ' aria-selected="true"' : "") + ">"
-        + (x.person ? avatar(x.person) : "") + '<span class="todos-ac-name">' + esc(x.name) + "</span>" + (x.typ ? '<span class="todos-ac-typ">' + esc(x.typ) + "</span>" : "") + "</li>";
-    }).join("") || (INDEX ? "" : '<li class="muted small">Suchindex lädt …</li>');
-    liste.hidden = !liste.innerHTML;
-    input.setAttribute("aria-expanded", liste.hidden ? "false" : "true");
-    input.setAttribute("aria-activedescendant", r.length ? "ac-" + key + "-0" : "");
-  }
-  function waehle(input, wert) {
-    var feld = input.closest("[data-chips]"), key = feld.getAttribute("data-chips"), t = finde(auswahl);
-    if (!t || !wert) return;
-    t.felder[key] = (t.felder[key] || []).concat([wert]);
-    // a project's event_tag comes along as tag, so the challenge shows up via tags as well
-    if (key === "projekte" && INDEX) { var p = (INDEX.projekte || []).filter(function (x) { return x.id === wert; })[0]; if (p && p.tag && (t.felder.tags || []).indexOf(p.tag) < 0) { t.felder.tags = (t.felder.tags || []).concat([p.tag]); renderChips("tags"); } }
-    input.value = "";
-    feld.querySelector(".todos-ac-liste").hidden = true;
-    input.setAttribute("aria-expanded", "false");
-    speichern(aktuell); renderChips(key); renderMatrix();
-    input.focus();
-  }
-  editor.addEventListener("focusin", function (e) { if (e.target.classList.contains("todos-ac-input")) ladeIndex().then(function () { if (document.activeElement === e.target) zeigeTreffer(e.target); }); });
-  editor.addEventListener("focusout", function (e) {
-    if (!e.target.classList.contains("todos-ac-input")) return;
-    setTimeout(function () { var l = e.target.closest("[data-chips]"); if (l && !l.contains(document.activeElement)) { l.querySelector(".todos-ac-liste").hidden = true; e.target.setAttribute("aria-expanded", "false"); } }, 150);
-  });
-  editor.addEventListener("input", function (e) {
-    var input = e.target;
-    if (!input.classList.contains("todos-ac-input")) return;
-    zeigeTreffer(input);
-    var key = input.closest("[data-chips]").getAttribute("data-chips");
-    clearTimeout(acTimer);
-    if (key === "verlinkt" && input.value.trim().length >= 3) {
-      acTimer = setTimeout(function () {
-        var q = input.value.trim();
-        ladePagefind().then(function (pf) {
-          if (!pf) return null;
-          return pf.search(q).then(function (s) { return Promise.all(s.results.slice(0, 5).map(function (r) { return r.data(); })); });
-        }).then(function (daten) {
-          if (!daten || input.value.trim() !== q) return;
-          zeigeTreffer(input, daten.map(function (d) { return { wert: d.url.replace(/index\.html$/, ""), name: (d.meta && d.meta.title) || d.url, typ: "Suche" }; }));
-        }).catch(function () {});
-      }, 250);
-    }
-  });
-  editor.addEventListener("keydown", function (e) {
-    var input = e.target;
-    if (!input.classList || !input.classList.contains("todos-ac-input")) return;
-    var feld = input.closest("[data-chips]"), liste = feld.querySelector(".todos-ac-liste");
-    var opts = Array.prototype.slice.call(liste.querySelectorAll("[role=option]"));
-    var i = opts.findIndex(function (o) { return o.getAttribute("aria-selected") === "true"; });
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      if (!opts.length) return;
-      e.preventDefault();
-      if (i >= 0) opts[i].removeAttribute("aria-selected");
-      i = (i + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length;
-      opts[i].setAttribute("aria-selected", "true");
-      input.setAttribute("aria-activedescendant", opts[i].id);
-      opts[i].scrollIntoView({ block: "nearest" });
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (!liste.hidden && i >= 0) waehle(input, opts[i].getAttribute("data-wert"));
-    } else if (e.key === "Escape" && !liste.hidden) {
-      e.preventDefault(); e.stopPropagation();
-      liste.hidden = true; input.setAttribute("aria-expanded", "false");
-    } else if (e.key === "Backspace" && !input.value) {
-      var t = finde(auswahl), key = feld.getAttribute("data-chips");
-      if (t && (t.felder[key] || []).length) { t.felder[key].pop(); speichern(aktuell); renderChips(key); renderMatrix(); }
-    }
-  });
-  editor.addEventListener("mousedown", function (e) {
-    var o = e.target.closest(".todos-ac-liste [role=option]");
-    if (!o) return;
-    e.preventDefault();
-    waehle(o.closest("[data-chips]").querySelector(".todos-ac-input"), o.getAttribute("data-wert"));
-  });
   editor.addEventListener("submit", function (e) { e.preventDefault(); });
-  // Escape in an open autocomplete only closes the list, not the dialog.
-  dialog.addEventListener("cancel", function (e) { if (editor.querySelector('.todos-ac-input[aria-expanded="true"]')) e.preventDefault(); });
 
   // ---------- diff + pull request ----------
   function diffZeilen(a, b) {
@@ -772,14 +677,14 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
     return { html: html.join(""), plus: plus, minus: minus };
   }
 
+  var diffPerson = null;
   function zeigeDiff(person) {
+    diffPerson = person;
     laden(person).then(function (st) {
       var neu = serialize(st.doc), alt = st.server;
       var d = diffHtml(alt, neu);
-      var datei = "todos/" + person + ".md";
-      var url = alt == null
-        ? CFG.github + "/new/" + CFG.branch + "/todos?filename=" + encodeURIComponent(person + ".md") + "&value=" + encodeURIComponent(neu)
-        : CFG.github + "/edit/" + CFG.branch + "/" + datei;
+      var datei = pfad(person);
+      var url = alt == null ? FX.githubNeu("todos", dateiname(person), neu) : FX.githubEdit(datei);
       diffBody.innerHTML =
         "<p>" + avatar(person) + " <code>" + esc(datei) + "</code> " + (alt == null ? "(neue Datei)" : "") + ' <span class="d-zahl-plus">+' + d.plus + '</span> <span class="d-zahl-minus">−' + d.minus + "</span></p>"
         + '<pre class="todos-diff-pre">' + d.html + "</pre>"
@@ -794,29 +699,24 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
         + '<p class="muted small" data-status aria-live="polite"></p>'
         + '<details><summary>Ganze neue Datei ansehen</summary><textarea class="todos-diff-text" rows="12" readonly>' + esc(neu) + "</textarea></details>";
       diffBody.querySelector("[data-kopieren]").addEventListener("click", function () {
-        var status = diffBody.querySelector("[data-status]");
-        var oeffnen = function (msg) { status.textContent = msg; window.open(url, "_blank", "noopener"); };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(neu).then(function () { oeffnen("Kopiert – jetzt im GitHub-Editor einfügen."); },
-            function () { diffBody.querySelector("details").open = true; diffBody.querySelector("textarea").select(); oeffnen("Kopieren ging nicht – bitte den Text unten kopieren."); });
-        } else { diffBody.querySelector("details").open = true; diffBody.querySelector("textarea").select(); oeffnen("Bitte den Text unten kopieren."); }
+        FX.kopierenUndOeffnen(neu, url, diffBody.querySelector("[data-status]"), function () {
+          diffBody.querySelector("details").open = true; diffBody.querySelector("textarea").select();
+        });
       });
-      if (dialog.open) dialog.close();
-      diffDialog.showModal();
+      if (!diffDialog.open) diffDialog.showModal();
     });
   }
-  diffDialog.addEventListener("click", function (e) { if (e.target === diffDialog || e.target.closest("[data-schliessen]")) diffDialog.close(); });
 
   // ---------- routing: #person or #person/challenge ----------
   function zeige(person) {
     aktuell = person;
     renderPersonen();
-    matrixPlatz.querySelector("#todos-laden") || (matrix.parentNode ? null : (matrixPlatz.innerHTML = '<p class="muted" id="todos-laden">Lädt …</p>'));
+    if (!EINGEBETTET && !matrix.parentNode && !matrixPlatz.querySelector("#todos-laden")) matrixPlatz.innerHTML = '<p class="muted" id="todos-laden">Lädt …</p>';
     return laden(person).then(function () {
       if (aktuell !== person) return;
       renderAlles();
     }).catch(function () {
-      matrixPlatz.innerHTML = '<p class="note">Die Datei <code>todos/' + esc(person) + '.md</code> konnte nicht geladen werden.</p>';
+      (EINGEBETTET ? matrix : matrixPlatz).innerHTML = '<p class="note">Die Datei <code>' + esc(pfad(person)) + '</code> konnte nicht geladen werden.</p>';
     });
   }
   function route() {
@@ -829,8 +729,74 @@ if (typeof module !== "undefined") module.exports = TodoFormat;
       else if (dialog.open && !h[1]) dialog.close();
     });
   }
-  window.addEventListener("hashchange", route);
-  // Other tabs: keep the change dots in sync.
-  window.addEventListener("storage", function (e) { if (e.key && e.key.indexOf(STORE) === 0) { renderPersonen(); renderLeiste(); } });
-  route();
+  // Another tab changed a draft (edited, saved, discarded): take over its content, so this tab neither shows
+  // a stale save bar / diff nor overwrites the other tab with an older state.
+  function abgleich(person, roh) {
+    if (ROH[person] === roh) return;
+    ROH[person] = roh;
+    var st = DOCS[person];
+    if (st) {
+      var neu = null;
+      try { neu = JSON.parse(roh || "null"); } catch (x) { /* ignore broken value */ }
+      st.doc = parse(neu ? neu.text : (st.server || ""));
+      st.konflikt = !!neu && normal(neu.basis) !== normal(st.server);
+      if (person === aktuell) {
+        renderMatrix();
+        if (auswahl && !finde(auswahl)) schliessen();
+        else if (auswahl && !editor.contains(document.activeElement)) renderEditor();
+      }
+    }
+    renderPersonen(); renderLeiste();
+    if (diffDialog.open && diffPerson === person) {
+      if (geaendert(person)) zeigeDiff(person);
+      else { diffDialog.close(); sagen("Die Änderungen an " + pfad(person) + " wurden in einem anderen Tab gespeichert oder verworfen."); }
+    }
+  }
+  window.addEventListener("storage", function (e) {
+    if (e.key === null) { pruefeTabs(); return; } // localStorage.clear() in another tab
+    if (e.key.indexOf(STORE) === 0) abgleich(e.key.slice(STORE.length), e.newValue);
+  });
+  // Safety net for missed events (e.g. a tab restored from the back/forward cache): compare once per second
+  // while the tab is visible, and right away when it becomes visible again.
+  function pruefeTabs() {
+    var personen = Object.keys(ROH);
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf(STORE) === 0 && personen.indexOf(k.slice(STORE.length)) < 0) personen.push(k.slice(STORE.length)); } } catch (e) { return; }
+    personen.forEach(function (p) { abgleich(p, storeRoh(p)); });
+  }
+  setInterval(function () { if (!document.hidden) pruefeTabs(); }, 1000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) pruefeTabs(); });
+  window.addEventListener("pageshow", function (e) { if (e.persisted) pruefeTabs(); });
+  if (!EINGEBETTET) {
+    window.addEventListener("hashchange", route);
+    route();
+    return;
+  }
+
+  // Embedded: o = { person } (team profile) or { projekt, tag, team: [...] } (project page), plus titel.
+  // On a project page every person file is loaded; the navigation shows people with todos for the project, then the project team.
+  matrixPlatz.appendChild(matrix);
+  window.TodoApp = {
+    start: function (o) {
+      FILTER = o.projekt ? { projekt: o.projekt, tag: o.tag || "" } : null;
+      document.getElementById("todos-dialog-titel").textContent = o.titel || "Todos";
+      alleLink.hidden = false;
+      var laden1 = o.person ? laden(o.person) : Promise.all(CFG.dateien.map(function (id) { return laden(id).catch(function () { return null; }); }));
+      return laden1.then(function () {
+        var personen = [];
+        if (o.person) personen = [o.person];
+        else {
+          CFG.dateien.forEach(function (id) { if (DOCS[id] && DOCS[id].doc.todos.some(sichtbar)) personen.push(id); });
+          (o.team || []).forEach(function (id) { if (PERSON[id] && personen.indexOf(id) < 0) personen.push(id); });
+          if (!personen.length) personen = CFG.dateien.slice(0, 1);
+        }
+        NAV = personen;
+        auswahl = null;
+        return zeige(personen[0]);
+      }).then(function () {
+        if (!dialog.open) dialog.showModal();
+        renderEditor();
+        FX.ladeIndex();
+      });
+    }
+  };
 })();

@@ -35,6 +35,7 @@ Werkzeug: Python/Pillow (`ImageOps.exif_transpose`, Zuschnitt, Neuspeichern ohne
 | `institut/ifsmb-logo-wortmarke.png` | wie oben, mit Schriftzug „Institut für spontane Makespace Buildung“ |
 | `institut/ifsmb-logo-badge.svg` | Vektorversion des Badges, nach den Maßen des PNG nachgebaut |
 | `institut/ifsmb-logo-wortmarke.svg` | Vektorversion mit Schriftzug |
+| `../assets/images/og-preview.jpg` | 1200 × 630 px Social-Media-Vorschaubild (Open Graph / Twitter Card) in den Institutsfarben (`#ffcc00` / `#16161d`), ohne Metadaten; Vorschau in `_logo/social-preview.html` |
 
 Die Schrift ist die System-Monospace bzw. System-UI-Schrift von macOS (SF Mono, wght 800; SF Pro, wght 700, opsz 28). In den SVGs ist der Text mit fontTools in Pfade umgewandelt, sie brauchen also keine installierte Schrift. Farben: `#ffcc00` (Gelb), `#16161d` (Schwarz), Badge um −3° gedreht.
 

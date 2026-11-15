@@ -4,11 +4,13 @@
 # Prüft die fertig gebaute Seite in _site/:
 #   1. Tote interne Links (href, src, poster, srcset) und fehlende #Anker
 #   2. Verwaiste Seiten: HTML-Seiten, die von der Startseite aus über Links nicht erreichbar sind
-#   3. Optional (--extern): externe Links per HTTP prüfen
+#   3. Keine Geokoordinaten (EXIF-GPS/XMP) in Bildern unter assets/ (_scripts/check_geodaten.rb)
+#   4. Optional (--extern): externe Links per HTTP prüfen
 #
 # Aufruf:  bundle exec jekyll build && ruby _scripts/check_site.rb [--extern]
-# Exit-Code 1, wenn tote interne Links oder verwaiste Seiten gefunden wurden.
+# Exit-Code 1, wenn tote interne Links, verwaiste Seiten oder Fotos mit Geokoordinaten gefunden wurden.
 
+require "rbconfig"
 require "set"
 require "uri"
 require "cgi"
@@ -22,6 +24,8 @@ CHECK_EXTERNAL = ARGV.include?("--extern")
 ORPHAN_OK = %w[/404.html].freeze
 # Pfade, die erst im CI entstehen (Pagefind-Index)
 GENERATED_PREFIXES = %w[/pagefind/].freeze
+# Pages whose #fragment is a JS route, not an HTML id (e.g. /todos/#<person>/<todo>)
+HASH_ROUTES = %w[/todos/].freeze
 
 abort "#{SITE} fehlt – erst `bundle exec jekyll build` ausführen." unless Dir.exist?(SITE)
 
@@ -94,7 +98,7 @@ html_of.each do |file, html|
       next
     end
 
-    if uri.fragment && !uri.fragment.empty? && target.end_with?(".html")
+    if uri.fragment && !uri.fragment.empty? && target.end_with?(".html") && !HASH_ROUTES.include?(url_path_for(target))
       frag = CGI.unescape(uri.fragment)
       broken[page] << "Anker fehlt: #{ref}" unless ids_of[target].include?(frag)
     end
@@ -141,6 +145,8 @@ else
     puts "  #{url_path_for(f)}#{note}"
   end
 end
+
+ok = false unless system(RbConfig.ruby, File.expand_path("check_geodaten.rb", __dir__))
 
 if CHECK_EXTERNAL
   marked = external.keys.select { |u| known_dead.include?(u) }

@@ -10,10 +10,11 @@ image: /assets/images/ausstattung/fabmaker/01.jpg
 thumb: /assets/images/ausstattung/fabmaker/01-600w.jpg
 image_alt: "Ein Fabmaker-3D-Drucker mit rotem Deckel und Display in einem Fahrradanhänger, angehängt an ein Lastenrad auf Kopfsteinpflaster"
 tags: [fabmaker, 3d-drucker, ktg]
-verlinkt: [/projekte/3d-druck-ag-ktg/, /projekte/3d-druck-ag-rosalind-franklin-gymnasium/]
+verlinkt: [/projekte/3d-druck-ag-ktg/, /projekte/3d-druck-ag-rosalind-franklin-gymnasium/, /todos/]
+uuid: 0d1fe4e6-359e-4b9c-8f04-15d94c945750
 ---
 
-An der [3D-Druck AG der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) stehen **zwei Fabmaker** – geschlossene „Bildungsdrucker“ der Fabmaker GmbH aus Braunschweig. Beide gehören Falko. Einen hat das [Rosalind-Franklin-Gymnasium]({{ '/projekte/3d-druck-ag-rosalind-franklin-gymnasium/' | relative_url }}) verschenkt; er war dort nicht mehr funktionsfähig.
+An der [3D-Druck AG der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) stehen **zwei Fabmaker** – geschlossene „Bildungsdrucker“ der Fabmaker GmbH aus Braunschweig. Beide gehören Falko. Einen hat das [Rosalind-Franklin-Gymnasium]({{ '/projekte/3d-druck-ag-rosalind-franklin-gymnasium/' | relative_url }}) verschenkt; er war dort nicht mehr funktionsfähig. Der andere kam aus einem Gymnsaium im Wedding, weil das Gerät nicht mehr unterstützt wird, stand es dort nur rum.
 
 Die Fabmaker GmbH ist seit 2023 insolvent, die Website ist abgeschaltet. Es gibt also keinen Support mehr – und der Slicer läuft nur unter Windows. Alles, was wir herausfinden, sammeln wir im Repository [35services/fabmaker-rettung](https://github.com/35services/fabmaker-rettung): Recherche, Installationsdateien, Wartungsprogramme und das Anwenderhandbuch.
 
@@ -21,4 +22,12 @@ Was wir schon wissen:
 
 - Fabmaker empfahl, nur mit **PETG** zu drucken.
 - Als Druckbett-Folie passt **BuildTak** in 304 × 304 mm.
-- Welches Dateiformat der Drucker erwartet, ist noch offen – siehe die Herausforderung [Fabmaker-Slicer für Mac und Web]({{ '/herausforderungen/fabmaker-slicer-mac-web/' | relative_url }}).
+- Welches Dateiformat der Drucker erwartet, ist noch offen – siehe das Todo [Fabmaker-Slicer für Mac und Web]({{ '/todos/#falko-richter/fabmaker-slicer-mac-web' | relative_url }}).
+
+## Links 
+
+- https://www.facebook.com/reel/693153367802930
+- https://www.youtube.com/watch?v=RZR0yw8zzek
+- https://www.instagram.com/fabmaker_3d/
+- https://www.tu-braunschweig.de/transferservice/technologietransfer/gruendungen/gruendungen-an-der-tu-braunschweig/interviews/fabmaker
+- https://3druck.com/drucker-und-produkte/fabmaker-bietet-beratung-und-arbeitet-einen-eigenen-3d-drucker-2313628/
