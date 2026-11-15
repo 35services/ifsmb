@@ -16,6 +16,8 @@ verwandt:
 team:
   - falko-richter
   - jan
+verlinkt:
+  - /team/opa-andi/
 partners:
   - 35 services e. V.
 uuid: 50fc05ca-0cf9-465d-9d64-4acf456f3de1
@@ -60,7 +62,7 @@ Viele Projekte im Repo verbinden die Werkstatt direkt mit der [3D-Druck AG an de
 
 ## Drucker, 3D-Scanner & Workshops
 
-- **Creality CR-6 Max** ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max), Mai–Juli 2024): [Jan]({{ '/team/jan/' | relative_url }}) hat das PrusaSlicer-Profil für den großen CR-6 Max (400 × 400 mm Bauraum) beigesteuert; dazu stehen dort die Unterlagen für das Upgrade auf den Bondtech LGX Lite Arrow Extruder. Der Drucker wurde später an Falkos Vater weiterverkauft.
+- **Creality CR-6 Max** ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max), Mai–Juli 2024): [Jan]({{ '/team/jan/' | relative_url }}) hat das PrusaSlicer-Profil für den großen CR-6 Max (400 × 400 mm Bauraum) beigesteuert; dazu stehen dort die Unterlagen für das Upgrade auf den Bondtech LGX Lite Arrow Extruder. Der Drucker wurde später an [Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }}) weiterverkauft.
 - **3D-Scannen** ([`wandpanel/`](https://github.com/35services/3d/tree/main/wandpanel), Februar 2024 – Februar 2026): Erste 3D-Scan-Versuche eines Wandpaneels – daraus ist später das Projekt [3D-Scanner evaluieren]({{ '/projekte/3d-scanner-evaluieren/' | relative_url }}) gewachsen.
 - **CAD-Workshop & OctoPrint** ([`cad-workshop/`](https://github.com/35services/3d/tree/main/cad-workshop), Januar 2026, sowie `octoprint/` in der Git-Historie vom September 2026): Ideen für gemeinsame Konstruktions-Workshops und ein Docker-Compose-Setup für OctoPrint samt `ipOnConnect`-Plugin.
 

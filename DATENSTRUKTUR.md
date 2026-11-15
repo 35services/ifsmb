@@ -56,11 +56,11 @@ Die Zielseite zeigt die Verbindung ebenfalls an.
  │ verlinkt  ──► jede Seite       │      Termine, Geräte, Beiträge, Partner …
  └────────────────────────────────┘
  ┌─ PERSON ───────────────────────┐      └────────────────────────────────┘
- │ verlinkt  ──► jede Seite       │      ┌─ PARTNER ──────────────────────┐
- │ (alles andere zeigt auf sie)   │      │ in _data/partners.yml, keine   │
- └────────────────────────────────┘      │ eigenen Felder – andere zeigen │
-                                         │ per Name oder Adresse auf ihn  │
-                                         └────────────────────────────────┘
+ │ verlinkt       ──► jede Seite  │      ┌─ PARTNER ──────────────────────┐
+ │ nicht_im_team  = nicht auf     │      │ in _data/partners.yml, keine   │
+ │                  /team/        │      │ eigenen Felder – andere zeigen │
+ │ (alles andere zeigt auf sie)   │      │ per Name oder Adresse auf ihn  │
+ └────────────────────────────────┘      └────────────────────────────────┘
 ```
 
 ## Orte auf der Karte

@@ -26,7 +26,7 @@ Im Zweifel gibt's auch ab und zu eine Ehrenamtspauschale für die Aktiven im Tea
 
 - 🖨️ [Snapmaker U1]({{ '/ausstattung/snapmaker-u1/' | relative_url }}) – unser 4-Farb-Drucker an der KTG. Die Spenden decken die Anschaffung noch nicht ganz.
 - 📷 [3D-Scanner evaluieren]({{ '/projekte/3d-scanner-evaluieren/' | relative_url }}) – wir testen gerade, welcher 3D-Scanner zu uns passt.
-- 💾 [USB-Sticks für den 3D-Druck-Stick]({{ '/projekte/3ddruck-iso-jugend-hackt/' | relative_url }}) – damit wir viele alte Laptops auf einmal einrichten können, hat Falko die Sticks privat gekauft. Die Laptops selbst wären sonst im Müll gelandet: Sie kommen von Falkos Vater und aus der KTG.
+- 💾 [USB-Sticks für den 3D-Druck-Stick]({{ '/projekte/3ddruck-iso-jugend-hackt/' | relative_url }}) – damit wir viele alte Laptops auf einmal einrichten können, hat Falko die Sticks privat gekauft. Die Laptops selbst wären sonst im Müll gelandet: Sie kommen von [Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }}) und aus der KTG.
 
 ## Materialspenden
 {: #materialspenden}

@@ -316,6 +316,10 @@ content:
       - name: order
         label: Reihenfolge
         type: number
+      - name: nicht_im_team
+        label: Nicht auf /team/ auflisten (nur eigene Seite zum Verlinken)
+        description: Die Person hat trotzdem eine eigene Seite unter /team/<kürzel>/ und kann überall verlinkt werden (team, author, owner_team, verlinkt), erscheint aber nicht in der Übersicht auf /team/.
+        type: boolean
       - name: photo
         label: Foto (quadratisch, ca. 480 px)
         description: Achtung – Handyfotos enthalten oft GPS-Daten. Vorher Metadaten entfernen oder Falko fragen.
