@@ -16,7 +16,7 @@ verlinkt: [/ausstattung/snapmaker-u1/]
 uuid: d52eb86e-cca5-42bb-b594-f1ea25a9f680
 ---
 
-Falko hat sich **privat einen Snapmaker U1 mit Deckel** zugelegt – den gleichen Drucker, der auch in der [3D-Druck AG an der KTG]({{ '/ausstattung/snapmaker-u1/' | relative_url }}) steht. Damit kann er im Keller endlich **zuverlässig drucken**. Vielleicht unterstützt er damit auch AGs, die er ja kommerziell anbietet. Inzwischen ist er angekommen, steht im Keller und druckt schon fleißig – nach dem mehrfarbigen Test-Drachen läuft darauf bereits der [RC Tractor von ProfessorBoots]({{ '/projekte/rc-tractor-professorboots/' | relative_url }}).
+Falko hat sich **privat einen Snapmaker U1 mit Deckel** zugelegt – den gleichen Drucker, der auch in der [3D-Druck AG an der KTG]({{ '/ausstattung/snapmaker-u1/' | relative_url }}) steht. Damit kann er im Keller endlich **zuverlässig drucken**. Vielleicht unterstützt er damit auch AGs, die er kommerziell anbietet – wie die [Modellbau-AG an der KTG]({{ '/projekte/modellbau-ag-ktg/' | relative_url }}). Inzwischen ist er angekommen, steht im Keller und druckt schon fleißig – nach dem mehrfarbigen Test-Drachen läuft darauf bereits der [RC Tractor von ProfessorBoots]({{ '/projekte/rc-tractor-professorboots/' | relative_url }}).
 
 ### Die U1-Community wächst
 
