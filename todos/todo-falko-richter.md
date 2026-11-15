@@ -107,6 +107,20 @@ verlinkt: [/projekte/3d-druck-ag-platanus-schule/, /news/2026/11/11/post-von-der
 
 https://www.platanus-schule.de/tag-der-offenen-tuer/
 
+### Keramik Koordination {#keramik-koordination}
+
+```yaml
+art: aufgabe
+status: in-arbeit
+seit: 2026-11-13
+faellig: 2026-11-18
+projekte: [3d-druck-ag-platanus-schule]
+tags: [platanus]
+verlinkt: [/news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
+```
+
+Ich muss mit der Keramik AG klären wie viel Zeit wir dafür haben
+
 ## 🤝 Abgeben
 
 ## 💤 Später
