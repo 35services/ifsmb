@@ -1,5 +1,5 @@
 ---
-title: Bambu Lab A1 mini
+title: 35services Bambu Lab A1 mini
 kategorie: 3D-Drucker (FDM)
 summary: Kompakter, schneller 3D-Drucker – ideal zum Einstieg und für kleine Teile.
 owner_partner: 35 services e. V.
