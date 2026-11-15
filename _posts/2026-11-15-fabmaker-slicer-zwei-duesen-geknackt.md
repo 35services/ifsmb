@@ -6,7 +6,7 @@ tags: [fabmaker]
 verlinkt: [/ausstattung/fabmaker/, /herausforderungen/fabmaker-slicer-mac-web/]
 ---
 
-Große Neuigkeit für die [zwei Fabmaker]({{ '/ausstattung/fabmaker/' | relative_url }}): Falko und Anton haben den alten Windows-Slicer mit [Claude Code](https://claude.com/claude-code) auseinandergenommen – und damit die [Herausforderung „Fabmaker-Slicer für Mac und Web“]({{ '/herausforderungen/fabmaker-slicer-mac-web/' | relative_url }}) einen großen Schritt vorangebracht. Die wichtigste Erkenntnis: **Der Drucker braucht kein geheimes Dateiformat.** Er versteht ganz normales G-Code über die serielle Schnittstelle (115200 Baud). Damit ist der Weg zu Mac und Browser offen.
+Große Neuigkeit für die [zwei Fabmaker]({{ '/ausstattung/fabmaker/' | relative_url }}): Falko hat den alten Windows-Slicer mit [Claude Code](https://claude.com/claude-code) auseinandergenommen – und damit die [Herausforderung „Fabmaker-Slicer für Mac und Web“]({{ '/herausforderungen/fabmaker-slicer-mac-web/' | relative_url }}) einen großen Schritt vorangebracht. Die wichtigste Erkenntnis: **Der Drucker braucht kein geheimes Dateiformat.** Er versteht ganz normales G-Code über die serielle Schnittstelle (115200 Baud). Damit ist der Weg zu Mac und Browser offen.
 
 ### Drei Funde
 
