@@ -14,4 +14,5 @@ uuid: 7e2e4f16-4f66-42a2-96d5-3504be25357e
 
 Aktuell bewegen sich die Motoren allerdings keinen Millimeter mehr: Irgendwo scheint die **24-Volt-Leitung unterbrochen** zu sein. Als Nächstes geht es an die Fehlersuche in der Stromversorgung, damit die Schrittmotoren wieder Saft bekommen und der Drucker wieder läuft.
 
-
+![Der klassische IBM-Nadeldrucker mit Rauchglas-Abdeckung, Bedienfeld, Parallel- und Stromkabel sowie grauem IBM-Handbuch-Schuber](/assets/images/projekte/drucker-kleinanzeigen-alexander/01.jpg)
+{: .gallery}
