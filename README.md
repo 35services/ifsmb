@@ -25,7 +25,7 @@ ruby _scripts/check_site.rb --extern                                # zusätzlic
 | Was | Wo | Hinweise |
 |---|---|---|
 | Neuigkeiten | `_posts/YYYY-MM-DD-slug.md` | Front Matter: `title`, `date` |
-| Team-Mitglied | `_team/vorname-nachname.md` | `title` (Name), `role`, `order`, optional `photo`, `links` |
+| Team-Mitglied | `_team/vorname-nachname.md` | `title` (Name), `role`, `order`, optional `nicht_im_team: true` (eigene Seite zum Verlinken, nicht auf `/team/` gelistet), `photo`, `links` |
 | Projekt | `_projects/slug.md` | `title`, `summary`, `status` (`aktuell` / `abgeschlossen`), `start`, `zeitraum`, `ort`, `team` (Slugs aus `_team`), `partners` (Namen aus `_data/partners.yml`) |
 | Partner | `_data/partners.yml` oder `_data/partner/<name>.yml` (ein Partner pro Datei) | Logo nach `assets/images/partner/` legen, Original nach `_logo/partner/` |
 | Termin | `_events/YYYY-MM-DD-slug.md` | `title`, `start` / `end` (`2026-11-28 15:00`), `all_day`, `location`, `summary` |

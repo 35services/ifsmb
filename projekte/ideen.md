@@ -56,7 +56,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 - **Kettenfahrzeuge** ([Video 1](https://www.youtube.com/watch?v=q3XNYwNZ97w), [Video 2](https://youtu.be/6lUlWxRsPhI))
 - **RC Avatar Scorpion V2** ([Cults](https://cults3d.com/en/3d-model/game/rc-avatar-scorpion-v2), [Video](https://youtu.be/UkFCE25-XTs))
 - 🕒 **RC Tractor von ProfessorBoots** – wird gerade gebaut: [RC Tractor von ProfessorBoots bauen]({{ '/projekte/rc-tractor-professorboots/' | relative_url }}) ([Printables](https://www.printables.com/model/1714813-rc-tractor), [John Deere Hood Mod](https://www.printables.com/model/1813353-john-deere-hood-mod-for-the-rc-tractor/files))
-- **OpenRC Tractor** – empfohlen von Opa ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
+- **OpenRC Tractor** – empfohlen von [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
 - **Pistenraupe** ([youmagine](https://youmagine.com/designs/34c46679-cdef-402c-94d7-eb25388172c3)) und [Bambu Labs „Santa's Snowcat“](https://www.youtube.com/watch?v=45_44t7ZurE) ([Video](https://youtu.be/nZYnPq2CSUg))
 
 ### Roboter

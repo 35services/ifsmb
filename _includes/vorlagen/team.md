@@ -5,6 +5,7 @@
 title: Vorname Nachname   # Anzeigename – der Dateiname (vorname-nachname) ist das Team-Kürzel für team/author/owner_team
 role: Rolle im Makespace   # erscheint unter dem Namen, z. B. „hilft in der KTG-AG“
 order: 50   # Reihenfolge auf /team/, kleiner = weiter vorne
+nicht_im_team: false   # true = eigene Seite unter /team/<kürzel>/ und überall verlinkbar (team, author, owner_team, verlinkt), aber nicht auf /team/ gelistet
 photo:   # /assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis, ohne Metadaten; leer = kein Foto
 photo_2x:   # optional: doppelt so großes Foto für scharfe Bildschirme
 photo_icon:   # optional: rundes Mini-Foto (48 px) für die Kalenderseite
