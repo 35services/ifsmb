@@ -18,7 +18,7 @@ uuid: 1b0c98c7-aaf4-451b-9e9c-edce3886027a
 Die Website der [Kurt-Tucholsky-Grundschule](https://kurt-tucholsky-grundschule.de/) läuft mit **WordPress**. Falko hilft der Schule ehrenamtlich dabei, die Seite zu pflegen und Inhalte einfacher einzustellen.
 
 ## Themen:
-* [ ] Elementor los werden (Freigabe erteilt)
+* [ ] Elementor los werden (Freigabe erteilt, Rosalind hat sich auch explizit gegen Elementor entschieden)
 * [ ] Webseite umziehen zu in-berlin.de (Freigabe erteilt, könnte man demnächst mal angehen)
 * [x] Ansprechpartner bei riedewald.net auf die aktuelle Schulleitung anpassen lassen
 * [ ] Lehrkräfte schulen
