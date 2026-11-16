@@ -24,8 +24,9 @@ team:
   - falko-richter
 uuid: 8d61c539-4a12-4d3b-9b7a-63e1f2049c81
 ---
+# Der vorläufige Plan:
 
-Ergänzend zur ehrenamtlichen [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) startet [Falko]({{ '/team/falko-richter/' | relative_url }}) als privates Projekt eine **Modellbau-AG an der [Kurt-Tucholsky-Grundschule]({{ '/partner/' | relative_url }}#kurt-tucholsky-grundschule) (KTG)**: Für **40 Euro im Monat pro Kind** (für Filament, Elektronik, Motoren, Kleinteile und Druckzeit) bauen die Kinder Schritt für Schritt ihre eigenen **3D-gedruckten ferngesteuerten Fahrzeuge**.
+Ergänzend zur ehrenamtlichen [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) startet [Falko]({{ '/team/falko-richter/' | relative_url }}) als privates Projekt eine **Modellbau-AG an der [Kurt-Tucholsky-Grundschule]({{ '/partner/' | relative_url }}#kurt-tucholsky-grundschule) (KTG)**: Für **40 Euro im Monat pro Kind** (für Filament, Elektronik, Motoren, Kleinteile und Druckzeit) bauen die Kinder Schritt für Schritt ihre eigenen **3D-gedruckten ferngesteuerten Fahrzeuge**. Es gibt 16 Euro Rabatt, wenn ihr selber einen Drucker oder Zugang zu einem Drucker habt. Ihr wollt dann ja auch selber drucken.
 
 Gedruckt wird unter anderem auf dem [Snapmaker U1 an der KTG]({{ '/ausstattung/snapmaker-u1/' | relative_url }}) und im Keller auf [Falkos privatem Snapmaker U1]({{ '/ausstattung/snapmaker-u1-falko/' | relative_url }}), sodass auch größere Bausätze, mehrfarbige Karosserieteile und flexible Reifen aus TPU oder NinjaFlex (zum Beispiel auf dem [LulzBot Mini]({{ '/ausstattung/lulzbot-mini/' | relative_url }})) zuverlässig entstehen.
 
