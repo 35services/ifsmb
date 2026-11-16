@@ -1,5 +1,5 @@
 ---
-title: "Ein Vokabeltrainer, gebaut mit KI"
+title: "Ein offline, datenschutzkonformer Vokabeltrainer, gebaut mit github-copilot KI"
 date: 2026-01-12 07:23:22 +0100
 author: falko-richter
 persoenlich: true
@@ -20,7 +20,7 @@ Was der Trainer kann:
 - **Eigene Listen** als einfaches Markdown (`- Wort : Bedeutung`), mit Fehlerprüfung, und **per Link teilen**
 - Eine fertige Liste mit 142 englischen Wörtern in 12 Kategorien: Körper, Essen, Getränke, Zuhause, Wochentage, Monate …
 
-Alles läuft als einfache Seite auf GitHub Pages, die Vokabeln bleiben im eigenen Browser.
+Alles läuft als einfache Seite auf GitHub Pages, die Vokabeln bleiben im eigenen Browser. Ohne Cookies. Ohne Tracking. Komplett Datenschutzneutral. Man kann Daten nur per Link verschicken, das Tool kann keine Daten speichern.
 
 - Ausprobieren: [Vokabeltrainer](https://falkorichter.github.io/learning-with-ai/english/with-config.html)
 - Quellcode (Apache 2.0): [github.com/falkorichter/learning-with-ai](https://github.com/falkorichter/learning-with-ai)
