@@ -1056,3 +1056,11 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
   transition: width .4s ease;
 }
 @media (prefers-reduced-motion: reduce) { .gelesen-fortschritt-balken span { transition: none; } }
+
+/* Bearbeiten-Zeile: ✏️ Bearbeiten (Formular) + GitHub-Logo mit Dateipfad (_includes/bearbeiten-knopf.html) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.github-datei { display: inline-flex; align-items: center; gap: .4rem; }
+.github-logo { flex: none; }
+.bearbeiten-btn[aria-busy=true] { opacity: .6; cursor: progress; }
+.neu-vorschau mark.neu-geaendert { background: #fff1a8; color: inherit; border-radius: 2px; box-shadow: -.3rem 0 0 #fff1a8, .3rem 0 0 #fff1a8; }
+[data-senden]:disabled { opacity: .5; cursor: not-allowed; }

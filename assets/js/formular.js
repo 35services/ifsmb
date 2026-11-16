@@ -271,6 +271,91 @@ var Formular = (function () {
       return k + ": " + yamlText(v);
     }).join("\n");
   }
+  // ---------- reading front matter (edit forms) ----------
+  // Splits a file into front matter blocks and body, keeping every byte: joining the raw blocks with "\n" gives the
+  // front matter back unchanged. A block is one top-level key with its following lines (indented lines, "- " list
+  // items, blank lines) or a top-level comment. → { bloecke: [{ key, raw }], rest } or null without front matter.
+  // rest = everything after the closing "---" line, including its newline.
+  function zerlegeDatei(text) {
+    text = String(text).replace(/\r\n/g, "\n");
+    if (!/^---\n/.test(text)) return null;
+    var ende = text.indexOf("\n---", 3);
+    while (ende >= 0 && !/^\n---(\n|$)/.test(text.slice(ende, ende + 5))) ende = text.indexOf("\n---", ende + 1);
+    var leerFm = /^---\n---(\n|$)/.test(text);
+    if (ende < 0 && !leerFm) return null;
+    var fm = leerFm ? "" : text.slice(4, ende), rest = leerFm ? text.slice(3) : text.slice(ende + 4);
+    var bloecke = [];
+    if (fm !== "") fm.split("\n").forEach(function (z) {
+      var m = z.match(/^([A-Za-z_][\w-]*)\s*:(\s|$)/);
+      if (m) bloecke.push({ key: m[1], zeilen: [z] });
+      else if (/^#/.test(z) || !bloecke.length) bloecke.push({ key: null, zeilen: [z] });
+      else bloecke[bloecke.length - 1].zeilen.push(z);
+    });
+    return { bloecke: bloecke.map(function (b) { return { key: b.key, raw: b.zeilen.join("\n") }; }), rest: rest, leer: leerFm };
+  }
+  function setzeDatei(z, bloecke, rest) {
+    var fm = bloecke.join("\n");
+    return "---\n" + (fm === "" ? "" : fm + "\n") + "---" + rest;
+  }
+  function ohneKommentar(s) { return s.replace(/\s+#.*$/, ""); }
+  function einWert(s) {
+    s = s.trim();
+    var m = s.match(/^"((?:[^"\\]|\\.)*)"\s*(#.*)?$/);
+    if (m) return m[1].replace(/\\(["\\\/])/g, "$1").replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+    m = s.match(/^'((?:[^']|'')*)'\s*(#.*)?$/);
+    if (m) return m[1].replace(/''/g, "'");
+    if (/^["']/.test(s)) return undefined; // unclosed quote (multi-line) – too complex
+    s = ohneKommentar(s);
+    if (/^(true|false)$/i.test(s)) return /^true$/i.test(s);
+    if (/^(null|~)?$/i.test(s)) return "";
+    if (/^[\[{&*!|>]/.test(s)) return undefined;
+    return s;
+  }
+  function inlineListe(s) {
+    s = ohneKommentar(s.trim());
+    if (!/^\[.*\]$/.test(s)) return undefined;
+    var innen = s.slice(1, -1), teile = [], akt = "", q = null;
+    for (var i = 0; i < innen.length; i++) {
+      var c = innen[i];
+      if (q) { akt += c; if (c === q && innen[i - 1] !== "\\") q = null; }
+      else if (c === '"' || c === "'") { q = c; akt += c; }
+      else if (c === ",") { teile.push(akt); akt = ""; }
+      else if (c === "[" || c === "{") return undefined;
+      else akt += c;
+    }
+    if (akt.trim() !== "" || teile.length) teile.push(akt);
+    var r = teile.map(einWert);
+    return r.some(function (x) { return x === undefined || typeof x === "boolean"; }) ? undefined : r.map(String);
+  }
+  // Value of a raw block from zerlegeDatei: string, boolean, array of strings, "" for empty, undefined if the value
+  // is something the forms don't edit (objects, lists of objects, anchors …).
+  function yamlWert(raw) {
+    var zeilen = raw.split("\n"), kopf = zeilen[0].replace(/^[^:]*:\s?/, ""), weiter = zeilen.slice(1);
+    var inhalt = weiter.filter(function (z) { return z.trim() !== "" && !/^\s*#/.test(z); });
+    var b = kopf.trim().match(/^([|>])([+-]?)\s*(#.*)?$/);
+    if (b) {
+      var ein = Math.min.apply(null, inhalt.map(function (z) { return z.match(/^ */)[0].length; }).concat([Infinity]));
+      var txt = weiter.map(function (z) { return z.slice(Math.min(ein, z.length)); });
+      while (txt.length && txt[txt.length - 1] === "") txt.pop();
+      var s = b[1] === "|" ? txt.join("\n") : txt.join("\n").replace(/([^\n])\n(?=[^\n])/g, "$1 ");
+      return b[2] === "-" ? s : s + "\n";
+    }
+    if (kopf.trim() === "" || /^#/.test(kopf.trim())) {
+      if (!inhalt.length) return "";
+      if (inhalt.every(function (z) { return /^\s*- /.test(z) || /^\s*-$/.test(z); })) {
+        var r = inhalt.map(function (z) { return einWert(z.replace(/^\s*-\s?/, "")); });
+        return r.some(function (x) { return x === undefined || typeof x === "boolean" || /^[\w-]+:\s/.test(x); }) ? undefined : r.map(String);
+      }
+      return undefined; // mapping or list of objects
+    }
+    if (/^\s*\[/.test(kopf)) return inhalt.length ? undefined : inlineListe(kopf);
+    if (inhalt.length) {
+      if (/^["']/.test(kopf.trim())) return undefined;
+      return einWert([kopf].concat(inhalt.map(function (z) { return z.trim(); })).join(" ")); // folded plain scalar
+    }
+    return einWert(kopf);
+  }
+
   function frontMatter(paare, text) { return "---\n" + yaml(paare) + "\n---\n" + (String(text || "").trim() ? "\n" + String(text).trim() + "\n" : ""); }
 
   // ---------- GitHub ----------
@@ -280,6 +365,7 @@ var Formular = (function () {
     return c.github + "/new/" + c.branch + "/" + ordner + "?filename=" + encodeURIComponent(datei) + (inhalt == null ? "" : "&value=" + encodeURIComponent(inhalt));
   }
   function githubEdit(pfad) { var c = cfg(); return c.github + "/edit/" + c.branch + "/" + pfad; }
+  function githubDatei(pfad) { var c = cfg(); return c.github + "/blob/" + c.branch + "/" + pfad; }
   // Copy text, then open url in a new tab. status (element) gets a hint; if copying fails, fallback() is called
   // (e.g. to show the text for manual copying).
   function kopierenUndOeffnen(text, url, status, fallback) {
@@ -297,7 +383,8 @@ var Formular = (function () {
     personen: personen, person: person, avatar: avatar,
     QUELLEN: QUELLEN, chipFeld: chipFeld, dialog: dialog,
     yaml: yaml, yamlText: yamlText, yamlListe: yamlListe, frontMatter: frontMatter, leer: leer,
-    githubNeu: githubNeu, githubEdit: githubEdit, kopierenUndOeffnen: kopierenUndOeffnen
+    zerlegeDatei: zerlegeDatei, setzeDatei: setzeDatei, yamlWert: yamlWert,
+    githubNeu: githubNeu, githubEdit: githubEdit, githubDatei: githubDatei, kopierenUndOeffnen: kopierenUndOeffnen
   };
 })();
 if (typeof module !== "undefined") module.exports = Formular;
