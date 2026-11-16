@@ -83,7 +83,8 @@ def write_obj(path, meshes):
 
 
 name = sys.argv[1] if len(sys.argv) > 1 else ""
-stem = "ifsmb-badge" + (f"-{name.lower()}" if name else "")
+slug = re.sub(r"[^a-z0-9äöüß]+", "-", name.lower()).strip("-")  # "Hr. Sladek" -> "hr-sladek"
+stem = "ifsmb-badge" + (f"-{slug}" if slug else "")
 meshes = [render(p, name) for p, _ in PARTS]
 write_3mf(os.path.join(HERE, stem + ".3mf"), meshes)
 write_obj(os.path.join(HERE, stem + ".obj"), meshes)
