@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""Exportiert das Badge als 3MF und OBJ mit zwei getrennten, eingefärbten Objekten („gelb“ und „schwarz“).
+"""Exportiert ein Badge nach assets/badge/ (dort liegen die Dateien für die Website):
 
-Im Slicer muss man dann nur noch jedem Objekt ein Filament zuweisen (oder es ist schon richtig eingefärbt).
+  <name>.3mf        zwei getrennte, eingefärbte Objekte „gelb“ und „schwarz“ (AMS/MMU)
+  <name>.obj/.mtl   dasselbe als OBJ – lädt auch der 3D-Viewer der Website (assets/js/badge3d.js)
+  <name>.stl        ein Körper, Farbwechsel per Pause bei Z = base_h
+  <name>-oben.png   Vorschau von oben
 
 Aufruf:
-  python3 export-farbig.py                 -> ifsmb-badge.3mf / .obj
-  python3 export-farbig.py Falko           -> ifsmb-badge-falko.3mf / .obj
+  python3 export-farbig.py                 -> ifsmb-badge.*
+  python3 export-farbig.py "Hr. Sladek"    -> ifsmb-badge-hr-sladek.*
+Neue Badges auch in _data/badges.yml eintragen.
 """
 import os, re, subprocess, sys, tempfile, zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCAD = os.path.join(HERE, "ifsmb-badge.scad")
+OUT = os.path.normpath(os.path.join(HERE, "..", "..", "assets", "badge"))
 PARTS = [("gelb", "#FFCC00"), ("schwarz", "#16161D")]
 
 
@@ -86,7 +91,13 @@ name = sys.argv[1] if len(sys.argv) > 1 else ""
 slug = re.sub(r"[^a-z0-9äöüß]+", "-", name.lower()).strip("-")  # "Hr. Sladek" -> "hr-sladek"
 stem = "ifsmb-badge" + (f"-{slug}" if slug else "")
 meshes = [render(p, name) for p, _ in PARTS]
-write_3mf(os.path.join(HERE, stem + ".3mf"), meshes)
-write_obj(os.path.join(HERE, stem + ".obj"), meshes)
+base = os.path.join(OUT, stem)
+write_3mf(base + ".3mf", meshes)
+write_obj(base + ".obj", meshes)
+q = subprocess.DEVNULL
+subprocess.run(["openscad", "-D", f'name="{name}"', "-o", base + ".stl", SCAD], check=True, stdout=q, stderr=q)
+subprocess.run(["openscad", "--projection=o", "--camera=0,-3,0,0,0,0,110", "--imgsize=1200,800",
+                "--colorscheme=Tomorrow", "-D", f'name="{name}"', "-o", base + "-oben.png", SCAD],
+               check=True, stdout=q, stderr=q)
 for (n, _), (v, t) in zip(PARTS, meshes):
     print(f"{stem}: {n} {len(v)} Punkte, {len(t)} Dreiecke")

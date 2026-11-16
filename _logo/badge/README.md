@@ -2,19 +2,27 @@
 
 Das Logo „Logo (Badge) als SVG“ (`../institut/ifsmb-logo-badge.svg`) als flaches Badge, optional mit Namen.
 
-![Badge](ifsmb-badge-oben.png) ![Badge mit Namen](ifsmb-badge-falko-oben.png)
+![Badge](../../assets/badge/ifsmb-badge-oben.png) ![Badge mit Namen](../../assets/badge/ifsmb-badge-falko-oben.png)
+
+Auf der Website: [/presse/#badge](https://ifsmb.de/presse/#badge) (drehbares 3D-Modell, Downloads) und im Teamprofil jeder Person mit Badge.
 
 | Datei | Inhalt |
 |---|---|
 | `ifsmb-badge.scad` | OpenSCAD-Quelle; Parameter oben in der Datei (auch im Customizer von OpenSCAD) |
 | `ifsmb-schriftzug.scad` | Schriftzug „IfsMB“ als Polygon, erzeugt aus dem Logo-SVG – nicht von Hand bearbeiten |
 | `schriftzug-aus-svg.py` | erzeugt `ifsmb-schriftzug.scad` neu, falls sich das Logo-SVG ändert |
-| `ifsmb-badge.stl` | nur Logo, 52,8 × 24 × 2 mm |
-| `ifsmb-badge-falko.stl` | Beispiel mit Namen „Falko“, 52,8 × 30,7 × 2 mm |
-| `ifsmb-badge.3mf`, `ifsmb-badge-falko.3mf` | **farbig**: zwei Objekte „gelb“ und „schwarz“ (bereits eingefärbt) |
-| `ifsmb-badge.obj`/`.mtl`, `ifsmb-badge-falko.obj`/`.mtl` | dasselbe als OBJ mit zwei Gruppen und Materialfarben |
-| `export-farbig.py` | erzeugt 3MF und OBJ (`python3 export-farbig.py [Name]`) |
-| `ifsmb-badge-oben.png`, `ifsmb-badge-falko-oben.png` | Vorschau |
+| `export-farbig.py` | erzeugt alle Dateien eines Badges in `assets/badge/` (`python3 export-farbig.py ["Name"]`) |
+
+Erzeugte Dateien in **`assets/badge/`** (von der Website ausgeliefert), je Badge:
+
+| Datei | Inhalt |
+|---|---|
+| `<name>.3mf` | zwei Objekte „gelb“ und „schwarz“, bereits eingefärbt (AMS/MMU) |
+| `<name>.obj` + `.mtl` | dasselbe als OBJ; lädt auch der 3D-Viewer `assets/js/badge3d.js` |
+| `<name>.stl` | ein Körper, Farbwechsel per Pause bei 1,4 mm |
+| `<name>-oben.png` | Vorschau, zugleich Bild ohne JavaScript/WebGL |
+
+Vorhanden: `ifsmb-badge` (nur Logo, 52,8 × 24 × 2 mm), `-falko`, `-gregor`, `-mr-e`, `-hr-sladek` (mit Namen, 52,8 × 30,7 × 2 mm). Welche Badges auf der Website erscheinen und zu welchem Teamprofil sie gehören, steht in `_data/badges.yml`.
 
 ## Aufbau
 
@@ -46,14 +54,11 @@ openscad -D 'name="Falko"' -o ifsmb-badge-falko.stl ifsmb-badge.scad
 - `name_size` (6 mm) ist die Wunschhöhe; lange Namen werden automatisch kleiner, damit sie ins Band passen. Bis 8 Zeichen bleibt es bei 6 mm, bis etwa 13 Zeichen über 4 mm.
 - `name_band` (9 mm) ist die sichtbare Höhe des schwarzen Bandes.
 
-## Neu exportieren
+## Neues Badge
 
 ```bash
-openscad -o ifsmb-badge.stl ifsmb-badge.scad
-openscad -D 'name="Falko"' -o ifsmb-badge-falko.stl ifsmb-badge.scad
-# farbig als 3MF + OBJ (zwei Objekte gelb/schwarz)
-python3 export-farbig.py
-python3 export-farbig.py Falko
-# Vorschau (farbig, von oben)
-openscad --projection=o --camera=0,-3,0,0,0,0,110 --imgsize=1200,800 --colorscheme=Tomorrow -o ifsmb-badge-oben.png ifsmb-badge.scad
+cd _logo/badge
+python3 export-farbig.py "Vorname"      # -> assets/badge/ifsmb-badge-vorname.*
 ```
+
+Dann in `_data/badges.yml` eintragen (`aufschrift`, `datei`, optional `team` = Team-Kürzel → erscheint im Teamprofil).
