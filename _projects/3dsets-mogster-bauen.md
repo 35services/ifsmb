@@ -31,4 +31,4 @@ Alle Teile kommen aus dem 3D-Drucker. Dazu kommen Schrauben, Lager, Motor und El
 
 ## Antons Mogster {#antons-mogster}
 
-[Anton]({{ '/team/anton/' | relative_url }}) aus dem Team baut sich ebenfalls einen Mogster. <span class="todo">[Farbe, Baufortschritt, Fotos]</span>
+[Anton]({{ '/team/anton/' | relative_url }}) aus dem Team baut sich ebenfalls einen Mogster. Im November 2026 laufen dafür [drei Drucker gleichzeitig]({{ '/news/2026/11/16/antons-mogster-drucker-im-einsatz/' | relative_url }}): Chassisteile auf dem MK4, Zahnräder auf dem MK3S. <span class="todo">[Farbe]</span>
