@@ -11,6 +11,9 @@ Das Logo „Logo (Badge) als SVG“ (`../institut/ifsmb-logo-badge.svg`) als fla
 | `schriftzug-aus-svg.py` | erzeugt `ifsmb-schriftzug.scad` neu, falls sich das Logo-SVG ändert |
 | `ifsmb-badge.stl` | nur Logo, 52,8 × 24 × 2 mm |
 | `ifsmb-badge-falko.stl` | Beispiel mit Namen „Falko“, 52,8 × 30,7 × 2 mm |
+| `ifsmb-badge.3mf`, `ifsmb-badge-falko.3mf` | **farbig**: zwei Objekte „gelb“ und „schwarz“ (bereits eingefärbt) |
+| `ifsmb-badge.obj`/`.mtl`, `ifsmb-badge-falko.obj`/`.mtl` | dasselbe als OBJ mit zwei Gruppen und Materialfarben |
+| `export-farbig.py` | erzeugt 3MF und OBJ (`python3 export-farbig.py [Name]`) |
 | `ifsmb-badge-oben.png`, `ifsmb-badge-falko-oben.png` | Vorschau |
 
 ## Aufbau
@@ -31,7 +34,7 @@ Es gibt also genau **einen Farbwechsel, bei Z = 1,4 mm**. Ein normaler Drucker o
 
 Auf der Rückseite ist eine Aussparung (26 × 4,2 × 0,6 mm) für eine Anstecknadel zum Einkleben (`pin_slot = [0,0,0]` schaltet sie ab).
 
-Mit AMS/MMU geht es auch als zwei Teile eines Objekts (`part="gelb"` und `part="schwarz"` exportieren, beide gleichzeitig laden, gleicher Ursprung).
+**Mit AMS/MMU** einfach die `.3mf` öffnen: sie enthält zwei Objekte „gelb“ und „schwarz“ an der richtigen Position; jedem Objekt das passende Filament zuweisen. Fragt der Slicer, ob die Objekte zu einem Objekt mit mehreren Teilen zusammengefasst werden sollen: ja. Kein Farbwechsel per Pause nötig.
 
 ## Eigener Name
 
@@ -48,6 +51,9 @@ openscad -D 'name="Falko"' -o ifsmb-badge-falko.stl ifsmb-badge.scad
 ```bash
 openscad -o ifsmb-badge.stl ifsmb-badge.scad
 openscad -D 'name="Falko"' -o ifsmb-badge-falko.stl ifsmb-badge.scad
+# farbig als 3MF + OBJ (zwei Objekte gelb/schwarz)
+python3 export-farbig.py
+python3 export-farbig.py Falko
 # Vorschau (farbig, von oben)
 openscad --projection=o --camera=0,-3,0,0,0,0,110 --imgsize=1200,800 --colorscheme=Tomorrow -o ifsmb-badge-oben.png ifsmb-badge.scad
 ```
