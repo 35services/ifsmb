@@ -19,3 +19,5 @@ Wir brauchen die offene Software https://github.com/Snapmaker/OrcaSlicer/release
 Konkret geht es um Version [v2.4.1](https://github.com/Snapmaker/OrcaSlicer/releases/tag/v2.4.1) und sehr wahrscheinlich (weil windows) um diesen Installer https://github.com/Snapmaker/OrcaSlicer/releases/download/v2.4.1/Snapmaker_Orca_Windows_Installer_V2.4.1.exe
 
 Die Software ist quelloffen und frei verfügbar.
+
+Das Rosalind Franklin Gymnasium und die Platanus Schule haben diese Software oder die Basis (Orcaslicer ohne snapmaker Plugin) bereits erfolgreich installiert.
