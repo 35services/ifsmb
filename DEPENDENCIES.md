@@ -56,7 +56,7 @@ Stand: 17.11.2026
 | Was | Version | Benutzt von | Hinweis |
 |---|---|---|---|
 | Ruby-Standardbibliothek inkl. `minitest` | mit Ruby 3.1 | `_scripts/*.rb` | keine zusätzlichen Gems |
-| Node.js | was der Runner mitbringt (`ubuntu-latest`) | `test_formulare.rb` → `formulare_beispiele.js`, `bearbeiten_beispiele.js` | ⚠️ nicht festgelegt; nur Node-Bordmittel (`fs`, `path`, `vm`), keine npm-Pakete |
+| Node.js | was der Runner mitbringt (`ubuntu-latest`) | `test_formulare.rb` → `formulare_beispiele.js`, `edit_examples.js` | ⚠️ nicht festgelegt; nur Node-Bordmittel (`fs`, `path`, `vm`), keine npm-Pakete |
 
 ## 4. Nur lokal (Skripte für Menschen, nicht in CI)
 
@@ -66,7 +66,7 @@ Stand: 17.11.2026
 | Google Chrome (headless) | aktuell installierte | `_scripts/pr_vorschau.py` | Pfad über `$CHROME` änderbar |
 | OpenSCAD | 2021.01 getestet | `_logo/badge/` (Badge zum Drucken) | – |
 | SF Mono Heavy (Schrift von macOS) | mit macOS | `_logo/badge/ifsmb-badge.scad` (nur für Namen auf Badges) | liegt nicht im Repo; andere Systeme: `name_font` |
-| Python 3 (ohne Zusatzpakete) | – | `_logo/badge/schriftzug-aus-svg.py`, `export-farbig.py` | – |
+| Python 3 (ohne Zusatzpakete) | – | `_logo/badge/wordmark_from_svg.py`, `export_colored.py` | – |
 
 ## Offene Punkte
 

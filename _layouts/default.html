@@ -97,7 +97,7 @@
   {% if site.repository and page.path %}
   {%- assign schmale_layouts = "post,project,member,event,equipment,press" | split: "," -%}
   <div class="container edit-page{% if schmale_layouts contains page.layout %} narrow{% endif %}" data-pagefind-ignore>
-    {% include bearbeiten-knopf.html %}
+    {% include edit-buttons.html %}
     {% include neu-buttons.html %}
   </div>
   {% endif %}
