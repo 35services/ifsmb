@@ -6,7 +6,7 @@ lead: Unsere Bestandsaufnahme – Aufgaben, Probleme und offene Fragen aus unser
 verlinkt: [/todos/]
 ---
 {%- comment -%}
-  Overview of all challenges: open / in progress first, solved below, personal ones at the end.
+  Overview of all challenges: open ones (in progress first) in an Eisenhower matrix, solved below as cards, personal ones at the end.
 {%- endcomment -%}
 <div class="prose intro">
   <p>Ein Projekt besteht aus vielen kleinen <strong>Herausforderungen</strong>: Welche Motoren passen? Wer besorgt die Platine? Warum haftet das Filament nicht? Jede Herausforderung gehört zu einem oder mehreren <a href="{{ '/projekte/' | relative_url }}">Projekten</a>, Terminen oder Menschen – und jemand aus dem <a href="{{ '/team/' | relative_url }}">Team</a> kümmert sich darum.</p>
@@ -25,14 +25,9 @@ verlinkt: [/todos/]
   <a href="#offen">Offen ({{ h_open.size }})</a>{% if h_done.size > 0 %} · <a href="#geloest">Gelöst ({{ h_done.size }})</a>{% endif %}{% if personal.size > 0 %} · <a href="#persoenlich">Persönlich ({{ personal.size }})</a>{% endif %}
 </nav>
 
-<h2 class="cal-heading" id="offen">Offen</h2>
-{% if h_open.size > 0 %}
-<div class="grid-2">
-  {% for h in h_open %}{% include herausforderung-karte.html h=h %}{% endfor %}
-</div>
-{% else %}
-<p class="muted">Gerade ist hier nichts gesammelt. Neue Herausforderungen legt ihr mit „➕ Herausforderung“ unten an; was schon angepackt wird, steht in den <a href="{{ '/todos/' | relative_url }}">Todos</a>.</p>
-{% endif %}
+<h2 class="cal-heading" id="offen">Offen: Was ist wichtig, was ist dringend?</h2>
+<p class="muted">Die offenen Herausforderungen, sortiert nach der <a href="https://de.wikipedia.org/wiki/Eisenhower-Prinzip">Eisenhower-Matrix</a> – eingeordnet über <code>wichtig</code> und <code>dringend</code> in der Datei. Mit ➕ legt ihr eine neue Herausforderung direkt im passenden Feld an.</p>
+{% include eisenhower.html list=h_open %}
 
 {% if h_done.size > 0 %}
 <h2 class="cal-heading" id="geloest">Gelöst</h2>

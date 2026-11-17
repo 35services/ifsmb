@@ -1,6 +1,7 @@
 {%- comment -%}
   Status badge and kind of a challenge (Herausforderung). include.h = the challenge.
   status: offen (default) | in-arbeit | geloest – art: aufgabe | problem | frage (optional)
+  Unsolved ones also get their Eisenhower quadrant (wichtig/dringend).
 {%- endcomment -%}
 {%- assign hs = include.h -%}
 {%- case hs.status -%}
@@ -15,3 +16,6 @@
 {%- when "frage" %} · ❓ Frage
 {%- else %} · 🧗 Herausforderung
 {%- endcase -%}
+{%- unless hs.status == "geloest" -%}
+{%- include eisenhower-feld.html h=hs %} <span class="hm-badge hm-{{ ef_q }}" title="Eisenhower-Matrix">{{ ef_icon }} {{ ef_name }}</span>
+{%- endunless -%}

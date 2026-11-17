@@ -1,5 +1,5 @@
 {%- comment -%}
-  Template for a new challenge (_herausforderungen/). Params: team, projekte, tags, verlinkt, persoenlich.
+  Template for a new challenge (_herausforderungen/). Params: team, projekte, tags, verlinkt, persoenlich, wichtig, dringend ("true"/"false").
   JJJJ-MM-TT is replaced with today's date by JS when the button is clicked.
 {%- endcomment -%}
 ---
@@ -9,6 +9,8 @@ art: frage   # aufgabe, problem oder frage
 status: offen   # offen, in-arbeit oder geloest
 seit: JJJJ-MM-TT   # seit wann die Herausforderung besteht
 geloest_am:   # Datum, wenn gelöst
+wichtig: {{ include.wichtig | default: false }}   # Eisenhower-Matrix: true/false
+dringend: {{ include.dringend | default: false }}   # true/false – wichtig+dringend = sofort, nur wichtig = einplanen, nur dringend = abgeben, keins = später
 team: [{{ include.team }}]   # Team-Kürzel der Zuständigen – eine oder mehrere Personen
 projekte: [{{ include.projekte }}]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: [{{ include.tags }}]   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt
