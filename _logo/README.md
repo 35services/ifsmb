@@ -39,6 +39,10 @@ Werkzeug: Python/Pillow (`ImageOps.exif_transpose`, Zuschnitt, Neuspeichern ohne
 
 Die Schrift ist die System-Monospace bzw. System-UI-Schrift von macOS (SF Mono, wght 800; SF Pro, wght 700, opsz 28). In den SVGs ist der Text mit fontTools in Pfade umgewandelt, sie brauchen also keine installierte Schrift. Farben: `#ffcc00` (Gelb), `#16161d` (Schwarz), Badge um −3° gedreht.
 
+## Badge zum Drucken
+
+`badge/`: das Logo-Badge als OpenSCAD-Modell für den 3D-Druck (gelbe Grundplatte, schwarze Teile erhaben, nur ein Farbwechsel), optional mit Namen im verlängerten Schatten. Die erzeugten Dateien (3MF, OBJ, STL, Vorschau) liegen in `assets/badge/`, die Liste in `_data/badges.yml`; sie erscheinen auf `/presse/#badge` und in den Teamprofilen. Der Schriftzug „IfsMB“ wird mit `badge/schriftzug-aus-svg.py` direkt aus `institut/ifsmb-logo-badge.svg` übernommen. Details in `badge/README.md`.
+
 ## Übernommene Blogbeiträge
 
 Bilder und Videos aus den Beiträgen von 35services.de (Autor: Falko Richter) liegen in `assets/images/news/<slug>/` und `assets/video/news/<slug>/`.
