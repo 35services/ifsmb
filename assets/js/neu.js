@@ -437,7 +437,7 @@ var NeuFormular = (function () {
       status.textContent = aktiv.bearbeiten ? "Änderungen verworfen." : "Neu angefangen.";
     });
     // "close" fires a moment after close(); if the dialog was opened again meanwhile, leave the new form alone
-    d.addEventListener("close", function () { if (d.open) return; if (aktiv && aktiv.gesendet) loescheEntwurf(); entferneEditoren(); aktiv = null; });
+    d.addEventListener("close", function () { if (d.open) return; if (aktiv && aktiv.gesendet) loescheEntwurf(); destroyEditors(); aktiv = null; });
   }
 
   // in edit mode a required field only stays required if the file had a value (old posts without date: …)
@@ -472,7 +472,7 @@ var NeuFormular = (function () {
   }
 
   function baueFelder() {
-    entferneEditoren();
+    destroyEditors();
     var mehrFelder = mehrBox.querySelector(".neu-felder");
     links.innerHTML = ""; mehrFelder.innerHTML = "";
     aktiv.schema.felder.forEach(function (zeile) {
@@ -487,7 +487,7 @@ var NeuFormular = (function () {
     mehrBox.open = aktiv.felder.some(function (f) { return f.mehr && !F.leer(aktiv.w[f.name]); });
     dateiInput.value = aktiv.w.datei;
     aktiv.felder.forEach(function (f) { if (f.liste) fuelleListe(f.liste); });
-    markdownEditoren();
+    createMarkdownEditors();
   }
   function fuelleListe(key) {
     F.ladeIndex().then(function (I) {
@@ -497,109 +497,113 @@ var NeuFormular = (function () {
   }
 
   // ---------- markdown editor ----------
-  // Fields with markdown: true get OverType (assets/js/bibliotheken/overtype/, MIT, copied unchanged – no external files),
-  // loaded on first use. Its textarea keeps the field's name, so input, preview and draft work as before; if the
-  // script can't load, the plain textarea stays. The toolbar can be switched off (🛠️) – off by default on phones,
-  // the choice is remembered in this browser.
-  var editoren = [], WERKZEUG = "ifsmb-werkzeugleiste";
+  // Fields with markdown: true get OverType (assets/js/third-party/overtype/, MIT, copied unchanged – no external files,
+  // see DEPENDENCIES.md), loaded on first use. Its textarea keeps the field's name, so input, preview and draft work as
+  // before; if the script can't load, the plain textarea stays. The toolbar can be switched off (🛠️) – off by default
+  // on phones, the choice is remembered in this browser.
+  var editors = [], TOOLBAR_KEY = "ifsmb-md-toolbar";
   var NAV = typeof navigator !== "undefined" ? navigator : {};
-  var MAC = /Mac|iPhone|iPad/.test(NAV.platform || NAV.userAgent || "");
-  var MOD = MAC ? "⌘" : "Strg+", UMSCHALT = MAC ? "⇧⌘" : "Strg+Umschalt+";
+  var IS_MAC = /Mac|iPhone|iPad/.test(NAV.platform || NAV.userAgent || "");
+  // shortcut hints shown to visitors (German UI text)
+  var MOD = IS_MAC ? "⌘" : "Strg+", SHIFT_MOD = IS_MAC ? "⇧⌘" : "Strg+Umschalt+";
   var LABELS = {
     toolbar: "Formatierung",
     viewModes: { normal: "Bearbeiten", plain: "Nur Text", preview: "Vorschau" },
-    buttons: { bold: "Fett", italic: "Kursiv", strikethrough: "Durchgestrichen (" + UMSCHALT + "X)", code: "Code", link: "Link einfügen",
+    buttons: { bold: "Fett", italic: "Kursiv", strikethrough: "Durchgestrichen (" + SHIFT_MOD + "X)", code: "Code", link: "Link einfügen",
       h1: "Überschrift 1", h2: "Überschrift 2", h3: "Überschrift 3", h4: "Überschrift 4", h5: "Überschrift 5", h6: "Überschrift 6",
       bulletList: "Liste", orderedList: "Nummerierte Liste", taskList: "Aufgabenliste", outdent: "Ausrücken", indent: "Einrücken",
       quote: "Zitat", upload: "Datei hochladen", viewMode: "Ansicht", underline: "Unterstrichen (" + MOD + "U)" }
   };
   // Shortcuts on top of OverType's own (⌘B, ⌘I, ⌘K, ⌘E, ⌥⌘1–3, ⇧⌘7/8/9, ⇧⌘.): ⇧⌘X strikethrough (~~ ~~),
   // ⌘U underline. Markdown has no underline – <u>…</u> is HTML that kramdown passes through. Ctrl instead of ⌘ off Mac.
-  var LINIE = 'stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"';
-  function unterstreichen(ta) {
-    var A = "<u>", Z = "</u>", v = ta.value, s = ta.selectionStart, e = ta.selectionEnd, auswahl = v.slice(s, e), neu, start;
-    if (auswahl.length >= A.length + Z.length && auswahl.indexOf(A) === 0 && auswahl.slice(-Z.length) === Z) {
-      neu = auswahl.slice(A.length, -Z.length); start = s;                       // tags selected too → remove
-    } else if (v.slice(s - A.length, s) === A && v.slice(e, e + Z.length) === Z) {
-      ta.setSelectionRange(s - A.length, e + Z.length); neu = auswahl; start = s - A.length; // tags around → remove
+  var STROKE = 'stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"';
+  function toggleUnderline(ta) {
+    var OPEN = "<u>", CLOSE = "</u>", value = ta.value, from = ta.selectionStart, to = ta.selectionEnd;
+    var selected = value.slice(from, to), replacement, start;
+    if (selected.length >= OPEN.length + CLOSE.length && selected.indexOf(OPEN) === 0 && selected.slice(-CLOSE.length) === CLOSE) {
+      replacement = selected.slice(OPEN.length, -CLOSE.length); start = from;            // tags selected too → remove
+    } else if (value.slice(from - OPEN.length, from) === OPEN && value.slice(to, to + CLOSE.length) === CLOSE) {
+      ta.setSelectionRange(from - OPEN.length, to + CLOSE.length);                       // tags around → remove
+      replacement = selected; start = from - OPEN.length;
     } else {
-      neu = A + auswahl + Z; start = s + A.length;                               // wrap
+      replacement = OPEN + selected + CLOSE; start = from + OPEN.length;                  // wrap
     }
-    var inhaltLaenge = neu === auswahl || neu.indexOf(A) !== 0 ? neu.length : auswahl.length;
+    var innerLength = replacement === selected || replacement.indexOf(OPEN) !== 0 ? replacement.length : selected.length;
     ta.focus();
     // insertText keeps undo (⌘Z) working; fallback for browsers without it
-    if (!(document.execCommand && document.execCommand("insertText", false, neu))) {
-      ta.setRangeText(neu);
+    if (!(document.execCommand && document.execCommand("insertText", false, replacement))) {
+      ta.setRangeText(replacement);
       ta.dispatchEvent(new Event("input", { bubbles: true }));
     }
-    ta.setSelectionRange(start, start + inhaltLaenge);
+    ta.setSelectionRange(start, start + innerLength);
   }
-  function knoepfe() {
-    var T = window.toolbarButtons, standard = (window.defaultToolbarButtons || []).slice();
-    if (!T || !standard.length) return null; // OverType without exports: keep its default toolbar
-    var unterstrichen = {
+  function toolbarButtons() {
+    var T = window.toolbarButtons, buttons = (window.defaultToolbarButtons || []).slice();
+    if (!T || !buttons.length) return null; // OverType without exports: keep its default toolbar
+    var underline = {
       name: "underline", actionId: "toggleUnderline", title: "Unterstrichen (" + MOD + "U)",
-      icon: '<svg viewBox="0 0 18 18"><path ' + LINIE + ' d="M5,3v5a4,4,0,0,0,8,0V3"></path><line ' + LINIE + ' x1="4" x2="14" y1="15.5" y2="15.5"></line></svg>',
-      action: function (o) { unterstreichen(o.editor.textarea); }
+      icon: '<svg viewBox="0 0 18 18"><path ' + STROKE + ' d="M5,3v5a4,4,0,0,0,8,0V3"></path><line ' + STROKE + ' x1="4" x2="14" y1="15.5" y2="15.5"></line></svg>',
+      action: function (o) { toggleUnderline(o.editor.textarea); }
     };
-    var i = standard.indexOf(T.italic);
-    standard.splice(i < 0 ? 2 : i + 1, 0, T.strikethrough, unterstrichen);
-    return standard;
+    var i = buttons.indexOf(T.italic);
+    buttons.splice(i < 0 ? 2 : i + 1, 0, T.strikethrough, underline);
+    return buttons;
   }
-  function tasten(e, ed) {
-    if (!(MAC ? e.metaKey : e.ctrlKey) || e.altKey) return;
-    var k = (e.key || "").toLowerCase();
-    if (k === "u" && !e.shiftKey) { e.preventDefault(); ed.performAction("toggleUnderline", e); }
-    else if (k === "x" && e.shiftKey) { e.preventDefault(); ed.performAction("toggleStrikethrough", e); }
+  function onEditorKeydown(e, editor) {
+    if (!(IS_MAC ? e.metaKey : e.ctrlKey) || e.altKey) return;
+    var key = (e.key || "").toLowerCase();
+    if (key === "u" && !e.shiftKey) { e.preventDefault(); editor.performAction("toggleUnderline", e); }
+    else if (key === "x" && e.shiftKey) { e.preventDefault(); editor.performAction("toggleStrikethrough", e); }
   }
-  function werkzeugleiste(an) {
-    if (an != null) { try { localStorage.setItem(WERKZEUG, an ? "1" : "0"); } catch (e) { /* storage blocked */ } return an; }
-    try { var v = localStorage.getItem(WERKZEUG); if (v != null) return v === "1"; } catch (e) { /* storage blocked */ }
+  // toolbarVisible() reads the remembered choice (default: off on phones), toolbarVisible(bool) stores it
+  function toolbarVisible(visible) {
+    if (visible != null) { try { localStorage.setItem(TOOLBAR_KEY, visible ? "1" : "0"); } catch (e) { /* storage blocked */ } return visible; }
+    try { var stored = localStorage.getItem(TOOLBAR_KEY); if (stored != null) return stored === "1"; } catch (e) { /* storage blocked */ }
     return !(window.matchMedia && window.matchMedia("(max-width: 640px)").matches);
   }
-  function entferneEditoren() {
-    editoren.forEach(function (e) { try { e.destroy(); } catch (x) { /* already gone */ } });
-    editoren = [];
+  function destroyEditors() {
+    editors.forEach(function (e) { try { e.destroy(); } catch (x) { /* already gone */ } });
+    editors = [];
   }
-  function markdownEditoren() {
-    var fuer = aktiv, felder = aktiv.felder.filter(function (f) { return f.markdown && form.elements[f.name]; });
-    if (!felder.length || !window.ladeSkripte) return;
-    window.ladeSkripte(["bibliotheken/overtype/overtype.min.js"]).then(function () {
-      if (aktiv !== fuer || !window.OverType) return; // dialog closed or reopened meanwhile
-      felder.forEach(function (f) { macheEditor(f, fuer); });
+  function createMarkdownEditors() {
+    var state = aktiv, fields = aktiv.felder.filter(function (f) { return f.markdown && form.elements[f.name]; });
+    if (!fields.length || !window.ladeSkripte) return;
+    window.ladeSkripte(["third-party/overtype/overtype.min.js"]).then(function () {
+      if (aktiv !== state || !window.OverType) return; // dialog closed or reopened meanwhile
+      fields.forEach(function (f) { createEditor(f, state); });
     }).catch(function () { /* plain textarea stays */ });
   }
-  function macheEditor(f, fuer) {
+  function createEditor(f, state) {
     var ta = form.elements[f.name];
     if (!ta || ta.tagName !== "TEXTAREA") return;
-    var alt = ta.closest(".form-feld"), an = werkzeugleiste();
+    var oldField = ta.closest(".form-feld"), visible = toolbarVisible();
     // a <div> instead of the <label>: clicks on the toolbar must not jump into the text
-    var feld = F.el('<div class="form-feld form-md' + (an ? "" : " ohne-werkzeugleiste") + '"><div class="form-md-kopf"><span>'
-      + esc(f.label) + '</span><button type="button" class="btn btn-ghost btn-small form-md-schalter" aria-pressed="' + an
-      + '" title="Werkzeugleiste ein- oder ausblenden">🛠️ <span class="form-md-schalter-text">Werkzeugleiste</span></button></div>'
+    var field = F.el('<div class="form-feld form-md' + (visible ? "" : " toolbar-hidden") + '"><div class="form-md-head"><span>'
+      + esc(f.label) + '</span><button type="button" class="btn btn-ghost btn-small form-md-toggle" aria-pressed="' + visible
+      + '" title="Werkzeugleiste ein- oder ausblenden">🛠️ <span class="form-md-toggle-text">Werkzeugleiste</span></button></div>'
       + '<div class="form-md-editor"></div>' + (f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "") + "</div>");
-    alt.replaceWith(feld);
-    var ed = new window.OverType(feld.querySelector(".form-md-editor"), {
+    oldField.replaceWith(field);
+    var editor = new window.OverType(field.querySelector(".form-md-editor"), {
       value: aktiv.w[f.name] || "",
-      toolbar: true, toolbarButtons: knoepfe() || undefined, labels: LABELS, placeholder: f.platzhalter || "",
-      onKeydown: tasten,
+      toolbar: true, toolbarButtons: toolbarButtons() || undefined, labels: LABELS, placeholder: f.platzhalter || "",
+      onKeydown: onEditorKeydown,
       fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", fontSize: "14px", lineHeight: 1.6,
       autoResize: true, minHeight: Math.max(6, (f.zeilen || 8) * 1.6) + "em", maxHeight: "60vh",
       spellcheck: true,
       textareaProps: { name: f.name, "aria-label": f.label },
-      onChange: function (v) {
-        if (aktiv !== fuer || v === aktiv.w[f.name]) return;
-        aktiv.w[f.name] = v;
+      onChange: function (value) {
+        if (aktiv !== state || value === aktiv.w[f.name]) return;
+        aktiv.w[f.name] = value;
         nachAenderung();
       }
     })[0];
-    editoren.push(ed);
-    var schalter = feld.querySelector(".form-md-schalter");
-    schalter.addEventListener("click", function () {
-      var neu = schalter.getAttribute("aria-pressed") !== "true";
-      werkzeugleiste(neu);
-      schalter.setAttribute("aria-pressed", String(neu));
-      feld.classList.toggle("ohne-werkzeugleiste", !neu);
+    editors.push(editor);
+    var toggle = field.querySelector(".form-md-toggle");
+    toggle.addEventListener("click", function () {
+      var show = toggle.getAttribute("aria-pressed") !== "true";
+      toolbarVisible(show);
+      toggle.setAttribute("aria-pressed", String(show));
+      field.classList.toggle("toolbar-hidden", !show);
     });
   }
 

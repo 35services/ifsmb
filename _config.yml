@@ -116,6 +116,7 @@ exclude:
   - CLAUDE.md
   - CHANGELOG.md
   - DATENSTRUKTUR.md
+  - DEPENDENCIES.md
   - LICENSE
   - .pages.yml
   - todo.md

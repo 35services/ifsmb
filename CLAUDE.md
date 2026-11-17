@@ -21,7 +21,7 @@ Ruby 3.1.2 (`.ruby-version`). `_site/` niemals committen.
 
 Alle sichtbaren Texte sind **Deutsch**.
 
-**Code-Kommentare sind Englisch** – in Skripten, Workflows, Layouts/Includes (Liquid- und HTML-Kommentare), CSS und JS, auch Docstrings. Deutsch bleibt alles, was Besucher*innen oder Redakteur*innen sehen: Seitentexte, Fehlermeldungen und Hilfetexte von Skripten, Namen von Workflow-Schritten, Commit-Messages und PR-Beschreibungen.
+**Quellcode ist Englisch** – Ordner- und Dateinamen, Bezeichner (Funktionen, Variablen, CSS-Klassen, IDs, localStorage-Schlüssel, Parameter von Includes) und Code-Kommentare in Skripten, Workflows, Plugins, Layouts/Includes (Liquid- und HTML-Kommentare), CSS und JS, auch Docstrings. Neue Ordner heißen z. B. `assets/js/third-party/`, nicht `bibliotheken/`; Dokumente im Repo ebenso (`DEPENDENCIES.md`). **Nur Inhalte dürfen deutsch (oder in einer anderen Sprache) heißen:** Beiträge, Termine, Projekte, Seiten und ihre Adressen, die Ordner ihrer Bilder (`assets/images/news/<slug>/`) sowie die Felder im Front Matter, die Redakteur*innen ausfüllen (`verlinkt`, `persoenlich` …). Ältere deutsche Namen im Code (z. B. `neu.js`, `formular.js`, `_plugins/einzeldateien.rb`, Funktionen wie `baueFelder`) nicht nebenbei umbenennen – das ist eine eigene Aufräumarbeit mit eigenem PR; neuer Code daneben bekommt trotzdem englische Namen. Deutsch bleibt alles, was Besucher*innen oder Redakteur*innen sehen: Seitentexte, Fehlermeldungen und Hilfetexte von Skripten, Namen von Workflow-Schritten, Commit-Messages und PR-Beschreibungen.
 
 Immer **Makespace** schreiben, nie „Makerspace“. Grund: „Maker“ ist im Deutschen ein männliches Wort, und wir wollen die Gender-Diskussion vermeiden. Das gilt für alle Texte: Seiten, Posts, Projekte, Profile, Meta-Beschreibungen, Alt-Texte und Commit-Messages.
 
@@ -65,7 +65,7 @@ Immer **Makespace** schreiben, nie „Makerspace“. Grund: „Maker“ ist im D
 
 - Kein CSS-/JS-Framework, alle Styles in `assets/css/style.css` mit CSS-Variablen
 - Keine externen Ressourcen (Fonts, Skripte, Tracker) einbinden – Datenschutzhinweis im Impressum verspricht das. Einzige Ausnahme: die Kartenbilder von OpenStreetMap auf `/karte/`, und nur nach Klick auf „Karte laden“ (im Impressum unter Datenschutz beschrieben)
-- Fremde Bibliotheken nur als unveränderte Kopie in `assets/js/bibliotheken/<name>/` mit `LICENSE` und `README.md` (Herkunft, Version, SHA-256, geprüft: lädt nichts von außen), erst bei Bedarf laden. Beim Einbinden und bei jedem Update die **genaue Version** auch im `CHANGELOG.md` nennen. Bisher: OverType (Markdown-Editor der Formulare, MIT) – `neu.js` macht daraus die Felder mit `markdown: true`; Werkzeugleiste mit 🛠️ ein-/ausblendbar, auf dem Handy anfangs aus, Wahl im localStorage (`ifsmb-werkzeugleiste`); zusätzlich zu OverTypes Kürzeln Durchgestrichen (⇧⌘X) und Unterstrichen (⌘U → `<u>…</u>`) als eigene Knöpfe/Tasten in `neu.js` (`knoepfe`, `tasten`). Alle Kürzel erklärt der Beitrag `_posts/2026-11-17-mitschreiben-leicht-gemacht.md` – bei Änderungen dort mitpflegen
+- Fremde Bibliotheken, Werkzeuge und andere Abhängigkeiten: siehe Abschnitt **„Abhängigkeiten“** unten und `DEPENDENCIES.md`. Bisher im Browser: OverType (Markdown-Editor der Formulare) – `neu.js` macht daraus die Felder mit `markdown: true`; Werkzeugleiste mit 🛠️ ein-/ausblendbar, auf dem Handy anfangs aus, Wahl im localStorage (`ifsmb-md-toolbar`); zusätzlich zu OverTypes Kürzeln Durchgestrichen (⇧⌘X) und Unterstrichen (⌘U → `<u>…</u>`) als eigene Knöpfe/Tasten in `neu.js` (`toolbarButtons`, `onEditorKeydown`). Alle Kürzel erklärt der Beitrag `_posts/2026-11-17-mitschreiben-leicht-gemacht.md` – bei Änderungen dort mitpflegen
 - E-Mail-Adressen nur über das `.obf-mail`-Muster, Telefonnummern über `.obf-tel` (siehe README)
 - Original-Logos in `_logo/`, `_logo/README.md` aktuell halten
 - Platzhalter sind mit `<span class="todo">` markiert
@@ -130,6 +130,17 @@ Falko schreibt Beiträge zuerst auf https://35services.de. Soll ein Beitrag hier
 ## Changelog
 
 `CHANGELOG.md` folgt [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), auf Deutsch. **Nur Funktionen der Website kommen hinein** – neue oder geänderte Layouts, Includes, Plugins, Seitentypen und Felder, Skripte, Workflows, CSS/JS, Regeln für die Arbeit am Repo, behobene Fehler. **Keine Inhalte**: neue oder geänderte Beiträge, Termine, Projekte, Teamprofile, Geräte, Partner, Pressemitteilungen, Textseiten und Fotos bekommen keinen Eintrag – was wann dazukam, zeigen das Netzwerk und seine Zeitleiste (`/netzwerk/`). Jede nennenswerte Funktionsänderung kommt mit in den Commit: zuerst unter `## [Unreleased]`, sortiert nach `### Hinzugefügt`, `### Geändert`, `### Veraltet`, `### Entfernt`, `### Behoben`, `### Sicherheit`. Die Seite hat keine Versionsnummern: Beim Push nach `main` wird `[Unreleased]` zum Tagesabschnitt `## [JJJJ-MM-TT]` (neueste oben, Vergleichslinks unten pflegen). Einträge für Menschen schreiben, nicht Commit-Messages kopieren; Tippfehler-Korrekturen und reine Merges weglassen. `CHANGELOG.md` steht in `exclude` und wird nicht ausgeliefert.
+
+## Abhängigkeiten
+
+Ziel: kein Abhängigkeits-Wildwuchs. Jede Abhängigkeit ist **genau dokumentiert** – so, dass jemand ohne Vorwissen sie nachvollziehen, aktualisieren oder wieder entfernen kann.
+
+- **Alles steht in `DEPENDENCIES.md`, bevor es benutzt wird:** Bibliotheken im Browser, Gems, npm-Pakete und `npx`-Werkzeuge, GitHub Actions, Schriften, lokale Werkzeuge der Skripte (Python-Pakete, Chrome, OpenSCAD …). Was dort nicht steht, wird nicht benutzt – keine Abhängigkeit „nebenbei“.
+- **Pro Eintrag:** Zweck (wofür, was ohne sie fehlt) · **genaue Version** (keine Bereiche, kein `latest`; wo das noch nicht geht, als offener Punkt markieren) · Herkunft (URL und der **exakte Befehl** zum Holen, Datum) · wo sie liegt bzw. festgelegt ist (Pfad, Workflow) · wer sie benutzt (Dateien) und wann sie geladen wird (immer / erst bei Bedarf / nur Build / nur lokal) · Lizenz · bei kopierten Dateien **SHA-256** · was geprüft wurde (lädt nichts von außen, keine Tracker, Größe) · Änderungen (am besten keine – sonst jede genau beschreiben) · wie man **aktualisiert** (Schritte und was danach zu testen ist) · wie man sie **entfernt** (was dann wegfällt, Rückfall).
+- **Erst prüfen, ob es ohne geht.** Wenig eigener Code ist oft besser als eine Bibliothek (`karte.js`, `netzwerk.js`, `badge3d.js` kommen ohne aus).
+- **Im Browser nur als unveränderte Kopie** in `assets/js/third-party/<name>/` mit `LICENSE` und `README.md` (dieselben Angaben in kurz), nie per CDN (Datenschutzversprechen im Impressum), erst bei Bedarf laden, ohne sie muss die Seite weiter funktionieren. Den Ordner nicht `vendor/` nennen – den ignorieren `.gitignore` und Jekyll.
+- **Jede Änderung an Abhängigkeiten** (neu, Update, entfernt) zusätzlich mit genauer Version im `CHANGELOG.md` und in der PR-Beschreibung; `DEPENDENCIES.md` im selben Commit aktualisieren (auch das Datum „Stand“).
+- **Offene Punkte** (z. B. nicht festgelegte Versionen) bleiben in `DEPENDENCIES.md` sichtbar, bis sie erledigt sind.
 
 ## Branches und Pull Requests
 

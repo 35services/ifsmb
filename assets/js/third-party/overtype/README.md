@@ -1,5 +1,7 @@
 # OverType (fremde Bibliothek, unverändert kopiert)
 
+Ausführlicher Eintrag mit Herkunft, Prüfungen, Aktualisieren und Entfernen: `DEPENDENCIES.md` im Hauptordner.
+
 Markdown-Editor für die Textfelder der Formulare (➕ neu, ✏️ bearbeiten) – `assets/js/neu.js` lädt ihn erst,
 wenn ein Formular mit Markdown-Feld aufgeht. Ohne ihn bleibt das normale Textfeld.
 

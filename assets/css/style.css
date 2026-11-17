@@ -1116,13 +1116,13 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
   .hm-cell { min-height: 0; }
 }
 
-/* Markdown-Editor in den Formularen (OverType, assets/js/bibliotheken/overtype/; assets/js/neu.js) */
-.form-md-kopf { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
-.form-md-schalter { padding: .15rem .55rem; font-size: .78rem; }
-.form-md-schalter[aria-pressed=true] { background: var(--accent); }
+/* Markdown-Editor in den Formularen (OverType, assets/js/third-party/overtype/; assets/js/neu.js) */
+.form-md-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.form-md-toggle { padding: .15rem .55rem; font-size: .78rem; }
+.form-md-toggle[aria-pressed=true] { background: var(--accent); }
 .form-md-editor { border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: var(--paper); }
 .form-md-editor:focus-within { outline: 3px solid var(--blue); outline-offset: 1px; }
-.form-md.ohne-werkzeugleiste .overtype-toolbar { display: none !important; } /* OverType setzt display: flex !important */
+.form-md.toolbar-hidden .overtype-toolbar { display: none !important; } /* OverType setzt display: flex !important */
 /* Werkzeugleiste umbrechen statt seitlich scrollen (OverType: overflow-x auto !important) */
 .form-md .overtype-toolbar { flex-wrap: wrap !important; overflow-x: visible !important; row-gap: 2px !important; }
 
