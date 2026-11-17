@@ -7,6 +7,8 @@ start: 2026-11-15
 zeitraum: seit November 2026
 event_tag: nonplanar
 tags: [3d-drucker, bambu-lab-a1-mini, 35services]
+verwandt:
+  - impasto
 team:
   - falko-richter
   - alexander-augenrahmen
@@ -17,6 +19,11 @@ verlinkt:
   - /todos/#falko-richter/non-planar-slicing
   - /ausstattung/35services-bambu-lab-a1-mini/
 updates:
+  - datum: 2026-11-17
+    text: |-
+      **Das Werkzeug hat jetzt einen Namen:** Aus dem Arbeitstitel „Non-Planar GCoder" ist **Impasto** geworden; Version 0.4.0 liegt offen auf GitHub, mit eigener Projektseite: [Impasto – Farbe auf fertige 3D-Drucke](/projekte/impasto/).
+
+      Neben dem Namen ist einiges dazugekommen: eine Kollisionsprüfung gegen Kopfprofile, echte Prioritätsregeln bei überlappenden Elementen, ein Wipe beim Rückzug gegen Oozing, ein Schrägen-Ausgleich und ein Warp-Ausgleich, der die Düse über einem verzogenen Bauteil nicht schleifen lässt.
   - datum: 2026-11-15
     text: |-
       **Eigener Prozess für nachträglich angepassten G-Code:** Aus verschiedenen Quellen aus dem Netz, seinen eigenen Vorlieben und den Funktionen, die er braucht, hat [Alexander](/team/alexander-augenrahmen/) einen eigenen Prozess entwickelt, um G-Code im Nachhinein anzupassen („Non-Planar GCoder“). Damit behält man die gewohnte Qualität und den normalen Druckprozess aus Bambu Studio – plus optional eine **nonplanare Deckschicht (Top Layer)** auf der gewölbten Oberfläche.
