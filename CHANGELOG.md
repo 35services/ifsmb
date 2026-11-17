@@ -25,6 +25,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ### Geändert
 
+- **Regel zum Maskieren von E-Mail-Adressen verschärft (CLAUDE.md):** E-Mail-Adressen nie im Klartext – auch nicht in `_data/*.yml`, Front Matter, `.pages.yml`-Beispielen, Alt-Texten oder `mailto:`-Links; nur `.obf-mail` mit base64 bzw. `*_b64`-Felder plus maskierter Anzeige.
 - **Englische Namen im Code von Badge und ✏️-Formular** (nach der neuen Regel): die Quelltexte für das ✏️-Formular liegen jetzt unter `/source/` statt `/quelltext/` (`_plugins/source_files.rb`), `_includes/edit-buttons.html`, `_scripts/edit_examples.js`, im Badge-Ordner `export_colored.py`, `wordmark_from_svg.py`, `ifsmb-wordmark.scad` (Parameter `width`, `part = "all"/"yellow"/"black"`); Bezeichner und Kommentare in `badge3d.js`, den Badge-Skripten und dem ✏️-Teil von `neu.js`/`formular.js` englisch. Für Besucher*innen ändert sich nichts; die erzeugten Badge-Dateien sind byte-gleich.
 - `DATENSTRUKTUR.md` heißt jetzt **`DATA_STRUCTURES.md`** (Dateinamen sind englisch, der Inhalt bleibt vorerst deutsch).
 - **Regel in `CLAUDE.md`:** Quellcode ist Englisch – auch Ordner- und Dateinamen und Bezeichner, nicht nur Kommentare; deutsch (oder in anderen Sprachen) heißen nur Inhalte. Neuer Code nach dieser Regel, ältere deutsche Namen werden separat aufgeräumt.
