@@ -8,7 +8,7 @@ zeitraum: seit Oktober 2026
 event_tag: macro-lens
 tags: [macro-lens, ernährung, android]
 team:
-  - alexander-augenrahmen
+  - alexander-riedel
 image: /assets/images/projekte/macro-lens/01.png
 updates:
   - datum: 2026-10-18

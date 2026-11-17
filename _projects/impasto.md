@@ -8,7 +8,7 @@ zeitraum: seit November 2026
 event_tag: impasto
 tags: [impasto, nonplanar, 3d-drucker, bambu-lab-a1-mini]
 team:
-  - alexander-augenrahmen
+  - alexander-riedel
 verwandt:
   - nonplanarer-druck
 verlinkt:

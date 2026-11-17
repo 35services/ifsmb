@@ -8,7 +8,7 @@ zeitraum: seit November 2026
 event_tag: proprinter
 tags: [proprinter, nadeldrucker, retro, altrechner]
 team:
-  - alexander-augenrahmen
+  - alexander-riedel
 verwandt:
   - monocell
 verlinkt:

@@ -8,7 +8,7 @@ zeitraum: seit Oktober 2026
 event_tag: monocell
 tags: [monocell, retro, linux, altrechner]
 team:
-  - alexander-augenrahmen
+  - alexander-riedel
 image: /assets/images/projekte/monocell/01.png
 updates:
   - datum: 2026-11-16

@@ -11,7 +11,7 @@ verwandt:
   - impasto
 team:
   - falko-richter
-  - alexander-augenrahmen
+  - alexander-riedel
   - jan
 partners:
   - 35 services e. V.
@@ -26,7 +26,7 @@ updates:
       Neben dem Namen ist einiges dazugekommen: eine Kollisionsprüfung gegen Kopfprofile, echte Prioritätsregeln bei überlappenden Elementen, ein Wipe beim Rückzug gegen Oozing, ein Schrägen-Ausgleich und ein Warp-Ausgleich, der die Düse über einem verzogenen Bauteil nicht schleifen lässt.
   - datum: 2026-11-15
     text: |-
-      **Eigener Prozess für nachträglich angepassten G-Code:** Aus verschiedenen Quellen aus dem Netz, seinen eigenen Vorlieben und den Funktionen, die er braucht, hat [Alexander](/team/alexander-augenrahmen/) einen eigenen Prozess entwickelt, um G-Code im Nachhinein anzupassen („Non-Planar GCoder“). Damit behält man die gewohnte Qualität und den normalen Druckprozess aus Bambu Studio – plus optional eine **nonplanare Deckschicht (Top Layer)** auf der gewölbten Oberfläche.
+      **Eigener Prozess für nachträglich angepassten G-Code:** Aus verschiedenen Quellen aus dem Netz, seinen eigenen Vorlieben und den Funktionen, die er braucht, hat [Alexander](/team/alexander-riedel/) einen eigenen Prozess entwickelt, um G-Code im Nachhinein anzupassen („Non-Planar GCoder“). Damit behält man die gewohnte Qualität und den normalen Druckprozess aus Bambu Studio – plus optional eine **nonplanare Deckschicht (Top Layer)** auf der gewölbten Oberfläche.
 
       ![3D-Vorschau auf dem Druckbett: schwarze Brillenfassung auf Baumstützen mit weißen, gewellten nonplanaren Bahnen auf der gewölbten Oberseite](/assets/images/projekte/nonplanarer-druck/01.jpg)
       ![Nahaufnahme der gedruckten schwarzen Brillenfassung: die weißen, geschwungenen Linien folgen als nonplanare Deckschicht der Wölbung des Rahmens](/assets/images/projekte/nonplanarer-druck/02.jpg)
@@ -37,7 +37,7 @@ image: /assets/video/projekte/nonplanarer-druck/01.jpg
 uuid: 8ec30934-7816-47da-ac7e-7e7407465672
 ---
 
-Ein neues privates Projekt von [Alexander von augenrahmen.de]({{ '/team/alexander-augenrahmen/' | relative_url }}) – und [Falko]({{ '/team/falko-richter/' | relative_url }}) und [Jan]({{ '/team/jan/' | relative_url }}) sind auch total interessiert. Der [Bambu Lab A1 mini]({{ '/ausstattung/35services-bambu-lab-a1-mini/' | relative_url }}) von [35services e. V.]({{ '/partner/35services/' | relative_url }}) ist ideal für dieses Experiment. Wir wollen **nonplanaren 3D-Druck** ergründen. Normalerweise druckt ein 3D-Drucker in flachen Schichten übereinander. Beim nonplanaren Druck folgen die Schichten dagegen der Form des Bauteils – gewölbte Oberflächen werden glatt statt treppenförmig.
+Ein neues privates Projekt von [Alexander Riedel]({{ '/team/alexander-riedel/' | relative_url }}) – und [Falko]({{ '/team/falko-richter/' | relative_url }}) und [Jan]({{ '/team/jan/' | relative_url }}) sind auch total interessiert. Der [Bambu Lab A1 mini]({{ '/ausstattung/35services-bambu-lab-a1-mini/' | relative_url }}) von [35services e. V.]({{ '/partner/35services/' | relative_url }}) ist ideal für dieses Experiment. Wir wollen **nonplanaren 3D-Druck** ergründen. Normalerweise druckt ein 3D-Drucker in flachen Schichten übereinander. Beim nonplanaren Druck folgen die Schichten dagegen der Form des Bauteils – gewölbte Oberflächen werden glatt statt treppenförmig.
 
 Alexander hat das schon ausprobiert: Er druckt **zweifarbig nonplanar** und experimentiert weiter. Im Video entsteht eine Brillenfassung – der schwarze Unterbau steht auf Baumstützen, die weiße Oberfläche wird nonplanar obendrauf gedruckt und folgt der Wölbung der Brille.
 

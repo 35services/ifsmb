@@ -9,7 +9,7 @@ ort: Berlin-Moabit
 event_tag: augenrahmen
 tags: [augenrahmen, 3d-drucker, pha]
 team:
-  - alexander-augenrahmen
+  - alexander-riedel
 verlinkt:
   - /projekte/3d-druck-ag-ktg/
   - /projekte/3d-druck-ag-rosalind-franklin-gymnasium/
@@ -48,8 +48,8 @@ Seit Herbst 2026 ist das Produkt am Markt. Wer eine Fassung anschauen möchte, k
 
 Im Oktober 2026 war Alexander zu Gast in den 3D-Druck-AGs der [Kurt-Tucholsky-Grundschule]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) und des [Rosalind-Franklin-Gymnasiums]({{ '/projekte/3d-druck-ag-rosalind-franklin-gymnasium/' | relative_url }}) und hat gezeigt, wie aus einem Drucker ein Gegenstand wird, den man wirklich trägt – inklusive der Frage, was passiert, wenn man draufsetzt.
 
-- [Alexander von augenrahmen.de zu Besuch in der 3D-Druck AG an der KTG]({{ '/kalender/2026-10-05-augenrahmen-zu-besuch-in-der-ag/' | relative_url }})
-- [Alexander von augenrahmen.de zu Besuch in der 3D-Druck AG am Rosalind-Franklin-Gymnasium]({{ '/kalender/2026-10-06-augenrahmen-rosalind/' | relative_url }})
+- [Alexander Riedel zu Besuch in der 3D-Druck AG an der KTG]({{ '/kalender/2026-10-05-augenrahmen-zu-besuch-in-der-ag/' | relative_url }})
+- [Alexander Riedel zu Besuch in der 3D-Druck AG am Rosalind-Franklin-Gymnasium]({{ '/kalender/2026-10-06-augenrahmen-rosalind/' | relative_url }})
 
 ## Was noch offen ist
 
