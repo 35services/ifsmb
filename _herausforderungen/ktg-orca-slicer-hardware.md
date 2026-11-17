@@ -5,6 +5,8 @@ art: problem   # aufgabe, problem oder frage
 status: offen   # offen, in-arbeit oder geloest
 seit: 2026-09-01   # seit wann die Herausforderung besteht
 geloest_am:   # Datum, wenn gelöst
+wichtig: true   # Eisenhower-Matrix: true/false
+dringend: true   # true/false – wichtig+dringend = sofort, nur wichtig = einplanen, nur dringend = abgeben, keins = später
 team: [falko-richter, mr-e, gregor-dill]   # Team-Kürzel der Zuständigen – eine oder mehrere Personen
 projekte: []   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: []   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt

@@ -494,6 +494,13 @@ content:
       - name: geloest_am
         label: Gelöst am
         type: date
+      - name: wichtig
+        label: Wichtig (Eisenhower-Matrix)
+        type: boolean
+      - name: dringend
+        label: Dringend (Eisenhower-Matrix)
+        description: wichtig + dringend = sofort erledigen, nur wichtig = einplanen, nur dringend = abgeben, keins = später
+        type: boolean
       - name: team
         label: Zuständig (Team-Kürzel, eine oder mehrere Personen)
         type: string

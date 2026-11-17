@@ -1085,6 +1085,37 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
 .neu-vorschau mark.neu-geaendert { background: #fff1a8; color: inherit; border-radius: 2px; box-shadow: -.3rem 0 0 #fff1a8, .3rem 0 0 #fff1a8; }
 [data-senden]:disabled { opacity: .5; cursor: not-allowed; }
 
+/* Eisenhower matrix of challenges (/herausforderungen/): columns dringend / nicht dringend, rows wichtig / nicht wichtig.
+   Own hm-* classes so the todo matrix (.todos-*) stays independent. */
+.hm-matrix { display: grid; grid-template-columns: 2rem 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: .6rem; margin: 1rem 0 1.5rem; }
+.hm-axis { font-family: var(--mono); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }
+.hm-axis-col { text-align: center; padding-bottom: .1rem; }
+.hm-axis-row { display: flex; align-items: center; justify-content: center; }
+.hm-axis-row span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.hm-cell { border: 2px solid var(--ink); border-radius: var(--radius); padding: .8rem 1rem; box-shadow: 3px 3px 0 var(--ink); min-height: 8rem; scroll-margin-top: 1rem; }
+.hm-q1 { background: #ffd9d0; }
+.hm-q2 { background: #fff4c2; }
+.hm-q3 { background: #dbe6ff; }
+.hm-q4 { background: #eeeae1; }
+.hm-title { font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: .4rem; }
+.hm-count { margin-left: auto; font-family: var(--mono); font-size: .8rem; background: var(--paper); border: 1.5px solid var(--ink); border-radius: 999px; padding: 0 .5rem; }
+.neu-btn-klein { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; font-size: .8rem; text-decoration: none; background: var(--paper); border: 1.5px solid var(--ink); border-radius: 999px; box-shadow: 2px 2px 0 var(--ink); transition: transform .1s, box-shadow .1s; }
+.neu-btn-klein:hover, .neu-btn-klein:focus-visible { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.hm-sub { font-family: var(--mono); font-size: .75rem; color: var(--ink-soft); margin: .15rem 0 .6rem; }
+.hm-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+.hm-list li { background: var(--paper); border: 1.5px solid var(--ink); border-radius: 8px; padding: .45rem .6rem; }
+.hm-list a { font-weight: 700; }
+.hm-summary { display: block; font-size: .9rem; margin-top: .1rem; }
+.hm-meta { display: block; font-size: .8rem; color: var(--ink-soft); margin-top: .2rem; }
+.hm-meta .badge { font-size: .65rem; padding: 0 .35rem; }
+.hm-empty { color: var(--muted); margin: 0; }
+.hm-badge { display: inline-block; font-size: .75rem; font-weight: 700; padding: .1rem .45rem; border-radius: 6px; border: 1.5px solid var(--ink); }
+@media (max-width: 560px) {
+  .hm-matrix { grid-template-columns: 1fr; grid-template-rows: none; }
+  .hm-corner, .hm-axis { display: none; }
+  .hm-cell { min-height: 0; }
+}
+
 /* Markdown-Editor in den Formularen (OverType, assets/js/bibliotheken/overtype/; assets/js/neu.js) */
 .form-md-kopf { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
 .form-md-schalter { padding: .15rem .55rem; font-size: .78rem; }

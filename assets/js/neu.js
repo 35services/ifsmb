@@ -176,6 +176,8 @@ var NeuFormular = (function () {
         [auswahl("art", "Art", [["frage", "❓ Frage"], ["aufgabe", "📋 Aufgabe"], ["problem", "⚠️ Problem"]]),
           auswahl("status", "Status", [["offen", "Offen"], ["in-arbeit", "In Arbeit"], ["geloest", "Gelöst"]]),
           datum("seit", "Seit", { standard: F.heute })],
+        [haken("wichtig", "Wichtig", { hilfe: "allein 📌 einplanen, mit dringend 🔥 sofort" }),
+          haken("dringend", "Dringend", { hilfe: "allein 🤝 abgeben, keins von beiden 💤 später" })],
         leute("team", "👥 Zuständig"),
         projekte("projekte", "🔧 Projekte"),
         stichworte(),

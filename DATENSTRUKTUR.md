@@ -54,6 +54,8 @@ Die Zielseite zeigt die Verbindung ebenfalls an.
  │ team      ──► PERSON (zustän-  │      Teamprofil listet „Herausforderungen“
  │               dig, Liste)      │
  │ verlinkt  ──► jede Seite       │      Termine, Geräte, Beiträge, Partner …
+ │ wichtig + dringend ──► MATRIX  │      Eisenhower auf /herausforderungen/:
+ │                                │      sofort / einplanen / abgeben / später
  └────────────────────────────────┘
  ┌─ PERSON ───────────────────────┐      └────────────────────────────────┘
  │ verlinkt       ──► jede Seite  │      ┌─ PARTNER ──────────────────────┐
