@@ -211,3 +211,58 @@ class TodoFormatTest < Minitest::Test
     end
   end
 end
+
+# "✏️ Bearbeiten" forms against every real page (_scripts/bearbeiten_beispiele.js):
+#   - opening and saving without changes gives the same bytes,
+#   - after changing title, a list field and the text, Jekyll reads the new values and every other key is unchanged.
+class BearbeitenTest < Minitest::Test
+  def ergebnisse
+    @@ergebnisse ||= begin
+      out, err, status = Open3.capture3("node", File.join(ROOT, "_scripts/bearbeiten_beispiele.js"))
+      raise "bearbeiten_beispiele.js ist fehlgeschlagen:\n#{err}" unless status.success?
+      JSON.parse(out)
+    end
+  end
+
+  def test_es_gibt_seiten_zum_bearbeiten
+    assert_operator ergebnisse.size, :>, 50
+  end
+
+  def test_ohne_aenderung_bleibt_die_datei_gleich
+    ergebnisse.each do |r|
+      refute r["ohne_front_matter"], "#{r['pfad']}: kein Front Matter"
+      assert r["unveraendert"], "#{r['pfad']}: Öffnen und Speichern ohne Änderung verändert die Datei"
+    end
+  end
+
+  def test_kommentar_hinter_einem_wert_bleibt
+    quelle = "---\ntitle: Test\nstatus: offen   # offen, in-arbeit oder geloest\nart: frage\n---\n\nText\n"
+    js = "const N=require('./assets/js/neu.js');process.stdout.write(N.bearbeitet('herausforderung',#{quelle.to_json},{status:'in-arbeit'}).inhalt)"
+    out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
+    assert status.success?, err
+    assert_equal quelle.sub("status: offen ", "status: in-arbeit "), out
+  end
+
+  def test_alle_formularfelder_sind_lesbar
+    ergebnisse.each { |r| assert_empty r["roh"], "#{r['pfad']}: Felder nur auf GitHub bearbeitbar: #{r['roh'].join(', ')}" }
+  end
+
+  def test_aenderungen_kommen_an_und_der_rest_bleibt
+    ergebnisse.each do |r|
+      alt, = Daten.front_matter(r["original"].gsub("\r\n", "\n"))
+      neu, text = Daten.front_matter(r["geaendert"])
+      a = r["aenderung"]
+      assert_equal a["title"], neu["title"], "#{r['pfad']}: Titel" if a["title"]
+      if r["liste"]
+        assert_equal a[r["liste"]], Array(neu[r["liste"]]).map(&:to_s), "#{r['pfad']}: Liste #{r['liste']}"
+      end
+      assert_equal a["text"].strip, text.strip, "#{r['pfad']}: Text"
+      geaendert = ["title", r["liste"]].compact
+      (alt.keys - geaendert).each do |k|
+        msg = "#{r['pfad']}: Feld #{k} hat sich verändert"
+        alt[k].nil? ? assert_nil(neu[k], msg) : assert_equal(alt[k], neu[k], msg)
+      end
+      assert_empty neu.keys - alt.keys - geaendert, "#{r['pfad']}: neue Felder"
+    end
+  end
+end

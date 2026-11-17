@@ -97,7 +97,7 @@
   {% if site.repository and page.path %}
   {%- assign schmale_layouts = "post,project,member,event,equipment,press" | split: "," -%}
   <div class="container edit-page{% if schmale_layouts contains page.layout %} narrow{% endif %}" data-pagefind-ignore>
-    <a class="btn btn-ghost btn-small" href="https://github.com/{{ site.repository }}/edit/{{ site.branch | default: 'main' }}/{{ page.path }}" target="_blank" rel="noopener" title="Diese Seite auf GitHub bearbeiten: {{ page.path }}">✏️ <code>{{ page.path }}</code></a>
+    {% include bearbeiten-knopf.html %}
     {% include neu-buttons.html %}
   </div>
   {% endif %}

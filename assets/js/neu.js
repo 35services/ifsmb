@@ -5,6 +5,12 @@
 // The form writes the new file (front matter + Markdown, or plain YAML), shows it live, keeps a draft in
 // localStorage and creates it through GitHub's "new file" editor (→ pull request).
 // NeuFormular.datei(typ, werte) builds a file without DOM – used by the tests (_scripts/test_formulare.rb).
+//
+// "✏️ Bearbeiten" (_includes/bearbeiten-knopf.html) opens the same form for an existing page: NeuFormular.bearbeiten(link)
+// loads the unprocessed source from /quelltext/<pfad> (_plugins/quelltexte.rb), fills the fields and writes back only
+// what was changed – every other line (unknown fields, comments, galleries, formatting) stays byte for byte.
+// GitHub's edit page can't be prefilled, so saving copies the file and opens the editor to paste it.
+// NeuFormular.bearbeitet(typ, quelle, aenderungen) does the same without DOM (tests).
 var NeuFormular = (function () {
   "use strict";
   var F = typeof Formular !== "undefined" ? Formular : require("./formular.js");
@@ -237,7 +243,8 @@ var NeuFormular = (function () {
   // ---------- state ----------
   var STORE = "ifsmb-neu:";
   var d = null, form, links, mehrBox, vorschau, socialBox, socialImg, socialTitel, socialBeschr, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
-  var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder }
+  var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder, bearbeiten }
+  var schritteEl, verwerfenBtn, sendenBtn;
 
   function alleFelder(schema) {
     return schema.felder.reduce(function (a, z) { return a.concat(z); }, []).concat([{ name: "datei", intern: true, folgt: schema.datei }]);
@@ -268,7 +275,7 @@ var NeuFormular = (function () {
     }).map(function (f) { return f.name; });
   }
   function speichereEntwurf() {
-    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt })); } catch (e) { /* storage blocked */ }
+    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt, quelle: aktiv.bearbeiten && aktiv.bearbeiten.quelle })); } catch (e) { /* storage blocked */ }
   }
   function ladeEntwurf() {
     try { return JSON.parse(localStorage.getItem(aktiv.schluessel) || "null"); } catch (e) { return null; }
@@ -296,7 +303,84 @@ var NeuFormular = (function () {
     }
     return schema.format === "yaml" ? F.yaml(paare) + "\n" : F.frontMatter(paare, w.text);
   }
-  function dateiInhalt() { return dateiText(aktiv.schema, aktiv.w); }
+  function dateiInhalt() { return aktiv.bearbeiten ? bearbeiteterText(aktiv.schema, aktiv.bearbeiten, aktiv.w) : dateiText(aktiv.schema, aktiv.w); }
+
+  // ---------- editing an existing file ----------
+  function gleich(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+  // value from the file → value of the form field
+  function alsFeldwert(f, v) {
+    if (f.typ === "chips") return Array.isArray(v) ? v.map(String) : F.leer(v) ? [] : [String(v)];
+    if (f.typ === "haken") return v === true || v === "true";
+    if (Array.isArray(v) || typeof v === "boolean") return undefined;
+    v = String(v);
+    if (f.typ === "zeit") { var m = v.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?/); return m ? m[1] + "T" + (m[2] || "00:00") : v; }
+    if (f.typ === "datum") return v.slice(0, 10);
+    if (f.typ === "langtext" || f.typ === "text" || f.typ === "adresse") return v.replace(/\n$/, "");
+    return v;
+  }
+  // Reads a source file for a type. → { quelle, z (blocks), w0 (values as loaded), roh ({ name: true } for fields the
+  // form can't show, e.g. lists of objects) } or null if the file has no front matter.
+  function liesQuelle(schema, quelle, pfad) {
+    var z = F.zerlegeDatei(quelle);
+    if (!z) return null;
+    var felder = alleFelder(schema), w = anfangswerte(schema), roh = {};
+    felder.forEach(function (f) { if (f.typ) w[f.name] = f.typ === "chips" ? [] : f.typ === "haken" ? false : ""; });
+    z.bloecke.forEach(function (b) {
+      var f = b.key && felder.filter(function (x) { return x.name === b.key && x.typ && !x.intern; })[0];
+      if (!f) return;
+      var v = F.yamlWert(b.raw), fw = v === undefined ? undefined : alsFeldwert(f, v);
+      if (fw === undefined) roh[f.name] = true; else w[f.name] = fw;
+      if (b.key === "uuid") w.uuid = v;
+    });
+    z.bloecke.forEach(function (b) { if (b.key === "uuid") w.uuid = F.yamlWert(b.raw); });
+    w.text = z.rest.replace(/^\n+/, "").replace(/\s+$/, "");
+    w.datei = pfad ? pfad.split("/").pop() : "";
+    return { quelle: quelle, z: z, w0: JSON.parse(JSON.stringify(w)), roh: roh };
+  }
+  // The file with the changed fields: unchanged blocks stay as they were, changed ones are written anew (or removed
+  // when emptied), new fields go to the end of the front matter. The body only changes when the text was edited.
+  function bearbeiteterText(schema, b, w) {
+    var felder = alleFelder(schema).filter(function (f) { return f.typ && !f.intern; }), gesehen = {};
+    function zeile(f) { return F.yaml([[f.name, f.ausgabe ? f.ausgabe(w[f.name], w) : w[f.name]]]); }
+    var bloecke = [];
+    b.z.bloecke.forEach(function (bl) {
+      var f = bl.key && felder.filter(function (x) { return x.name === bl.key; })[0];
+      if (f) gesehen[f.name] = true;
+      if (!f || b.roh[f.name] || gleich(w[f.name], b.w0[f.name])) { bloecke.push(bl.raw); return; }
+      var neu = zeile(f), leerzeilen = (bl.raw.match(/(\n\s*)*$/) || [""])[0];
+      // keep a trailing comment of a one-line value ("status: offen   # offen, in-arbeit oder geloest")
+      var erste = bl.raw.split("\n")[0], ohne = erste.replace(/\s+#[^"'\n]*$/, "");
+      if (neu && neu.indexOf("\n") < 0 && ohne !== erste && gleich(F.yamlWert(ohne), F.yamlWert(erste))) neu += erste.slice(ohne.length);
+      if (neu) bloecke.push(neu + leerzeilen); else if (leerzeilen.length > 1) bloecke.push(leerzeilen.slice(1));
+    });
+    felder.forEach(function (f) {
+      if (gesehen[f.name] || gleich(w[f.name], b.w0[f.name])) return;
+      var neu = zeile(f);
+      if (!neu) return;
+      var i = bloecke.length; // before a trailing uuid
+      if (b.z.bloecke.length && b.z.bloecke[b.z.bloecke.length - 1].key === "uuid") i = bloecke.length - 1;
+      bloecke.splice(i, 0, neu);
+    });
+    var rest = w.text === b.w0.text ? b.z.rest : "\n" + (String(w.text).trim() ? "\n" + String(w.text).trim() + "\n" : "");
+    return F.setzeDatei(b.z, bloecke, rest);
+  }
+  // Without DOM: the file after changing some values (tests). → { inhalt, roh, werte }
+  function bearbeitet(typ, quelle, aenderungen, pfad) {
+    var schema = TYPEN[typ], b = liesQuelle(schema, quelle, pfad);
+    if (!b) return null;
+    var w = Object.assign(JSON.parse(JSON.stringify(b.w0)), aenderungen || {});
+    return { inhalt: bearbeiteterText(schema, b, w), roh: Object.keys(b.roh), werte: b.w0 };
+  }
+  // Lines of neu that are not in alt (longest common subsequence) → array of booleans
+  function geaenderteZeilen(alt, neu) {
+    var a = alt.split("\n"), n = neu.split("\n"), L = [];
+    for (var i = a.length; i >= 0; i--) { L[i] = []; for (var j = n.length; j >= 0; j--) L[i][j] = i === a.length || j === n.length ? 0 : a[i] === n[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]); }
+    var r = n.map(function () { return true; }), x = 0, y = 0;
+    while (x < a.length && y < n.length) {
+      if (a[x] === n[y]) { r[y] = false; x++; y++; } else if (L[x + 1][y] >= L[x][y + 1]) x++; else y++;
+    }
+    return r;
+  }
   // Without DOM: the file a form of this type would create from these values (as if typed in by hand).
   function datei(typ, werte) {
     var schema = TYPEN[typ], w = anfangswerte(schema), beruehrt = {};
@@ -317,12 +401,10 @@ var NeuFormular = (function () {
       + '<details class="neu-social" open><summary>Social-Media-Vorschau (WhatsApp, Signal, X …)</summary>'
       + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
       + '<div class="neu-social-text"><span class="neu-social-domain">ifsmb.de</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
-      + '<ol class="neu-schritte small"><li>„Auf GitHub anlegen“ kopiert die Datei und öffnet GitHub mit dem fertigen Inhalt.</li>'
-      + "<li>Dort „Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
-      + "<li>Nach dem Merge erscheint die Seite nach ein paar Minuten auf der Website.</li></ol></aside></div>"
-      + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen>🗑️ Neu anfangen</button>'
+      + '<ol class="neu-schritte small"></ol></aside></div>'
+      + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen></button>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
-      + '<button type="submit" class="btn">📋 Auf GitHub anlegen</button></div></form>');
+      + '<button type="submit" class="btn" data-senden></button></div></form>');
     form = d.querySelector("form");
     links = d.querySelector(".neu-links > .neu-felder");
     mehrBox = d.querySelector(".neu-mehr");
@@ -336,27 +418,36 @@ var NeuFormular = (function () {
     status = d.querySelector("[data-status]");
     hinweisEl = d.querySelector(".neu-hinweis");
     vorlageLink = d.querySelector(".neu-vorlage");
+    schritteEl = d.querySelector(".neu-schritte");
+    verwerfenBtn = d.querySelector("[data-verwerfen]");
+    sendenBtn = d.querySelector("[data-senden]");
 
     form.addEventListener("input", aenderung);
     form.addEventListener("change", aenderung);
     // Enter in a one-line field must not send the form
     form.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT" && e.target.type !== "submit") e.preventDefault(); });
     form.addEventListener("submit", function (e) { e.preventDefault(); anlegen(); });
-    d.querySelector("[data-verwerfen]").addEventListener("click", function () {
+    verwerfenBtn.addEventListener("click", function () {
       loescheEntwurf();
-      aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe); aktiv.beruehrt = {};
+      if (aktiv.bearbeiten) { aktiv.w = JSON.parse(JSON.stringify(aktiv.bearbeiten.w0)); aktiv.beruehrt = alleBeruehrt(); }
+      else { aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe); aktiv.beruehrt = {}; }
       folge(); baueFelder(); zeigeVorschau();
-      status.textContent = "Neu angefangen.";
+      status.textContent = aktiv.bearbeiten ? "Änderungen verworfen." : "Neu angefangen.";
     });
     d.addEventListener("close", function () { if (aktiv && aktiv.gesendet) loescheEntwurf(); aktiv = null; });
   }
 
+  // in edit mode a required field only stays required if the file had a value (old posts without date: …)
+  function pflicht(f) { return f.pflicht && !(aktiv.bearbeiten && F.leer(aktiv.bearbeiten.w0[f.name])); }
   function baueFeld(f) {
+    if (aktiv.bearbeiten && aktiv.bearbeiten.roh[f.name]) {
+      return F.el('<label class="form-feld"><span>' + esc(f.label) + '</span><input type="text" disabled value="(in der Datei als Liste/Objekt – bitte auf GitHub bearbeiten)"></label>');
+    }
     var w = aktiv.w[f.name], hilfe = f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "";
-    var label = esc(f.label) + (f.pflicht ? ' <span class="form-pflicht" aria-hidden="true">*</span>' : "");
+    var label = esc(f.label) + (pflicht(f) ? ' <span class="form-pflicht" aria-hidden="true">*</span>' : "");
     if (f.typ === "chips") {
       return F.chipFeld({
-        label: f.label + (f.pflicht ? " *" : ""), quelle: f.quelle, placeholder: f.platzhalter, hilfe: f.hilfe, einzeln: f.einzeln,
+        label: f.label + (pflicht(f) ? " *" : ""), quelle: f.quelle, placeholder: f.platzhalter, hilfe: f.hilfe, einzeln: f.einzeln,
         werte: function () { return aktiv.w[f.name]; },
         setze: function (a) { aktiv.w[f.name] = a; nachAenderung(); }
       });
@@ -364,7 +455,7 @@ var NeuFormular = (function () {
     if (f.typ === "haken") {
       return F.el('<label class="form-check"><input type="checkbox" name="' + f.name + '"' + (w ? " checked" : "") + "><span>" + label + "</span>" + hilfe + "</label>");
     }
-    var attr = ' name="' + f.name + '"' + (f.pflicht ? " required" : "") + (f.platzhalter ? ' placeholder="' + esc(f.platzhalter) + '"' : "");
+    var attr = ' name="' + f.name + '"' + (pflicht(f) ? " required" : "") + (f.platzhalter ? ' placeholder="' + esc(f.platzhalter) + '"' : "");
     var eingabe;
     if (f.typ === "auswahl") {
       eingabe = "<select" + attr + ">" + f.optionen.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === w ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join("") + "</select>";
@@ -433,7 +524,13 @@ var NeuFormular = (function () {
       .replace(/[#*_>`~]/g, "").split("\n").map(function (z) { return z.trim(); }).filter(Boolean)[0] || "";
   }
   function zeigeVorschau() {
-    vorschau.textContent = dateiInhalt();
+    var text = dateiInhalt();
+    if (aktiv.bearbeiten) {
+      var markiert = geaenderteZeilen(aktiv.bearbeiten.quelle.replace(/\r\n/g, "\n"), text), zahl = markiert.filter(Boolean).length;
+      vorschau.innerHTML = text.split("\n").map(function (z, i) { return markiert[i] ? '<mark class="neu-geaendert">' + esc(z || " ") + "</mark>" : esc(z); }).join("\n");
+      sendenBtn.disabled = !zahl;
+      sendenBtn.title = zahl ? "" : "Noch nichts geändert";
+    } else vorschau.textContent = text;
     if (!socialBox) return;
     var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
     socialBox.hidden = !istSeite;
@@ -445,13 +542,21 @@ var NeuFormular = (function () {
   }
 
   function fehlt() {
-    var leer = aktiv.felder.filter(function (f) { return f.pflicht && f.typ === "chips" && !aktiv.w[f.name].length; })[0];
+    var leer = aktiv.felder.filter(function (f) { return pflicht(f) && f.typ === "chips" && !aktiv.w[f.name].length; })[0];
     if (leer) return "Bitte „" + leer.label.replace(/^\W+\s*/, "") + "“ ausfüllen.";
     return aktiv.schema.pruefe && aktiv.schema.pruefe(aktiv.w);
   }
   function anlegen() {
     var fehler = fehlt();
     if (fehler) { status.textContent = "⚠️ " + fehler; return; }
+    if (aktiv.bearbeiten) {
+      var neuText = dateiInhalt();
+      if (neuText === aktiv.bearbeiten.quelle) { status.textContent = "Noch nichts geändert."; return; }
+      F.kopierenUndOeffnen(neuText, F.githubEdit(aktiv.pfad), status, function () { getSelection().selectAllChildren(vorschau); });
+      setTimeout(function () { if (/^Kopiert/.test(status.textContent)) status.textContent = "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."; }, 50);
+      aktiv.gesendet = true;
+      return;
+    }
     var s = aktiv.schema, inhaltText = dateiInhalt(), datei = aktiv.w.datei.trim();
     var url = F.githubNeu(s.ordner, datei, inhaltText), zuLang = url.length > 8000;
     if (zuLang) url = F.githubNeu(s.ordner, datei);
@@ -459,6 +564,24 @@ var NeuFormular = (function () {
     if (zuLang) status.textContent = "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.";
     aktiv.gesendet = true;
   }
+
+  var SCHRITTE_NEU = '<li>„Auf GitHub anlegen“ kopiert die Datei und öffnet GitHub mit dem fertigen Inhalt.</li>'
+    + "<li>Dort „Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
+    + "<li>Nach dem Merge erscheint die Seite nach ein paar Minuten auf der Website.</li>";
+  var SCHRITTE_BEARBEITEN = "<li>„Auf GitHub speichern“ kopiert die geänderte Datei und öffnet sie im GitHub-Editor.</li>"
+    + "<li>Dort den ganzen Inhalt markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V).</li>"
+    + "<li>„Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
+    + "<li>Nach dem Merge ist die Änderung nach ein paar Minuten auf der Website.</li>";
+  function modus(bearbeiten) {
+    schritteEl.innerHTML = bearbeiten ? SCHRITTE_BEARBEITEN : SCHRITTE_NEU;
+    verwerfenBtn.textContent = bearbeiten ? "↩️ Änderungen verwerfen" : "🗑️ Neu anfangen";
+    sendenBtn.textContent = bearbeiten ? "📋 Auf GitHub speichern" : "📋 Auf GitHub anlegen";
+    sendenBtn.disabled = false; sendenBtn.title = "";
+    dateiInput.readOnly = !!bearbeiten;
+    d.querySelector(".neu-pfad").previousElementSibling.textContent = bearbeiten ? "Datei" : "Neue Datei";
+    vorlageLink.textContent = bearbeiten ? "Auf GitHub ansehen ↗" : "Vorlage mit allen Feldern ↗";
+  }
+  function alleBeruehrt() { var b = {}; aktiv.felder.forEach(function (f) { b[f.name] = true; }); return b; }
 
   // ---------- open ----------
   // link: an a[data-neu] from _includes/neu-button.html
@@ -474,6 +597,7 @@ var NeuFormular = (function () {
     if (entwurf) aktiv.beruehrt = entwurf.beruehrt || {};
     folge();
 
+    modus(false);
     d.titel("➕ " + (daten.label || schema.titel));
     hinweisEl.textContent = daten.hinweis || "";
     hinweisEl.hidden = !daten.hinweis;
@@ -488,6 +612,35 @@ var NeuFormular = (function () {
     F.ladeIndex();
   }
 
-  return { oeffnen: oeffnen, datei: datei, TYPEN: TYPEN, alleFelder: alleFelder };
+  // link: an a[data-bearbeiten] from _includes/bearbeiten-knopf.html, data = { typ, pfad, quelle }. → Promise
+  function bearbeiten(link) {
+    var daten = JSON.parse(link.getAttribute("data-bearbeiten")), schema = TYPEN[daten.typ];
+    if (!schema) return Promise.reject(new Error("typ"));
+    return fetch(daten.quelle, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (quelle) {
+      var b = liesQuelle(schema, quelle, daten.pfad);
+      if (!b) throw new Error("kein Front Matter");
+      if (!d) baueDialog();
+      var teile = daten.pfad.split("/");
+      aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), gesendet: false, bearbeiten: b, pfad: daten.pfad,
+        schluessel: "ifsmb-bearbeiten:" + daten.pfad };
+      aktiv.beruehrt = alleBeruehrt(); // nothing is derived while editing (file name, event_tag, end …)
+      var entwurf = ladeEntwurf(), passt = entwurf && entwurf.quelle === quelle;
+      aktiv.w = passt ? Object.assign(JSON.parse(JSON.stringify(b.w0)), entwurf.w) : JSON.parse(JSON.stringify(b.w0));
+      if (entwurf && !passt) loescheEntwurf(); // the file changed on GitHub since – old draft no longer fits
+      modus(true);
+      d.titel("✏️ " + schema.titel + " bearbeiten");
+      hinweisEl.textContent = "Änderungen an " + daten.pfad + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.";
+      hinweisEl.hidden = false;
+      vorlageLink.href = F.githubDatei(daten.pfad);
+      ordnerEl.textContent = teile.slice(0, -1).join("/") + "/";
+      baueFelder();
+      zeigeVorschau();
+      status.textContent = passt ? "Entwurf wiederhergestellt." : "";
+      if (!d.open) d.showModal();
+      F.ladeIndex();
+    });
+  }
+
+  return { oeffnen: oeffnen, bearbeiten: bearbeiten, datei: datei, bearbeitet: bearbeitet, TYPEN: TYPEN, alleFelder: alleFelder };
 })();
 if (typeof module !== "undefined") module.exports = NeuFormular;
