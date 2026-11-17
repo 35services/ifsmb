@@ -1,13 +1,11 @@
 ---
 title: "Kleine feierliche Eröffnung mit Netzwerktreffen des Makespace am Rosalind-Franklin-Gymnasium"
-start: 2027-01-01 00:00
-end: 2027-01-31 00:00
+start: 2027-01-19 16:00
+end: 2027-01-19 18:00
 tags: [rosalind-franklin-gym, junior1stein]
-all_day: true
-date_label: "Januar 2027 – genauer Termin folgt"
 location: "Rosalind-Franklin-Gymnasium, Turmstraße 75A, 10551 Berlin"
 location_url: https://rosalind-franklin-gymnasium.de/
-summary: Die 6 Drucker sind seit Beginn des Schuljahres im Einsatz, die 3D-Druck-AG läuft – im Januar feiern wir das mit Gästen.
+summary: Die 6 Drucker sind seit Beginn des Schuljahres im Einsatz, die 3D-Druck-AG läuft (an) – im Januar feiern wir das mit Gästen.
 team: [falko-richter, frieder-euteneuer]
 uuid: 9c813306-de63-4f75-81f0-0e2e76baf476
 ---
