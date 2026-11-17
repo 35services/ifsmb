@@ -31,7 +31,7 @@ var NeuFormular = (function () {
   function auswahl(name, label, optionen, x) { return feld("auswahl", name, label, Object.assign({ optionen: optionen, standard: optionen[0][0] }, x)); }
   function chips(name, label, quelle, x) { return feld("chips", name, label, Object.assign({ quelle: quelle }, x)); }
   function titel(platzhalter, x) { return text("title", "Titel", Object.assign({ pflicht: true, platzhalter: platzhalter, klasse: "form-feld-titel" }, x)); }
-  function inhalt(platzhalter, x) { return feld("langtext", "text", "Text (Markdown)", Object.assign({ intern: true, zeilen: 10, platzhalter: platzhalter }, x)); }
+  function inhalt(platzhalter, x) { return feld("langtext", "text", "Text (Markdown)", Object.assign({ intern: true, markdown: true, zeilen: 10, platzhalter: platzhalter }, x)); }
 
   // fields that many types share
   var stichworte = function (x) { return chips("tags", "🏷️ Stichworte", "stichworte", Object.assign({ platzhalter: "Stichwort suchen oder neu …" }, x)); };
@@ -183,7 +183,7 @@ var NeuFormular = (function () {
         persoenlich("Aus einem privaten Projekt im Team"),
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
         datum("geloest_am", "Gelöst am", { mehr: true }),
-        feld("langtext", "loesung", "Lösung (Markdown)", { mehr: true, zeilen: 4 }),
+        feld("langtext", "loesung", "Lösung (Markdown)", { mehr: true, markdown: true, zeilen: 4 }),
         socialBild()
       ]
     },
@@ -434,7 +434,8 @@ var NeuFormular = (function () {
       folge(); baueFelder(); zeigeVorschau();
       status.textContent = aktiv.bearbeiten ? "Änderungen verworfen." : "Neu angefangen.";
     });
-    d.addEventListener("close", function () { if (aktiv && aktiv.gesendet) loescheEntwurf(); aktiv = null; });
+    // "close" fires a moment after close(); if the dialog was opened again meanwhile, leave the new form alone
+    d.addEventListener("close", function () { if (d.open) return; if (aktiv && aktiv.gesendet) loescheEntwurf(); entferneEditoren(); aktiv = null; });
   }
 
   // in edit mode a required field only stays required if the file had a value (old posts without date: …)
@@ -469,6 +470,7 @@ var NeuFormular = (function () {
   }
 
   function baueFelder() {
+    entferneEditoren();
     var mehrFelder = mehrBox.querySelector(".neu-felder");
     links.innerHTML = ""; mehrFelder.innerHTML = "";
     aktiv.schema.felder.forEach(function (zeile) {
@@ -483,11 +485,76 @@ var NeuFormular = (function () {
     mehrBox.open = aktiv.felder.some(function (f) { return f.mehr && !F.leer(aktiv.w[f.name]); });
     dateiInput.value = aktiv.w.datei;
     aktiv.felder.forEach(function (f) { if (f.liste) fuelleListe(f.liste); });
+    markdownEditoren();
   }
   function fuelleListe(key) {
     F.ladeIndex().then(function (I) {
       if (document.getElementById("neu-liste-" + key)) return;
       d.insertAdjacentHTML("beforeend", '<datalist id="neu-liste-' + key + '">' + (I[key] || []).map(function (x) { return '<option value="' + esc(x) + '">'; }).join("") + "</datalist>");
+    });
+  }
+
+  // ---------- markdown editor ----------
+  // Fields with markdown: true get OverType (assets/js/bibliotheken/overtype/, MIT, copied unchanged – no external files),
+  // loaded on first use. Its textarea keeps the field's name, so input, preview and draft work as before; if the
+  // script can't load, the plain textarea stays. The toolbar can be switched off (🛠️) – off by default on phones,
+  // the choice is remembered in this browser.
+  var editoren = [], WERKZEUG = "ifsmb-werkzeugleiste";
+  var LABELS = {
+    toolbar: "Formatierung",
+    viewModes: { normal: "Bearbeiten", plain: "Nur Text", preview: "Vorschau" },
+    buttons: { bold: "Fett", italic: "Kursiv", strikethrough: "Durchgestrichen", code: "Code", link: "Link einfügen",
+      h1: "Überschrift 1", h2: "Überschrift 2", h3: "Überschrift 3", h4: "Überschrift 4", h5: "Überschrift 5", h6: "Überschrift 6",
+      bulletList: "Liste", orderedList: "Nummerierte Liste", taskList: "Aufgabenliste", outdent: "Ausrücken", indent: "Einrücken",
+      quote: "Zitat", upload: "Datei hochladen", viewMode: "Ansicht" }
+  };
+  function werkzeugleiste(an) {
+    if (an != null) { try { localStorage.setItem(WERKZEUG, an ? "1" : "0"); } catch (e) { /* storage blocked */ } return an; }
+    try { var v = localStorage.getItem(WERKZEUG); if (v != null) return v === "1"; } catch (e) { /* storage blocked */ }
+    return !(window.matchMedia && window.matchMedia("(max-width: 640px)").matches);
+  }
+  function entferneEditoren() {
+    editoren.forEach(function (e) { try { e.destroy(); } catch (x) { /* already gone */ } });
+    editoren = [];
+  }
+  function markdownEditoren() {
+    var fuer = aktiv, felder = aktiv.felder.filter(function (f) { return f.markdown && form.elements[f.name]; });
+    if (!felder.length || !window.ladeSkripte) return;
+    window.ladeSkripte(["bibliotheken/overtype/overtype.min.js"]).then(function () {
+      if (aktiv !== fuer || !window.OverType) return; // dialog closed or reopened meanwhile
+      felder.forEach(function (f) { macheEditor(f, fuer); });
+    }).catch(function () { /* plain textarea stays */ });
+  }
+  function macheEditor(f, fuer) {
+    var ta = form.elements[f.name];
+    if (!ta || ta.tagName !== "TEXTAREA") return;
+    var alt = ta.closest(".form-feld"), an = werkzeugleiste();
+    // a <div> instead of the <label>: clicks on the toolbar must not jump into the text
+    var feld = F.el('<div class="form-feld form-md' + (an ? "" : " ohne-werkzeugleiste") + '"><div class="form-md-kopf"><span>'
+      + esc(f.label) + '</span><button type="button" class="btn btn-ghost btn-small form-md-schalter" aria-pressed="' + an
+      + '" title="Werkzeugleiste ein- oder ausblenden">🛠️ <span class="form-md-schalter-text">Werkzeugleiste</span></button></div>'
+      + '<div class="form-md-editor"></div>' + (f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "") + "</div>");
+    alt.replaceWith(feld);
+    var ed = new window.OverType(feld.querySelector(".form-md-editor"), {
+      value: aktiv.w[f.name] || "",
+      toolbar: true, labels: LABELS, placeholder: f.platzhalter || "",
+      fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", fontSize: "14px", lineHeight: 1.6,
+      autoResize: true, minHeight: Math.max(6, (f.zeilen || 8) * 1.6) + "em", maxHeight: "60vh",
+      spellcheck: true,
+      textareaProps: { name: f.name, "aria-label": f.label },
+      onChange: function (v) {
+        if (aktiv !== fuer || v === aktiv.w[f.name]) return;
+        aktiv.w[f.name] = v;
+        nachAenderung();
+      }
+    })[0];
+    editoren.push(ed);
+    var schalter = feld.querySelector(".form-md-schalter");
+    schalter.addEventListener("click", function () {
+      var neu = schalter.getAttribute("aria-pressed") !== "true";
+      werkzeugleiste(neu);
+      schalter.setAttribute("aria-pressed", String(neu));
+      feld.classList.toggle("ohne-werkzeugleiste", !neu);
     });
   }
 

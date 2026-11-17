@@ -65,6 +65,7 @@ Immer **Makespace** schreiben, nie „Makerspace“. Grund: „Maker“ ist im D
 
 - Kein CSS-/JS-Framework, alle Styles in `assets/css/style.css` mit CSS-Variablen
 - Keine externen Ressourcen (Fonts, Skripte, Tracker) einbinden – Datenschutzhinweis im Impressum verspricht das. Einzige Ausnahme: die Kartenbilder von OpenStreetMap auf `/karte/`, und nur nach Klick auf „Karte laden“ (im Impressum unter Datenschutz beschrieben)
+- Fremde Bibliotheken nur als unveränderte Kopie in `assets/js/bibliotheken/<name>/` mit `LICENSE` und `README.md` (Herkunft, Version, SHA-256, geprüft: lädt nichts von außen), erst bei Bedarf laden. Bisher: OverType (Markdown-Editor der Formulare, MIT) – `neu.js` macht daraus die Felder mit `markdown: true`; Werkzeugleiste mit 🛠️ ein-/ausblendbar, auf dem Handy anfangs aus, Wahl im localStorage (`ifsmb-werkzeugleiste`)
 - E-Mail-Adressen nur über das `.obf-mail`-Muster, Telefonnummern über `.obf-tel` (siehe README)
 - Original-Logos in `_logo/`, `_logo/README.md` aktuell halten
 - Platzhalter sind mit `<span class="todo">` markiert

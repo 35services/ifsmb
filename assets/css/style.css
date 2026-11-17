@@ -1084,3 +1084,11 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
 .bearbeiten-btn[aria-busy=true] { opacity: .6; cursor: progress; }
 .neu-vorschau mark.neu-geaendert { background: #fff1a8; color: inherit; border-radius: 2px; box-shadow: -.3rem 0 0 #fff1a8, .3rem 0 0 #fff1a8; }
 [data-senden]:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Markdown-Editor in den Formularen (OverType, assets/js/bibliotheken/overtype/; assets/js/neu.js) */
+.form-md-kopf { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.form-md-schalter { padding: .15rem .55rem; font-size: .78rem; }
+.form-md-schalter[aria-pressed=true] { background: var(--accent); }
+.form-md-editor { border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: var(--paper); }
+.form-md-editor:focus-within { outline: 3px solid var(--blue); outline-offset: 1px; }
+.form-md.ohne-werkzeugleiste .overtype-toolbar { display: none !important; } /* OverType setzt display: flex !important */
