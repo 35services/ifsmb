@@ -29,6 +29,14 @@ layout: default
     <div class="prose">
       {{ content }}
     </div>
+    {%- assign mein_badge = site.data.badges | where: "team", page.slug | first -%}
+    {% if mein_badge %}
+    <h2 id="badge">IfsMB-Badge</h2>
+    <div class="member-badge">
+      {% include badge-3d.html b=mein_badge %}
+      <p class="muted small">Zum Drehen ins Modell ziehen. Gedruckt in Gelb und Schwarz mit nur einem Farbwechsel – <a href="{{ '/presse/#badge' | relative_url }}">mehr zum Badge</a>.</p>
+    </div>
+    {% endif %}
     {% assign member_all = site.projects | where_exp: "p", "p.team contains page.slug" %}
     {% assign member_projects = member_all | where_exp: "p", "p.persoenlich != true" %}
     {% assign member_personal = member_all | where: "persoenlich", true | sort: "start" | reverse %}

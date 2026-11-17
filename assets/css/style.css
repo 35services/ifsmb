@@ -1056,3 +1056,23 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
   transition: width .4s ease;
 }
 @media (prefers-reduced-motion: reduce) { .gelesen-fortschritt-balken span { transition: none; } }
+
+/* Badge zum 3D-Drucken (_includes/badge-3d.html, assets/js/badge3d.js) */
+.badge-3d {
+  position: relative;
+  margin: 0 0 .5rem;
+  aspect-ratio: 3 / 2;
+  border-radius: 10px;
+  background: radial-gradient(circle at 50% 40%, #fff 0%, #f1eee6 100%);
+  overflow: hidden;
+}
+.badge-3d img { display: block; width: 100%; height: 100%; object-fit: contain; border: 0; border-radius: 0; }
+.badge-3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: pan-y; }
+.badge-3d canvas:active { cursor: grabbing; }
+.badge-3d-aktiv img { visibility: hidden; }
+.badge-downloads { margin-bottom: 0; }
+.badge-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; margin-bottom: 1.5rem; }
+.badge-intro ol { padding-left: 1.2rem; }
+@media (max-width: 760px) { .badge-intro { grid-template-columns: 1fr; } }
+.badge-karte h3 { margin-bottom: .5rem; }
+.member-badge { max-width: 480px; }

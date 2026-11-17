@@ -57,3 +57,35 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
     {% endfor %}
   </div>
 </section>
+
+<section class="press-section" id="badge">
+  <h2>Badge zum 3D-Drucken</h2>
+  {%- assign logo_badge = site.data.badges | where: "datei", "ifsmb-badge" | first %}
+  <div class="badge-intro">
+    <div>
+      {% include badge-3d.html b=logo_badge %}
+    </div>
+    <div>
+      <p>Unser Logo als Anstecker zum Selberdrucken – genau wie „Logo (Badge) als SVG“, 52,8 × 24 × 2 mm. Gedruckt wird in zwei Farben mit <strong>nur einem Farbwechsel</strong>: Die gelbe Grundplatte liegt unten, Rand, Schriftzug und Schatten stehen schwarz 0,6 mm darüber. Auf der Rückseite ist eine Aussparung für eine Anstecknadel zum Einkleben.</p>
+      <ol>
+        <li><strong>Mit AMS/MMU:</strong> die <strong>3MF</strong> öffnen – sie enthält die Objekte „gelb“ und „schwarz“. Jedem Objekt das passende Filament zuweisen (fragt der Slicer, ob er sie zu einem Objekt zusammenfassen soll: ja).</li>
+        <li><strong>Ohne Mehrfarb-System:</strong> die <strong>STL</strong> mit gelbem Filament starten und bei <strong>1,4 mm</strong> einen Filamentwechsel (Pause/M600) einfügen, dann schwarz zu Ende drucken.</li>
+        <li>0,2 mm Schichthöhe, flach auf der Rückseite, ohne Stützen.</li>
+      </ol>
+      <p class="muted small">Zum Drehen ins Modell ziehen.</p>
+    </div>
+  </div>
+
+  <h3>Badges mit Namen</h3>
+  <p>Für das Team gibt es das Badge mit Namen: Der schwarze Schatten ist unten zu einem Band verlängert, die Buchstaben des Namens sind darin ausgespart – dort scheint das Gelb durch. Auch hier bleibt es bei einem Farbwechsel.</p>
+  <div class="grid-2">
+    {%- for b in site.data.badges %}{% if b.aufschrift %}
+    {%- assign b_person = nil %}{% if b.team %}{% assign b_person = site.team | where: "slug", b.team | first %}{% endif %}
+    <div class="card badge-karte">
+      <h3>{% if b_person %}<a href="{{ b_person.url | relative_url }}#badge">{{ b.aufschrift }}</a>{% else %}{{ b.aufschrift }}{% endif %}</h3>
+      {% include badge-3d.html b=b %}
+    </div>
+    {%- endif %}{% endfor %}
+  </div>
+  <p class="muted small">Eigener Name: Das OpenSCAD-Modell liegt im Repository unter <a href="https://github.com/{{ site.repository }}/tree/{{ site.branch | default: 'main' }}/_logo/badge" target="_blank" rel="noopener"><code>_logo/badge/</code></a> – <code>python3 export-farbig.py "Name"</code> erzeugt alle Dateien. Der Schriftzug „IfsMB“ ist direkt aus dem Logo-SVG übernommen.</p>
+</section>
