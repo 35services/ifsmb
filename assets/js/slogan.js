@@ -1,6 +1,7 @@
 /*
   Wechselnder Slogan auf der Startseite.
   <h1 class="slogan" data-slogans="Zeile 1|Zeile 2;;Zeile 1|Zeile 2">
+  Slogans are maintained in _data/slogans.yml; index.html renders them into data-slogans.
   Die Slogans stehen in data-slogans (";;" trennt Slogans, "|" trennt die Zeilen; Zeile 2 ist hervorgehoben).
   Der erste Slogan steht als normales HTML im <h1> (für Suchmaschinen und ohne JavaScript).
   Effekt „Scramble“ (wie jugendhackt.org): Buchstaben flackern kurz als Zufallszeichen, dann steht der neue Text.

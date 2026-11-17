@@ -1,0 +1,9 @@
+# Rotating slogans on the homepage (assets/js/slogan.js).
+# Each entry has two lines; "zeile2" is highlighted. The first entry is
+# rendered as plain HTML (search engines, no JavaScript).
+- zeile1: Wir bauen Makespaces.
+  zeile2: Spontan.
+- zeile1: Kompetent improvisieren.
+  zeile2: Seit gestern.
+- zeile1: Chaos Theorie.
+  zeile2: Praktisch gestalten.

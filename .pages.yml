@@ -592,6 +592,21 @@ content:
         options:
           format: markdown
 
+  - name: slogans
+    label: Startseite – Slogans
+    type: file
+    path: _data/slogans.yml
+    list: true
+    fields:
+      - name: zeile1
+        label: Zeile 1
+        type: string
+        required: true
+      - name: zeile2
+        label: Zeile 2 (hervorgehoben)
+        type: string
+        required: true
+
   - name: presse
     label: Presse – Kurzprofil & Kontakt
     type: file
