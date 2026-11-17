@@ -500,14 +500,56 @@ var NeuFormular = (function () {
   // script can't load, the plain textarea stays. The toolbar can be switched off (🛠️) – off by default on phones,
   // the choice is remembered in this browser.
   var editoren = [], WERKZEUG = "ifsmb-werkzeugleiste";
+  var NAV = typeof navigator !== "undefined" ? navigator : {};
+  var MAC = /Mac|iPhone|iPad/.test(NAV.platform || NAV.userAgent || "");
+  var MOD = MAC ? "⌘" : "Strg+", UMSCHALT = MAC ? "⇧⌘" : "Strg+Umschalt+";
   var LABELS = {
     toolbar: "Formatierung",
     viewModes: { normal: "Bearbeiten", plain: "Nur Text", preview: "Vorschau" },
-    buttons: { bold: "Fett", italic: "Kursiv", strikethrough: "Durchgestrichen", code: "Code", link: "Link einfügen",
+    buttons: { bold: "Fett", italic: "Kursiv", strikethrough: "Durchgestrichen (" + UMSCHALT + "X)", code: "Code", link: "Link einfügen",
       h1: "Überschrift 1", h2: "Überschrift 2", h3: "Überschrift 3", h4: "Überschrift 4", h5: "Überschrift 5", h6: "Überschrift 6",
       bulletList: "Liste", orderedList: "Nummerierte Liste", taskList: "Aufgabenliste", outdent: "Ausrücken", indent: "Einrücken",
-      quote: "Zitat", upload: "Datei hochladen", viewMode: "Ansicht" }
+      quote: "Zitat", upload: "Datei hochladen", viewMode: "Ansicht", underline: "Unterstrichen (" + MOD + "U)" }
   };
+  // Shortcuts on top of OverType's own (⌘B, ⌘I, ⌘K, ⌘E, ⌥⌘1–3, ⇧⌘7/8/9, ⇧⌘.): ⇧⌘X strikethrough (~~ ~~),
+  // ⌘U underline. Markdown has no underline – <u>…</u> is HTML that kramdown passes through. Ctrl instead of ⌘ off Mac.
+  var LINIE = 'stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"';
+  function unterstreichen(ta) {
+    var A = "<u>", Z = "</u>", v = ta.value, s = ta.selectionStart, e = ta.selectionEnd, auswahl = v.slice(s, e), neu, start;
+    if (auswahl.length >= A.length + Z.length && auswahl.indexOf(A) === 0 && auswahl.slice(-Z.length) === Z) {
+      neu = auswahl.slice(A.length, -Z.length); start = s;                       // tags selected too → remove
+    } else if (v.slice(s - A.length, s) === A && v.slice(e, e + Z.length) === Z) {
+      ta.setSelectionRange(s - A.length, e + Z.length); neu = auswahl; start = s - A.length; // tags around → remove
+    } else {
+      neu = A + auswahl + Z; start = s + A.length;                               // wrap
+    }
+    var inhaltLaenge = neu === auswahl || neu.indexOf(A) !== 0 ? neu.length : auswahl.length;
+    ta.focus();
+    // insertText keeps undo (⌘Z) working; fallback for browsers without it
+    if (!(document.execCommand && document.execCommand("insertText", false, neu))) {
+      ta.setRangeText(neu);
+      ta.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    ta.setSelectionRange(start, start + inhaltLaenge);
+  }
+  function knoepfe() {
+    var T = window.toolbarButtons, standard = (window.defaultToolbarButtons || []).slice();
+    if (!T || !standard.length) return null; // OverType without exports: keep its default toolbar
+    var unterstrichen = {
+      name: "underline", actionId: "toggleUnderline", title: "Unterstrichen (" + MOD + "U)",
+      icon: '<svg viewBox="0 0 18 18"><path ' + LINIE + ' d="M5,3v5a4,4,0,0,0,8,0V3"></path><line ' + LINIE + ' x1="4" x2="14" y1="15.5" y2="15.5"></line></svg>',
+      action: function (o) { unterstreichen(o.editor.textarea); }
+    };
+    var i = standard.indexOf(T.italic);
+    standard.splice(i < 0 ? 2 : i + 1, 0, T.strikethrough, unterstrichen);
+    return standard;
+  }
+  function tasten(e, ed) {
+    if (!(MAC ? e.metaKey : e.ctrlKey) || e.altKey) return;
+    var k = (e.key || "").toLowerCase();
+    if (k === "u" && !e.shiftKey) { e.preventDefault(); ed.performAction("toggleUnderline", e); }
+    else if (k === "x" && e.shiftKey) { e.preventDefault(); ed.performAction("toggleStrikethrough", e); }
+  }
   function werkzeugleiste(an) {
     if (an != null) { try { localStorage.setItem(WERKZEUG, an ? "1" : "0"); } catch (e) { /* storage blocked */ } return an; }
     try { var v = localStorage.getItem(WERKZEUG); if (v != null) return v === "1"; } catch (e) { /* storage blocked */ }
@@ -537,7 +579,8 @@ var NeuFormular = (function () {
     alt.replaceWith(feld);
     var ed = new window.OverType(feld.querySelector(".form-md-editor"), {
       value: aktiv.w[f.name] || "",
-      toolbar: true, labels: LABELS, placeholder: f.platzhalter || "",
+      toolbar: true, toolbarButtons: knoepfe() || undefined, labels: LABELS, placeholder: f.platzhalter || "",
+      onKeydown: tasten,
       fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", fontSize: "14px", lineHeight: 1.6,
       autoResize: true, minHeight: Math.max(6, (f.zeilen || 8) * 1.6) + "em", maxHeight: "60vh",
       spellcheck: true,
