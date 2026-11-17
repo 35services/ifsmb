@@ -13,6 +13,16 @@ gallery:
     alt: "Erster mehrfarbiger Testdruck im Bauraum des Snapmaker U1: der rot-gelb-schwarze Drache entsteht Schicht für Schicht auf der strukturierten PEI-Druckplatte"
 tags: [u1, 3d-drucker, mehrfarbdruck]
 verlinkt: [/ausstattung/snapmaker-u1/]
+updates:
+  - datum: 2026-11-17
+    text: |
+      Falko schaut sich zum ersten Mal die [Klipper](https://www.klipper3d.org/)-Oberfläche an ([Fluidd](https://docs.fluidd.xyz/), direkt im Browser). Die ist echt beeindruckend. Der Snapmaker ist echt Open-Source-basiert.
+
+      ![Fluidd-Startseite des U1: laufender Druck „BRIO-flexible“, Temperaturen der vier Extruder, des Druckbetts, des Bauraums und der Motortreiber mit Temperaturkurve, darunter die Werkzeug-Buttons und die Konsole](/assets/images/ausstattung/snapmaker-u1-falko/03.jpg)
+      ![Bed Mesh in Fluidd: 3D-Höhenkarte des Druckbetts mit einem Bereich von etwa 0,31 mm, daneben die Steuerung für das Mesh und die Filament-Sensoren der Extruder](/assets/images/ausstattung/snapmaker-u1-falko/04.jpg)
+      ![Liste der Druckaufträge in Fluidd mit Vorschaubildern, Höhe, Schichthöhe und den verwendeten Filamenten – darunter der BRIO-Schienen-Druck, zwei IfsMB-Badges, Teile des RC Tractors und der Test-Drache](/assets/images/ausstattung/snapmaker-u1-falko/05.jpg)
+      ![G-Code-Vorschau in Fluidd: Umrisse der ersten Schicht von drei Badges auf dem Druckbett, von oben gesehen](/assets/images/ausstattung/snapmaker-u1-falko/06.jpg)
+      {: .gallery}
 uuid: d52eb86e-cca5-42bb-b594-f1ea25a9f680
 ---
 

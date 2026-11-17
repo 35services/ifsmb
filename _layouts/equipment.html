@@ -2,10 +2,12 @@
 layout: default
 ---
 {%- if page.standort_partner -%}{%- assign sp = site.data.partners | where: "name", page.standort_partner | first -%}{%- endif -%}
+{%- assign eq_updates = "" | split: "" -%}{%- if page.updates -%}{%- assign eq_updates = page.updates | sort: "datum" | reverse -%}{%- endif -%}
+{%- assign eq_last = eq_updates | first -%}
 <main class="container page narrow">
   <article>
     <header class="page-header">
-      <p class="meta">{% if page.status == "in-aussicht" %}<span class="badge badge-inquiry">In Aussicht</span> · {% elsif page.status == "in-reparatur" %}<span class="badge badge-inquiry">In Reparatur</span> · {% elsif page.status == "im-test" %}<span class="badge badge-inquiry">Im Test</span> · {% endif %}{% if page.kategorie %}{{ page.kategorie }} · {% endif %}{% include besitz.html item=page %}</p>
+      <p class="meta">{% if page.status == "in-aussicht" %}<span class="badge badge-inquiry">In Aussicht</span> · {% elsif page.status == "in-reparatur" %}<span class="badge badge-inquiry">In Reparatur</span> · {% elsif page.status == "im-test" %}<span class="badge badge-inquiry">Im Test</span> · {% endif %}{% if page.kategorie %}{{ page.kategorie }} · {% endif %}{% include besitz.html item=page %}{% if eq_last %} · Letztes Update: <a href="#updates">{{ eq_last.datum | date: "%d.%m.%Y" }}</a>{% endif %}</p>
       <h1>{{ page.title }}</h1>
       {% if page.summary %}<p class="lead">{{ page.summary }}</p>{% endif %}
       {% if page.standort or sp %}
@@ -39,6 +41,20 @@ layout: default
       {% if v.caption %}<figcaption class="muted small">{{ v.caption }}</figcaption>{% endif %}
     </figure>
     {% endfor %}
+    {% endif %}
+    {%- comment -%}Stand / Updates: short dated notes (`updates`: datum + text in Markdown, may contain a {: .gallery}), newest first – like on project pages.{%- endcomment -%}
+    {% if eq_updates.size > 0 %}
+    <section class="project-updates" id="updates">
+      <h2>Stand / Updates</h2>
+      <ol class="update-list">
+        {%- for u in eq_updates %}
+        <li class="update-item">
+          <span class="meta update-date">{{ u.datum | date: "%d.%m.%Y" }}</span>
+          <div class="update-text">{{ u.text | markdownify }}</div>
+        </li>
+        {%- endfor %}
+      </ol>
+    </section>
     {% endif %}
     {% if page.status == "in-aussicht" %}
     <p class="note">Dieses Gerät ist noch nicht da – wir bekommen es vielleicht. Sobald es so weit ist, aktualisieren wir diese Seite.</p>
