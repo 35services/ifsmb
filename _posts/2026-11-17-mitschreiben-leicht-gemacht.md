@@ -67,6 +67,6 @@ Dafür braucht es ein kostenloses GitHub-Konto. Wer keins hat oder nicht möchte
 
 ### Und der Datenschutz?
 
-Der Editor ist [OverType](https://github.com/panphora/overtype), ein freies Programm (MIT-Lizenz). Er liegt als Kopie auf unserem eigenen Server, wird erst geladen, wenn du ein Formular öffnest, und lädt selbst nichts von anderen Seiten nach. Dein Entwurf und die Einstellung der Werkzeugleiste bleiben nur in deinem Browser.
+Der Editor ist [OverType](https://github.com/panphora/overtype) in der **Version 2.9.0**, ein freies Programm (MIT-Lizenz). Er liegt als Kopie auf unserem eigenen Server, wird erst geladen, wenn du ein Formular öffnest, und lädt selbst nichts von anderen Seiten nach. Dein Entwurf und die Einstellung der Werkzeugleiste bleiben nur in deinem Browser.
 
 Wir sind gespannt auf eure Beiträge!
