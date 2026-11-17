@@ -143,6 +143,9 @@ img { max-width: 100%; height: auto; }
 /* Wechselnder Slogan (assets/js/slogan.js) */
 .slogan-word { white-space: nowrap; }
 .slogan-char { white-space: pre; }
+/* Highlight per character while scrambling; no padding so the text does not shift afterwards */
+.slogan .hl { padding: 0; }
+.slogan-char.hl-char { background: linear-gradient(transparent 55%, var(--accent) 55%); }
 .slogan .slogan-char.scrambling { font-family: var(--mono); font-weight: 700; color: var(--accent-2); }
 
 .hero-text { max-width: 640px; font-size: 1.15rem; color: var(--ink-soft); margin-bottom: 2rem; }
