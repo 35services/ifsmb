@@ -17,6 +17,10 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - **Gelesen-Markierung:** Wer eine Seite geöffnet hat, sieht Links dorthin danach mit einem kleinen ✓ – in Listen, auf Projektkarten, bei „Verbindungen“ und im Text. Neuigkeiten und Projekte zeigen oben, wie viele schon gelesen sind („3 von 28 gelesen“). Gespeichert wird nur im eigenen Browser (localStorage, kein Cookie, nichts wird übertragen); im Impressum unter Datenschutz beschrieben, dort lassen sich die Markierungen auch löschen.
 - Jede Inhaltsseite hat dafür eine feste Kennung `uuid` im Front Matter, die auch beim Umbenennen der Datei gleich bleibt. Formulare und Vorlagen der ➕-Buttons erzeugen sie automatisch; `_scripts/uuids_ergaenzen.rb` ergänzt fehlende (z. B. bei Seiten aus Pages CMS) und meldet doppelte – doppelte stoppen Pull Requests und Deployment.
 
+### Geändert
+
+- **Regel zum Maskieren von E-Mail-Adressen verschärft (CLAUDE.md):** E-Mail-Adressen nie im Klartext – auch nicht in `_data/*.yml`, Front Matter, `.pages.yml`-Beispielen, Alt-Texten oder `mailto:`-Links; nur `.obf-mail` mit base64 bzw. `*_b64`-Felder plus maskierter Anzeige.
+
 ## [2026-11-13]
 
 ### Hinzugefügt
