@@ -4,6 +4,7 @@ summary: Falko sucht einen Job, Quereinstieg? Honorarkraft? Was ist rechtlich un
 art: aufgabe
 status: offen
 seit: 2025-11-01
+wichtig: true
 team: [falko-richter]
 projekte: [ifsmb-de]
 verlinkt: [/projekte/3d-druck-ag-platanus-schule/, /projekte/3d-druck-ag-rosalind-franklin-gymnasium/, /news/2026/10/19/jugend-hackt-congress-2026/]
