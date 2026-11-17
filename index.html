@@ -6,9 +6,21 @@ layout: default
 <section class="hero">
   <div class="container">
     <p class="kicker">Institut für spontane Makespace Buildung</p>
-    {%- capture slogans -%}{%- for s in site.data.slogans -%}{{ s.zeile1 }}|{{ s.zeile2 }}{%- unless forloop.last -%};;{%- endunless -%}{%- endfor -%}{%- endcapture -%}
-    {%- assign erster = site.data.slogans | first %}
-    <h1 class="slogan" data-slogans="{{ slogans | escape }}">{{ erster.zeile1 }}<br><span class="hl">{{ erster.zeile2 }}</span></h1>
+    {%- comment -%} Slogans: _data/slogans.yml; the first one is static HTML, assets/js/slogan.js rotates all of them {%- endcomment -%}
+    {%- capture nl %}
+{% endcapture -%}
+    {%- assign erster = site.data.slogans | first -%}
+    {%- assign zeilen = erster.text | strip | split: nl %}
+    <h1 class="slogan" data-slogans="{{ site.data.slogans | map: 'text' | jsonify | escape }}">
+      {%- for zeile in zeilen -%}
+        {%- unless forloop.first %}<br>{% endunless -%}
+        {%- assign teile = zeile | split: '**' -%}
+        {%- for teil in teile -%}
+          {%- assign rest = forloop.index0 | modulo: 2 -%}
+          {%- if rest == 1 %}<span class="hl">{{ teil | escape }}</span>{% else %}{{ teil | escape }}{% endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    </h1>
     <p class="hero-text">
       Wir sind eine Gruppe von Eltern, Bastler*innen und Technik-Begeisterten aus Moabit.
       Gemeinsam mit Schulen, Vereinen und offenen Werkstätten richten wir Orte ein,
