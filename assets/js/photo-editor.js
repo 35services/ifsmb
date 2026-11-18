@@ -10,6 +10,8 @@
 // - a description (alt text) is required, like in _plugins/galerie.rb
 //
 // PhotoEditor.open(file) → Promise<null | { full: Blob, thumb: Blob, alt: string, preview: objectURL, width, height }>
+// PhotoEditor.open(file, { size: [1200, 630], title }) → fixed format (social media preview): the crop keeps the aspect
+//   ratio, the result is exactly that size, no alt text → Promise<null | { full: Blob, preview, width, height }>
 var PhotoEditor = (function () {
   "use strict";
   var F = window.Formular, esc = F.esc;
@@ -17,42 +19,42 @@ var PhotoEditor = (function () {
   var d, canvas, ctx, statusEl, altEl, modeBtns, detectBtn, listEl, state, resolveFn;
 
   function build() {
-    d = F.dialog({ id: "foto-editor", klasse: "foto-dialog", titel: "📷 Foto vorbereiten" });
+    d = F.dialog({ id: "photo-editor", klasse: "photo-dialog", titel: "📷 Foto vorbereiten" });
     d.insertAdjacentHTML("beforeend",
-      '<div class="foto-body"><div class="foto-links">'
-      + '<div class="foto-werkzeuge" role="toolbar" aria-label="Werkzeuge">'
+      '<div class="photo-body"><div class="photo-main">'
+      + '<div class="photo-tools" role="toolbar" aria-label="Werkzeuge">'
       + '<button type="button" class="btn btn-small btn-ghost" data-rotate>↻ Drehen</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-mode="crop" aria-pressed="false">✂️ Zuschneiden</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-mode="blur" aria-pressed="true">🔲 Unkenntlich machen</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-detect>🔍 Gesichter &amp; QR-Codes suchen</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-reset>↩️ Zurücksetzen</button></div>'
-      + '<div class="foto-leinwand"><canvas></canvas></div>'
-      + '<p class="muted small foto-tipp">Rechteck aufziehen: im Modus „Unkenntlich machen“ wird der Bereich verpixelt, ein Klick auf ein Rechteck entfernt es wieder. Im Modus „Zuschneiden“ legt das Rechteck den Ausschnitt fest.</p></div>'
-      + '<aside class="foto-rechts">'
+      + '<div class="photo-canvas"><canvas></canvas></div>'
+      + '<p class="muted small photo-tip">Rechteck aufziehen: im Modus „Unkenntlich machen“ wird der Bereich verpixelt, ein Klick auf ein Rechteck entfernt es wieder. Im Modus „Zuschneiden“ legt das Rechteck den Ausschnitt fest.</p></div>'
+      + '<aside class="photo-side">'
       + '<label class="form-feld"><span>Was ist zu sehen? (Alt-Text) <span class="form-pflicht" aria-hidden="true">*</span></span>'
       + '<textarea rows="4" required placeholder="z. B. Der Drucker steht aufgebaut auf dem Werkstatttisch, daneben eine Rolle grünes Filament"></textarea>'
       + '<small class="form-hilfe">Für Menschen, die das Bild nicht sehen können – und für die Suche.</small></label>'
-      + '<div class="foto-check small"><strong>Vor dem Hochladen prüfen:</strong><ul>'
+      + '<div class="photo-check small"><strong>Vor dem Hochladen prüfen:</strong><ul>'
       + '<li>Gesichter von Kindern (auch Profile und Hinterköpfe)</li><li>Autokennzeichen</li>'
       + '<li>Namen, Zugangscodes, QR-Codes, Classroom-Links</li><li>Wohnadressen, Straßenschilder vor Wohnhäusern</li></ul>'
       + '<p class="muted">Standortdaten (GPS) und alle anderen Metadaten werden beim Speichern automatisch entfernt.</p></div>'
-      + '<ul class="foto-liste small" aria-label="Unkenntlich gemachte Bereiche"></ul>'
+      + '<ul class="photo-areas small" aria-label="Unkenntlich gemachte Bereiche"></ul>'
       + '<div class="form-fuss"><span class="muted small" data-status aria-live="polite"></span>'
-      + '<button type="button" class="btn btn-small btn-ghost" data-abbrechen>Abbrechen</button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-cancel>Abbrechen</button>'
       + '<button type="button" class="btn" data-ok>✅ Foto übernehmen</button></div>'
       + "</aside></div>");
     canvas = d.querySelector("canvas"); ctx = canvas.getContext("2d");
-    statusEl = d.querySelector("[data-status]"); altEl = d.querySelector("textarea"); listEl = d.querySelector(".foto-liste");
+    statusEl = d.querySelector("[data-status]"); altEl = d.querySelector("textarea"); listEl = d.querySelector(".photo-areas");
     modeBtns = d.querySelectorAll("[data-mode]"); detectBtn = d.querySelector("[data-detect]");
     d.querySelector("[data-rotate]").addEventListener("click", function () { rotate(); });
-    d.querySelector("[data-reset]").addEventListener("click", function () { state.crop = null; state.blurs = []; render(); });
+    d.querySelector("[data-reset]").addEventListener("click", function () { state.crop = startCrop(); state.blurs = []; render(); });
     modeBtns.forEach(function (b) { b.addEventListener("click", function () { setMode(b.getAttribute("data-mode")); }); });
     detectBtn.addEventListener("click", detect);
-    d.querySelector("[data-abbrechen]").addEventListener("click", function () { d.close(); });
+    d.querySelector("[data-cancel]").addEventListener("click", function () { d.close(); });
     d.querySelector("[data-ok]").addEventListener("click", accept);
     listEl.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-weg]"); if (!b) return;
-      state.blurs.splice(+b.getAttribute("data-weg"), 1); render();
+      var b = e.target.closest("[data-remove]"); if (!b) return;
+      state.blurs.splice(+b.getAttribute("data-remove"), 1); render();
     });
     d.addEventListener("close", function () { if (resolveFn) { var r = resolveFn; resolveFn = null; r(null); } });
     canvas.addEventListener("pointerdown", down);
@@ -112,6 +114,15 @@ var PhotoEditor = (function () {
     return { x: x, y: y, w: Math.max(1, Math.min(c.width - x, Math.round(r.w))), h: Math.max(1, Math.min(c.height - y, Math.round(r.h))) };
   }
 
+  // fixed format: the largest centred rectangle with the wanted aspect ratio
+  function aspect() { var z = state.opts.size; return z ? z[0] / z[1] : 0; }
+  function startCrop() {
+    var a = aspect(); if (!a) return null;
+    var b = base(), w = b.width, h = w / a;
+    if (h > b.height) { h = b.height; w = h * a; }
+    return { x: (b.width - w) / 2, y: (b.height - h) / 2, w: w, h: h };
+  }
+
   // ---------- drawing ----------
   function render() {
     var b = base(), box = canvas.parentElement.getBoundingClientRect();
@@ -135,7 +146,7 @@ var PhotoEditor = (function () {
     }
     if (state.drag && state.mode === "blur") { var q2 = mul(norm(state.drag), s); ctx.strokeStyle = "#ffd400"; ctx.setLineDash([4, 3]); ctx.strokeRect(q2.x, q2.y, q2.w, q2.h); ctx.setLineDash([]); }
     listEl.innerHTML = state.blurs.map(function (r, i) {
-      return '<li><span>' + (i + 1) + ". " + esc(r.auto || "von Hand") + '</span> <button type="button" class="btn btn-small btn-ghost" data-weg="' + i + '" aria-label="Bereich ' + (i + 1) + ' entfernen">✕</button></li>';
+      return '<li><span>' + (i + 1) + ". " + esc(r.auto || "von Hand") + '</span> <button type="button" class="btn btn-small btn-ghost" data-remove="' + i + '" aria-label="Bereich ' + (i + 1) + ' entfernen">✕</button></li>';
     }).join("");
   }
   function label(q, t) { ctx.fillStyle = "#ffd400"; ctx.fillRect(q.x, q.y, 18, 18); ctx.fillStyle = "#000"; ctx.font = "bold 12px sans-serif"; ctx.fillText(t, q.x + 5, q.y + 13); }
@@ -143,7 +154,13 @@ var PhotoEditor = (function () {
   function norm(r) { return { x: Math.min(r.x, r.x + r.w), y: Math.min(r.y, r.y + r.h), w: Math.abs(r.w), h: Math.abs(r.h) }; }
   function point(e) { var b = canvas.getBoundingClientRect(); return { x: (e.clientX - b.left) / state.scale * (canvas.width / b.width), y: (e.clientY - b.top) / state.scale * (canvas.height / b.height) }; }
   function down(e) { canvas.setPointerCapture(e.pointerId); var p = point(e); state.drag = { x: p.x, y: p.y, w: 0, h: 0 }; }
-  function move(e) { if (!state.drag) return; var p = point(e); state.drag.w = p.x - state.drag.x; state.drag.h = p.y - state.drag.y; render(); }
+  function move(e) {
+    if (!state.drag) return;
+    var p = point(e), a = state.mode === "crop" && aspect();
+    state.drag.w = p.x - state.drag.x;
+    state.drag.h = a ? (p.y - state.drag.y < 0 ? -1 : 1) * Math.abs(state.drag.w) / a : p.y - state.drag.y;
+    render();
+  }
   function up(e) {
     if (!state.drag) return;
     var r = norm(state.drag); state.drag = null;
@@ -152,7 +169,7 @@ var PhotoEditor = (function () {
       if (state.mode === "blur") { // click on a rectangle → remove it
         var p = point(e), i = state.blurs.findIndex(function (b) { return p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h; });
         if (i >= 0) state.blurs.splice(i, 1);
-      } else state.crop = null;
+      } else if (!aspect()) state.crop = null;
     } else if (state.mode === "blur") state.blurs.push(r);
     else state.crop = r;
     render();
@@ -165,7 +182,9 @@ var PhotoEditor = (function () {
     var H = base().height; // rotate rectangles clockwise with the photo: (x, y) → (H - y - h, x)
     function turn(r) { return { x: H - r.y - r.h, y: r.x, w: r.h, h: r.w, auto: r.auto }; }
     state.blurs = state.blurs.map(turn); if (state.crop) state.crop = turn(norm(state.crop));
-    state.rot = (state.rot + 1) % 4; render();
+    state.rot = (state.rot + 1) % 4;
+    if (aspect()) state.crop = startCrop(); // a rotated crop would have the wrong format
+    render();
   }
 
   // ---------- automatic suggestions ----------
@@ -193,6 +212,14 @@ var PhotoEditor = (function () {
   }
 
   function accept() {
+    if (state.opts.size) { // fixed format: exactly size[0] × size[1]
+      var src = result(), out = document.createElement("canvas"); out.width = state.opts.size[0]; out.height = state.opts.size[1];
+      var ox = out.getContext("2d"); ox.imageSmoothingQuality = "high"; ox.drawImage(src, 0, 0, out.width, out.height);
+      return jpeg(out).then(function (b) {
+        var r = resolveFn; resolveFn = null; URL.revokeObjectURL(state.img.src);
+        r({ full: b, preview: URL.createObjectURL(b), width: out.width, height: out.height }); d.close();
+      });
+    }
     var alt = altEl.value.trim();
     if (!alt) { statusEl.textContent = "⚠️ Bitte beschreiben, was auf dem Foto zu sehen ist."; altEl.focus(); return; }
     statusEl.textContent = "Speichern …";
@@ -205,14 +232,16 @@ var PhotoEditor = (function () {
     });
   }
 
-  function open(file) {
+  function open(file, opts) {
     if (/^video\//.test(file.type)) return Promise.reject(new Error("Videos gehen hier (noch) nicht – bitte an Falko schicken."));
     if (!d) build();
     return loadImage(file).then(function (img) {
-      state = { img: img, rot: 0, crop: null, blurs: [], mode: "blur", drag: null };
+      state = { img: img, rot: 0, crop: null, blurs: [], mode: "blur", drag: null, opts: opts || {} };
       altEl.value = ""; statusEl.textContent = "";
-      d.titel("📷 " + file.name);
-      setMode("blur");
+      altEl.closest(".form-feld").style.display = state.opts.size ? "none" : ""; // [hidden] loses against .form-feld { display: flex }
+      d.titel(state.opts.title || "📷 " + file.name);
+      state.crop = startCrop();
+      setMode(state.opts.size ? "crop" : "blur");
       detectBtn.hidden = !("FaceDetector" in window) && !("BarcodeDetector" in window);
       if (!d.open) d.showModal();
       requestAnimationFrame(render);

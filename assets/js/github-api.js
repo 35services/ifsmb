@@ -87,9 +87,9 @@ var GitHubApi = (function () {
     });
   }
 
-  // Current text of a file on the base branch (or null if it doesn't exist) – to warn before overwriting newer changes.
-  function readFile(path) {
-    return call("GET", "/repos/" + repo() + "/contents/" + path.split("/").map(encodeURIComponent).join("/") + "?ref=" + encodeURIComponent(baseBranch()))
+  // Current text of a file on the base branch or on ref (or null if it doesn't exist) – to warn before overwriting newer changes.
+  function readFile(path, ref) {
+    return call("GET", "/repos/" + repo() + "/contents/" + path.split("/").map(encodeURIComponent).join("/") + "?ref=" + encodeURIComponent(ref || baseBranch()))
       .then(function (f) {
         var bin = atob(String(f.content).replace(/\n/g, "")), bytes = new Uint8Array(bin.length);
         for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -98,11 +98,26 @@ var GitHubApi = (function () {
   }
 
   // File names in a folder on the base branch ([] if the folder doesn't exist yet)
-  function listFolder(folder) {
+  function listFolder(folder, ref) {
     var path = folder.replace(/\/$/, "").split("/").map(encodeURIComponent).join("/");
-    return call("GET", "/repos/" + repo() + "/contents/" + path + "?ref=" + encodeURIComponent(baseBranch()))
+    return call("GET", "/repos/" + repo() + "/contents/" + path + "?ref=" + encodeURIComponent(ref || baseBranch()))
       .then(function (list) { return (Array.isArray(list) ? list : []).map(function (f) { return f.name; }); },
         function (e) { if (e.status === 404) return []; throw e; });
+  }
+
+  // Open pull requests that change (or create) this file – the page's Markdown file is the indicator.
+  // → [{ number, title, url, branch, user, sameRepo, status }]. One request for the list + one per open PR.
+  function openPullsForFile(path) {
+    var r = "/repos/" + repo();
+    return call("GET", r + "/pulls?state=open&per_page=50").then(function (pulls) {
+      return Promise.all(pulls.slice(0, 30).map(function (pr) {
+        return call("GET", r + "/pulls/" + pr.number + "/files?per_page=100").then(function (files) {
+          var f = files.filter(function (x) { return x.filename === path || x.previous_filename === path; })[0];
+          return f && { number: pr.number, title: pr.title, url: pr.html_url, branch: pr.head.ref, user: pr.user && pr.user.login,
+            sameRepo: !!(pr.head.repo && pr.head.repo.full_name === repo()), status: f.status };
+        }, function () { return null; });
+      }));
+    }).then(function (list) { return list.filter(Boolean); });
   }
 
   function branchName(hint) {
@@ -113,14 +128,15 @@ var GitHubApi = (function () {
 
   // One commit with all files on a new branch + pull request.
   // o = { title, body, files: [{ path, text } | { path, blob }], branchHint, onStep(text) }
-  // → Promise<{ url, number, branch }>
+  // With o.pr = { number, url, branch } the commit goes on top of that open pull request's branch instead (no new PR).
+  // → Promise<{ url, number, branch, updated }>
   function createPullRequest(o) {
-    var r = "/repos/" + repo(), step = o.onStep || function () {}, base = baseBranch(), branch, baseSha;
+    var r = "/repos/" + repo(), step = o.onStep || function () {}, base = o.pr ? o.pr.branch : baseBranch(), branch, baseSha;
     return whoAmI().then(function (u) {
       if (!u.canPush) throw new Error("@" + u.login + " darf in " + repo() + " keine Branches anlegen (Pull Requests aus Forks kommen später).");
-      branch = branchName(o.branchHint);
+      branch = o.pr ? o.pr.branch : branchName(o.branchHint);
       step("Stand von " + base + " holen …");
-      return call("GET", r + "/git/ref/heads/" + encodeURIComponent(base));
+      return call("GET", r + "/git/ref/heads/" + base.split("/").map(encodeURIComponent).join("/"));
     }).then(function (ref) {
       baseSha = ref.object.sha;
       return call("GET", r + "/git/commits/" + baseSha);
@@ -145,17 +161,24 @@ var GitHubApi = (function () {
         tree: tree.sha, parents: [baseSha]
       });
     }).then(function (commit) {
+      if (o.pr) {
+        step("Pull Request #" + o.pr.number + " ergänzen …");
+        // force: false – if someone pushed to the branch meanwhile, GitHub refuses instead of losing their commit
+        return call("PATCH", r + "/git/refs/heads/" + branch.split("/").map(encodeURIComponent).join("/"), { sha: commit.sha, force: false })
+          .then(function () { return { pr: o.pr }; });
+      }
       step("Branch " + branch + " anlegen …");
       return call("POST", r + "/git/refs", { ref: "refs/heads/" + branch, sha: commit.sha });
-    }).then(function () {
+    }).then(function (res) {
+      if (res && res.pr) return { html_url: res.pr.url, number: res.pr.number, updated: true };
       step("Pull Request öffnen …");
       return call("POST", r + "/pulls", { title: o.title, head: branch, base: base, body: o.body || "", maintainer_can_modify: true });
-    }).then(function (pr) { return { url: pr.html_url, number: pr.number, branch: branch }; });
+    }).then(function (pr) { return { url: pr.html_url, number: pr.number, branch: branch, updated: !!pr.updated }; });
   }
 
   return {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
-    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, createPullRequest: createPullRequest
+    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, createPullRequest: createPullRequest
   };
 })();
 if (typeof module !== "undefined") module.exports = GitHubApi;

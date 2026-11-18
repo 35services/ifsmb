@@ -25,6 +25,9 @@ Nichts geht direkt auf `main`. Ohne Verbindung bleibt alles wie bisher (Kopieren
 | Foto-Editor: drehen (90°), zuschneiden, Bereiche verpixeln, Alt-Text Pflicht, Export 1600 px + `-600w`, ohne Metadaten | `assets/js/photo-editor.js` | ✅ getestet (kein EXIF im Ergebnis) |
 | Automatische Vorschläge: QR-/Barcodes (`BarcodeDetector`), Gesichter (`FaceDetector`) | `photo-editor.js` | ⚠️ nur wo der Browser es kann (s. u.) |
 | Ändert sich der Dateiname nach dem Hinzufügen von Fotos, ziehen die Fotos mit um | `neu.js` | ✅ |
+| **Foto-Ablage mit Verwendungen**: antippen oder ziehen → Galerie im Text, Titelbild/Foto (+ Alt-Text), Profilfoto, Logo/Partnerkarte, Social-Media-Vorschau (eigener Ausschnitt 1200 × 630, `NN-social.jpg`); abgeleitet aus den Feldern jedes Typs; nur Verwendetes wird hochgeladen | `neu.js` (`direct.slots`) | ✅ getestet (Partner, Termin) |
+| `#bearbeiten` in der Adresse, Aufruf mit `#bearbeiten`/`#edit` öffnet das Formular | `neu.js`, `edit-buttons.html` | ✅ |
+| Offene PRs zur selben Markdown-Datei: Warnung im Formular + oben auf der Seite (nur für Verbundene), „In #N weiterarbeiten“ = Commit auf den PR-Branch statt zweitem PR | `github-api.js`, `neu.js`, `edit-buttons.html` | ✅ getestet gegen simulierte API |
 
 Neue Abhängigkeiten: **keine** – nur Browser-APIs (Canvas, Fetch, FileReader). Externe Anfragen gehen nur an `api.github.com` und nur nach aktivem Verbinden (im Impressum beschrieben).
 
@@ -77,7 +80,9 @@ Für B gilt die Regel aus `CLAUDE.md`: der Dienst ist eine Abhängigkeit → vor
 ## Bekannte Lücken im Prototyp
 
 - Fotos stehen nicht im Entwurf (localStorage) – nach Neuladen sind sie weg, nur die Zeilen im Text bleiben (Hinweis im Status).
-- Fotos nur bei Typen mit Textfeld (Beitrag, Termin, Projekt, Gerät …); Titelbild/`image`/`gallery:`-Felder werden noch nicht befüllt.
+- `gallery:`-Listen im Front Matter (Geräte, Termine) werden noch nicht befüllt – Galerien gehen als Markdown in den Text. Bestehende Bilder der Seite lassen sich noch nicht neu zuordnen (nur neue Fotos).
+- Logos werden als JPEG gespeichert (keine Transparenz) – für echte Logos mit transparentem Hintergrund weiter von Hand (PNG/SVG).
+- Die Prüfung auf offene PRs fragt bis zu 30 offene PRs einzeln ab (Dateiliste) – bei sehr vielen offenen PRs später über GraphQL.
 - Die Galerie kommt immer ans Textende; Reihenfolge/Position ändert man im Text.
 - Todo-Editor (`todos.js`) nutzt noch Kopieren → GitHub.
 - Nur mit simulierter GitHub-API getestet – der erste echte Test braucht ein Token (siehe unten).
@@ -86,7 +91,7 @@ Für B gilt die Regel aus `CLAUDE.md`: der Dienst ist eine Abhängigkeit → vor
 
 1. **Echter Test** mit einem Fine-grained Token (Falko): Beitrag mit 2 Fotos anlegen, Bearbeiten eines Geräts, Konflikt-Warnung.
 2. Entscheidung **Anmeldung B** (GitHub App + Worker) – dann App anlegen, Worker schreiben, `DEPENDENCIES.md` + Impressum.
-3. Titelbild/Galerie-Felder (`image`, `thumb`, `gallery:`) für Geräte und Termine.
+3. `gallery:`-Listen im Front Matter und bestehende Bilder neu zuordnen; PNG für Logos.
 4. Fotos im Entwurf (IndexedDB), damit nichts verloren geht.
 5. Automatische Gesichtserkennung als optionales lokales Modell prüfen (Größe, Lizenz, Treffer bei Kindern im Profil).
 6. Forks für Leute ohne Schreibrechte.
