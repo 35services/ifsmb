@@ -13,7 +13,19 @@
 // Only works for people with write access to the repository (branch in the same repository); forks are a later step.
 var GitHubApi = (function () {
   "use strict";
-  var KEY = "ifsmb-github-token", API = "https://api.github.com";
+  var KEY = "ifsmb-github-token", API = apiBase();
+
+  // Tests only (_tests/e2e/): localStorage "ifsmb-github-api" points the API at a local fake GitHub. Honoured only
+  // when this page runs on localhost/127.0.0.1 AND the override is a local http address – so on ifsmb.de (or with a
+  // stray value) the token is never sent anywhere but api.github.com.
+  function apiBase() {
+    var real = "https://api.github.com";
+    try {
+      if (typeof location === "undefined" || !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return real;
+      var v = localStorage.getItem("ifsmb-github-api");
+      return v && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(v) ? v : real;
+    } catch (e) { return real; } // storage blocked
+  }
 
   function cfg() { return JSON.parse(document.getElementById("formular-daten").textContent); }
   function repo() { return cfg().github.replace(/^https:\/\/github\.com\//, ""); } // "owner/name"
