@@ -148,6 +148,18 @@ img { max-width: 100%; height: auto; }
 .slogan-char.hl-char { background: linear-gradient(transparent 55%, var(--accent) 55%); }
 .slogan .slogan-char.scrambling { font-family: var(--mono); font-weight: 700; color: var(--accent-2); }
 
+/* Slogan editor (_includes/slogan-editor.html) */
+.slogan-editor { margin: 2rem 0; }
+.slogan-editor h3 { margin-top: 0; }
+.slogan-editor-werkzeug { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0 1rem; }
+.slogan-editor-vorschau { padding: 1.25rem 1rem; border: 2px solid var(--ink); border-radius: 8px; }
+.slogan-editor-vorschau .kicker { margin-bottom: .4rem; }
+.slogan-preview { font-size: clamp(1.6rem, 6vw, 2.6rem); line-height: 1.05; font-weight: 900; letter-spacing: -.02em; margin: 0; overflow-wrap: anywhere; }
+.slogan-editor-hinweis { margin-top: .6rem; }
+.slogan-editor-aktionen { margin-top: 1rem; }
+.slogan-editor-fallback { white-space: pre-wrap; font-size: .8rem; max-height: 14rem; overflow: auto; }
+.slogan-editor-liste mark.hl { color: inherit; }
+
 .hero-text { max-width: 640px; font-size: 1.15rem; color: var(--ink-soft); margin-bottom: 2rem; }
 
 .hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
