@@ -10,6 +10,7 @@ event_tag: lastenlaufrad-kiez-wm
 tags: [lastenlaufrad-kiez-wm]
 team:
   - falko-richter
+partners: ["Zazza Moabit / Pajas Kaffee"]
 uuid: 5c10bb97-1010-4a42-8fc4-94b9a7bdb2f6
 ---
 
