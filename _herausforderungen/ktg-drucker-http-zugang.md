@@ -29,7 +29,7 @@ Das hängt eng mit der Herausforderung [Software für die KTG AG](/herausforderu
 
 ## Was wir schon wissen
 
-Am eigenen U1 haben wir ausprobiert, was über HTTP geht – dokumentiert im (noch privaten) Repo snapmaker-ui:
+Am eigenen U1 haben wir ausprobiert, was über HTTP geht – dokumentiert im Repo [snapmaker-ui](https://github.com/falkorichter/snapmaker-ui) – dort stehen alle Details zum Nachlesen und Weitermachen:
 
 - Die Weboberfläche läuft direkt auf dem Drucker: `http://<drucker-ip>/`
 - Das **Kamerabild** gibt es mit etwa 2 Bildern pro Sekunde, wenn man es über die Schnittstelle einschaltet.
