@@ -56,7 +56,9 @@
       box.innerHTML = '<p class="note small"><strong>✏️ Diese Seite wird gerade bearbeitet:</strong> ' + prs.map(function (pr) {
         var x = document.createElement('a'); x.href = pr.url; x.target = '_blank'; x.rel = 'noopener'; x.textContent = '#' + pr.number + ' ' + pr.title;
         return x.outerHTML + (pr.user ? ' von @' + pr.user.replace(/[^\w-]/g, '') : '');
-      }).join(', ') + ' – bitte <a href="#bearbeiten" data-edit-open>dort weiterarbeiten</a> statt einen zweiten Pull Request zu starten.</p>';
+      }).join(', ') + ' – bitte <a data-edit-open>dort weiterarbeiten</a> statt einen zweiten Pull Request zu starten.</p>';
+      // set via the DOM: written into the HTML, the link check (_scripts/check_site.rb) would read it as a link on every page
+      box.querySelector('[data-edit-open]').href = '#bearbeiten';
       var main = document.querySelector('main');
       if (main) main.insertBefore(box, main.firstChild);
       box.addEventListener('click', function (e) {
