@@ -54,16 +54,31 @@ var GitHubApi = (function () {
       cache: "no-store"
     }).then(function (r) {
       return r.text().then(function (txt) {
-        var data = txt ? JSON.parse(txt) : null;
-        if (!r.ok) {
-          var msg = (data && data.message) || r.statusText;
-          if (r.status === 401) msg = "Token ungültig oder abgelaufen.";
-          if (r.status === 403 || r.status === 404) msg += " (fehlt dem Token die Berechtigung für " + repo() + "?)";
-          var err = new Error(msg); err.status = r.status; throw err;
-        }
+        var data = null;
+        try { data = txt ? JSON.parse(txt) : null; } catch (e) { data = null; }
+        if (!r.ok) throw explain(r, data);
         return data;
       });
+    }, function () { // fetch itself failed: offline, DNS, blocked
+      throw failure("network", 0, "Keine Verbindung zu GitHub – bitte die Internetverbindung prüfen und nochmal versuchen.");
     });
+  }
+  // Error with a German message and a kind the form can react to: auth (connect again), rate (wait), permission,
+  // notfound, conflict (422 – e.g. branch moved or file exists), network, other. err.status = HTTP status.
+  function failure(kind, status, msg) { var err = new Error(msg); err.kind = kind; err.status = status; return err; }
+  function explain(r, data) {
+    var gh = (data && data.message) || r.statusText || "Fehler";
+    if (r.status === 401) return failure("auth", 401, "Dein GitHub-Token ist abgelaufen oder ungültig. Bitte neu verbinden – deine Eingaben bleiben erhalten.");
+    var remaining = r.headers.get("X-RateLimit-Remaining"), reset = +r.headers.get("X-RateLimit-Reset");
+    if ((r.status === 403 || r.status === 429) && (remaining === "0" || r.headers.get("Retry-After"))) {
+      var when = reset ? new Date(reset * 1000) : null;
+      return failure("rate", r.status, "GitHub bremst gerade (zu viele Anfragen)." + (when ? " Ab " + String(when.getHours()).padStart(2, "0") + ":" + String(when.getMinutes()).padStart(2, "0") + " Uhr geht es wieder." : " Bitte in ein paar Minuten nochmal versuchen."));
+    }
+    if (r.status === 403) return failure("permission", 403, "Das Token darf das nicht (" + gh + "). Beim Token für " + repo() + " „Contents“ und „Pull requests“ auf „Read and write“ stellen.");
+    if (r.status === 404) return failure("notfound", 404, "Nicht gefunden (" + gh + ") – fehlt dem Token der Zugriff auf " + repo() + "?");
+    if (r.status === 409 || r.status === 422) return failure("conflict", r.status, "GitHub hat die Änderung abgelehnt: " + gh);
+    if (r.status >= 500) return failure("other", r.status, "GitHub hat gerade ein Problem (" + r.status + "). Bitte gleich nochmal versuchen.");
+    return failure("other", r.status, gh);
   }
 
   // Who is connected and may they push to the repository? → { login, avatar, name, canPush }

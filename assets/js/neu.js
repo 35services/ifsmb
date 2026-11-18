@@ -226,7 +226,7 @@ var NeuFormular = (function () {
         adresse("instagram", "Instagram", { mehr: true }),
         text("logo", "Logo", { mehr: true, platzhalter: "/assets/images/partner/<name>.png" }),
         haken("logo_dark", "Logo hat helle Elemente (dunkler Hintergrund)", { mehr: true }),
-        text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partner/<name>/" })
+        text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partner/<name>/", hilfe: "Nur unsere eigene Unterseite (partner/<name>/index.md) – die Website des Partners gehört oben in „Website“." })
       ]
     },
     pressebericht: {
@@ -451,7 +451,7 @@ var NeuFormular = (function () {
       var sl = e.target.closest("[data-slot]"); if (!sl) return;
       e.preventDefault(); sl.classList.remove("media-drop");
       var i = +e.dataTransfer.getData("text/x-ifsmb-photo"), p = aktiv.photos[i], slot = direct.slots().filter(function (x) { return x.id === sl.getAttribute("data-slot"); })[0];
-      if (p && slot) direct.assign(p, slot).then(direct.showPhotos, function (err) { status.textContent = "⚠️ " + err.message; });
+      if (p && slot) direct.assign(p, slot).then(direct.showPhotos, function (err) { direct.showError(err); });
     });
     // direct pull requests: github-api.js is small – load it with the dialog to know whether a token is there
     if (window.ladeSkripte) window.ladeSkripte(["github-api.js"]).then(function () { direct.update(); }).catch(function () {});
@@ -735,6 +735,15 @@ var NeuFormular = (function () {
       if (area === "news") name = name.replace(/^\d{4}-\d{2}-\d{2}-/, "");
       return "assets/images/" + area + "/" + (name || "neu") + "/";
     },
+    // Error from GitHubApi (err.kind, see github-api.js): message in the status line, plus the matching next step
+    showError: function (err) {
+      status.textContent = "⚠️ " + err.message + " ";
+      if (err.kind === "auth") {
+        var b = F.el('<button type="button" class="btn btn-small">🔑 Neu verbinden</button>');
+        b.addEventListener("click", function () { GitHubApi.logout(); direct.update(); direct.connectDialog(); });
+        status.appendChild(b);
+      }
+    },
     // Editing: is there already an open pull request that changes this file? Then offer to continue there (same branch,
     // no second PR) – otherwise two people edit the same page in parallel and the second merge conflicts.
     checkOpenPulls: function () {
@@ -771,7 +780,7 @@ var NeuFormular = (function () {
         box.innerHTML = '<strong>✏️ Du arbeitest in <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a> weiter</strong> – Speichern ergänzt diesen Pull Request um einen Commit.";
         submitBtn.textContent = "🚀 In #" + pr.number + " speichern";
         status.textContent = "Stand aus #" + pr.number + " geladen.";
-      }).catch(function (err) { status.textContent = "⚠️ " + err.message; });
+      }).catch(function (err) { direct.showError(err); });
     },
     // Where photos can be used in this form – derived from the fields the type has, so every resource gets its own
     // uses: gallery in the text, cover/device photo, profile photo, logo (partner card), social media preview.
@@ -839,12 +848,13 @@ var NeuFormular = (function () {
       var p = aktiv.photos[i], slot = direct.slots().filter(function (x) { return x.id === slotId; })[0];
       if (!p || !slot) return;
       (direct.uses(p, slot) ? Promise.resolve(direct.unassign(p, slot)) : direct.assign(p, slot))
-        .then(direct.showPhotos, function (err) { status.textContent = "⚠️ " + err.message; });
+        .then(direct.showPhotos, function (err) { direct.showError(err); });
     },
     update: function () {
       if (!d || !aktiv) return;
       var on = direct.active();
       githubBtn.textContent = on ? "🔑 GitHub ✓" : "🔑 GitHub verbinden";
+      if (on) GitHubApi.whoAmI().then(function (me) { if (direct.active()) githubBtn.textContent = "🔑 @" + me.login; }, function () {});
       githubBtn.title = on ? "Mit GitHub verbunden – Pull Requests direkt von hier" : "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)";
       fotosBtn.hidden = !direct.slots().length;
       if (on) {
@@ -931,7 +941,7 @@ var NeuFormular = (function () {
             direct.showPhotos();
             status.textContent = added.length + " Foto(s) vorbereitet – " + (slots.length === 1 ? "eingefügt" : "jetzt eine Verwendung wählen") + ". Hochgeladen wird mit dem Pull Request (nicht im Entwurf gespeichert).";
           });
-        }).catch(function (err) { status.textContent = "⚠️ " + err.message; });
+        }).catch(function (err) { direct.showError(err); });
       });
       input.click();
     },
@@ -968,6 +978,8 @@ var NeuFormular = (function () {
       });
       if (unused) status.textContent = unused + " Foto(s) werden nirgends verwendet und nicht hochgeladen.";
       submitBtn.disabled = true;
+      var label = submitBtn.textContent;
+      submitBtn.textContent = "⏳ Wird gesendet …";
       var state = aktiv, step = function (t) { status.textContent = t; };
       GitHubApi.whoAmI().then(function (me) {
         u = me;
@@ -999,8 +1011,8 @@ var NeuFormular = (function () {
         direct.clearPhotos();
         status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke!";
       }).catch(function (err) {
-        if (aktiv === state) status.textContent = "⚠️ " + err.message;
-      }).then(function () { submitBtn.disabled = false; });
+        if (aktiv === state) direct.showError(err);
+      }).then(function () { submitBtn.disabled = false; if (submitBtn.textContent === "⏳ Wird gesendet …") submitBtn.textContent = label; });
     },
     // small dialog: paste a fine-grained token, check it, remember it (or not), disconnect
     connectDialog: function (then) {
@@ -1010,7 +1022,7 @@ var NeuFormular = (function () {
           g = F.dialog({ id: "github-connect", klasse: "github-dialog", titel: "🔑 Mit GitHub verbinden" });
           g.insertAdjacentHTML("beforeend", '<div class="github-body">'
             + '<p>Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.</p>'
-            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – „Fine-grained“, nur das Repository <code>' + esc(GitHubApi.repo()) + '</code>, Berechtigungen <em>Contents</em> und <em>Pull requests</em>: „Read and write“, kurze Laufzeit.</li>'
+            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt. Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>' + esc(GitHubApi.repo()) + '</code> wählen, dann „Generate token“.</li>'
             + "<li>Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.</li></ol>"
             + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>'
             + '<label class="form-check"><input type="checkbox" data-remember><span>Auf diesem Gerät merken</span><small class="form-hilfe">Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.</small></label>'
