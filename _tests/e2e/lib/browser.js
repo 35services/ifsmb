@@ -187,8 +187,11 @@ async function launchChrome({ headless = process.env.HEADLESS !== "0" } = {}) {
     async close() {
       try { await Promise.race([conn.send("Browser.close"), timeout(3000, "close")]); } catch (e) { /* already gone or hanging */ }
       try { ws.close(); } catch (e) { /* closed */ }
-      if (proc.exitCode === null) { proc.kill("SIGKILL"); await new Promise((r) => proc.once("exit", r)); }
-      fs.rmSync(userDir, { recursive: true, force: true });
+      // Browser.close answers before the process is gone – wait for the exit (Chrome still writes its profile), then kill
+      const exited = () => proc.exitCode !== null || proc.signalCode !== null;
+      if (!exited()) await Promise.race([new Promise((r) => proc.once("exit", r)), new Promise((r) => setTimeout(r, 5000).unref())]);
+      if (!exited()) { proc.kill("SIGKILL"); await new Promise((r) => proc.once("exit", r)); }
+      try { fs.rmSync(userDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch (e) { /* temp dir – not worth failing a test run */ }
     }
   };
   return browser;

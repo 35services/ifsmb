@@ -181,11 +181,13 @@ async function startEnv({ site = SITE } = {}) {
     async closePeople() { while (people.length) await people.pop().close(); },
     makePng(name, o) { return makePng(path.join(tmp, name), o); },
     async close() {
-      await env.closePeople().catch(() => {});
-      await browser.close();
-      await staticServer.close();
-      await fake.close();
-      fs.rmSync(tmp, { recursive: true, force: true });
+      // always stop the servers, even if Chrome fails to close – otherwise the test process never ends
+      try { await env.closePeople().catch(() => {}); await browser.close(); }
+      finally {
+        await staticServer.close();
+        await fake.close();
+        fs.rmSync(tmp, { recursive: true, force: true });
+      }
     }
   };
   return env;
