@@ -15,7 +15,7 @@ verlinkt:
   - /projekte/3d-druck-ag-rosalind-franklin-gymnasium/
   - /kalender/2026-10-05-augenrahmen-zu-besuch-in-der-ag/
   - /kalender/2026-10-06-augenrahmen-rosalind/
-  - /projekte/impasto/
+  - /projekte/nonplanarer-druck/#impasto
 image: /assets/images/projekte/augenrahmen/01.jpg
 uuid: 52931a75-f8b0-44ae-8fc8-e1542f29e662
 ---
