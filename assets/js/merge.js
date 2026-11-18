@@ -56,6 +56,20 @@ var FileMerge = (function () {
     return parts;
   }
 
+  // List fields (tags, team, partners …) changed on both sides: merge as sets – theirs + what I added − what I removed.
+  // → raw block, or null if it's not a list or one side adds what the other removes (then it stays a conflict).
+  function mergeList(key, B, A, T) {
+    function list(raw) { if (raw === "") return []; var v = F.yamlValue(raw); return Array.isArray(v) ? v : v === "" ? [] : null; }
+    var b = list(B), a = list(A), t = list(T);
+    if (!b || !a || !t) return null;
+    var added = a.filter(function (x) { return b.indexOf(x) < 0; }), removed = b.filter(function (x) { return a.indexOf(x) < 0; });
+    var theirsAdded = t.filter(function (x) { return b.indexOf(x) < 0; }), theirsRemoved = b.filter(function (x) { return t.indexOf(x) < 0; });
+    if (added.some(function (x) { return theirsRemoved.indexOf(x) >= 0; }) || removed.some(function (x) { return theirsAdded.indexOf(x) >= 0; })) return null;
+    var out = t.filter(function (x) { return removed.indexOf(x) < 0; });
+    added.forEach(function (x) { if (out.indexOf(x) < 0) out.push(x); });
+    return out.length ? key + ": " + F.yamlListe(out) : "";
+  }
+
   // front matter blocks → ordered keys + Map(key → raw); comments and other unkeyed blocks get a key from their text
   function blocks(text) {
     var f = F.splitFile(text);
@@ -99,6 +113,10 @@ var FileMerge = (function () {
       order.forEach(function (k) {
         var B = fb.map.has(k) ? [fb.map.get(k)] : [], A = fm.map.has(k) ? [fm.map.get(k)] : [], T = ft.map.has(k) ? [ft.map.get(k)] : [];
         var r = resolve(B, A, T);
+        if (r.conflict && k.charAt(0) !== "#") {
+          var merged = mergeList(k, B.join(""), A.join(""), T.join(""));
+          if (merged !== null) { parts.push({ field: merged === "" ? [] : [merged] }); return; }
+        }
         if (r.conflict) add({ where: "field", key: k.charAt(0) === "#" ? null : k, base: B.join(""), mine: A.join(""), theirs: T.join("") });
         else parts.push({ field: r.lines });
       });

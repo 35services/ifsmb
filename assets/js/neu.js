@@ -278,7 +278,7 @@ var NeuFormular = (function () {
     }).map(function (f) { return f.name; });
   }
   function speichereEntwurf() {
-    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source })); } catch (e) { /* storage blocked */ }
+    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source, pr: aktiv.prBase || null, savedAt: Date.now() })); } catch (e) { /* storage blocked */ }
   }
   function ladeEntwurf() {
     try { return JSON.parse(localStorage.getItem(aktiv.schluessel) || "null"); } catch (e) { return null; }
@@ -737,7 +737,7 @@ var NeuFormular = (function () {
     },
     // Error from GitHubApi (err.kind, see github-api.js): message in the status line, plus the matching next step
     showError: function (err) {
-      status.textContent = "⚠️ " + err.message + " ";
+      status.textContent = (err.kind === "info" ? "ℹ️ " : "⚠️ ") + err.message + " ";
       if (err.kind === "auth") {
         var b = F.el('<button type="button" class="btn btn-small">🔑 Neu verbinden</button>');
         b.addEventListener("click", function () { GitHubApi.logout(); direct.update(); direct.connectDialog(); });
@@ -748,39 +748,128 @@ var NeuFormular = (function () {
     // no second PR) – otherwise two people edit the same page in parallel and the second merge conflicts.
     checkOpenPulls: function () {
       var state = aktiv;
-      if (!state || !state.edit || !direct.active()) return;
-      GitHubApi.openPullsForFile(state.path).then(function (prs) {
-        if (aktiv !== state || !prs.length) return;
+      if (!state || !state.edit || state.prBase || !direct.active()) return;
+      Promise.all([GitHubApi.openPullsForFile(state.path, true), GitHubApi.whoAmI()]).then(function (res) {
+        var prs = res[0].filter(function (pr) { return pr.status !== "removed"; }), me = res[1];
+        if (aktiv !== state || state.prBase || !prs.length) return;
         state.openPulls = prs;
-        var box = F.el('<div class="form-pr-notice note small" role="status"></div>');
+        var box = direct.noticeBox();
+        var own = prs.filter(function (pr) { return pr.sameRepo && pr.user === me.login; })[0];
+        if (own) { // your own open PR: carry on there instead of starting a second one
+          direct.pickUp(own, "Du hast diese Seite schon in #" + own.number + " geändert – du arbeitest dort weiter.", true);
+          return;
+        }
         box.innerHTML = "<strong>⚠️ Diese Seite wird gerade schon geändert:</strong><ul>" + prs.map(function (pr, i) {
           return '<li><a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a>"
             + (pr.user ? " von @" + esc(pr.user) : "")
-            + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " weiterarbeiten</button>" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
-        }).join("") + "</ul><span>Sonst entsteht ein zweiter Pull Request mit demselben Stand von <code>main</code> – beim Mergen gibt es dann Konflikte.</span>";
-        box.addEventListener("click", function (e) {
-          var b = e.target.closest("[data-pr-continue]"); if (b) direct.pickUp(prs[+b.getAttribute("data-pr-continue")], box);
-        });
-        hinweisEl.after(box);
+            + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
+        }).join("") + "</ul><span>Mit „mitschicken“ landet deine Änderung im selben Pull Request – was du schon eingetragen hast, wird übernommen. Sonst entsteht ein eigener Pull Request.</span>";
+        box.onclick = function (e) {
+          var b = e.target.closest("[data-pr-continue]"); if (b) direct.pickUp(prs[+b.getAttribute("data-pr-continue")]);
+        };
       }, function () { /* no check possible – the normal path still works */ });
     },
-    // load the file as it is in the pull request's branch and commit there on submit
-    pickUp: function (pr, box) {
-      var state = aktiv;
+    // one notice box under the hint line (open PRs, PR mode, carried-over drafts)
+    noticeBox: function () {
+      var box = d.querySelector(".form-pr-notice");
+      if (!box) { box = F.el('<div class="form-pr-notice note small" role="status"></div>'); hinweisEl.after(box); }
+      box.onclick = null;
+      return box;
+    },
+    // PR mode: show which PR the form saves into, with a way out ("own pull request instead")
+    showPrMode: function (text) {
+      var pr = aktiv.prBase, box = direct.noticeBox();
+      box.innerHTML = "<strong>✏️ " + esc(text || "Du arbeitest in #" + pr.number + " weiter.") + '</strong> <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " ansehen ↗</a>"
+        + " – Speichern ergänzt diesen Pull Request um einen Commit."
+        + (aktiv.sent ? "" : ' <button type="button" class="btn btn-small btn-ghost" data-pr-leave>Stattdessen eigener Pull Request</button>');
+      box.onclick = function (e) {
+        if (!e.target.closest("[data-pr-leave]")) return;
+        // keep the form as it is; base stays the PR's state, so on submit only MY changes are merged onto main
+        aktiv.prBase = null; box.remove(); direct.update(); speichereEntwurf();
+        status.textContent = "Ok – es wird ein eigener Pull Request nur mit deinen Änderungen.";
+      };
+      direct.update();
+    },
+    // continue in an open PR: load the file from its branch and carry over what was already typed (merge, K07)
+    pickUp: function (pr, text, quiet) {
+      var state = aktiv, mine = dateiInhalt(), base = state.edit.source;
+      if (state.pickingUp || (state.prBase && state.prBase.number === pr.number)) return; // already (being) picked up
+      state.pickingUp = true;
       status.textContent = "Lade den Stand aus #" + pr.number + " …";
-      GitHubApi.readFile(state.path, pr.branch).then(function (source) {
+      Promise.all([GitHubApi.readFile(state.path, pr.branch), withMerge()]).then(function (res) {
+        var theirs = res[0];
         if (aktiv !== state) return;
-        if (source == null) throw new Error("Die Datei gibt es im Branch von #" + pr.number + " nicht.");
-        var loaded = readSource(state.schema, source, state.path);
-        if (!loaded) throw new Error("Die Datei in #" + pr.number + " hat kein Front Matter.");
-        state.edit = loaded; state.prBase = pr; state.beruehrt = allTouched();
-        state.w = JSON.parse(JSON.stringify(loaded.w0));
-        direct.clearPhotos();
-        baueFelder(); zeigeVorschau();
-        box.innerHTML = '<strong>✏️ Du arbeitest in <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a> weiter</strong> – Speichern ergänzt diesen Pull Request um einen Commit.";
-        submitBtn.textContent = "🚀 In #" + pr.number + " speichern";
-        status.textContent = "Stand aus #" + pr.number + " geladen.";
-      }).catch(function (err) { direct.showError(err); });
+        if (theirs == null) throw new Error("Die Datei gibt es im Branch von #" + pr.number + " nicht.");
+        state.prBase = { number: pr.number, url: pr.url, branch: pr.branch };
+        var r = FileMerge.merge(base, mine, theirs);
+        if (r.conflicts.length) { direct.showConflicts(r, theirs, "#" + pr.number); direct.showPrMode(text); return; }
+        direct.rebase(theirs, r.build());
+        direct.showPrMode(text);
+        status.textContent = quiet ? "" : mine === base ? "Stand aus #" + pr.number + " geladen." : "Stand aus #" + pr.number + " geladen – deine Eingaben sind übernommen.";
+      }).catch(function (err) { direct.showError(err); }).then(function () { state.pickingUp = false; });
+    },
+    // put the form onto a new base (the file as it is now on main or a PR branch) with values from result
+    rebase: function (baseText, resultText) {
+      var loaded = readSource(aktiv.schema, baseText, aktiv.path), res = readSource(aktiv.schema, resultText, aktiv.path);
+      if (!loaded || !res) throw new Error("Die Datei hat kein Front Matter.");
+      aktiv.edit = loaded; aktiv.beruehrt = allTouched();
+      aktiv.w = JSON.parse(JSON.stringify(res.w0));
+      baueFelder(); zeigeVorschau(); speichereEntwurf();
+    },
+    // a draft from earlier that doesn't fit the current file any more: merge it onto the current state (K14/K15)
+    restoreDraft: function (draft) {
+      var state = aktiv, when = draft.savedAt ? new Date(draft.savedAt) : null;
+      var label = when ? when.toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "früher";
+      withMerge().then(function () {
+        var old = readSource(state.schema, draft.source, state.path);
+        if (!old || aktiv !== state) return;
+        var mine = editedText(state.schema, old, Object.assign(JSON.parse(JSON.stringify(old.w0)), draft.w));
+        if (mine === draft.source) return; // the draft had no changes
+        if (draft.pr && direct.active()) { // draft belonged to an open PR: continue there
+          state.edit = old;
+          state.w = Object.assign(JSON.parse(JSON.stringify(old.w0)), draft.w);
+          baueFelder(); zeigeVorschau();
+          direct.pickUp(draft.pr, "Dein Entwurf vom " + label + " gehört zu #" + draft.pr.number + " – du arbeitest dort weiter.");
+          return;
+        }
+        var r = FileMerge.merge(draft.source, mine, state.edit.source);
+        if (r.conflicts.length) { direct.showConflicts(r, state.edit.source, "der Seite"); status.textContent = "Dein Entwurf vom " + label + " ist älter als die Seite – bitte die Konflikte unten lösen."; return; }
+        direct.rebase(state.edit.source, r.build());
+        status.textContent = "Dein Entwurf vom " + label + " wurde auf den neuen Stand der Seite übertragen.";
+      });
+    },
+    // Conflict box: one entry per field/passage with the choices; "Übernehmen" puts the form onto theirs + choices
+    showConflicts: function (r, theirs, where) {
+      var state = aktiv, box = d.querySelector(".form-conflicts");
+      if (box) box.remove();
+      box = F.el('<section class="form-conflicts" role="alert"></section>');
+      function label(c) {
+        if (c.where === "text") return "Text";
+        var f = state.felder.filter(function (x) { return x.name === c.key; })[0];
+        return f ? f.label.replace(/^\W+\s*/, "") : c.key || "Feld";
+      }
+      function show(t) { return t === "" ? '<em class="muted">(leer / gelöscht)</em>' : "<pre>" + esc(t) + "</pre>"; }
+      box.innerHTML = "<h3>⚠️ " + r.conflicts.length + (r.conflicts.length === 1 ? " Konflikt" : " Konflikte") + " – bitte entscheiden</h3>"
+        + '<p class="small">Seit du angefangen hast, hat jemand in ' + esc(where) + " dieselben Stellen geändert. Was nicht überlappt, ist schon zusammengeführt.</p>"
+        + r.conflicts.map(function (c) {
+          return '<fieldset class="form-conflict"><legend>' + esc(label(c)) + "</legend>"
+            + '<div class="form-conflict-versions"><div><strong>Deine Version</strong>' + show(c.mine) + "</div><div><strong>Neuere Version</strong>" + show(c.theirs) + "</div></div>"
+            + '<label><input type="radio" name="' + c.id + '" value="mine" checked> Meine Version</label> '
+            + '<label><input type="radio" name="' + c.id + '" value="theirs"> Neuere Version</label>'
+            + (c.where === "text" ? ' <label><input type="radio" name="' + c.id + '" value="both"> Beide</label>' : "")
+            + "</fieldset>";
+        }).join("")
+        + '<p><button type="button" class="btn" data-conflicts-apply>✅ Übernehmen</button> <span class="small muted">Danach kannst du alles im Formular noch anpassen und dann senden.</span></p>';
+      links.parentNode.insertBefore(box, links);
+      submitBtn.disabled = true; submitBtn.title = "Erst die Konflikte oben lösen";
+      box.querySelector("[data-conflicts-apply]").addEventListener("click", function () {
+        var choices = {};
+        r.conflicts.forEach(function (c) { var x = box.querySelector('input[name="' + c.id + '"]:checked'); choices[c.id] = x ? x.value : "mine"; });
+        try { direct.rebase(theirs, r.build(choices)); } catch (err) { direct.showError(err); return; }
+        box.remove(); submitBtn.disabled = false; submitBtn.title = "";
+        status.textContent = "Konflikte gelöst – bitte kurz prüfen und dann senden.";
+      });
+      box.scrollIntoView({ block: "nearest" });
     },
     // Where photos can be used in this form – derived from the fields the type has, so every resource gets its own
     // uses: gallery in the text, cover/device photo, profile photo, logo (partner card), social media preview.
@@ -858,7 +947,7 @@ var NeuFormular = (function () {
       githubBtn.title = on ? "Mit GitHub verbunden – Pull Requests direkt von hier" : "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)";
       fotosBtn.hidden = !direct.slots().length;
       if (on) {
-        submitBtn.textContent = aktiv.edit ? "🚀 Änderung als Pull Request" : "🚀 Als Pull Request anlegen";
+        submitBtn.textContent = aktiv.prBase ? "🚀 In #" + aktiv.prBase.number + " speichern" : aktiv.edit ? "🚀 Änderung als Pull Request" : "🚀 Als Pull Request anlegen";
         stepsEl.innerHTML = "<li>„Als Pull Request“ legt einen neuen Branch mit "
           + (aktiv.edit ? "der geänderten Datei" : "der neuen Datei") + " und allen verwendeten Fotos an und öffnet einen Pull Request.</li>"
           + "<li>Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.</li>";
@@ -907,8 +996,8 @@ var NeuFormular = (function () {
     // next free number NN in the folder: existing files on GitHub + photos added in this form
     nextNumber: function (folder) {
       var taken = (aktiv.photos || []).map(function (p) { return parseInt(p.name, 10); });
-      return GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch).then(function (names) {
-        names.forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
+      return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
+        res[0].concat(res[1]).forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
         return taken.reduce(function (a, b) { return Math.max(a, b); }, 0) + 1;
       });
     },
@@ -970,7 +1059,7 @@ var NeuFormular = (function () {
         ["", "-600w", "-social"].forEach(function (v) { newText = newText.split(direct.url(p, v)).join(direct.url({ folder: folder, name: p.name }, v)); });
         p.folder = folder;
       });
-      var files = [{ path: path, text: newText }];
+      var files = [{ path: path, text: newText }], parent = null;
       usage.forEach(function (u) {
         var base = direct.url(u.p).slice(1);
         if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
@@ -989,11 +1078,10 @@ var NeuFormular = (function () {
         }).then(function (prs) {
           if (prs && prs.length) throw new Error("Pull Request #" + prs[0].number + " („" + prs[0].title + "“) legt " + path + " schon an – bitte dort weitermachen oder den Dateinamen ändern.");
         });
-        return GitHubApi.readFile(path, state.prBase && state.prBase.branch).then(function (cur) {
-          if (cur != null && cur !== state.edit.source && !state.overwriteOk) {
-            state.overwriteOk = true;
-            throw new Error("Die Datei wurde inzwischen auf GitHub geändert. Nochmal klicken legt den Pull Request trotzdem an – beim Mergen ggf. zusammenführen.");
-          }
+        return direct.prepareEdit(state, path, newText).then(function (prep) {
+          if (prep.stop) throw prep.stop;
+          files[0].text = newText = prep.text;
+          parent = prep.parent;
         });
       }).then(function () {
         var body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf ifsmb.de von @" + u.login
@@ -1002,17 +1090,79 @@ var NeuFormular = (function () {
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
           + "- [ ] Checks („Prüfen“) sind grün\n";
-        return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase });
+        return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase, parent: parent });
       }).then(function (pr) {
         if (aktiv !== state) return;
         loescheEntwurf();
-        state.gesendet = true;
+        state.gesendet = true; state.retries = 0;
         state.sent = { text: newText, url: pr.url, number: pr.number };
         direct.clearPhotos();
-        status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke!";
+        // stay in this pull request: further changes become more commits there, not a second PR (K17–K19)
+        var branch = pr.branch || (state.prBase && state.prBase.branch);
+        state.prBase = { number: pr.number, url: pr.url, branch: branch };
+        if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
+        state.edit = readSource(state.schema, newText, path) || state.edit;
+        state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+        baueFelder(); zeigeVorschau();
+        direct.showPrMode("Gespeichert in #" + pr.number + ".");
+        status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke! Weitere Änderungen landen im selben Pull Request.";
       }).catch(function (err) {
-        if (aktiv === state) direct.showError(err);
-      }).then(function () { submitBtn.disabled = false; if (submitBtn.textContent === "⏳ Wird gesendet …") submitBtn.textContent = label; });
+        if (aktiv !== state) return;
+        // someone pushed to the branch in between: fetch, merge and try again (max. 3×, K09)
+        if (err.kind === "conflict" && /fast.forward/i.test(err.message) && (state.retries || 0) < 3) {
+          state.retries = (state.retries || 0) + 1; status.textContent = "Inzwischen hat jemand gespeichert – führe zusammen …";
+          setTimeout(function () { submitBtn.disabled = false; direct.submit(); }, 0);
+          return;
+        }
+        state.retries = 0;
+        if (err.prGone) { direct.prGone(err.prGone); return; }
+        if (err.conflicts) return; // conflict box is open
+        direct.showError(err);
+      }).then(function () {
+        submitBtn.disabled = !!d.querySelector(".form-conflicts"); // stays off while the conflict box is open
+        if (submitBtn.textContent === "⏳ Wird gesendet …") { submitBtn.textContent = label; direct.update(); }
+      });
+    },
+    // Before an edit is sent: where does it go (main or the PR's branch), is that PR still open, and what is there NOW?
+    // If the file changed since the form was loaded, merge (base = loaded, mine = form, theirs = now) – automatically
+    // if nothing overlaps, otherwise open the conflict box and stop. → { text, parent } or { stop: Error }
+    prepareEdit: function (state, path, mineText) {
+      var check = state.prBase ? GitHubApi.getPull(state.prBase.number) : Promise.resolve(null);
+      return Promise.all([check, withMerge()]).then(function (res) {
+        var pr = res[0];
+        if (pr && (pr.state !== "open")) { var gone = new Error("gone"); gone.prGone = pr; throw gone; }
+        return GitHubApi.headSha(state.prBase ? state.prBase.branch : null);
+      }).then(function (head) {
+        if (!head) { var gone = new Error("gone"); gone.prGone = { number: state.prBase.number, url: state.prBase.url, state: "closed", branchGone: true }; throw gone; }
+        return GitHubApi.readFile(path, head).then(function (theirs) {
+          var mine = mineText, base = state.edit.source;
+          if (theirs == null) return { stop: new Error("Die Datei " + path + " gibt es dort nicht mehr – sie wurde inzwischen gelöscht oder umbenannt.") };
+          if (theirs === base) return { text: mine, parent: head };
+          var r = FileMerge.merge(base, mine, theirs);
+          if (r.conflicts.length) {
+            direct.showConflicts(r, theirs, state.prBase ? "#" + state.prBase.number : "der Seite");
+            var stop = new Error("conflicts"); stop.conflicts = true; return { stop: stop };
+          }
+          var merged = r.build();
+          direct.rebase(theirs, merged); // the form now shows the combined state
+          if (merged === theirs) return { stop: Object.assign(new Error("Deine Änderungen sind dort schon enthalten – nichts zu senden."), { kind: "info" }) };
+          status.textContent = "ℹ️ Die Seite wurde inzwischen geändert – deine Änderung wird auf den neuen Stand übertragen.";
+          return { text: merged, parent: head };
+        });
+      });
+    },
+    // the PR the form saves into was merged or closed meanwhile (or its branch is gone): offer a new PR (K10–K12)
+    prGone: function (pr) {
+      var box = direct.noticeBox(), merged = pr.merged;
+      box.innerHTML = "<strong>" + (merged ? "✅ #" + pr.number + " ist inzwischen gemergt." : "⚠️ #" + pr.number + (pr.branchGone ? " gibt es so nicht mehr (Branch gelöscht)." : " wurde inzwischen geschlossen.")) + "</strong> "
+        + "Deine Änderungen sind noch da. "
+        + '<button type="button" class="btn btn-small" data-pr-new>Neuen Pull Request anlegen</button>';
+      box.onclick = function (e) {
+        if (!e.target.closest("[data-pr-new]")) return;
+        aktiv.prBase = null; aktiv.sent = null; box.remove(); direct.update();
+        status.textContent = "Ok – beim Senden entsteht ein neuer Pull Request auf dem aktuellen Stand.";
+      };
+      status.textContent = "";
     },
     // small dialog: paste a fine-grained token, check it, remember it (or not), disconnect
     connectDialog: function (then) {
@@ -1052,6 +1202,8 @@ var NeuFormular = (function () {
       });
     }
   };
+  // three-way merge (assets/js/merge.js), loaded on first use
+  function withMerge() { return window.FileMerge ? Promise.resolve(window.FileMerge) : window.ladeSkripte(["merge.js"]).then(function () { return window.FileMerge; }); }
   function setText(v) {
     aktiv.w.text = v;
     var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
@@ -1069,7 +1221,7 @@ var NeuFormular = (function () {
     + "<li>Nach dem Merge ist die Änderung nach ein paar Minuten auf der Website.</li>";
   // switch the dialog between "new file" and "edit existing file"
   function setMode(editing) {
-    d.querySelectorAll(".form-pr-notice").forEach(function (x) { x.remove(); });
+    d.querySelectorAll(".form-pr-notice, .form-conflicts").forEach(function (x) { x.remove(); });
     stepsEl.innerHTML = editing ? STEPS_EDIT : STEPS_NEW;
     discardBtn.textContent = editing ? "↩️ Änderungen verwerfen" : "🗑️ Neu anfangen";
     submitBtn.textContent = editing ? "📋 Auf GitHub speichern" : "📋 Auf GitHub anlegen";
@@ -1122,9 +1274,10 @@ var NeuFormular = (function () {
       aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], edit: loaded, path: data.path,
         schluessel: "ifsmb-edit:" + data.path };
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
-      var draft = ladeEntwurf(), draftFits = draft && draft.source === source;
+      var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
       aktiv.w = draftFits ? Object.assign(JSON.parse(JSON.stringify(loaded.w0)), draft.w) : JSON.parse(JSON.stringify(loaded.w0));
-      if (draft && !draftFits) loescheEntwurf(); // the file changed on GitHub since – old draft no longer fits
+      // a draft that no longer fits (the page changed since, or it belongs to an open PR) is never thrown away: it is
+      // carried over onto the current state below (direct.restoreDraft), with a conflict box if both changed the same thing
       setMode(true);
       d.titel("✏️ " + schema.titel + " bearbeiten");
       hinweisEl.textContent = "Änderungen an " + data.path + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.";
@@ -1135,6 +1288,7 @@ var NeuFormular = (function () {
       zeigeVorschau();
       status.textContent = draftFits ? "Entwurf wiederhergestellt." : "";
       if (!d.open) d.showModal();
+      if (draft && !draftFits && draft.source) direct.restoreDraft(draft);
       if (!EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search + "#bearbeiten");
       F.ladeIndex();
       direct.checkOpenPulls();

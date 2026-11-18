@@ -105,6 +105,27 @@ test("Datei ohne Front Matter (YAML-Partner) → pro Feld", () => {
   const r = FileMerge.merge(b, b.replace("alt", "neu"), b.replace("https://a.de/", "https://b.de/"));
   assert.equal(r.conflicts.length, 0); assert.equal(r.build(), "name: Zazza\nurl: https://b.de/\ndescription: neu\n");
 });
+test("Listen: beide fügen Stichworte hinzu → Menge, kein Konflikt", () => {
+  const b = set(base, "team: [falko-richter]", "team: [falko-richter]\ntags: [ktg, zazza]");
+  const mine = set(b, "tags: [ktg, zazza]", "tags: [ktg, zazza, herbst]");
+  const theirs = set(b, "tags: [ktg, zazza]", "tags: [ktg, 3d-drucker, zazza]");
+  const r = FileMerge.merge(b, mine, theirs);
+  assert.equal(r.conflicts.length, 0); assert.ok(r.build().includes("tags: [ktg, 3d-drucker, zazza, herbst]"));
+});
+test("Listen: ich entferne, andere fügen hinzu → beides", () => {
+  const mine = set(base, "team: [falko-richter]", "team: []");
+  const theirs = set(base, "team: [falko-richter]", "team: [falko-richter, anton]");
+  const r = FileMerge.merge(base, mine, theirs);
+  assert.equal(r.conflicts.length, 0); assert.ok(r.build().includes("team: [anton]"));
+});
+test("Listen: verschiedene Einträge hinzugefügt bzw. entfernt → beides", () => {
+  const b = set(base, "team: [falko-richter]", "team: [falko-richter, anton]");
+  const mine = set(b, "team: [falko-richter, anton]", "team: [falko-richter, anton, jan]");
+  const theirs = set(b, "team: [falko-richter, anton]", "team: [falko-richter]");
+  const r = FileMerge.merge(b, mine, theirs);
+  assert.equal(r.conflicts.length, 0, "jan hinzu + anton weg überschneiden sich nicht");
+  assert.ok(r.build().includes("team: [falko-richter, jan]"));
+});
 test("alle echten Inhaltsdateien: mit sich selbst und mit einer fremden Änderung unverändert bzw. sauber", () => {
   const fs = require("node:fs"), path = require("node:path"), root = path.join(__dirname, "..");
   const dirs = ["_posts", "_events", "_projects", "_equipment", "_team", "_herausforderungen", "_press", "_data/partner"];

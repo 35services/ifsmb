@@ -120,29 +120,66 @@ var GitHubApi = (function () {
         function (e) { if (e.status === 404) return []; throw e; });
   }
 
-  // Open pull requests that change (or create) this file – the page's Markdown file is the indicator.
-  // → [{ number, title, url, branch, user, sameRepo, status }]. One request for the list + one per open PR.
-  function openPullsForFile(path) {
+  // All open pull requests with their changed files (max. 30 PRs), cached for 30 s – used for "is this page being
+  // edited?", the page warning and for photo numbers already taken in open PRs.
+  // → [{ number, title, url, branch, user, sameRepo, files: [{ filename, previous_filename, status }] }]
+  var pullsCache = null;
+  function openPulls(fresh) {
+    if (!fresh && pullsCache && Date.now() - pullsCache.at < 30000) return pullsCache.list;
     var r = "/repos/" + repo();
-    return call("GET", r + "/pulls?state=open&per_page=50").then(function (pulls) {
+    var list = call("GET", r + "/pulls?state=open&per_page=50").then(function (pulls) {
       return Promise.all(pulls.slice(0, 30).map(function (pr) {
-        return call("GET", r + "/pulls/" + pr.number + "/files?per_page=100").then(function (files) {
-          var f = files.filter(function (x) { return x.filename === path || x.previous_filename === path; })[0];
-          return f && { number: pr.number, title: pr.title, url: pr.html_url, branch: pr.head.ref, user: pr.user && pr.user.login,
-            sameRepo: !!(pr.head.repo && pr.head.repo.full_name === repo()), status: f.status };
-        }, function () { return null; });
+        return call("GET", r + "/pulls/" + pr.number + "/files?per_page=100").then(function (files) { return files; }, function () { return []; })
+          .then(function (files) {
+            return { number: pr.number, title: pr.title, url: pr.html_url, branch: pr.head.ref, user: pr.user && pr.user.login,
+              sameRepo: !!(pr.head.repo && pr.head.repo.full_name === repo()), files: files };
+          });
       }));
-    }).then(function (list) { return list.filter(Boolean); });
+    });
+    pullsCache = { at: Date.now(), list: list };
+    list.catch(function () { pullsCache = null; });
+    return list;
+  }
+  // Open pull requests that change (or create) this file – the page's Markdown file is the indicator.
+  function openPullsForFile(path, fresh) {
+    return openPulls(fresh).then(function (list) {
+      return list.filter(function (pr) {
+        return pr.files.some(function (f) { return f.filename === path || f.previous_filename === path; });
+      }).map(function (pr) {
+        var f = pr.files.filter(function (x) { return x.filename === path || x.previous_filename === path; })[0];
+        return { number: pr.number, title: pr.title, url: pr.url, branch: pr.branch, user: pr.user, sameRepo: pr.sameRepo, status: f.status };
+      });
+    });
+  }
+  // file names inside folder that open pull requests add (photo numbers must not collide with them)
+  function namesInOpenPulls(folder) {
+    var prefix = folder.replace(/\/?$/, "/");
+    return openPulls().then(function (list) {
+      var names = [];
+      list.forEach(function (pr) { pr.files.forEach(function (f) { if (f.filename.indexOf(prefix) === 0 && f.filename.slice(prefix.length).indexOf("/") < 0) names.push(f.filename.slice(prefix.length)); }); });
+      return names;
+    }, function () { return []; });
+  }
+  // state of one pull request → { number, url, branch, state: "open" | "closed", merged }
+  function getPull(number) {
+    return call("GET", "/repos/" + repo() + "/pulls/" + number).then(function (pr) {
+      return { number: pr.number, url: pr.html_url, branch: pr.head.ref, state: pr.state, merged: !!pr.merged };
+    });
+  }
+  // newest commit of a branch (default: the base branch); null if the branch is gone
+  function headSha(branch) {
+    return call("GET", "/repos/" + repo() + "/git/ref/heads/" + (branch || baseBranch()).split("/").map(encodeURIComponent).join("/"))
+      .then(function (ref) { return ref.object.sha; }, function (e) { if (e.status === 404) return null; throw e; });
   }
 
   function branchName(hint) {
-    var d = new Date(), stamp = d.toISOString().slice(0, 16).replace(/[-:T]/g, "");
+    var d = new Date(), stamp = d.toISOString().slice(0, 19).replace(/[-:T]/g, "") + "-" + Math.random().toString(36).slice(2, 6);
     var slug = String(hint || "aenderung").toLowerCase().replace(/\.[a-z]+$/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
     return "web/" + (me ? me.login.toLowerCase() + "-" : "") + slug + "-" + stamp;
   }
 
   // One commit with all files on a new branch + pull request.
-  // o = { title, body, files: [{ path, text } | { path, blob }], branchHint, onStep(text) }
+  // o = { title, body, files: [{ path, text } | { path, blob }], branchHint, onStep(text), parent? (commit SHA to build on) }
   // With o.pr = { number, url, branch } the commit goes on top of that open pull request's branch instead (no new PR).
   // → Promise<{ url, number, branch, updated }>
   function createPullRequest(o) {
@@ -150,6 +187,7 @@ var GitHubApi = (function () {
     return whoAmI().then(function (u) {
       if (!u.canPush) throw new Error("@" + u.login + " darf in " + repo() + " keine Branches anlegen (Pull Requests aus Forks kommen später).");
       branch = o.pr ? o.pr.branch : branchName(o.branchHint);
+      if (o.parent) return { object: { sha: o.parent } }; // the commit the form merged against (see neu.js direct.submit)
       step("Stand von " + base + " holen …");
       return call("GET", r + "/git/ref/heads/" + base.split("/").map(encodeURIComponent).join("/"));
     }).then(function (ref) {
@@ -193,7 +231,8 @@ var GitHubApi = (function () {
 
   return {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
-    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, createPullRequest: createPullRequest
+    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
+    namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest
   };
 })();
 if (typeof module !== "undefined") module.exports = GitHubApi;
