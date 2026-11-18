@@ -34,6 +34,39 @@
       .catch(function () { window.open(a.href, '_blank', 'noopener'); })
       .then(function () { a.removeAttribute('aria-busy'); });
   });
+  // after DOMContentLoaded: the script loader (formular-config.html) comes later in the page
+  document.addEventListener('DOMContentLoaded', function () {
+    var a = document.querySelector('a[data-edit]');
+    if (!a || !window.ladeSkripte) return;
+    // <page>#bearbeiten (or #edit) opens the edit form directly – the form sets it while it is open
+    if (/^#(bearbeiten|edit)$/.test(location.hash)) {
+      window.ladeSkripte(['formular.js', 'neu.js']).then(function () { return window.NeuFormular.edit(a); }).catch(function () {});
+    }
+    // Only for people connected with GitHub (token in this browser): warn on the page itself if an open pull request
+    // already changes this file. Visitors without a token send no request to GitHub (see Impressum).
+    var connected = false;
+    try { connected = !!(sessionStorage.getItem('ifsmb-github-token') || localStorage.getItem('ifsmb-github-token')); } catch (e) { /* storage blocked */ }
+    if (!connected) return;
+    var path = JSON.parse(a.getAttribute('data-edit')).path;
+    window.ladeSkripte(['github-api.js']).then(function () { return window.GitHubApi.openPullsForFile(path); }).then(function (prs) {
+      if (!prs.length) return;
+      var box = document.createElement('div');
+      box.className = 'container edit-pr-warning';
+      box.setAttribute('role', 'status');
+      box.innerHTML = '<p class="note small"><strong>✏️ Diese Seite wird gerade bearbeitet:</strong> ' + prs.map(function (pr) {
+        var x = document.createElement('a'); x.href = pr.url; x.target = '_blank'; x.rel = 'noopener'; x.textContent = '#' + pr.number + ' ' + pr.title;
+        return x.outerHTML + (pr.user ? ' von @' + pr.user.replace(/[^\w-]/g, '') : '');
+      }).join(', ') + ' – bitte <a data-edit-open>dort weiterarbeiten</a> statt einen zweiten Pull Request zu starten.</p>';
+      // set via the DOM: written into the HTML, the link check (_scripts/check_site.rb) would read it as a link on every page
+      box.querySelector('[data-edit-open]').href = '#bearbeiten';
+      var main = document.querySelector('main');
+      if (main) main.insertBefore(box, main.firstChild);
+      box.addEventListener('click', function (e) {
+        if (!e.target.closest('[data-edit-open]')) return;
+        e.preventDefault(); a.click();
+      });
+    }).catch(function () {});
+  });
 </script>
 {%- else -%}
 <a class="btn btn-small edit-btn" href="{{ edit_url }}" target="_blank" rel="noopener" title="Diese Seite auf GitHub bearbeiten"><span aria-hidden="true">✏️</span><span class="sr-only">Bearbeiten</span></a>
