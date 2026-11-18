@@ -11,7 +11,10 @@ ruby _scripts/check_site.rb # nach dem Build: tote Links, verwaiste Seiten, Geok
 ruby _scripts/check_galerien.rb # Galerien müssen Markdown sein (keine HTML-Galerien)
 ruby _scripts/check_geodaten.rb # Fotos dürfen keine Geokoordinaten (EXIF-GPS/XMP) enthalten
 ruby _scripts/test_formulare.rb # Formulare (➕, Todos) ↔ Vorlagen ↔ Pages CMS (.pages.yml); braucht Node
+_scripts/test_e2e.sh            # E2E: ➕/✏️-Formulare mit GitHub-Verbindung in Headless-Chrome gegen ein Fake-GitHub (baut vorher; --no-build)
 ```
+
+**E2E-Tests** (`_tests/e2e/`, Anleitung in `_tests/e2e/README.md`): `node --test` + Chrome über das DevTools-Protokoll, keine npm-Pakete (Node ≥ 22, Chrome – siehe `DEPENDENCIES.md`). Das Fake-GitHub (`_tests/e2e/lib/fake-github.js`) hält Git und Pull Requests im Speicher und hat eine Steuer-API (`/__fake/…`) für Szenarien (fremde Commits, PRs öffnen/mergen/schließen, abgelaufene Tokens, Fehler einschleusen). `assets/js/github-api.js` nimmt die Fake-Adresse aus `localStorage["ifsmb-github-api"]` nur auf `localhost`/`127.0.0.1`. Wer an `neu.js`, `formular.js`, `github-api.js`, `photo-editor.js` oder `edit-buttons.html` arbeitet, lässt sie laufen und ergänzt Szenarien; in CI läuft `.github/workflows/e2e.yml`.
 
 Nach neuen Seiten/Posts den Link-Check laufen lassen; er läuft auch im Pages-Workflow und stoppt das Deployment bei Fehlern. Externe Links, die dauerhaft tot sind, nicht löschen, sondern in Markdown mit `{: .link-tot}` hinter dem Link markieren (`[Text](url){: .link-tot}`): Das Layout hängt 🪦 an und erklärt das Symbol unten auf der Seite; `--extern` prüft markierte Links nicht mehr. Private Repos („noch privat“) nicht markieren. Das gilt nur für Links, die früher funktioniert haben (ältere Beiträge, übernommene Texte) – einen frisch recherchierten Link, der schon beim Einfügen tot ist, einfach entfernen.
 

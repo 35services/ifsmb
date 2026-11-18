@@ -44,6 +44,8 @@ Neue Abhängigkeiten: **keine** – nur Browser-APIs (Canvas, Fetch, FileReader,
 
 ## Testen ohne echtes GitHub
 
+**Automatisch:** `_scripts/test_e2e.sh` – Headless-Chrome gegen ein Fake-GitHub mit Steuer-API für Szenarien (andere Person committet/öffnet/mergt PRs, Token läuft ab, Fehler beim n-ten Request …); Anleitung und neue Szenarien in [`_tests/e2e/README.md`](_tests/e2e/README.md). Von Hand geht weiterhin:
+
 Im Browser (lokaler Server) `window.fetch` für `https://api.github.com` durch eine kleine Attrappe ersetzen und `sessionStorage.setItem("ifsmb-github-token", "fake")` setzen. Die Attrappe muss beantworten: `GET /user`, `GET /repos/<repo>` (`permissions.push`), `GET …/pulls?state=open`, `GET …/pulls/<n>/files`, `GET …/contents/…` (404 = gibt es nicht), `GET …/git/ref/heads/<branch>`, `GET …/git/commits/<sha>`, `POST …/git/blobs|trees|commits|refs`, `PATCH …/git/refs/heads/<branch>`, `POST …/pulls`. Den Dateiauswahl-Dialog umgeht man, indem man `HTMLInputElement.prototype.click` für `type=file` so ersetzt, dass es `files` per `DataTransfer` setzt und `change` auslöst. Danach Token und Entwürfe (`ifsmb-neu:*`, `ifsmb-edit:*`) wieder löschen.
 
 ## Erfahrungen aus dem ersten echten Test (PR #112)
