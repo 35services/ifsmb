@@ -79,7 +79,7 @@ Für B gilt `CLAUDE.md`: der Dienst ist eine Abhängigkeit → vorher in `DEPEND
 | QR-Codes, Zugangscodes | von Hand | 🤖 `BarcodeDetector` (Chrome auf macOS/Android/ChromeOS), sonst ✋ | Handschrift/Namen: weiter von Hand |
 | Straßenschilder, Wohnadressen | von Hand | ✋ von Hand + Prüfliste | – |
 | Alt-Texte | Claude beschreibt das Bild | ✍️ Pflichtfeld, Mensch schreibt | KI-Vorschlag nur mit externem Dienst → Datenschutz, vorerst nicht |
-| **Videos** (720p, ohne Ton, Vorschaubild) | ffmpeg | ❌ | ffmpeg.wasm (~30 MB) zu schwer → Videos weiter über Falko/Claude |
+| **Videos** (720p, ohne Ton, Vorschaubild) | ffmpeg | ❌ | im Browser zu schwer (ffmpeg.wasm ~30 MB) → **Rohvideo hochladen, später verarbeiten**, siehe [Nächste Stufe: Videos](#nächste-stufe-videos-hochladen-und-später-verarbeiten) |
 | HEIC (iPhone) | Pillow (mit Plugin) | ✅ Safari, ❌ Chrome | Hinweis im Editor ist da |
 | „Makespace“ statt „Makerspace“, Inhalt prüfen | Claude/Durchsicht | Prüfliste im PR | Check in `pruefen.yml` |
 | Screenshots für den PR (`pr_vorschau.py`) | lokal | ❌ | Workflow, der Vorschaubilder an `web/*`-PRs hängt |
@@ -92,6 +92,49 @@ Für B gilt `CLAUDE.md`: der Dienst ist eine Abhängigkeit → vorher in `DEPEND
 - Das Token liegt im Browser: standardmäßig `sessionStorage`, nur auf Wunsch `localStorage`. Gefahr ist Cross-Site-Scripting – deshalb **keine fremden Skripte** (OverType liegt als geprüfte Kopie im Repo).
 - Fine-grained Token mit **nur diesem Repo** und kurzer Laufzeit; GitHub-App-Tokens (Option B) laufen nach 8 h ab.
 - Alle Prüfungen laufen auf jedem PR weiter (`pruefen.yml`: Galerien, Geodaten, Formulare, uuids).
+
+## Nächste Stufe: Videos hochladen und später verarbeiten
+
+Idee (Falko, 18.11.2026): Im Formular darf man **Rohvideos hochladen**. Verarbeitet werden sie später – lokal mit Claude Code bzw. einem kleinen **Verarbeiter, der im Hintergrund läuft** – so wie bisher von Hand: 720p, ohne Ton, ohne Metadaten, Vorschaubild, Sichtprüfung.
+
+### Das Problem: das Repository ist öffentlich
+
+Ein Rohvideo darf **nie** im öffentlichen Repository landen – auch nicht kurz auf einem Branch, denn die Git-Historie bleibt sichtbar:
+
+- Handyvideos enthalten oft **Standortdaten** (MP4-Metadaten), **Stimmen** und **Gesichter von Kindern** – genau das, was wir bei Fotos vorher entfernen.
+- Sie sind groß (4K, 50–500 MB). Git-Dateien über 100 MB lehnt GitHub ab, und jedes Video bliebe für immer in der Historie.
+
+Die Rohvideos brauchen also einen **privaten Eingang (Inbox)**; ins öffentliche Repository kommt nur das fertige, geprüfte Ergebnis.
+
+### Optionen für die Inbox
+
+| | Wie | Grenzen | Bewertung |
+|---|---|---|---|
+| **A. Privates Repository** `ifsmb-inbox` | Formular lädt das Rohvideo als Blob auf einen Branch `inbox/<id>` dort (gleiche Git-Data-API wie heute); das Token bekommt Zugriff auf beide Repos | max. 100 MB pro Datei; Rohdaten stecken in der Historie des privaten Repos → nach dem Verarbeiten Branch löschen | geht sofort mit dem vorhandenen Code |
+| **B. Release-Assets im privaten Repository** | pro Video ein Asset an einem Release `inbox` (bis 2 GB, ohne Git-Historie, einzeln löschbar) | Upload geht an `uploads.github.com` – ob das aus dem Browser (CORS) klappt, **prüfen** | sauberer, falls der Browser-Upload geht |
+| **C. Eigener Speicher** (z. B. Objektspeicher) | der Dienst aus „Anmeldung B“ gibt eine einmalige Upload-Adresse aus | neue Abhängigkeit, Kosten, Impressum | erst zusammen mit Anmeldung B sinnvoll |
+
+Empfehlung: **B prüfen**, sonst **A** (für Videos bis 100 MB, längere vorher am Handy kürzen).
+
+### Ablauf
+
+1. Formular: **🎬 Video hinzufügen** → Rohvideo geht in die Inbox, zusammen mit einer kleinen Beschreibung (JSON): Ziel-PR/Branch, Zielpfad `assets/video/<bereich>/<name>/NN.mp4`, Beschreibung, wer es hochgeladen hat.
+2. Im Beitrag steht sofort `![Beschreibung](/assets/video/<bereich>/<name>/NN.mp4)` als eigener Absatz. Solange das Video fehlt, meldet `check_site.rb` den Pfad als tot → **der PR bleibt rot**, bis das Video verarbeitet ist. Das ist gewollt: so wird nichts halb gemergt.
+3. **Verarbeiter** `_scripts/process_videos.py` (lokal auf Falkos Rechner – von Hand, per Claude Code oder regelmäßig über `launchd`/cron):
+   - offene Einträge in der Inbox holen, Rohvideo herunterladen
+   - `ffmpeg … -vf scale=-2:720 -an -c:v libx264 -crf 28 -preset slow -movflags +faststart -map_metadata -1` (Hochkant: 720 × 1280), Vorschaubild `NN.jpg`
+   - **Kontaktbogen** (z. B. 1 Bild pro Sekunde) erzeugen – Claude oder ein Mensch schaut ihn auf Kindergesichter, Kennzeichen, Namen durch; im Zweifel zuschneiden, kürzen oder ablehnen
+   - Ergebnis per Commit auf den PR-Branch, Kommentar im PR („Video verarbeitet: 720p, 1,5 MB, ohne Ton“), Rohvideo in der Inbox löschen
+4. Danach ist der PR grün und kann wie gewohnt durchgesehen und gemergt werden.
+
+**Warum lokal und nicht als GitHub Action?** ffmpeg gäbe es auch auf den Action-Runnern (im privaten Inbox-Repo), aber die Sichtprüfung auf Kinder braucht einen Menschen oder Claude – und die Rohdaten blieben in Logs/Artefakten von GitHub. Eine Action könnte höchstens vorverarbeiten (verkleinern, Ton weg, Kontaktbogen) und den Rest lokal lassen.
+
+### Offen
+
+- Gesichter in Videos verpixeln ist viel schwerer als bei Fotos (jedes Bild, Bewegung). Vorerst gilt: Videos mit erkennbaren Kindern nur gekürzt/zugeschnitten so, dass niemand erkennbar ist – sonst nicht veröffentlichen.
+- Ton immer entfernen (Stimmen); falls einmal Ton gewünscht ist, nur nach ausdrücklicher Prüfung.
+- Impressum (Datenschutz) und `DEPENDENCIES.md` (ffmpeg-Version für den Verarbeiter) ergänzen, bevor es losgeht.
+- Größen-/Längenlimit im Formular anzeigen (z. B. „max. 100 MB, am besten unter 1 Minute“).
 
 ## Offene Punkte
 
@@ -114,7 +157,7 @@ Sortiert nach Wichtigkeit. ⭐ = als Nächstes sinnvoll.
 10. **Konvention für Partnerbilder** festlegen: flach `partner/<name>.jpg` (bisher) oder Ordner `partner/<name>/NN.jpg` (Ablage). Eventuell eigenes Feld für ein Foto statt Logo, damit `logo` wirklich das Logo bleibt.
 11. Galerie-Position: neue Fotos kommen ans Textende (bzw. in die letzte Galerie) – Einfügen an der Cursor-Position wäre schöner.
 12. Automatische **Gesichtserkennung** als optionales lokales Modell (Größe, Lizenz, Treffer bei Kindern im Profil/Hinterkopf); Kennzeichen weiter von Hand.
-13. Videos: bleiben bei Falko/Claude; im Formular ggf. ein Hinweis „Video an Falko schicken“ mit Link.
+13. **Videos hochladen und im Hintergrund verarbeiten** – eigener Abschnitt [Nächste Stufe: Videos](#nächste-stufe-videos-hochladen-und-später-verarbeiten).
 
 ### Offene PRs & Zusammenarbeit
 
