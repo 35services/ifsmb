@@ -15,15 +15,18 @@ Hinter dem Zazza stehen **Paul und Zazza-Jan** (so nennen wir ihn, damit er nich
 
 ## Was wir gemeinsam machen
 
-- **Unterstützung von Anfang an:** Schon beim Start der ersten [3D-Druck- und Elektronik-AG an der KTG]({{ '/news/2024/01/08/diy-eine-3d-druck-und-elektronik-ag-an-der-ktg/' | relative_url }}) 2024 gab es Kaffee und Unterstützung aus dem Zazza.
+- **Unterstützung von Anfang an:** Schon beim Start der ersten [3D-Druck- und Elektronik-AG an der KTG]({{ '/news/2024/01/08/diy-eine-3d-druck-und-elektronik-ag-an-der-ktg/' | relative_url }}) 2024 gab es Kaffee und Unterstützung aus dem Zazza – und im [ersten AG-Jahr]({{ '/projekte/ktg-ag-jahr-1/' | relative_url }}) war das Zazza einer der Sponsoren, die die Kinder selbst gefunden haben.
 - **Moabiter Lastenlaufrad Kiez-WM:** Beim Frühlingsfest im Zazza am 9. Mai 2026 fand die erste [Lastenlaufrad-Weltmeisterschaft im Kiez]({{ '/projekte/lastenlaufrad-kiez-wm-2026/' | relative_url }}) statt – für Kinder und Erwachsene.
 - **Herbstfest beim Zazza:** Kastanienfiguren basteln mit [live 3D-Druck von Hüten und Stiefeln]({{ '/kalender/2026-10-10-herbstfest-beim-zazza/' | relative_url }}) direkt auf dem Platz der Nachbarschaft.
-- **Winterfest in der Kufa:** Auch in der Kulturfabrik Moabit machen wir gemeinsam Aktionen im Kiez.
+- **Winterfest in der Kulturfabrik:** Am 5. Dezember 2026 feiern wir gemeinsam das [Winterfest in der Kulturfabrik Moabit]({{ '/kalender/2026-12-05-winterfest-kulturfabrik/' | relative_url }}).
 
 → [pajas-kaffee.de](https://www.pajas-kaffee.de/) · [Instagram @zazza_moabit](https://www.instagram.com/zazza_moabit/)
 
 </div>
 
 {% include verbindungen.html partner="Zazza Moabit / Pajas Kaffee" %}
+
+{% assign zazza_tags = "zazza" | split: "," %}
+{% include verknuepft.html tags=zazza_tags %}
 
 <a href="{{ '/partner/' | relative_url }}" class="back-link">← Alle Partner</a>

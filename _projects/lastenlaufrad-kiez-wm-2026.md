@@ -7,7 +7,7 @@ start: 2026-05-09
 zeitraum: Mai 2026
 ort: Zazza, Moabit
 event_tag: lastenlaufrad-kiez-wm
-tags: [lastenlaufrad-kiez-wm]
+tags: [lastenlaufrad-kiez-wm, zazza]
 team:
   - falko-richter
 partners: ["Zazza Moabit / Pajas Kaffee"]
