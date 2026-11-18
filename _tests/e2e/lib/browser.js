@@ -40,7 +40,10 @@ class Connection {
   send(method, params = {}, sessionId) {
     const id = ++this.id;
     return new Promise((ok, fail) => {
-      this.pending.set(id, { ok, fail, method });
+      // never wait forever (e.g. a crashed renderer): a CDP call that gets no answer fails after 30 s
+      const t = setTimeout(() => { if (this.pending.delete(id)) fail(new Error(method + ": keine Antwort von Chrome nach 30 s")); }, 30000);
+      t.unref();
+      this.pending.set(id, { ok: (r) => { clearTimeout(t); ok(r); }, fail: (e) => { clearTimeout(t); fail(e); }, method });
       this.ws.send(JSON.stringify(Object.assign({ id, method, params }, sessionId ? { sessionId } : {})));
     });
   }
@@ -159,6 +162,7 @@ async function launchChrome({ headless = process.env.HEADLESS !== "0" } = {}) {
   ];
   if (headless) args.unshift("--headless=new");
   if (process.env.CI || process.getuid?.() === 0) args.unshift("--no-sandbox"); // CI runners: no user namespaces for the sandbox
+  if (process.platform === "linux") args.unshift("--disable-dev-shm-usage"); // small /dev/shm in containers crashes renderers
   const proc = spawn(findChrome(), args, { stdio: ["ignore", "ignore", "pipe"] });
   const wsUrl = await new Promise((ok, fail) => {
     let buf = "";
