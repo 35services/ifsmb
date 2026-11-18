@@ -126,6 +126,12 @@ test("Listen: verschiedene Einträge hinzugefügt bzw. entfernt → beides", () 
   assert.equal(r.conflicts.length, 0, "jan hinzu + anton weg überschneiden sich nicht");
   assert.ok(r.build().includes("team: [falko-richter, jan]"));
 });
+test("gleicher Wert, anders geschrieben (Anführungszeichen) → kein Konflikt, Schreibweise der anderen", () => {
+  const b = set(base, 'title: "Herbstfest beim Zazza"', 'title: "Alter Titel"');
+  const mine = set(base, 'title: "Herbstfest beim Zazza"', "title: Herbstfest beim Zazza");
+  const r = FileMerge.merge(b, mine, base);
+  assert.equal(r.conflicts.length, 0); assert.ok(r.build().includes('title: "Herbstfest beim Zazza"'));
+});
 test("alle echten Inhaltsdateien: mit sich selbst und mit einer fremden Änderung unverändert bzw. sauber", () => {
   const fs = require("node:fs"), path = require("node:path"), root = path.join(__dirname, "..");
   const dirs = ["_posts", "_events", "_projects", "_equipment", "_team", "_herausforderungen", "_press", "_data/partner"];

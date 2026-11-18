@@ -6,6 +6,31 @@ Seit PR #110 legen die ➕/✏️-Formulare mit einem GitHub-Token selbst Pull R
 
 Ziel: **Konflikte werden im Browser erkannt und gelöst** – die Person bekommt klare Optionen, nie eine rohe GitHub-Meldung, und es geht nie stillschweigend etwas verloren (weder die eigene Arbeit noch die Änderung von jemand anderem).
 
+## Stand der Umsetzung
+
+Umgesetzt mit PR #118 (Integrations-Branch `editing-polish`), jeweils mit End-to-End-Test in `_tests/e2e/conflicts.test.js` (✅ = Test, ☑️ = umgesetzt, aber noch ohne eigenen Test):
+
+| ID | Lösung | Test |
+|---|---|---|
+| K04, K05, K28 | Senden liest das Ziel neu und führt zusammen (`direct.prepareEdit` + `merge.js`); keine stille Überschreibung mehr, Überschneidungen → Konfliktbox, Senden gesperrt | ✅ |
+| K07 | „In #N mitschicken“ führt das schon Eingetragene mit dem PR-Stand zusammen, Fotos bleiben | ✅ |
+| K08, K09 | Commit auf festem Parent, `PATCH force:false`; bei „not a fast forward“ neu holen und mergen (max. 3×) | ✅ |
+| K10, K11 | PR gemergt/geschlossen → Hinweis + „Neuen Pull Request anlegen“ (Basis = aktueller `main`) | ✅ |
+| K12 | Branch gelöscht → wie K11 | ☑️ |
+| K14 | Entwurf älter als die Seite → übertragen statt gelöscht (gleiche Werte in anderer Schreibweise sind kein Konflikt) | ✅ |
+| K15 | Entwurf merkt sich seinen PR (`pr`, `savedAt`) und arbeitet dort weiter | ☑️ |
+| K16 | eigener offener PR → automatisch dort weiter, „Stattdessen eigener Pull Request“ | ✅ |
+| K17, K18, K19 | nach dem Senden im PR-Modus bleiben (`direct.sentOk`), auch bei neuen Dateien | ✅ |
+| K01, K02, K06 (veralteter Tab) | beim Senden neu nach offenen PRs zur Datei suchen → „In #N mitschicken“ / „Trotzdem eigener Pull Request“ | ✅ |
+| K25 | Fotonummern berücksichtigen Dateien in offenen PRs (`namesInOpenPulls`) | ✅ |
+| K26 | umziehende Fotos bekommen freie Nummern im neuen Ordner (`direct.relocate`) | ✅ |
+| K37–K40 | Fehler mit Art (`err.kind`) und deutscher Meldung, „🔑 Neu verbinden“ | ☑️ (im Browser gegen eine Attrappe geprüft) |
+| K41 | PR anlegen scheitert nach dem Branch → nächstes Senden setzt fort (`finishPullRequest`), kein zweiter Branch | ✅ |
+| K42 | Antwort verloren → `finishPullRequest` findet den PR über den Branch | ☑️ |
+| K46 | neu verlinkte Fotos, die es nicht gibt → Senden stoppt mit Hinweis (`direct.checkMissingImages`) | ✅ |
+
+**Noch offen:** K13 (zwei Tabs), K20/K21 (Entwurf ohne Token / Verwerfen rückgängig), K22–K24 (neue Dateien: „dort weitermachen“), K30, K31 (PR-Branch hinter `main` aktualisieren), K32–K36 (mehrere PRs, Umbenennen/Löschen, Fork-Hinweis, Datei auf `main` gelöscht – teils mit Meldung abgedeckt), K43/K44 (Wiederaufnahme nach Neuladen: `pending` liegt nur im Speicher), K47/K48. Außerdem: Text wird zeilenweise statt absatzweise zusammengeführt (Nachbarzeilen = Konflikt, wie bei git).
+
 ## Inhalt
 
 - [Begriffe und Code-Stellen](#begriffe-und-code-stellen)

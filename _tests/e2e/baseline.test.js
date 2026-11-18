@@ -34,7 +34,7 @@ test("➕ neuer Beitrag → ein Pull Request mit genau der neuen Datei", async (
   const pr = pulls[0];
   assert.equal(pr.login, "alice");
   assert.equal(pr.base.ref, "main");
-  assert.match(pr.head.ref, /^web\/alice-\d{4}-\d{2}-\d{2}-e2e-neuer-beitrag-\d{12}$/);
+  assert.match(pr.head.ref, /^web\/alice-\d{4}-\d{2}-\d{2}-e2e-neuer-beitrag-\d{14}-[a-z0-9]{1,4}$/);
   assert.match(pr.title, /^Neu: Beitrag „E2E neuer Beitrag“$/);
   assert.equal(pr.files.length, 1);
   assert.equal(pr.files[0].status, "added");

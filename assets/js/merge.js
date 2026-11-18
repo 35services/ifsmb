@@ -56,6 +56,12 @@ var FileMerge = (function () {
     return parts;
   }
 
+  // two raw blocks of the same key mean the same (e.g. `title: "A"` and `title: A`)?
+  function sameValue(a, b) {
+    var x = F.yamlValue(a), y = F.yamlValue(b);
+    return x !== undefined && y !== undefined && JSON.stringify(x) === JSON.stringify(y);
+  }
+
   // List fields (tags, team, partners …) changed on both sides: merge as sets – theirs + what I added − what I removed.
   // → raw block, or null if it's not a list or one side adds what the other removes (then it stays a conflict).
   function mergeList(key, B, A, T) {
@@ -113,6 +119,9 @@ var FileMerge = (function () {
       order.forEach(function (k) {
         var B = fb.map.has(k) ? [fb.map.get(k)] : [], A = fm.map.has(k) ? [fm.map.get(k)] : [], T = ft.map.has(k) ? [ft.map.get(k)] : [];
         var r = resolve(B, A, T);
+        if (r.conflict && k.charAt(0) !== "#" && A.length && T.length && sameValue(A[0], T[0])) {
+          parts.push({ field: T }); return; // same value, only written differently (quotes, list style) → keep theirs
+        }
         if (r.conflict && k.charAt(0) !== "#") {
           var merged = mergeList(k, B.join(""), A.join(""), T.join(""));
           if (merged !== null) { parts.push({ field: merged === "" ? [] : [merged] }); return; }

@@ -28,6 +28,8 @@ jobs:
         run: ruby _scripts/uuids_ergaenzen.rb --pruefen
       - name: Formulare und Pages-CMS-Felder testen
         run: ruby _scripts/test_formulare.rb
+      - name: Zusammenführen (Konflikte) testen
+        run: node _scripts/test_merge.js
       - name: Seite bauen
         run: bundle exec jekyll build
       - name: Links und erreichbare Seiten prüfen

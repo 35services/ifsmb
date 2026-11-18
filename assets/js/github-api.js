@@ -237,14 +237,27 @@ var GitHubApi = (function () {
     }).then(function (res) {
       if (res && res.pr) return { html_url: res.pr.url, number: res.pr.number, updated: true };
       step("Pull Request öffnen …");
-      return call("POST", r + "/pulls", { title: o.title, head: branch, base: base, body: o.body || "", maintainer_can_modify: true });
+      return call("POST", r + "/pulls", { title: o.title, head: branch, base: base, body: o.body || "", maintainer_can_modify: true })
+        .catch(function (err) { err.pendingBranch = branch; throw err; }); // branch exists → finishPullRequest can carry on
     }).then(function (pr) { return { url: pr.html_url, number: pr.number, branch: branch, updated: !!pr.updated }; });
+  }
+
+  // Carry on after an interrupted send: the branch with the commit exists, the pull request maybe (answer lost) or not.
+  // o = { branch, title, body } → { url, number, branch } – never a second branch or a second PR (K41/K42)
+  function finishPullRequest(o) {
+    return openPulls(true).then(function (list) {
+      var found = list.filter(function (pr) { return pr.branch === o.branch; })[0];
+      if (found) return { url: found.url, number: found.number, branch: o.branch };
+      return call("POST", "/repos/" + repo() + "/pulls", { title: o.title, head: o.branch, base: baseBranch(), body: o.body || "", maintainer_can_modify: true })
+        .then(function (pr) { return { url: pr.html_url, number: pr.number, branch: o.branch }; });
+    });
   }
 
   return {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
     whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
-    namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest
+    namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
+    finishPullRequest: finishPullRequest
   };
 })();
 if (typeof module !== "undefined") module.exports = GitHubApi;
