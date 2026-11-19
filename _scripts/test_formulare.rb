@@ -243,6 +243,16 @@ class EditFormTest < Minitest::Test
     assert_equal source.sub("status: offen ", "status: in-arbeit "), out
   end
 
+  # owner_name is written as a list with one entry (alsEintrag) – the form must read that back as text
+  def test_text_field_reads_a_one_entry_list
+    source = "---\ntitle: Test\nowner_name: [\"Ralf, Falko\"]\n---\n\nText\n"
+    js = "const N=require('./assets/js/neu.js');const r=N.editedFile('geraet',#{source.to_json},{});" \
+         "process.stdout.write(JSON.stringify({raw:r.rawFields,owner:r.values.owner_name}))"
+    out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
+    assert status.success?, err
+    assert_equal({ "raw" => [], "owner" => "Ralf, Falko" }, JSON.parse(out))
+  end
+
   def test_all_form_fields_are_readable
     results.each { |r| assert_empty r["raw_fields"], "#{r['path']}: Felder nur auf GitHub bearbeitbar: #{r['raw_fields'].join(', ')}" }
   end
