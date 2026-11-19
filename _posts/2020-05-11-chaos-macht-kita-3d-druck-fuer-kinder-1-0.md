@@ -4,7 +4,7 @@ date: 2020-05-11 18:27:50 +0200
 author: falko-richter
 original_url: https://falkorichter.github.io/volkersfreunde-jekyll/chaos-macht-kita-3d-druck-fuer-kinder-1-0/
 original_site: volkersfreunde
-tags: [kita]
+tags: [kita, maydaygirl]
 verlinkt:
   - /team/opa-andi/
 uuid: 1a6472d9-b482-4e44-ab92-919f2a837a51
