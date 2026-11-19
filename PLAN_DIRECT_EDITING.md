@@ -44,6 +44,8 @@ Neue Abhängigkeiten: **keine** – nur Browser-APIs (Canvas, Fetch, FileReader,
 
 ## Testen ohne echtes GitHub
 
+**Automatisch:** `_scripts/test_e2e.sh` – Headless-Chrome gegen ein Fake-GitHub mit Steuer-API für Szenarien (andere Person committet/öffnet/mergt PRs, Token läuft ab, Fehler beim n-ten Request …); Anleitung und neue Szenarien in [`_tests/e2e/README.md`](_tests/e2e/README.md). Von Hand geht weiterhin:
+
 Im Browser (lokaler Server) `window.fetch` für `https://api.github.com` durch eine kleine Attrappe ersetzen und `sessionStorage.setItem("ifsmb-github-token", "fake")` setzen. Die Attrappe muss beantworten: `GET /user`, `GET /repos/<repo>` (`permissions.push`), `GET …/pulls?state=open`, `GET …/pulls/<n>/files`, `GET …/contents/…` (404 = gibt es nicht), `GET …/git/ref/heads/<branch>`, `GET …/git/commits/<sha>`, `POST …/git/blobs|trees|commits|refs`, `PATCH …/git/refs/heads/<branch>`, `POST …/pulls`. Den Dateiauswahl-Dialog umgeht man, indem man `HTMLInputElement.prototype.click` für `type=file` so ersetzt, dass es `files` per `DataTransfer` setzt und `change` auslöst. Danach Token und Entwürfe (`ifsmb-neu:*`, `ifsmb-edit:*`) wieder löschen.
 
 ## Erfahrungen aus dem ersten echten Test (PR #112)
@@ -161,15 +163,18 @@ Sortiert nach Wichtigkeit. ⭐ = als Nächstes sinnvoll.
 
 ### Offene PRs & Zusammenarbeit
 
-14. Nach dem Senden **weitere Änderungen in denselben PR** schreiben (heute: ohne Änderung → „Schon gesendet“, mit Änderung → neuer PR). Idee: nach Erfolg `aktiv.prBase` auf den neuen PR setzen.
+Alle Konfliktfälle mit Soll-Verhalten und Stand der Umsetzung: [`EDITING_CONFLICTS.md`](EDITING_CONFLICTS.md); Tests: `_tests/e2e/conflicts.test.js`.
+
+
+14. ✅ (PR #118) Nach dem Senden **weitere Änderungen in denselben PR** schreiben (heute: ohne Änderung → „Schon gesendet“, mit Änderung → neuer PR). Idee: nach Erfolg `aktiv.prBase` auf den neuen PR setzen.
 15. `openPullsForFile` fragt bis zu 30 offene PRs einzeln ab – bei vielen offenen PRs auf GraphQL umstellen (eine Anfrage).
 16. Hinweis „Diese Seite wird gerade bearbeitet“ für **alle** Besucher*innen (nicht nur Verbundene) – ginge ohne Anfragen aus dem Browser nur über eine Action, die bei PR-Ereignissen eine kleine JSON-Datei veröffentlicht. Abwägen (Lärm im Repo vs. Nutzen).
-17. Wenn der PR-Branch inzwischen weiter ist, scheitert „In #N weiterarbeiten“ mit einer GitHub-Meldung – freundlicher erklären und neu laden anbieten.
-18. Fehlermeldungen von GitHub (Rate-Limit, abgelaufenes Token) in verständliches Deutsch übersetzen.
+17. ✅ (PR #118: neu holen, zusammenführen, max. 3×) Wenn der PR-Branch inzwischen weiter ist, scheitert „In #N weiterarbeiten“ mit einer GitHub-Meldung – freundlicher erklären und neu laden anbieten.
+18. ✅ (PR #118) Fehlermeldungen von GitHub (Rate-Limit, abgelaufenes Token) in verständliches Deutsch übersetzen.
 
 ### Formulare & Inhalte
 
-19. ⭐ Hilfetext im Partner-Formular: `page` = eigene Partnerseite `/partner/<name>/`, nicht die Website (Fehler aus #112).
+19. ✅ (PR #118) Hilfetext im Partner-Formular: `page` = eigene Partnerseite `/partner/<name>/`, nicht die Website (Fehler aus #112).
 20. **Verbindungen auf anderen Seiten** mitpflegen (z. B. beim neuen Partner die Termine/Projekte mit `partners:` ergänzen, Stichwort anlegen) – heute macht das Claude nach Suche über Pagefind. Idee: nach dem Anlegen Vorschläge aus der Suche anzeigen („Diese Seiten erwähnen Zazza – verbinden?“) und die Änderungen mit in den Commit nehmen.
 21. Neue Stichworte bekommen keinen Anzeigenamen in `_data/stichworte.yml` – im Formular mit anbieten.
 22. Todo-Editor (`todos.js`) nutzt noch Kopieren → GitHub – auf `GitHubApi.createPullRequest` umstellen.

@@ -226,7 +226,7 @@ var NeuFormular = (function () {
         adresse("instagram", "Instagram", { mehr: true }),
         text("logo", "Logo", { mehr: true, platzhalter: "/assets/images/partner/<name>.png" }),
         haken("logo_dark", "Logo hat helle Elemente (dunkler Hintergrund)", { mehr: true }),
-        text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partner/<name>/" })
+        text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partner/<name>/", hilfe: "Nur unsere eigene Unterseite (partner/<name>/index.md) – die Website des Partners gehört oben in „Website“." })
       ]
     },
     pressebericht: {
@@ -278,7 +278,7 @@ var NeuFormular = (function () {
     }).map(function (f) { return f.name; });
   }
   function speichereEntwurf() {
-    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source })); } catch (e) { /* storage blocked */ }
+    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source, pr: aktiv.prBase || null, savedAt: Date.now() })); } catch (e) { /* storage blocked */ }
   }
   function ladeEntwurf() {
     try { return JSON.parse(localStorage.getItem(aktiv.schluessel) || "null"); } catch (e) { return null; }
@@ -453,7 +453,7 @@ var NeuFormular = (function () {
       var sl = e.target.closest("[data-slot]"); if (!sl) return;
       e.preventDefault(); sl.classList.remove("media-drop");
       var i = +e.dataTransfer.getData("text/x-ifsmb-photo"), p = aktiv.photos[i], slot = direct.slots().filter(function (x) { return x.id === sl.getAttribute("data-slot"); })[0];
-      if (p && slot) direct.assign(p, slot).then(direct.showPhotos, function (err) { status.textContent = "⚠️ " + err.message; });
+      if (p && slot) direct.assign(p, slot).then(direct.showPhotos, function (err) { direct.showError(err); });
     });
     // direct pull requests: github-api.js is small – load it with the dialog to know whether a token is there
     if (window.ladeSkripte) window.ladeSkripte(["github-api.js"]).then(function () { direct.update(); }).catch(function () {});
@@ -737,43 +737,141 @@ var NeuFormular = (function () {
       if (area === "news") name = name.replace(/^\d{4}-\d{2}-\d{2}-/, "");
       return "assets/images/" + area + "/" + (name || "neu") + "/";
     },
+    // Error from GitHubApi (err.kind, see github-api.js): message in the status line, plus the matching next step
+    showError: function (err) {
+      status.textContent = (err.kind === "info" ? "ℹ️ " : "⚠️ ") + err.message + " ";
+      if (err.kind === "auth") {
+        var b = F.el('<button type="button" class="btn btn-small">🔑 Neu verbinden</button>');
+        b.addEventListener("click", function () { GitHubApi.logout(); direct.update(); direct.connectDialog(); });
+        status.appendChild(b);
+      }
+    },
     // Editing: is there already an open pull request that changes this file? Then offer to continue there (same branch,
     // no second PR) – otherwise two people edit the same page in parallel and the second merge conflicts.
     checkOpenPulls: function () {
       var state = aktiv;
-      if (!state || !state.edit || !direct.active()) return;
-      GitHubApi.openPullsForFile(state.path).then(function (prs) {
-        if (aktiv !== state || !prs.length) return;
+      if (!state || !state.edit || state.prBase || !direct.active()) return;
+      Promise.all([GitHubApi.openPullsForFile(state.path, true), GitHubApi.whoAmI()]).then(function (res) {
+        var prs = res[0].filter(function (pr) { return pr.status !== "removed"; }), me = res[1];
+        if (aktiv !== state || state.prBase || !prs.length) return;
         state.openPulls = prs;
-        var box = F.el('<div class="form-pr-notice note small" role="status"></div>');
+        var box = direct.noticeBox();
+        var own = prs.filter(function (pr) { return pr.sameRepo && pr.user === me.login; })[0];
+        if (own) { // your own open PR: carry on there instead of starting a second one
+          direct.pickUp(own, "Du hast diese Seite schon in #" + own.number + " geändert – du arbeitest dort weiter.", true);
+          return;
+        }
         box.innerHTML = "<strong>⚠️ Diese Seite wird gerade schon geändert:</strong><ul>" + prs.map(function (pr, i) {
           return '<li><a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a>"
             + (pr.user ? " von @" + esc(pr.user) : "")
-            + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " weiterarbeiten</button>" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
-        }).join("") + "</ul><span>Sonst entsteht ein zweiter Pull Request mit demselben Stand von <code>main</code> – beim Mergen gibt es dann Konflikte.</span>";
-        box.addEventListener("click", function (e) {
-          var b = e.target.closest("[data-pr-continue]"); if (b) direct.pickUp(prs[+b.getAttribute("data-pr-continue")], box);
-        });
-        hinweisEl.after(box);
+            + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
+        }).join("") + "</ul><span>Mit „mitschicken“ landet deine Änderung im selben Pull Request – was du schon eingetragen hast, wird übernommen. Sonst entsteht ein eigener Pull Request.</span>";
+        box.onclick = function (e) {
+          var b = e.target.closest("[data-pr-continue]"); if (b) direct.pickUp(prs[+b.getAttribute("data-pr-continue")]);
+        };
       }, function () { /* no check possible – the normal path still works */ });
     },
-    // load the file as it is in the pull request's branch and commit there on submit
-    pickUp: function (pr, box) {
-      var state = aktiv;
+    // one notice box under the hint line (open PRs, PR mode, carried-over drafts)
+    noticeBox: function () {
+      var box = d.querySelector(".form-pr-notice");
+      if (!box) { box = F.el('<div class="form-pr-notice note small" role="status"></div>'); hinweisEl.after(box); }
+      box.onclick = null;
+      return box;
+    },
+    // PR mode: show which PR the form saves into, with a way out ("own pull request instead")
+    showPrMode: function (text) {
+      var pr = aktiv.prBase, box = direct.noticeBox();
+      box.innerHTML = "<strong>✏️ " + esc(text || "Du arbeitest in #" + pr.number + " weiter.") + '</strong> <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " ansehen ↗</a>"
+        + " – Speichern ergänzt diesen Pull Request um einen Commit."
+        + (aktiv.sent ? "" : ' <button type="button" class="btn btn-small btn-ghost" data-pr-leave>Stattdessen eigener Pull Request</button>');
+      box.onclick = function (e) {
+        if (!e.target.closest("[data-pr-leave]")) return;
+        // keep the form as it is; base stays the PR's state, so on submit only MY changes are merged onto main
+        aktiv.prBase = null; box.remove(); direct.update(); speichereEntwurf();
+        status.textContent = "Ok – es wird ein eigener Pull Request nur mit deinen Änderungen.";
+      };
+      direct.update();
+    },
+    // continue in an open PR: load the file from its branch and carry over what was already typed (merge, K07)
+    pickUp: function (pr, text, quiet) {
+      var state = aktiv, mine = dateiInhalt(), base = state.edit.source;
+      if (state.pickingUp || (state.prBase && state.prBase.number === pr.number)) return; // already (being) picked up
+      state.pickingUp = true;
       status.textContent = "Lade den Stand aus #" + pr.number + " …";
-      GitHubApi.readFile(state.path, pr.branch).then(function (source) {
+      Promise.all([GitHubApi.readFile(state.path, pr.branch), withMerge()]).then(function (res) {
+        var theirs = res[0];
         if (aktiv !== state) return;
-        if (source == null) throw new Error("Die Datei gibt es im Branch von #" + pr.number + " nicht.");
-        var loaded = readSource(state.schema, source, state.path);
-        if (!loaded) throw new Error("Die Datei in #" + pr.number + " hat kein Front Matter.");
-        state.edit = loaded; state.prBase = pr; state.beruehrt = allTouched();
-        state.w = JSON.parse(JSON.stringify(loaded.w0));
-        direct.clearPhotos();
-        baueFelder(); zeigeVorschau();
-        box.innerHTML = '<strong>✏️ Du arbeitest in <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a> weiter</strong> – Speichern ergänzt diesen Pull Request um einen Commit.";
-        submitBtn.textContent = "🚀 In #" + pr.number + " speichern";
-        status.textContent = "Stand aus #" + pr.number + " geladen.";
-      }).catch(function (err) { status.textContent = "⚠️ " + err.message; });
+        if (theirs == null) throw new Error("Die Datei gibt es im Branch von #" + pr.number + " nicht.");
+        state.prBase = { number: pr.number, url: pr.url, branch: pr.branch };
+        var r = FileMerge.merge(base, mine, theirs);
+        if (r.conflicts.length) { direct.showConflicts(r, theirs, "#" + pr.number); direct.showPrMode(text); return; }
+        direct.rebase(theirs, r.build());
+        direct.showPrMode(text);
+        status.textContent = quiet ? "" : mine === base ? "Stand aus #" + pr.number + " geladen." : "Stand aus #" + pr.number + " geladen – deine Eingaben sind übernommen.";
+      }).catch(function (err) { direct.showError(err); }).then(function () { state.pickingUp = false; });
+    },
+    // put the form onto a new base (the file as it is now on main or a PR branch) with values from result
+    rebase: function (baseText, resultText) {
+      var loaded = readSource(aktiv.schema, baseText, aktiv.path), res = readSource(aktiv.schema, resultText, aktiv.path);
+      if (!loaded || !res) throw new Error("Die Datei hat kein Front Matter.");
+      aktiv.edit = loaded; aktiv.beruehrt = allTouched();
+      aktiv.w = JSON.parse(JSON.stringify(res.w0));
+      baueFelder(); zeigeVorschau(); speichereEntwurf();
+    },
+    // a draft from earlier that doesn't fit the current file any more: merge it onto the current state (K14/K15)
+    restoreDraft: function (draft) {
+      var state = aktiv, when = draft.savedAt ? new Date(draft.savedAt) : null;
+      var label = when ? when.toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "früher";
+      withMerge().then(function () {
+        var old = readSource(state.schema, draft.source, state.path);
+        if (!old || aktiv !== state) return;
+        var mine = editedText(state.schema, old, Object.assign(JSON.parse(JSON.stringify(old.w0)), draft.w));
+        if (mine === draft.source) return; // the draft had no changes
+        if (draft.pr && direct.active()) { // draft belonged to an open PR: continue there
+          state.edit = old;
+          state.w = Object.assign(JSON.parse(JSON.stringify(old.w0)), draft.w);
+          baueFelder(); zeigeVorschau();
+          direct.pickUp(draft.pr, "Dein Entwurf vom " + label + " gehört zu #" + draft.pr.number + " – du arbeitest dort weiter.");
+          return;
+        }
+        var r = FileMerge.merge(draft.source, mine, state.edit.source);
+        if (r.conflicts.length) { direct.showConflicts(r, state.edit.source, "der Seite"); status.textContent = "Dein Entwurf vom " + label + " ist älter als die Seite – bitte die Konflikte unten lösen."; return; }
+        direct.rebase(state.edit.source, r.build());
+        status.textContent = "Dein Entwurf vom " + label + " wurde auf den neuen Stand der Seite übertragen.";
+      });
+    },
+    // Conflict box: one entry per field/passage with the choices; "Übernehmen" puts the form onto theirs + choices
+    showConflicts: function (r, theirs, where) {
+      var state = aktiv, box = d.querySelector(".form-conflicts");
+      if (box) box.remove();
+      box = F.el('<section class="form-conflicts" role="alert"></section>');
+      function label(c) {
+        if (c.where === "text") return "Text";
+        var f = state.felder.filter(function (x) { return x.name === c.key; })[0];
+        return f ? f.label.replace(/^\W+\s*/, "") : c.key || "Feld";
+      }
+      function show(t) { return t === "" ? '<em class="muted">(leer / gelöscht)</em>' : "<pre>" + esc(t) + "</pre>"; }
+      box.innerHTML = "<h3>⚠️ " + r.conflicts.length + (r.conflicts.length === 1 ? " Konflikt" : " Konflikte") + " – bitte entscheiden</h3>"
+        + '<p class="small">Seit du angefangen hast, hat jemand in ' + esc(where) + " dieselben Stellen geändert. Was nicht überlappt, ist schon zusammengeführt.</p>"
+        + r.conflicts.map(function (c) {
+          return '<fieldset class="form-conflict"><legend>' + esc(label(c)) + "</legend>"
+            + '<div class="form-conflict-versions"><div><strong>Deine Version</strong>' + show(c.mine) + "</div><div><strong>Neuere Version</strong>" + show(c.theirs) + "</div></div>"
+            + '<label><input type="radio" name="' + c.id + '" value="mine" checked> Meine Version</label> '
+            + '<label><input type="radio" name="' + c.id + '" value="theirs"> Neuere Version</label>'
+            + (c.where === "text" ? ' <label><input type="radio" name="' + c.id + '" value="both"> Beide</label>' : "")
+            + "</fieldset>";
+        }).join("")
+        + '<p><button type="button" class="btn" data-conflicts-apply>✅ Übernehmen</button> <span class="small muted">Danach kannst du alles im Formular noch anpassen und dann senden.</span></p>';
+      links.parentNode.insertBefore(box, links);
+      submitBtn.disabled = true; submitBtn.title = "Erst die Konflikte oben lösen";
+      box.querySelector("[data-conflicts-apply]").addEventListener("click", function () {
+        var choices = {};
+        r.conflicts.forEach(function (c) { var x = box.querySelector('input[name="' + c.id + '"]:checked'); choices[c.id] = x ? x.value : "mine"; });
+        try { direct.rebase(theirs, r.build(choices)); } catch (err) { direct.showError(err); return; }
+        box.remove(); submitBtn.disabled = false; submitBtn.title = "";
+        status.textContent = "Konflikte gelöst – bitte kurz prüfen und dann senden.";
+      });
+      box.scrollIntoView({ block: "nearest" });
     },
     // Where photos can be used in this form – derived from the fields the type has, so every resource gets its own
     // uses: gallery in the text, cover/device photo, profile photo, logo (partner card), social media preview.
@@ -841,16 +939,17 @@ var NeuFormular = (function () {
       var p = aktiv.photos[i], slot = direct.slots().filter(function (x) { return x.id === slotId; })[0];
       if (!p || !slot) return;
       (direct.uses(p, slot) ? Promise.resolve(direct.unassign(p, slot)) : direct.assign(p, slot))
-        .then(direct.showPhotos, function (err) { status.textContent = "⚠️ " + err.message; });
+        .then(direct.showPhotos, function (err) { direct.showError(err); });
     },
     update: function () {
       if (!d || !aktiv) return;
       var on = direct.active();
       githubBtn.textContent = on ? "🔑 GitHub ✓" : "🔑 GitHub verbinden";
+      if (on) GitHubApi.whoAmI().then(function (me) { if (direct.active()) githubBtn.textContent = "🔑 @" + me.login; }, function () {});
       githubBtn.title = on ? "Mit GitHub verbunden – Pull Requests direkt von hier" : "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)";
       fotosBtn.hidden = !direct.slots().length;
       if (on) {
-        submitBtn.textContent = aktiv.edit ? "🚀 Änderung als Pull Request" : "🚀 Als Pull Request anlegen";
+        submitBtn.textContent = aktiv.prBase ? "🚀 In #" + aktiv.prBase.number + " speichern" : aktiv.edit ? "🚀 Änderung als Pull Request" : "🚀 Als Pull Request anlegen";
         stepsEl.innerHTML = "<li>„Als Pull Request“ legt einen neuen Branch mit "
           + (aktiv.edit ? "der geänderten Datei" : "der neuen Datei") + " und allen verwendeten Fotos an und öffnet einen Pull Request.</li>"
           + "<li>Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.</li>";
@@ -899,8 +998,8 @@ var NeuFormular = (function () {
     // next free number NN in the folder: existing files on GitHub + photos added in this form
     nextNumber: function (folder) {
       var taken = (aktiv.photos || []).map(function (p) { return parseInt(p.name, 10); });
-      return GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch).then(function (names) {
-        names.forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
+      return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
+        res[0].concat(res[1]).forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
         return taken.reduce(function (a, b) { return Math.max(a, b); }, 0) + 1;
       });
     },
@@ -933,12 +1032,17 @@ var NeuFormular = (function () {
             direct.showPhotos();
             status.textContent = added.length + " Foto(s) vorbereitet – " + (slots.length === 1 ? "eingefügt" : "jetzt eine Verwendung wählen") + ". Hochgeladen wird mit dem Pull Request (nicht im Entwurf gespeichert).";
           });
-        }).catch(function (err) { status.textContent = "⚠️ " + err.message; });
+        }).catch(function (err) { direct.showError(err); });
       });
       input.click();
     },
     submit: function () {
       var newText = dateiInhalt(), path, title, u;
+      // sent already and nothing changed since → no second pull request with the same content
+      if (aktiv.sent && aktiv.sent.text === newText) {
+        status.innerHTML = 'Schon gesendet: <a href="' + esc(aktiv.sent.url) + '" target="_blank" rel="noopener">Pull Request #' + aktiv.sent.number + "</a>.";
+        return;
+      }
       if (aktiv.edit) {
         if (newText === aktiv.edit.source) { status.textContent = "Noch nichts geändert."; return; }
         path = aktiv.path;
@@ -947,62 +1051,207 @@ var NeuFormular = (function () {
         path = aktiv.schema.ordner + "/" + aktiv.w.datei.trim();
         title = "Neu: " + aktiv.schema.titel + " „" + (aktiv.w.title || aktiv.w.name || aktiv.w.medium || aktiv.w.datei) + "“";
       }
-      // sent already and nothing changed since → no second pull request with the same content
-      if (aktiv.sent && aktiv.sent.text === newText) {
-        status.innerHTML = 'Schon gesendet: <a href="' + esc(aktiv.sent.url) + '" target="_blank" rel="noopener">Pull Request #' + aktiv.sent.number + "</a>.";
-        return;
-      }
       // only photos that are used somewhere are uploaded (no orphans in assets/)
       var slots = direct.slots(), photos = aktiv.photos.filter(direct.used), unused = aktiv.photos.length - photos.length;
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
-      // photos follow the file name: if it changed after adding them, move them (all variants, in every field)
-      var folder = direct.folder();
-      photos.forEach(function (p) {
-        if (p.folder === folder) return;
-        ["", "-600w", "-social"].forEach(function (v) { newText = newText.split(direct.url(p, v)).join(direct.url({ folder: folder, name: p.name }, v)); });
-        p.folder = folder;
-      });
-      var files = [{ path: path, text: newText }];
-      usage.forEach(function (u) {
-        var base = direct.url(u.p).slice(1);
-        if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
-        if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
-      });
+      var folder = direct.folder(), files = [], parent = null, body = "";
+      function buildFiles() { // after relocating: the file itself + every used variant of every used photo
+        files = [{ path: path, text: newText }];
+        usage.forEach(function (u) {
+          var base = direct.url(u.p).slice(1);
+          if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
+          if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
+        });
+      }
       if (unused) status.textContent = unused + " Foto(s) werden nirgends verwendet und nicht hochgeladen.";
       submitBtn.disabled = true;
+      var label = submitBtn.textContent;
+      submitBtn.textContent = "⏳ Wird gesendet …";
       var state = aktiv, step = function (t) { status.textContent = t; };
+      // an earlier send was interrupted after the branch was created: finish that one first (K41/K42)
+      if (state.pending) {
+        GitHubApi.finishPullRequest(state.pending).then(function (pr) {
+          var sentText = state.pending.text; state.pending = null;
+          direct.sentOk(state, pr, sentText, path);
+          if (sentText !== newText) status.innerHTML += " Deine neueren Änderungen bitte nochmal senden.";
+        }).catch(function (err) { direct.showError(err); }).then(function () { submitBtn.disabled = false; submitBtn.textContent = label; direct.update(); });
+        return;
+      }
       GitHubApi.whoAmI().then(function (me) {
         u = me;
+        // photos follow the file name: if it changed after adding them, move them – with free numbers in the new folder (K26)
+        return direct.relocate(photos, folder).then(function (moved) {
+          moved.forEach(function (m) { ["", "-600w", "-social"].forEach(function (v) { newText = newText.split(direct.url(m.from, v)).join(direct.url(m.to, v)); }); });
+          return direct.checkMissingImages(state, newText, photos);
+        });
+      }).then(function () {
+        buildFiles();
         if (!state.edit) return GitHubApi.readFile(path).then(function (cur) {
           if (cur != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
           return GitHubApi.openPullsForFile(path);
         }).then(function (prs) {
           if (prs && prs.length) throw new Error("Pull Request #" + prs[0].number + " („" + prs[0].title + "“) legt " + path + " schon an – bitte dort weitermachen oder den Dateinamen ändern.");
         });
-        return GitHubApi.readFile(path, state.prBase && state.prBase.branch).then(function (cur) {
-          if (cur != null && cur !== state.edit.source && !state.overwriteOk) {
-            state.overwriteOk = true;
-            throw new Error("Die Datei wurde inzwischen auf GitHub geändert. Nochmal klicken legt den Pull Request trotzdem an – beim Mergen ggf. zusammenführen.");
-          }
+        return direct.prepareEdit(state, path, newText).then(function (prep) {
+          if (prep.stop) throw prep.stop;
+          files[0].text = newText = prep.text;
+          parent = prep.parent;
         });
       }).then(function () {
-        var body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf ifsmb.de von @" + u.login
+        body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf ifsmb.de von @" + u.login
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
           + "- [ ] Checks („Prüfen“) sind grün\n";
-        return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase });
+        return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase, parent: parent });
       }).then(function (pr) {
         if (aktiv !== state) return;
-        loescheEntwurf();
-        state.gesendet = true;
-        state.sent = { text: newText, url: pr.url, number: pr.number };
-        direct.clearPhotos();
-        status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke!";
+        direct.sentOk(state, pr, newText, path);
       }).catch(function (err) {
-        if (aktiv === state) status.textContent = "⚠️ " + err.message;
-      }).then(function () { submitBtn.disabled = false; });
+        if (aktiv !== state) return;
+        // the branch with the commit exists, but the pull request didn't come back: next click finishes it (K41/K42)
+        if (err.pendingBranch) {
+          state.pending = { branch: err.pendingBranch, title: title, body: body, text: newText };
+          direct.showError(err);
+          status.appendChild(document.createTextNode(" Nochmal senden setzt fort – es entsteht kein zweiter Pull Request."));
+          return;
+        }
+        // someone pushed to the branch in between: fetch, merge and try again (max. 3×, K09)
+        if (err.kind === "conflict" && /fast.forward/i.test(err.message) && (state.retries || 0) < 3) {
+          state.retries = (state.retries || 0) + 1; status.textContent = "Inzwischen hat jemand gespeichert – führe zusammen …";
+          setTimeout(function () { submitBtn.disabled = false; direct.submit(); }, 0);
+          return;
+        }
+        state.retries = 0;
+        if (err.prGone) { direct.prGone(err.prGone); return; }
+        if (err.newPulls) { direct.newPulls(err.newPulls); return; }
+        if (err.conflicts) return; // conflict box is open
+        direct.showError(err);
+      }).then(function () {
+        submitBtn.disabled = !!d.querySelector(".form-conflicts"); // stays off while the conflict box is open
+        if (submitBtn.textContent === "⏳ Wird gesendet …") { submitBtn.textContent = label; direct.update(); }
+      });
+    },
+    // success: stay in this pull request – further changes become more commits there, not a second PR (K17–K19)
+    sentOk: function (state, pr, text, path) {
+      loescheEntwurf();
+      state.gesendet = true; state.retries = 0;
+      state.sent = { text: text, url: pr.url, number: pr.number };
+      direct.clearPhotos();
+      var branch = pr.branch || (state.prBase && state.prBase.branch);
+      state.prBase = { number: pr.number, url: pr.url, branch: branch };
+      if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
+      state.edit = readSource(state.schema, text, path) || state.edit;
+      state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+      baueFelder(); zeigeVorschau();
+      direct.showPrMode("Gespeichert in #" + pr.number + ".");
+      status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke! Weitere Änderungen landen im selben Pull Request.";
+    },
+    // photos whose folder changed (new file renamed after adding them): free numbers in the new folder → [{ from, to }]
+    relocate: function (photos, folder) {
+      var moving = photos.filter(function (p) { return p.folder !== folder; });
+      if (!moving.length) return Promise.resolve([]);
+      return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
+        var taken = res[0].concat(res[1]).map(function (n) { return parseInt(n, 10); }).filter(function (n) { return n > 0; })
+          .concat(photos.filter(function (p) { return p.folder === folder; }).map(function (p) { return parseInt(p.name, 10); }));
+        var next = taken.reduce(function (a, b) { return Math.max(a, b); }, 0);
+        return moving.map(function (p) {
+          var from = { folder: p.folder, name: p.name }, nr = parseInt(p.name, 10);
+          if (taken.indexOf(nr) >= 0) nr = ++next; else { taken.push(nr); next = Math.max(next, nr); }
+          p.folder = folder; p.name = F.zwei(nr) + ".jpg";
+          return { from: from, to: { folder: folder, name: p.name } };
+        });
+      });
+    },
+    // images the text/fields newly point to must exist: in the photo pool, on the target branch or already before (K46 –
+    // after a reload the pool is empty but the lines are still in the text)
+    checkMissingImages: function (state, text, photos) {
+      var before = state.edit ? state.edit.source : "", re = /\/(assets\/images\/[^\s)"'\]]+\.(?:jpe?g|png|webp|gif))/gi, m, refs = {};
+      while ((m = re.exec(text))) if (before.indexOf(m[1]) < 0) refs[m[1]] = true;
+      (photos || []).forEach(function (p) { ["", "-600w", "-social"].forEach(function (v) { delete refs[direct.url(p, v).slice(1)]; }); });
+      var paths = Object.keys(refs);
+      if (!paths.length) return Promise.resolve();
+      var dirs = {}; paths.forEach(function (x) { var d0 = x.slice(0, x.lastIndexOf("/")); (dirs[d0] = dirs[d0] || []).push(x); });
+      return Promise.all(Object.keys(dirs).map(function (d0) {
+        return GitHubApi.listFolder(d0, state.prBase && state.prBase.branch).then(function (names) {
+          return dirs[d0].filter(function (x) { return names.indexOf(x.slice(d0.length + 1)) < 0; });
+        });
+      })).then(function (lists) {
+        var missing = [].concat.apply([], lists);
+        if (missing.length) throw Object.assign(new Error("Diese Fotos stehen im Text, sind aber nicht mehr da (z. B. nach dem Neuladen der Seite): "
+          + missing.map(function (x) { return x.split("/").pop(); }).join(", ") + ". Bitte neu hinzufügen oder die Zeilen entfernen."), { kind: "missing" });
+      });
+    },
+    // Before an edit is sent: where does it go (main or the PR's branch), is that PR still open, and what is there NOW?
+    // If the file changed since the form was loaded, merge (base = loaded, mine = form, theirs = now) – automatically
+    // if nothing overlaps, otherwise open the conflict box and stop. → { text, parent } or { stop: Error }
+    prepareEdit: function (state, path, mineText) {
+      var check = state.prBase ? GitHubApi.getPull(state.prBase.number) : GitHubApi.openPullsForFile(path, true).then(function (prs) {
+        var known = (state.openPulls || []).map(function (x) { return x.number; }).concat(state.ownPrOk || []);
+        var fresh = prs.filter(function (x) { return x.status !== "removed" && known.indexOf(x.number) < 0; });
+        if (fresh.length) { var e = new Error("newPulls"); e.newPulls = fresh; throw e; }
+        return null;
+      });
+      return Promise.all([check, withMerge()]).then(function (res) {
+        var pr = res[0];
+        if (pr && (pr.state !== "open")) { var gone = new Error("gone"); gone.prGone = pr; throw gone; }
+        return GitHubApi.headSha(state.prBase ? state.prBase.branch : null);
+      }).then(function (head) {
+        if (!head) { var gone = new Error("gone"); gone.prGone = { number: state.prBase.number, url: state.prBase.url, state: "closed", branchGone: true }; throw gone; }
+        return GitHubApi.readFile(path, head).then(function (theirs) {
+          var mine = mineText, base = state.edit.source;
+          if (theirs == null) return { stop: new Error("Die Datei " + path + " gibt es dort nicht mehr – sie wurde inzwischen gelöscht oder umbenannt.") };
+          if (theirs === base) return { text: mine, parent: head };
+          var r = FileMerge.merge(base, mine, theirs);
+          if (r.conflicts.length) {
+            direct.showConflicts(r, theirs, state.prBase ? "#" + state.prBase.number : "der Seite");
+            var stop = new Error("conflicts"); stop.conflicts = true; return { stop: stop };
+          }
+          var merged = r.build();
+          direct.rebase(theirs, merged); // the form now shows the combined state
+          if (merged === theirs) return { stop: Object.assign(new Error("Deine Änderungen sind dort schon enthalten – nichts zu senden."), { kind: "info" }) };
+          status.textContent = "ℹ️ Die Seite wurde inzwischen geändert – deine Änderung wird auf den neuen Stand übertragen.";
+          return { text: merged, parent: head };
+        });
+      });
+    },
+    // while the form was open, someone else opened a PR for the same file: send along there or own PR? (stale tab, K01/K06)
+    newPulls: function (prs) {
+      var box = direct.noticeBox();
+      box.innerHTML = "<strong>⚠️ Während du geschrieben hast, hat jemand einen Pull Request zu dieser Seite angelegt:</strong><ul>" + prs.map(function (pr, i) {
+        return '<li><a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a>" + (pr.user ? " von @" + esc(pr.user) : "")
+          + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : "") + "</li>";
+      }).join("") + '</ul><button type="button" class="btn btn-small btn-ghost" data-pr-own>Trotzdem eigener Pull Request</button>';
+      box.onclick = function (e) {
+        var b = e.target.closest("[data-pr-continue]");
+        if (b) { direct.pickUp(prs[+b.getAttribute("data-pr-continue")]); return; }
+        if (e.target.closest("[data-pr-own]")) {
+          aktiv.ownPrOk = (aktiv.ownPrOk || []).concat(prs.map(function (x) { return x.number; }));
+          box.remove(); status.textContent = "Ok – nochmal senden legt einen eigenen Pull Request an.";
+        }
+      };
+      status.textContent = "";
+    },
+    // the PR the form saves into was merged or closed meanwhile (or its branch is gone): offer a new PR (K10–K12)
+    prGone: function (pr) {
+      var box = direct.noticeBox(), merged = pr.merged;
+      box.innerHTML = "<strong>" + (merged ? "✅ #" + pr.number + " ist inzwischen gemergt." : "⚠️ #" + pr.number + (pr.branchGone ? " gibt es so nicht mehr (Branch gelöscht)." : " wurde inzwischen geschlossen.")) + "</strong> "
+        + "Deine Änderungen sind noch da. "
+        + '<button type="button" class="btn btn-small" data-pr-new>Neuen Pull Request anlegen</button>';
+      box.onclick = function (e) {
+        if (!e.target.closest("[data-pr-new]")) return;
+        // new PR from the current main: everything in the form (incl. what was in the old PR) counts as my change,
+        // so the base becomes main as it is now – the form values stay as they are (K10/K11)
+        var state = aktiv;
+        GitHubApi.readFile(state.path).then(function (mainText) {
+          if (aktiv !== state) return;
+          if (mainText != null) { var loaded = readSource(state.schema, mainText, state.path); if (loaded) state.edit = loaded; }
+          state.prBase = null; state.sent = null; box.remove(); direct.update(); zeigeVorschau(); speichereEntwurf();
+          status.textContent = "Ok – beim Senden entsteht ein neuer Pull Request auf dem aktuellen Stand.";
+        }).catch(function (err) { direct.showError(err); });
+      };
+      status.textContent = "";
     },
     // small dialog: paste a fine-grained token, check it, remember it (or not), disconnect
     connectDialog: function (then) {
@@ -1012,7 +1261,7 @@ var NeuFormular = (function () {
           g = F.dialog({ id: "github-connect", klasse: "github-dialog", titel: "🔑 Mit GitHub verbinden" });
           g.insertAdjacentHTML("beforeend", '<div class="github-body">'
             + '<p>Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.</p>'
-            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – „Fine-grained“, nur das Repository <code>' + esc(GitHubApi.repo()) + '</code>, Berechtigungen <em>Contents</em> und <em>Pull requests</em>: „Read and write“, kurze Laufzeit.</li>'
+            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt. Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>' + esc(GitHubApi.repo()) + '</code> wählen, dann „Generate token“.</li>'
             + "<li>Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.</li></ol>"
             + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>'
             + '<label class="form-check"><input type="checkbox" data-remember><span>Auf diesem Gerät merken</span><small class="form-hilfe">Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.</small></label>'
@@ -1042,6 +1291,8 @@ var NeuFormular = (function () {
       });
     }
   };
+  // three-way merge (assets/js/merge.js), loaded on first use
+  function withMerge() { return window.FileMerge ? Promise.resolve(window.FileMerge) : window.ladeSkripte(["merge.js"]).then(function () { return window.FileMerge; }); }
   function setText(v) {
     aktiv.w.text = v;
     var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
@@ -1059,7 +1310,7 @@ var NeuFormular = (function () {
     + "<li>Nach dem Merge ist die Änderung nach ein paar Minuten auf der Website.</li>";
   // switch the dialog between "new file" and "edit existing file"
   function setMode(editing) {
-    d.querySelectorAll(".form-pr-notice").forEach(function (x) { x.remove(); });
+    d.querySelectorAll(".form-pr-notice, .form-conflicts").forEach(function (x) { x.remove(); });
     stepsEl.innerHTML = editing ? STEPS_EDIT : STEPS_NEW;
     discardBtn.textContent = editing ? "↩️ Änderungen verwerfen" : "🗑️ Neu anfangen";
     submitBtn.textContent = editing ? "📋 Auf GitHub speichern" : "📋 Auf GitHub anlegen";
@@ -1112,9 +1363,10 @@ var NeuFormular = (function () {
       aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], edit: loaded, path: data.path,
         schluessel: "ifsmb-edit:" + data.path };
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
-      var draft = ladeEntwurf(), draftFits = draft && draft.source === source;
+      var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
       aktiv.w = draftFits ? Object.assign(JSON.parse(JSON.stringify(loaded.w0)), draft.w) : JSON.parse(JSON.stringify(loaded.w0));
-      if (draft && !draftFits) loescheEntwurf(); // the file changed on GitHub since – old draft no longer fits
+      // a draft that no longer fits (the page changed since, or it belongs to an open PR) is never thrown away: it is
+      // carried over onto the current state below (direct.restoreDraft), with a conflict box if both changed the same thing
       setMode(true);
       d.titel("✏️ " + schema.titel + " bearbeiten");
       hinweisEl.textContent = "Änderungen an " + data.path + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.";
@@ -1125,9 +1377,13 @@ var NeuFormular = (function () {
       zeigeVorschau();
       status.textContent = draftFits ? "Entwurf wiederhergestellt." : "";
       if (!d.open) d.showModal();
+      if (draft && !draftFits && draft.source) direct.restoreDraft(draft);
       if (!EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search + "#bearbeiten");
       F.ladeIndex();
-      direct.checkOpenPulls();
+      var hasToken = false;
+      try { hasToken = !!(sessionStorage.getItem("ifsmb-github-token") || localStorage.getItem("ifsmb-github-token")); } catch (e) { /* storage blocked */ }
+      if (hasToken && window.ladeSkripte) window.ladeSkripte(["github-api.js"]).then(function () { direct.update(); direct.checkOpenPulls(); }).catch(function () {});
+      else direct.checkOpenPulls();
     });
   }
 

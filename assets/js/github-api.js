@@ -13,7 +13,19 @@
 // Only works for people with write access to the repository (branch in the same repository); forks are a later step.
 var GitHubApi = (function () {
   "use strict";
-  var KEY = "ifsmb-github-token", API = "https://api.github.com";
+  var KEY = "ifsmb-github-token", API = apiBase();
+
+  // Tests only (_tests/e2e/): localStorage "ifsmb-github-api" points the API at a local fake GitHub. Honoured only
+  // when this page runs on localhost/127.0.0.1 AND the override is a local http address – so on ifsmb.de (or with a
+  // stray value) the token is never sent anywhere but api.github.com.
+  function apiBase() {
+    var real = "https://api.github.com";
+    try {
+      if (typeof location === "undefined" || !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return real;
+      var v = localStorage.getItem("ifsmb-github-api");
+      return v && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(v) ? v : real;
+    } catch (e) { return real; } // storage blocked
+  }
 
   function cfg() { return JSON.parse(document.getElementById("formular-daten").textContent); }
   function repo() { return cfg().github.replace(/^https:\/\/github\.com\//, ""); } // "owner/name"
@@ -54,16 +66,31 @@ var GitHubApi = (function () {
       cache: "no-store"
     }).then(function (r) {
       return r.text().then(function (txt) {
-        var data = txt ? JSON.parse(txt) : null;
-        if (!r.ok) {
-          var msg = (data && data.message) || r.statusText;
-          if (r.status === 401) msg = "Token ungültig oder abgelaufen.";
-          if (r.status === 403 || r.status === 404) msg += " (fehlt dem Token die Berechtigung für " + repo() + "?)";
-          var err = new Error(msg); err.status = r.status; throw err;
-        }
+        var data = null;
+        try { data = txt ? JSON.parse(txt) : null; } catch (e) { data = null; }
+        if (!r.ok) throw explain(r, data);
         return data;
       });
+    }, function () { // fetch itself failed: offline, DNS, blocked
+      throw failure("network", 0, "Keine Verbindung zu GitHub – bitte die Internetverbindung prüfen und nochmal versuchen.");
     });
+  }
+  // Error with a German message and a kind the form can react to: auth (connect again), rate (wait), permission,
+  // notfound, conflict (422 – e.g. branch moved or file exists), network, other. err.status = HTTP status.
+  function failure(kind, status, msg) { var err = new Error(msg); err.kind = kind; err.status = status; return err; }
+  function explain(r, data) {
+    var gh = (data && data.message) || r.statusText || "Fehler";
+    if (r.status === 401) return failure("auth", 401, "Dein GitHub-Token ist abgelaufen oder ungültig. Bitte neu verbinden – deine Eingaben bleiben erhalten.");
+    var remaining = r.headers.get("X-RateLimit-Remaining"), reset = +r.headers.get("X-RateLimit-Reset");
+    if ((r.status === 403 || r.status === 429) && (remaining === "0" || r.headers.get("Retry-After"))) {
+      var when = reset ? new Date(reset * 1000) : null;
+      return failure("rate", r.status, "GitHub bremst gerade (zu viele Anfragen)." + (when ? " Ab " + String(when.getHours()).padStart(2, "0") + ":" + String(when.getMinutes()).padStart(2, "0") + " Uhr geht es wieder." : " Bitte in ein paar Minuten nochmal versuchen."));
+    }
+    if (r.status === 403) return failure("permission", 403, "Das Token darf das nicht (" + gh + "). Beim Token für " + repo() + " „Contents“ und „Pull requests“ auf „Read and write“ stellen.");
+    if (r.status === 404) return failure("notfound", 404, "Nicht gefunden (" + gh + ") – fehlt dem Token der Zugriff auf " + repo() + "?");
+    if (r.status === 409 || r.status === 422) return failure("conflict", r.status, "GitHub hat die Änderung abgelehnt: " + gh);
+    if (r.status >= 500) return failure("other", r.status, "GitHub hat gerade ein Problem (" + r.status + "). Bitte gleich nochmal versuchen.");
+    return failure("other", r.status, gh);
   }
 
   // Who is connected and may they push to the repository? → { login, avatar, name, canPush }
@@ -105,29 +132,66 @@ var GitHubApi = (function () {
         function (e) { if (e.status === 404) return []; throw e; });
   }
 
-  // Open pull requests that change (or create) this file – the page's Markdown file is the indicator.
-  // → [{ number, title, url, branch, user, sameRepo, status }]. One request for the list + one per open PR.
-  function openPullsForFile(path) {
+  // All open pull requests with their changed files (max. 30 PRs), cached for 30 s – used for "is this page being
+  // edited?", the page warning and for photo numbers already taken in open PRs.
+  // → [{ number, title, url, branch, user, sameRepo, files: [{ filename, previous_filename, status }] }]
+  var pullsCache = null;
+  function openPulls(fresh) {
+    if (!fresh && pullsCache && Date.now() - pullsCache.at < 30000) return pullsCache.list;
     var r = "/repos/" + repo();
-    return call("GET", r + "/pulls?state=open&per_page=50").then(function (pulls) {
+    var list = call("GET", r + "/pulls?state=open&per_page=50").then(function (pulls) {
       return Promise.all(pulls.slice(0, 30).map(function (pr) {
-        return call("GET", r + "/pulls/" + pr.number + "/files?per_page=100").then(function (files) {
-          var f = files.filter(function (x) { return x.filename === path || x.previous_filename === path; })[0];
-          return f && { number: pr.number, title: pr.title, url: pr.html_url, branch: pr.head.ref, user: pr.user && pr.user.login,
-            sameRepo: !!(pr.head.repo && pr.head.repo.full_name === repo()), status: f.status };
-        }, function () { return null; });
+        return call("GET", r + "/pulls/" + pr.number + "/files?per_page=100").then(function (files) { return files; }, function () { return []; })
+          .then(function (files) {
+            return { number: pr.number, title: pr.title, url: pr.html_url, branch: pr.head.ref, user: pr.user && pr.user.login,
+              sameRepo: !!(pr.head.repo && pr.head.repo.full_name === repo()), files: files };
+          });
       }));
-    }).then(function (list) { return list.filter(Boolean); });
+    });
+    pullsCache = { at: Date.now(), list: list };
+    list.catch(function () { pullsCache = null; });
+    return list;
+  }
+  // Open pull requests that change (or create) this file – the page's Markdown file is the indicator.
+  function openPullsForFile(path, fresh) {
+    return openPulls(fresh).then(function (list) {
+      return list.filter(function (pr) {
+        return pr.files.some(function (f) { return f.filename === path || f.previous_filename === path; });
+      }).map(function (pr) {
+        var f = pr.files.filter(function (x) { return x.filename === path || x.previous_filename === path; })[0];
+        return { number: pr.number, title: pr.title, url: pr.url, branch: pr.branch, user: pr.user, sameRepo: pr.sameRepo, status: f.status };
+      });
+    });
+  }
+  // file names inside folder that open pull requests add (photo numbers must not collide with them)
+  function namesInOpenPulls(folder) {
+    var prefix = folder.replace(/\/?$/, "/");
+    return openPulls().then(function (list) {
+      var names = [];
+      list.forEach(function (pr) { pr.files.forEach(function (f) { if (f.filename.indexOf(prefix) === 0 && f.filename.slice(prefix.length).indexOf("/") < 0) names.push(f.filename.slice(prefix.length)); }); });
+      return names;
+    }, function () { return []; });
+  }
+  // state of one pull request → { number, url, branch, state: "open" | "closed", merged }
+  function getPull(number) {
+    return call("GET", "/repos/" + repo() + "/pulls/" + number).then(function (pr) {
+      return { number: pr.number, url: pr.html_url, branch: pr.head.ref, state: pr.state, merged: !!pr.merged };
+    });
+  }
+  // newest commit of a branch (default: the base branch); null if the branch is gone
+  function headSha(branch) {
+    return call("GET", "/repos/" + repo() + "/git/ref/heads/" + (branch || baseBranch()).split("/").map(encodeURIComponent).join("/"))
+      .then(function (ref) { return ref.object.sha; }, function (e) { if (e.status === 404) return null; throw e; });
   }
 
   function branchName(hint) {
-    var d = new Date(), stamp = d.toISOString().slice(0, 16).replace(/[-:T]/g, "");
+    var d = new Date(), stamp = d.toISOString().slice(0, 19).replace(/[-:T]/g, "") + "-" + Math.random().toString(36).slice(2, 6);
     var slug = String(hint || "aenderung").toLowerCase().replace(/\.[a-z]+$/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
     return "web/" + (me ? me.login.toLowerCase() + "-" : "") + slug + "-" + stamp;
   }
 
   // One commit with all files on a new branch + pull request.
-  // o = { title, body, files: [{ path, text } | { path, blob }], branchHint, onStep(text) }
+  // o = { title, body, files: [{ path, text } | { path, blob }], branchHint, onStep(text), parent? (commit SHA to build on) }
   // With o.pr = { number, url, branch } the commit goes on top of that open pull request's branch instead (no new PR).
   // → Promise<{ url, number, branch, updated }>
   function createPullRequest(o) {
@@ -135,6 +199,7 @@ var GitHubApi = (function () {
     return whoAmI().then(function (u) {
       if (!u.canPush) throw new Error("@" + u.login + " darf in " + repo() + " keine Branches anlegen (Pull Requests aus Forks kommen später).");
       branch = o.pr ? o.pr.branch : branchName(o.branchHint);
+      if (o.parent) return { object: { sha: o.parent } }; // the commit the form merged against (see neu.js direct.submit)
       step("Stand von " + base + " holen …");
       return call("GET", r + "/git/ref/heads/" + base.split("/").map(encodeURIComponent).join("/"));
     }).then(function (ref) {
@@ -172,13 +237,27 @@ var GitHubApi = (function () {
     }).then(function (res) {
       if (res && res.pr) return { html_url: res.pr.url, number: res.pr.number, updated: true };
       step("Pull Request öffnen …");
-      return call("POST", r + "/pulls", { title: o.title, head: branch, base: base, body: o.body || "", maintainer_can_modify: true });
+      return call("POST", r + "/pulls", { title: o.title, head: branch, base: base, body: o.body || "", maintainer_can_modify: true })
+        .catch(function (err) { err.pendingBranch = branch; throw err; }); // branch exists → finishPullRequest can carry on
     }).then(function (pr) { return { url: pr.html_url, number: pr.number, branch: branch, updated: !!pr.updated }; });
+  }
+
+  // Carry on after an interrupted send: the branch with the commit exists, the pull request maybe (answer lost) or not.
+  // o = { branch, title, body } → { url, number, branch } – never a second branch or a second PR (K41/K42)
+  function finishPullRequest(o) {
+    return openPulls(true).then(function (list) {
+      var found = list.filter(function (pr) { return pr.branch === o.branch; })[0];
+      if (found) return { url: found.url, number: found.number, branch: o.branch };
+      return call("POST", "/repos/" + repo() + "/pulls", { title: o.title, head: o.branch, base: baseBranch(), body: o.body || "", maintainer_can_modify: true })
+        .then(function (pr) { return { url: pr.html_url, number: pr.number, branch: o.branch }; });
+    });
   }
 
   return {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
-    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, createPullRequest: createPullRequest
+    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
+    namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
+    finishPullRequest: finishPullRequest
   };
 })();
 if (typeof module !== "undefined") module.exports = GitHubApi;

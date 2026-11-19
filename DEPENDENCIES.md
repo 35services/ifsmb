@@ -2,7 +2,7 @@
 
 Alles, worauf ifsmb.de angewiesen ist – im Browser, beim Bauen, in den Tests und in lokalen Skripten. Regeln in `CLAUDE.md` unter „Abhängigkeiten“: **Was hier nicht steht, wird nicht benutzt.** Neue, aktualisierte und entfernte Einträge kommen mit genauer Version auch ins `CHANGELOG.md` und in die PR-Beschreibung.
 
-Stand: 17.11.2026
+Stand: 18.11.2026
 
 ## 1. Im Browser (wird an Besucher*innen ausgeliefert)
 
@@ -49,6 +49,7 @@ Stand: 17.11.2026
 | `actions/configure-pages` | `@v5` | `pages.yml` | ⚠️ Major-Tag |
 | `actions/upload-pages-artifact` | `@v3` | `pages.yml` | ⚠️ Major-Tag |
 | `actions/deploy-pages` | `@v4` | `pages.yml` | ⚠️ Major-Tag |
+| `actions/setup-node` | `@v4`, Node **22.12.0** | `e2e.yml` | ⚠️ Major-Tag; Node-Version genau festgelegt (E2E-Tests brauchen ≥ 22) |
 | Pagefind | 1.5.2 | `pages.yml` | siehe oben |
 
 ## 3. Tests und Prüfskripte (laufen auch in CI)
@@ -57,13 +58,28 @@ Stand: 17.11.2026
 |---|---|---|---|
 | Ruby-Standardbibliothek inkl. `minitest` | mit Ruby 3.1 | `_scripts/*.rb` | keine zusätzlichen Gems |
 | Node.js | was der Runner mitbringt (`ubuntu-latest`) | `test_formulare.rb` → `formulare_beispiele.js`, `edit_examples.js` | ⚠️ nicht festgelegt; nur Node-Bordmittel (`fs`, `path`, `vm`), keine npm-Pakete |
+| Node.js ≥ 22 | lokal: installierte (getestet 26.13.1); CI: **22.12.0** (`actions/setup-node` in `e2e.yml`) | E2E-Tests `_tests/e2e/`, `_scripts/test_e2e.sh` | nur Bordmittel (`node:test`, `node:http`, `node:crypto`, `node:zlib`, eingebautes `WebSocket` ab 22) – **keine npm-Pakete**, kein `package.json`; das Skript bricht bei Node < 22 mit Hinweis ab |
+| Google Chrome / Chromium (headless) | lokal: installierte; CI: was `ubuntu-latest` mitbringt (`google-chrome --version` steht im Log) | E2E-Tests (`_tests/e2e/lib/browser.js`, gesteuert über das Chrome DevTools Protocol per WebSocket) | ⚠️ Version nicht festgelegt. Pfad über `$CHROME`; in CI mit `--no-sandbox`. Siehe Abschnitt „E2E-Tests“ unten |
+
+### E2E-Tests – warum kein Playwright/Puppeteer
+
+| | |
+|---|---|
+| Zweck | Die ➕/✏️-Formulare mit GitHub-Verbindung (Pull Requests aus dem Browser) automatisch durchklicken – gegen ein Fake-GitHub (`_tests/e2e/lib/fake-github.js`), auch für Konfliktfälle |
+| Entscheidung | **Keine neue Abhängigkeit.** Testrunner ist `node --test`, der Browser das ohnehin für `pr_vorschau.py` genutzte Chrome, gesteuert mit ~200 Zeilen eigenem CDP-Code (`_tests/e2e/lib/browser.js`: Kontexte, `Runtime.evaluate`, `DOM.setFileInputFiles` über `Page.setInterceptFileChooserDialog`). Playwright (`playwright@<version>` + eigener Browser-Download, Apache-2.0) wäre bequemer bei Wartezeiten und Fehlermeldungen, brächte aber `package.json`, Lockfile, `node_modules` und ~150 MB Browser – für eine Handvoll Szenarien zu viel. |
+| Version | Node ≥ 22 (eingebautes `WebSocket`), Chrome: installierte (siehe Tabelle oben) |
+| Herkunft | Node: https://nodejs.org (lokal z. B. `brew install node`; CI `actions/setup-node@v4` mit `node-version: "22.12.0"`); Chrome: https://www.google.com/chrome/ (auf `ubuntu-latest` vorinstalliert) |
+| Benutzt von | `_scripts/test_e2e.sh`, `_tests/e2e/*.test.js`, `.github/workflows/e2e.yml` – nur Tests, nichts davon wird ausgeliefert (`_tests/` ignoriert Jekyll) |
+| Lizenz | Node: MIT; Chrome: Google-Nutzungsbedingungen (Chromium: BSD) – wird nur ausgeführt, nicht weitergegeben |
+| Aktualisieren | Node-Version in `e2e.yml` erhöhen, `_scripts/test_e2e.sh` laufen lassen. Bricht das CDP-Protokoll in einer neuen Chrome-Version, zeigt die Fehlermeldung die Methode (`Page.…`, `DOM.…`) – in `browser.js` anpassen |
+| Entfernen | `_tests/e2e/`, `_scripts/test_e2e.sh`, `.github/workflows/e2e.yml` löschen und den Abschnitt in `CLAUDE.md` („Build“); die Formulare und `github-api.js` funktionieren ohne (die Test-Weiche für die API-Adresse greift nur auf `localhost`) |
 
 ## 4. Nur lokal (Skripte für Menschen, nicht in CI)
 
 | Was | Version | Benutzt von | Hinweis |
 |---|---|---|---|
 | Python 3 + Pillow | aktuell installierte | `_scripts/pr_vorschau.py` (Screenshots), Bildbearbeitung für Beiträge (Metadaten entfernen, verkleinern) | mit `python3 -I` aufrufen |
-| Google Chrome (headless) | aktuell installierte | `_scripts/pr_vorschau.py` | Pfad über `$CHROME` änderbar |
+| Google Chrome (headless) | aktuell installierte | `_scripts/pr_vorschau.py`, E2E-Tests (siehe 3.) | Pfad über `$CHROME` änderbar |
 | OpenSCAD | 2021.01 getestet | `_logo/badge/` (Badge zum Drucken) | – |
 | SF Mono Heavy (Schrift von macOS) | mit macOS | `_logo/badge/ifsmb-badge.scad` (nur für Namen auf Badges) | liegt nicht im Repo; andere Systeme: `name_font` |
 | Python 3 (ohne Zusatzpakete) | – | `_logo/badge/wordmark_from_svg.py`, `export_colored.py` | – |
@@ -74,4 +90,5 @@ Bekannte Lücken – nicht stillschweigend lassen, sondern hier abhaken, wenn er
 
 - [ ] **`Gemfile.lock` ist in `.gitignore`** – CI und lokal können verschiedene Jekyll-/Gem-Versionen bekommen. Vorschlag: `Gemfile.lock` einchecken.
 - [ ] **GitHub Actions nur mit Major-Tag** (`@v4` …) – Vorschlag: auf Commit-SHA festlegen (mit Kommentar zur Version).
-- [ ] **Node-Version in CI nicht festgelegt** – Vorschlag: `actions/setup-node` mit fester Version, falls die Tests einmal Node-Eigenheiten brauchen.
+- [ ] **Node-Version in CI nicht festgelegt** (`pruefen.yml`, `pages.yml`) – Vorschlag: `actions/setup-node` mit fester Version wie in `e2e.yml` (dort 22.12.0).
+- [ ] **Chrome-Version für die E2E-Tests nicht festgelegt** (lokal und auf `ubuntu-latest` die installierte) – bisher unkritisch, das DevTools-Protokoll ist stabil; bei Problemen in CI eine feste Version installieren (z. B. Chrome for Testing).
