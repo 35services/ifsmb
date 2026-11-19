@@ -25,3 +25,6 @@ uuid: 33908aa5-0210-4eaf-973d-3ad00d2f1da4
 {% include verknuepft.html tags=jh_tags %}
 
 <a href="{{ '/partner/' | relative_url }}" class="back-link">← Alle Partner</a>
+
+https://jugendhackt.org/spenden/
+Termine verknüpfen 
