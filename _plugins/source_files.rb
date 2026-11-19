@@ -5,6 +5,8 @@
 module IfsmbSourceFiles
   # collections with an edit form (same list as _includes/edit-buttons.html)
   COLLECTIONS = %w[posts events projects equipment herausforderungen team press].freeze
+  # data files edited from the site itself (slogan editor: _includes/slogan-editor.html)
+  DATA_FILES = %w[_data/slogans.yml].freeze
 
   Jekyll::Hooks.register :site, :post_write do |site|
     COLLECTIONS.each do |name|
@@ -16,6 +18,15 @@ module IfsmbSourceFiles
         FileUtils.mkdir_p(File.dirname(target))
         FileUtils.cp(doc.path, target)
       end
+    end
+
+    DATA_FILES.each do |path|
+      source = File.join(site.source, path)
+      next unless File.exist?(source)
+
+      target = File.join(site.dest, "source", path)
+      FileUtils.mkdir_p(File.dirname(target))
+      FileUtils.cp(source, target)
     end
   end
 end

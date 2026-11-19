@@ -244,9 +244,10 @@ var NeuFormular = (function () {
 
   // ---------- state ----------
   var STORE = "ifsmb-neu:";
+  var EDIT_HASH = /^#(bearbeiten|edit)$/; // <page>#bearbeiten opens the edit form directly (_includes/edit-buttons.html)
   var d = null, form, links, mehrBox, vorschau, socialBox, socialImg, socialTitel, socialBeschr, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
   var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder, edit, path }
-  var stepsEl, discardBtn, submitBtn;
+  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl;
 
   function alleFelder(schema) {
     return schema.felder.reduce(function (a, z) { return a.concat(z); }, []).concat([{ name: "datei", intern: true, folgt: schema.datei }]);
@@ -313,6 +314,8 @@ var NeuFormular = (function () {
   function toFieldValue(f, v) {
     if (f.typ === "chips") return Array.isArray(v) ? v.map(String) : F.leer(v) ? [] : [String(v)];
     if (f.typ === "haken") return v === true || v === "true";
+    // a one-entry list of text is what alsEintrag writes (owner_name) – show it as that text
+    if (Array.isArray(v) && v.length === 1 && typeof v[0] === "string" && !f.optionen) v = v[0];
     if (Array.isArray(v) || typeof v === "boolean") return undefined;
     v = String(v);
     if (f.typ === "zeit") { var m = v.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?/); return m ? m[1] + "T" + (m[2] || "00:00") : v; }
@@ -405,8 +408,11 @@ var NeuFormular = (function () {
       + '<details class="neu-social" open><summary>Social-Media-Vorschau (WhatsApp, Signal, X …)</summary>'
       + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
       + '<div class="neu-social-text"><span class="neu-social-domain">ifsmb.de</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
+      + '<div class="form-photos" aria-label="Neue Fotos"></div>'
       + '<ol class="neu-schritte small"></ol></aside></div>'
       + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen></button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-github>🔑 GitHub verbinden</button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>📷 Fotos hinzufügen</button>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
       + '<button type="submit" class="btn" data-submit></button></div></form>');
     form = d.querySelector("form");
@@ -425,6 +431,32 @@ var NeuFormular = (function () {
     stepsEl = d.querySelector(".neu-schritte");
     discardBtn = d.querySelector("[data-verwerfen]");
     submitBtn = d.querySelector("[data-submit]");
+    githubBtn = d.querySelector("[data-github]");
+    fotosBtn = d.querySelector("[data-photos]");
+    fotosEl = d.querySelector(".form-photos");
+    githubBtn.addEventListener("click", function () { direct.connectDialog(); });
+    fotosBtn.addEventListener("click", function () { direct.addPhotos(); });
+    fotosEl.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-photo-remove]"); if (b) { direct.removePhoto(+b.getAttribute("data-photo-remove")); return; }
+      var t = e.target.closest("[data-toggle]"); if (t) direct.toggle(+t.closest("[data-photo]").getAttribute("data-photo"), t.getAttribute("data-toggle"));
+    });
+    fotosEl.addEventListener("dragstart", function (e) {
+      var c = e.target.closest("[data-photo]"); if (!c) return;
+      e.dataTransfer.setData("text/x-ifsmb-photo", c.getAttribute("data-photo")); e.dataTransfer.effectAllowed = "copy";
+    });
+    fotosEl.addEventListener("dragover", function (e) {
+      var sl = e.target.closest("[data-slot]"); if (!sl || e.dataTransfer.types.indexOf("text/x-ifsmb-photo") < 0) return;
+      e.preventDefault(); sl.classList.add("media-drop");
+    });
+    fotosEl.addEventListener("dragleave", function (e) { var sl = e.target.closest("[data-slot]"); if (sl) sl.classList.remove("media-drop"); });
+    fotosEl.addEventListener("drop", function (e) {
+      var sl = e.target.closest("[data-slot]"); if (!sl) return;
+      e.preventDefault(); sl.classList.remove("media-drop");
+      var i = +e.dataTransfer.getData("text/x-ifsmb-photo"), p = aktiv.photos[i], slot = direct.slots().filter(function (x) { return x.id === sl.getAttribute("data-slot"); })[0];
+      if (p && slot) direct.assign(p, slot).then(direct.showPhotos, function (err) { status.textContent = "⚠️ " + err.message; });
+    });
+    // direct pull requests: github-api.js is small – load it with the dialog to know whether a token is there
+    if (window.ladeSkripte) window.ladeSkripte(["github-api.js"]).then(function () { direct.update(); }).catch(function () {});
 
     form.addEventListener("input", aenderung);
     form.addEventListener("change", aenderung);
@@ -433,13 +465,19 @@ var NeuFormular = (function () {
     form.addEventListener("submit", function (e) { e.preventDefault(); anlegen(); });
     discardBtn.addEventListener("click", function () {
       loescheEntwurf();
+      direct.clearPhotos();
       if (aktiv.edit) { aktiv.w = JSON.parse(JSON.stringify(aktiv.edit.w0)); aktiv.beruehrt = allTouched(); }
       else { aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe); aktiv.beruehrt = {}; }
       folge(); baueFelder(); zeigeVorschau();
       status.textContent = aktiv.edit ? "Änderungen verworfen." : "Neu angefangen.";
     });
     // "close" fires a moment after close(); if the dialog was opened again meanwhile, leave the new form alone
-    d.addEventListener("close", function () { if (d.open) return; if (aktiv && aktiv.gesendet) loescheEntwurf(); destroyEditors(); aktiv = null; });
+    d.addEventListener("close", function () {
+      if (d.open) return;
+      if (aktiv && aktiv.gesendet) loescheEntwurf();
+      destroyEditors(); aktiv = null;
+      if (EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search);
+    });
   }
 
   // in edit mode a required field only stays required if the file had a value (old posts without date: …)
@@ -654,6 +692,7 @@ var NeuFormular = (function () {
     socialBox.hidden = !istSeite;
     if (!istSeite) return;
     var bild = w.social_media_preview_image || (!w.image_is_illustration && !/\.svg$/i.test(w.image || "") && w.image) || w.photo || erstesMarkdownBild(w.text) || "/assets/images/og-preview.jpg";
+    bild = direct.previewFor(bild); // photos not uploaded yet: show the local preview
     if (socialImg.getAttribute("src") !== bild) socialImg.src = bild;
     socialTitel.textContent = w.title || aktiv.schema.titel;
     socialBeschr.textContent = (w.summary || w.subtitle || w.role || ersteTextzeile(w.text) || "Institut für spontane Makespace Buildung").slice(0, 160);
@@ -667,6 +706,7 @@ var NeuFormular = (function () {
   function anlegen() {
     var fehler = fehlt();
     if (fehler) { status.textContent = "⚠️ " + fehler; return; }
+    if (direct.active()) { direct.submit(); return; }
     if (aktiv.edit) {
       var newText = dateiInhalt();
       if (newText === aktiv.edit.source) { status.textContent = "Noch nichts geändert."; return; }
@@ -683,6 +723,332 @@ var NeuFormular = (function () {
     aktiv.gesendet = true;
   }
 
+
+  // ---------- direct pull requests (prototype, assets/js/github-api.js + photo-editor.js) ----------
+  // With a GitHub token the submit button creates the pull request itself: the file (new or only the changed lines,
+  // like before) plus new photos in one commit on a new branch. Without a token everything stays as it was
+  // (copy → GitHub's editor). Photos need the token, because they can't be pasted into GitHub's editor.
+  var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen" };
+  var direct = {
+    active: function () { return !!(window.GitHubApi && GitHubApi.connected()); },
+    // which folder new photos go into: assets/images/<area>/<slug>/ – posts without the date in front, like today
+    folder: function () {
+      var area = IMAGE_FOLDERS[aktiv.typ] || "news", name = String(aktiv.w.datei || "").replace(/\.(md|ya?ml)$/, "");
+      if (area === "news") name = name.replace(/^\d{4}-\d{2}-\d{2}-/, "");
+      return "assets/images/" + area + "/" + (name || "neu") + "/";
+    },
+    // Editing: is there already an open pull request that changes this file? Then offer to continue there (same branch,
+    // no second PR) – otherwise two people edit the same page in parallel and the second merge conflicts.
+    checkOpenPulls: function () {
+      var state = aktiv;
+      if (!state || !state.edit || !direct.active()) return;
+      GitHubApi.openPullsForFile(state.path).then(function (prs) {
+        if (aktiv !== state || !prs.length) return;
+        state.openPulls = prs;
+        var box = F.el('<div class="form-pr-notice note small" role="status"></div>');
+        box.innerHTML = "<strong>⚠️ Diese Seite wird gerade schon geändert:</strong><ul>" + prs.map(function (pr, i) {
+          return '<li><a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a>"
+            + (pr.user ? " von @" + esc(pr.user) : "")
+            + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " weiterarbeiten</button>" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
+        }).join("") + "</ul><span>Sonst entsteht ein zweiter Pull Request mit demselben Stand von <code>main</code> – beim Mergen gibt es dann Konflikte.</span>";
+        box.addEventListener("click", function (e) {
+          var b = e.target.closest("[data-pr-continue]"); if (b) direct.pickUp(prs[+b.getAttribute("data-pr-continue")], box);
+        });
+        hinweisEl.after(box);
+      }, function () { /* no check possible – the normal path still works */ });
+    },
+    // load the file as it is in the pull request's branch and commit there on submit
+    pickUp: function (pr, box) {
+      var state = aktiv;
+      status.textContent = "Lade den Stand aus #" + pr.number + " …";
+      GitHubApi.readFile(state.path, pr.branch).then(function (source) {
+        if (aktiv !== state) return;
+        if (source == null) throw new Error("Die Datei gibt es im Branch von #" + pr.number + " nicht.");
+        var loaded = readSource(state.schema, source, state.path);
+        if (!loaded) throw new Error("Die Datei in #" + pr.number + " hat kein Front Matter.");
+        state.edit = loaded; state.prBase = pr; state.beruehrt = allTouched();
+        state.w = JSON.parse(JSON.stringify(loaded.w0));
+        direct.clearPhotos();
+        baueFelder(); zeigeVorschau();
+        box.innerHTML = '<strong>✏️ Du arbeitest in <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a> weiter</strong> – Speichern ergänzt diesen Pull Request um einen Commit.";
+        submitBtn.textContent = "🚀 In #" + pr.number + " speichern";
+        status.textContent = "Stand aus #" + pr.number + " geladen.";
+      }).catch(function (err) { status.textContent = "⚠️ " + err.message; });
+    },
+    // Where photos can be used in this form – derived from the fields the type has, so every resource gets its own
+    // uses: gallery in the text, cover/device photo, profile photo, logo (partner card), social media preview.
+    slots: function () {
+      if (!aktiv) return [];
+      var has = function (n) { return aktiv.felder.some(function (f) { return f.name === n; }) && !(aktiv.edit && aktiv.edit.rawFields[n]); };
+      var s = [];
+      if (!aktiv.schema.format && has("text")) s.push({ id: "gallery", label: "🖼️ Galerie im Text", hilfe: "mehrere Fotos, erscheinen als Galerie" });
+      if (has("image")) s.push({ id: "image", label: aktiv.typ === "geraet" ? "📸 Foto des Geräts" : "📸 Titelbild", feld: "image", alt: has("image_alt") && "image_alt" });
+      if (has("photo")) s.push({ id: "photo", label: "🙂 Profilfoto", feld: "photo" });
+      if (has("logo")) s.push({ id: "logo", label: "🏷️ Logo / Bild auf der Partnerkarte", feld: "logo" });
+      if (has("social_media_preview_image")) s.push({ id: "social", label: "📣 Social-Media-Vorschau", feld: "social_media_preview_image", social: true, hilfe: "wird auf 1200×630 zugeschnitten" });
+      return s;
+    },
+    previewFor: function (v) {
+      var hit = null;
+      (aktiv && aktiv.photos || []).forEach(function (p) {
+        if (v === direct.url(p)) hit = p.preview;
+        if (v === direct.url(p, "-social") && p.social) hit = p.social.preview;
+      });
+      return hit || v;
+    },
+    url: function (p, variant) { return "/" + p.folder + p.name.replace(/\.jpg$/, (variant || "") + ".jpg"); },
+    uses: function (p, slot) {
+      if (slot.id === "gallery") return String(aktiv.w.text || "").indexOf("](" + direct.url(p) + ")") >= 0;
+      return aktiv.w[slot.feld] === direct.url(p, slot.social ? "-social" : "");
+    },
+    used: function (p) { return direct.slots().some(function (sl) { return direct.uses(p, sl); }); },
+    setField: function (name, v) {
+      aktiv.w[name] = v; aktiv.beruehrt[name] = v !== "";
+      var input = form.elements[name];
+      if (input) { input.value = v; if (mehrBox.contains(input) && v) mehrBox.open = true; }
+      nachAenderung();
+    },
+    assign: function (p, slot) {
+      if (direct.uses(p, slot)) return Promise.resolve();
+      if (slot.id === "gallery") {
+        var line = "![" + p.alt.replace(/[\[\]]/g, "") + "](" + direct.url(p) + ")", t = String(aktiv.w.text || "").replace(/\s+$/, "");
+        // directly under a gallery at the end of the text → same gallery, otherwise a new one
+        t = /\n\{: \.gallery[^}]*\}$/.test(t) && /\)\n\{: \.gallery[^}]*\}$/.test(t) ? t.replace(/\n(\{: \.gallery[^}]*\})$/, "\n" + line + "\n$1") : t + (t ? "\n\n" : "") + line + "\n{: .gallery}";
+        setText(t + "\n");
+        return Promise.resolve();
+      }
+      var ready = slot.social && !p.social ? window.ladeSkripte(["photo-editor.js"]).then(function () {
+        return window.PhotoEditor.open(new File([p.full], p.name, { type: "image/jpeg" }), { size: [1200, 630], title: "📣 Ausschnitt für die Social-Media-Vorschau (1200×630)" });
+      }).then(function (r) { if (r) p.social = r; return r; }) : Promise.resolve(true);
+      return ready.then(function (ok) {
+        if (!ok) return;
+        direct.setField(slot.feld, direct.url(p, slot.social ? "-social" : ""));
+        if (slot.alt) direct.setField(slot.alt, p.alt);
+      });
+    },
+    unassign: function (p, slot) {
+      if (slot.id === "gallery") {
+        var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("](" + direct.url(p) + ")") < 0; });
+        // a gallery marker without images above it is left over → remove it
+        lines = lines.filter(function (l, i) { return !/^\{: \.gallery/.test(l) || /^!\[/.test(lines[i - 1] || ""); });
+        setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
+      } else {
+        direct.setField(slot.feld, "");
+        if (slot.alt) direct.setField(slot.alt, "");
+      }
+    },
+    toggle: function (i, slotId) {
+      var p = aktiv.photos[i], slot = direct.slots().filter(function (x) { return x.id === slotId; })[0];
+      if (!p || !slot) return;
+      (direct.uses(p, slot) ? Promise.resolve(direct.unassign(p, slot)) : direct.assign(p, slot))
+        .then(direct.showPhotos, function (err) { status.textContent = "⚠️ " + err.message; });
+    },
+    update: function () {
+      if (!d || !aktiv) return;
+      var on = direct.active();
+      githubBtn.textContent = on ? "🔑 GitHub ✓" : "🔑 GitHub verbinden";
+      githubBtn.title = on ? "Mit GitHub verbunden – Pull Requests direkt von hier" : "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)";
+      fotosBtn.hidden = !direct.slots().length;
+      if (on) {
+        submitBtn.textContent = aktiv.edit ? "🚀 Änderung als Pull Request" : "🚀 Als Pull Request anlegen";
+        stepsEl.innerHTML = "<li>„Als Pull Request“ legt einen neuen Branch mit "
+          + (aktiv.edit ? "der geänderten Datei" : "der neuen Datei") + " und allen verwendeten Fotos an und öffnet einen Pull Request.</li>"
+          + "<li>Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.</li>";
+      }
+      direct.showPhotos();
+    },
+    // Media panel: one card per photo with a toggle per use; cards can also be dragged onto a use.
+    // Above: the uses of this form with what is in them right now (also images already in the file).
+    showPhotos: function () {
+      var photos = aktiv.photos || [], slots = direct.slots();
+      if (!photos.length) { fotosEl.innerHTML = ""; return; }
+      function thumbFor(v) {
+        var p = photos.filter(function (x) { return v && (v === direct.url(x) || v === direct.url(x, "-social")); })[0];
+        return p ? (v === direct.url(p, "-social") && p.social ? p.social.preview : p.preview) : v;
+      }
+      var slotHtml = slots.map(function (sl) {
+        var images = sl.id === "gallery"
+          ? (String(aktiv.w.text || "").match(/!\[[^\]]*\]\(([^)\s]+\.(?:jpe?g|png|webp|gif))\)/gi) || []).map(function (m) { return m.replace(/^.*\(/, "").replace(/\)$/, ""); })
+          : (aktiv.w[sl.feld] ? [aktiv.w[sl.feld]] : []);
+        return '<li class="media-slot" data-slot="' + sl.id + '"><span class="media-slot-name">' + esc(sl.label) + "</span>"
+          + (sl.hilfe ? '<small class="form-hilfe">' + esc(sl.hilfe) + "</small>" : "")
+          + '<span class="media-slot-images">' + (images.length ? images.map(function (b) { return '<img src="' + esc(thumbFor(b)) + '" alt="">'; }).join("") : '<span class="muted small">hierher ziehen</span>') + "</span></li>";
+      }).join("");
+      var cards = photos.map(function (p, i) {
+        var used = direct.used(p);
+        return '<li class="media-photo' + (used ? "" : " media-unused") + '" draggable="true" data-photo="' + i + '">'
+          + '<img src="' + p.preview + '" alt=""><div class="media-info small"><code>' + esc(p.name) + "</code> " + esc(p.alt)
+          + (used ? "" : '<br><strong>Noch nicht verwendet</strong> – wird nicht hochgeladen') + '<div class="media-uses">'
+          + slots.map(function (sl) { return '<button type="button" class="media-chip" data-toggle="' + sl.id + '" aria-pressed="' + direct.uses(p, sl) + '">' + esc(sl.label) + "</button>"; }).join("")
+          + '</div></div><button type="button" class="btn btn-small btn-ghost" data-photo-remove="' + i + '" aria-label="Foto entfernen">✕</button></li>';
+      }).join("");
+      fotosEl.innerHTML = '<p class="media-title"><strong>📷 Fotos</strong> <span class="muted small">– antippen oder auf eine Verwendung ziehen</span></p>'
+        + '<ul class="media-slots">' + slotHtml + '</ul><ul class="media-photos">' + cards + "</ul>";
+    },
+    clearPhotos: function () {
+      (aktiv && aktiv.photos || []).forEach(function (p) { URL.revokeObjectURL(p.preview); if (p.social) URL.revokeObjectURL(p.social.preview); });
+      if (aktiv) aktiv.photos = []; if (fotosEl) fotosEl.innerHTML = "";
+    },
+    removePhoto: function (i) {
+      var p = aktiv.photos[i];
+      direct.slots().forEach(function (sl) { if (direct.uses(p, sl)) direct.unassign(p, sl); });
+      aktiv.photos.splice(i, 1);
+      URL.revokeObjectURL(p.preview);
+      direct.showPhotos();
+    },
+    // next free number NN in the folder: existing files on GitHub + photos added in this form
+    nextNumber: function (folder) {
+      var taken = (aktiv.photos || []).map(function (p) { return parseInt(p.name, 10); });
+      return GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch).then(function (names) {
+        names.forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
+        return taken.reduce(function (a, b) { return Math.max(a, b); }, 0) + 1;
+      });
+    },
+    addPhotos: function () {
+      if (!direct.active()) { direct.connectDialog(function () { direct.addPhotos(); }); return; }
+      var input = F.el('<input type="file" accept="image/*" multiple hidden>');
+      document.body.appendChild(input);
+      input.addEventListener("change", function () {
+        var files = Array.prototype.slice.call(input.files || []), folder = direct.folder(), added = [];
+        input.remove();
+        if (!files.length) return;
+        window.ladeSkripte(["photo-editor.js"]).then(function () {
+          return files.reduce(function (p, file) {
+            return p.then(function () {
+              return window.PhotoEditor.open(file).then(function (r) {
+                if (!r) return;
+                return direct.nextNumber(folder).then(function (nr) {
+                  var photo = { folder: folder, name: F.zwei(nr) + ".jpg", full: r.full, thumb: r.thumb, alt: r.alt, preview: r.preview };
+                  aktiv.photos.push(photo); added.push(photo);
+                });
+              }, function (err) { status.textContent = "⚠️ " + file.name + ": " + err.message; });
+            });
+          }, Promise.resolve());
+        }).then(function () {
+          if (!added.length) return;
+          // with only one use there is nothing to choose; otherwise the photos wait in the panel
+          var slots = direct.slots();
+          var chain = slots.length === 1 ? added.reduce(function (pr, p) { return pr.then(function () { return direct.assign(p, slots[0]); }); }, Promise.resolve()) : Promise.resolve();
+          return chain.then(function () {
+            direct.showPhotos();
+            status.textContent = added.length + " Foto(s) vorbereitet – " + (slots.length === 1 ? "eingefügt" : "jetzt eine Verwendung wählen") + ". Hochgeladen wird mit dem Pull Request (nicht im Entwurf gespeichert).";
+          });
+        }).catch(function (err) { status.textContent = "⚠️ " + err.message; });
+      });
+      input.click();
+    },
+    submit: function () {
+      var newText = dateiInhalt(), path, title, u;
+      if (aktiv.edit) {
+        if (newText === aktiv.edit.source) { status.textContent = "Noch nichts geändert."; return; }
+        path = aktiv.path;
+        title = aktiv.schema.titel + " geändert: " + (aktiv.w.title || aktiv.w.name || path.split("/").pop());
+      } else {
+        path = aktiv.schema.ordner + "/" + aktiv.w.datei.trim();
+        title = "Neu: " + aktiv.schema.titel + " „" + (aktiv.w.title || aktiv.w.name || aktiv.w.medium || aktiv.w.datei) + "“";
+      }
+      // sent already and nothing changed since → no second pull request with the same content
+      if (aktiv.sent && aktiv.sent.text === newText) {
+        status.innerHTML = 'Schon gesendet: <a href="' + esc(aktiv.sent.url) + '" target="_blank" rel="noopener">Pull Request #' + aktiv.sent.number + "</a>.";
+        return;
+      }
+      // only photos that are used somewhere are uploaded (no orphans in assets/)
+      var slots = direct.slots(), photos = aktiv.photos.filter(direct.used), unused = aktiv.photos.length - photos.length;
+      var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
+      // photos follow the file name: if it changed after adding them, move them (all variants, in every field)
+      var folder = direct.folder();
+      photos.forEach(function (p) {
+        if (p.folder === folder) return;
+        ["", "-600w", "-social"].forEach(function (v) { newText = newText.split(direct.url(p, v)).join(direct.url({ folder: folder, name: p.name }, v)); });
+        p.folder = folder;
+      });
+      var files = [{ path: path, text: newText }];
+      usage.forEach(function (u) {
+        var base = direct.url(u.p).slice(1);
+        if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
+        if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
+      });
+      if (unused) status.textContent = unused + " Foto(s) werden nirgends verwendet und nicht hochgeladen.";
+      submitBtn.disabled = true;
+      var state = aktiv, step = function (t) { status.textContent = t; };
+      GitHubApi.whoAmI().then(function (me) {
+        u = me;
+        if (!state.edit) return GitHubApi.readFile(path).then(function (cur) {
+          if (cur != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
+          return GitHubApi.openPullsForFile(path);
+        }).then(function (prs) {
+          if (prs && prs.length) throw new Error("Pull Request #" + prs[0].number + " („" + prs[0].title + "“) legt " + path + " schon an – bitte dort weitermachen oder den Dateinamen ändern.");
+        });
+        return GitHubApi.readFile(path, state.prBase && state.prBase.branch).then(function (cur) {
+          if (cur != null && cur !== state.edit.source && !state.overwriteOk) {
+            state.overwriteOk = true;
+            throw new Error("Die Datei wurde inzwischen auf GitHub geändert. Nochmal klicken legt den Pull Request trotzdem an – beim Mergen ggf. zusammenführen.");
+          }
+        });
+      }).then(function () {
+        var body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf ifsmb.de von @" + u.login
+          + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
+          + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
+          + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
+          + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
+          + "- [ ] Checks („Prüfen“) sind grün\n";
+        return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase });
+      }).then(function (pr) {
+        if (aktiv !== state) return;
+        loescheEntwurf();
+        state.gesendet = true;
+        state.sent = { text: newText, url: pr.url, number: pr.number };
+        direct.clearPhotos();
+        status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke!";
+      }).catch(function (err) {
+        if (aktiv === state) status.textContent = "⚠️ " + err.message;
+      }).then(function () { submitBtn.disabled = false; });
+    },
+    // small dialog: paste a fine-grained token, check it, remember it (or not), disconnect
+    connectDialog: function (then) {
+      window.ladeSkripte(["github-api.js"]).then(function () {
+        var g = document.getElementById("github-connect");
+        if (!g) {
+          g = F.dialog({ id: "github-connect", klasse: "github-dialog", titel: "🔑 Mit GitHub verbinden" });
+          g.insertAdjacentHTML("beforeend", '<div class="github-body">'
+            + '<p>Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.</p>'
+            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – „Fine-grained“, nur das Repository <code>' + esc(GitHubApi.repo()) + '</code>, Berechtigungen <em>Contents</em> und <em>Pull requests</em>: „Read and write“, kurze Laufzeit.</li>'
+            + "<li>Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.</li></ol>"
+            + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>'
+            + '<label class="form-check"><input type="checkbox" data-remember><span>Auf diesem Gerät merken</span><small class="form-hilfe">Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.</small></label>'
+            + '<p class="github-who small" aria-live="polite"></p>'
+            + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-logout>Abmelden</button><span class="muted small"></span><button type="button" class="btn" data-connect>Verbinden</button></div></div>');
+          g.querySelector("[data-token-link]").href = GitHubApi.tokenUrl();
+        }
+        var input = g.querySelector("input[type=password]"), who = g.querySelector(".github-who");
+        function show() {
+          if (!GitHubApi.connected()) { who.textContent = "Nicht verbunden."; return; }
+          who.textContent = "Prüfe …";
+          GitHubApi.whoAmI().then(function (me) {
+            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"> Verbunden als <strong>@' + esc(me.login) + "</strong>"
+              + (me.canPush ? " – darf Pull Requests anlegen ✅" : " – hat <strong>keine Schreibrechte</strong> auf " + esc(GitHubApi.repo()) + " (Pull Requests aus Forks kommen später)");
+          }, function (err) { who.textContent = "⚠️ " + err.message; });
+        }
+        g.querySelector("[data-connect]").onclick = function () {
+          if (!input.value.trim()) { input.focus(); return; }
+          GitHubApi.setToken(input.value, g.querySelector("[data-remember]").checked);
+          input.value = "";
+          show(); direct.update();
+          GitHubApi.whoAmI().then(function (me) { if (me.canPush && then) { g.close(); then(); } }, function () {});
+        };
+        g.querySelector("[data-logout]").onclick = function () { GitHubApi.logout(); show(); direct.update(); setMode(!!(aktiv && aktiv.edit)); };
+        show();
+        g.showModal();
+      });
+    }
+  };
+  function setText(v) {
+    aktiv.w.text = v;
+    var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
+    if (ed) ed.setValue(v); else if (form.elements.text) form.elements.text.value = v;
+    nachAenderung();
+  }
+
   // step lists shown in the dialog (German UI text)
   var STEPS_NEW = '<li>„Auf GitHub anlegen“ kopiert die Datei und öffnet GitHub mit dem fertigen Inhalt.</li>'
     + "<li>Dort „Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
@@ -693,10 +1059,12 @@ var NeuFormular = (function () {
     + "<li>Nach dem Merge ist die Änderung nach ein paar Minuten auf der Website.</li>";
   // switch the dialog between "new file" and "edit existing file"
   function setMode(editing) {
+    d.querySelectorAll(".form-pr-notice").forEach(function (x) { x.remove(); });
     stepsEl.innerHTML = editing ? STEPS_EDIT : STEPS_NEW;
     discardBtn.textContent = editing ? "↩️ Änderungen verwerfen" : "🗑️ Neu anfangen";
     submitBtn.textContent = editing ? "📋 Auf GitHub speichern" : "📋 Auf GitHub anlegen";
     submitBtn.disabled = false; submitBtn.title = "";
+    direct.update();
     dateiInput.readOnly = !!editing;
     d.querySelector(".neu-pfad").previousElementSibling.textContent = editing ? "Datei" : "Neue Datei";
     vorlageLink.textContent = editing ? "Auf GitHub ansehen ↗" : "Vorlage mit allen Feldern ↗";
@@ -710,7 +1078,7 @@ var NeuFormular = (function () {
     var schema = TYPEN[daten.typ];
     if (!schema) { window.open(link.href, "_blank", "noopener"); return; }
     if (!d) baueDialog();
-    aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), vorgabe: daten.werte, beruehrt: {}, gesendet: false,
+    aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), vorgabe: daten.werte, beruehrt: {}, gesendet: false, photos: [],
       schluessel: STORE + daten.typ + ":" + location.pathname };
     var entwurf = ladeEntwurf();
     aktiv.w = Object.assign(anfangswerte(schema, daten.werte), entwurf && entwurf.w);
@@ -741,7 +1109,7 @@ var NeuFormular = (function () {
       if (!loaded) throw new Error("no front matter");
       if (!d) baueDialog();
       var folder = data.path.split("/").slice(0, -1).join("/");
-      aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, edit: loaded, path: data.path,
+      aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], edit: loaded, path: data.path,
         schluessel: "ifsmb-edit:" + data.path };
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
       var draft = ladeEntwurf(), draftFits = draft && draft.source === source;
@@ -757,7 +1125,9 @@ var NeuFormular = (function () {
       zeigeVorschau();
       status.textContent = draftFits ? "Entwurf wiederhergestellt." : "";
       if (!d.open) d.showModal();
+      if (!EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search + "#bearbeiten");
       F.ladeIndex();
+      direct.checkOpenPulls();
     });
   }
 
