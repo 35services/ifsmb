@@ -117,6 +117,7 @@ exclude:
   - CHANGELOG.md
   - DATA_STRUCTURES.md
   - DEPENDENCIES.md
+  - PLAN_DIRECT_EDITING.md
   - LICENSE
   - .pages.yml
   - todo.md

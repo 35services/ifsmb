@@ -1,5 +1,5 @@
 ---
-title: "3D-Druck auch in der Computer AG"
+title: 3D-Druck auch in der Computer AG?!
 date: 2026-11-09 12:00:00 +0100
 author: falko-richter
 tags: [ktg, u1]
