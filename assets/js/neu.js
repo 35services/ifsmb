@@ -314,6 +314,8 @@ var NeuFormular = (function () {
   function toFieldValue(f, v) {
     if (f.typ === "chips") return Array.isArray(v) ? v.map(String) : F.leer(v) ? [] : [String(v)];
     if (f.typ === "haken") return v === true || v === "true";
+    // a one-entry list of text is what alsEintrag writes (owner_name) – show it as that text
+    if (Array.isArray(v) && v.length === 1 && typeof v[0] === "string" && !f.optionen) v = v[0];
     if (Array.isArray(v) || typeof v === "boolean") return undefined;
     v = String(v);
     if (f.typ === "zeit") { var m = v.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?/); return m ? m[1] + "T" + (m[2] || "00:00") : v; }
