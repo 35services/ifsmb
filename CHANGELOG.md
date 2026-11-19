@@ -39,6 +39,10 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - **Regel in `CLAUDE.md`:** Quellcode ist Englisch – auch Ordner- und Dateinamen und Bezeichner, nicht nur Kommentare; deutsch (oder in anderen Sprachen) heißen nur Inhalte. Neuer Code nach dieser Regel, ältere deutsche Namen werden separat aufgeräumt.
 
 
+### Behoben
+
+- **✏️-Formular für Geräte liest „Gehört (andere)“ wieder:** Das Formular speichert `owner_name` als Liste mit einem Eintrag (`owner_name: ["…"]`), konnte diese Liste beim erneuten Öffnen aber nicht lesen – das Feld galt als „nur auf GitHub bearbeitbar“, und der Test `test_all_form_fields_are_readable` ließ seit #121 jeden Pull Request scheitern. Eine Liste mit genau einem Text wird jetzt als dieser Text angezeigt; neuer Test dafür in `_scripts/test_formulare.rb`.
+
 ## [2026-11-13]
 
 ### Hinzugefügt
