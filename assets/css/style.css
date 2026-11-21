@@ -959,6 +959,7 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
 .form-feld { display: flex; flex-direction: column; gap: .2rem; font-size: .85rem; font-weight: 700; min-width: 0; }
 .form-feld input, .form-feld select, .form-feld textarea, .form-ac-input { font: inherit; font-weight: 400; font-size: .95rem; padding: .4rem .55rem; border: 2px solid var(--ink); border-radius: 8px; background: var(--paper); color: var(--ink); width: 100%; box-sizing: border-box; }
 .form-feld textarea { font-family: var(--mono); font-size: .85rem; resize: vertical; }
+.form-field-code textarea { white-space: pre; overflow-wrap: normal; overflow-x: auto; tab-size: 2; min-height: 18rem; }
 .form-feld-titel input { font-size: 1.15rem; font-weight: 800; }
 .form-hilfe { font-weight: 400; font-size: .75rem; color: var(--muted); }
 .form-pflicht { color: #cf222e; }
