@@ -20,3 +20,5 @@ Der Zeitraffer vom Plotten:
 ## Und in 3D: Serpentine3D
 
 Außerdem haben wir mit **Serpentine3D** gearbeitet – das ist wohl ein Klon von Rhino 3D, und so sieht es auch aus: vier Ansichten (Perspektive, oben, vorne, rechts), eine Befehlszeile für `line`, `circle`, `extrude`, `loft` oder `revolve`, Objektfang wie bei Rhino – und bei jedem Objekt ein Feld „Print width (mm)“.
+
+![Serpentine3D mit vier Ansichten (Perspektive, oben, vorne, rechts) und einer gelben, ovalen Fläche, rechts die Eigenschaften von „Surface 01“ mit „Print width (mm)“, unten die Befehlszeile mit „revolve“](/assets/images/news/gebrueder-luftdruck-am-plotter/02.jpg)
