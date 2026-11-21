@@ -48,6 +48,7 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 
 ### Behoben
 
+- **Theme „Offene Werkstätten“: keine helle Linie mehr unter dem roten Kopf (#158):** Zwischen dem Kopf und seiner schrägen Unterkante (`.site-header::after`) blitzte je nach Breite und Pixeldichte (z. B. auf dem Handy) eine dünne helle Linie durch, weil der Kopf eine gebrochene Höhe hat und beide Kanten mitten in einem Pixel endeten. Die schräge Kante beginnt jetzt 1 px weiter oben hinter dem Kopf (Neigung unverändert, das Logo-Feld bleibt davor); die anderen Themes sind unverändert.
 - **✏️-Formular für Geräte liest „Gehört (andere)“ wieder:** Das Formular speichert `owner_name` als Liste mit einem Eintrag (`owner_name: ["…"]`), konnte diese Liste beim erneuten Öffnen aber nicht lesen – das Feld galt als „nur auf GitHub bearbeitbar“, und der Test `test_all_form_fields_are_readable` ließ seit #121 jeden Pull Request scheitern. Eine Liste mit genau einem Text wird jetzt als dieser Text angezeigt; neuer Test dafür in `_scripts/test_formulare.rb`.
 
 ## [2026-11-13]
