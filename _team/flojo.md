@@ -11,4 +11,6 @@ uuid: ebc35a76-74e9-4058-9b34-74e5888b8849
 
 Flojo hat einen A3 Axi
 
+Flojos Verein: [Kulturlabor Trial&Error e.V.](https://www.trial-error.org/) in Berlin – „nachhaltig – solidarisch – kreativ“.
+
 [instagram.com/flojo_y_crudo_official](https://www.instagram.com/flojo_y_crudo_official)
