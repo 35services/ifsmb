@@ -1,0 +1,281 @@
+/*
+  Themes – the look of the site in other contexts. Chosen per page (front matter `theme:`), site-wide
+  (`default_theme:` in _config.yml) or by the visitor (footer, localStorage "ifsmb-theme", ?theme=<id>);
+  the active one is html[data-theme] (_layouts/default.html). List of themes: _data/themes.yml.
+
+  The default theme "ifsmb" is assets/css/style.css itself – nothing here applies to it.
+  Every theme first sets the variables from :root in style.css, then adjusts a few components.
+  Fonts are self-hosted (assets/fonts/, see DEPENDENCIES.md); browsers only fetch a font once a theme uses it.
+*/
+
+@font-face { font-family: 'VT323'; font-style: normal; font-weight: 400; font-display: swap; src: url(../fonts/vt323/vt323-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Carlito'; font-style: normal; font-weight: 400; font-display: swap; src: url(../fonts/carlito/carlito-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Carlito'; font-style: italic; font-weight: 400; font-display: swap; src: url(../fonts/carlito/carlito-latin-400-italic.woff2) format('woff2'); }
+@font-face { font-family: 'Carlito'; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/carlito/carlito-latin-700-normal.woff2) format('woff2'); }
+@font-face { font-family: 'Carlito'; font-style: italic; font-weight: 700; font-display: swap; src: url(../fonts/carlito/carlito-latin-700-italic.woff2) format('woff2'); }
+@font-face { font-family: 'Lexend'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(../fonts/lexend/lexend-latin-wght-normal.woff2) format('woff2-variations'), url(../fonts/lexend/lexend-latin-wght-normal.woff2) format('woff2'); }
+
+/* theme picker in the footer – same in every theme */
+.theme-picker { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; font-size: .85rem; }
+.theme-picker select { font: inherit; padding: .2rem .4rem; border-radius: 6px; border: 1px solid currentColor; background: var(--paper); color: var(--ink); }
+
+/* ======================================================================
+   Offene Werkstätten – after offene-werkstaetten.org (Verbund Offener Werkstätten):
+   red header with a slanted edge, white logo panel, pixel font (VT323) in capitals for
+   navigation, headings and buttons, Carlito for text, light grey page, white cards with a
+   soft shadow, orange outline buttons, no rounded corners.
+   ====================================================================== */
+:root[data-theme="offene-werkstaetten"] {
+  --ink:      #222222;
+  --ink-soft: #3d3d3d;
+  --muted:    #595959;
+  --bg:       #e8e8e8;
+  --paper:    #ffffff;
+  --accent:   #fb7f05;
+  --accent-2: #be0101;
+  --blue:     #a14b00;   /* links: darker orange, 4.5:1 on white and on the grey page */
+  --line:     #d4d4d4;
+  --radius:   0px;
+  --font:     'Carlito', Calibri, 'Segoe UI', Arial, sans-serif;
+  --heading-font: 'VT323', ui-monospace, monospace;
+  --shadow-color: transparent;
+  --header-bg:   #be0101;
+  --header-ink:  #ffffff;
+  --header-line: 0;
+  --nav-radius:  0;
+  --btn-radius:  0;
+  --footer-bg:   #be0101;
+  --footer-ink:  #ffffff;
+  --footer-strong: #ffffff;
+  --footer-link: #ffe0b8;
+  --footer-link-hover: #ffffff;
+  --footer-note: #ffd9d9;
+  --footer-note-link: #ffffff;
+}
+[data-theme="offene-werkstaetten"] body { font-size: 1.06rem; }
+[data-theme="offene-werkstaetten"] h1,
+[data-theme="offene-werkstaetten"] h2,
+[data-theme="offene-werkstaetten"] h3 { font-weight: 400; text-transform: uppercase; letter-spacing: .03em; line-height: 1.05; }
+[data-theme="offene-werkstaetten"] .page-header h1,
+[data-theme="offene-werkstaetten"] .member-head h1 { font-size: clamp(2.3rem, 6vw, 3.4rem); }
+[data-theme="offene-werkstaetten"] .section h2,
+[data-theme="offene-werkstaetten"] .page h2 { font-size: 2.1rem; }
+[data-theme="offene-werkstaetten"] .prose h2 { font-size: 1.85rem; }
+[data-theme="offene-werkstaetten"] h3,
+[data-theme="offene-werkstaetten"] .card h3 { font-size: 1.45rem; }
+[data-theme="offene-werkstaetten"] .related-group h3 { font-family: var(--heading-font); font-size: 1.1rem; }
+
+/* header: red band, slanted lower edge, white logo panel */
+[data-theme="offene-werkstaetten"] .site-header::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 30px;
+  background: var(--header-bg); clip-path: polygon(0 0, 100% 0, 0 100%); pointer-events: none;
+}
+[data-theme="offene-werkstaetten"] .header-inner { padding-top: .5rem; padding-bottom: .5rem; }
+[data-theme="offene-werkstaetten"] .brand {
+  background: #fff; color: var(--accent-2); padding: .55rem 1.6rem .75rem .9rem; margin: -.5rem 0 -.5rem -1.25rem;
+  clip-path: polygon(0 0, 100% 0, 91% 100%, 0 92%);
+}
+[data-theme="offene-werkstaetten"] .brand:hover { color: var(--accent-2); }
+[data-theme="offene-werkstaetten"] .brand-mark {
+  font-family: var(--heading-font); font-weight: 400; font-size: 1.6rem; line-height: 1;
+  background: none; border: 0; box-shadow: none; transform: none; padding: 0; color: var(--accent-2);
+}
+[data-theme="offene-werkstaetten"] .brand-name { font-style: italic; color: #a14b00; }
+[data-theme="offene-werkstaetten"] .site-nav a,
+[data-theme="offene-werkstaetten"] .nav-group-toggle { font-family: var(--heading-font); font-weight: 400; font-size: 1.35rem; text-transform: uppercase; letter-spacing: .04em; line-height: 1.2; }
+[data-theme="offene-werkstaetten"] .site-nav a:hover,
+[data-theme="offene-werkstaetten"] .site-nav a.active,
+[data-theme="offene-werkstaetten"] .nav-group-toggle:hover,
+[data-theme="offene-werkstaetten"] .nav-group-toggle.active,
+[data-theme="offene-werkstaetten"] .nav-group:focus-within .nav-group-toggle { background: none; color: #fff; box-shadow: inset 0 -3px 0 var(--accent); }
+[data-theme="offene-werkstaetten"] .nav-sub { border: 0; box-shadow: 0 4px 14px rgba(0, 0, 0, .25); }
+@media (min-width: 721px) {
+  [data-theme="offene-werkstaetten"] .nav-sub a { color: var(--ink); }
+  [data-theme="offene-werkstaetten"] .nav-sub a:hover,
+  [data-theme="offene-werkstaetten"] .nav-sub a.active { color: var(--ink); background: var(--accent); box-shadow: none; }
+}
+@media (max-width: 720px) {
+  [data-theme="offene-werkstaetten"] .brand { margin-left: -1.25rem; }
+  [data-theme="offene-werkstaetten"] .nav-group-toggle:hover,
+  [data-theme="offene-werkstaetten"] .nav-group:focus-within .nav-group-toggle { box-shadow: none; }
+}
+@media (max-width: 1080px) and (min-width: 721px) {
+  [data-theme="offene-werkstaetten"] .site-nav a,
+  [data-theme="offene-werkstaetten"] .nav-group-toggle { font-size: 1.2rem; }
+}
+
+/* start page: grey stage with orange and red shapes, the text on a white panel */
+[data-theme="offene-werkstaetten"] .hero {
+  position: relative; overflow: hidden; border-bottom: 0; text-align: center;
+  background:
+    linear-gradient(to top right, var(--accent) 50%, transparent 50.5%) left bottom / 22% 45% no-repeat,
+    linear-gradient(to bottom left, var(--accent-2) 50%, transparent 50.5%) right bottom / 30% 24% no-repeat,
+    var(--bg);
+}
+[data-theme="offene-werkstaetten"] .hero .container {
+  max-width: 760px; background: #fff; padding: 2.5rem clamp(1.25rem, 4vw, 3rem); box-shadow: 0 4px 18px rgba(0, 0, 0, .18);
+}
+[data-theme="offene-werkstaetten"] .kicker { font-family: var(--heading-font); font-size: 1.35rem; letter-spacing: .06em; color: var(--accent-2); }
+[data-theme="offene-werkstaetten"] .hero h1 { font-size: clamp(2.4rem, 7vw, 4rem); letter-spacing: .02em; }
+/* the brush script of the original (EdoSZ) is not freely licensed – heavy italic capitals instead */
+[data-theme="offene-werkstaetten"] .hero .hl,
+[data-theme="offene-werkstaetten"] .slogan-char.hl-char { background: none; font-family: var(--font); font-weight: 700; font-style: italic; letter-spacing: -.01em; }
+[data-theme="offene-werkstaetten"] .hero-text { margin-left: auto; margin-right: auto; color: var(--ink); font-size: 1.1rem; }
+[data-theme="offene-werkstaetten"] .hero-actions { justify-content: center; }
+
+/* buttons: orange outline, pixel font in capitals */
+[data-theme="offene-werkstaetten"] .btn {
+  font-family: var(--heading-font); font-weight: 400; font-size: 1.4rem; line-height: 1.15; text-transform: uppercase; letter-spacing: .04em;
+  color: #a14b00; background: #fff; border: 2px solid var(--accent); padding: .35rem .9rem; transition: background .15s, color .15s;
+}
+[data-theme="offene-werkstaetten"] .btn:hover { color: var(--ink); background: var(--accent); transform: none; }
+[data-theme="offene-werkstaetten"] .btn-small { font-size: 1.15rem; padding: .2rem .65rem; }
+[data-theme="offene-werkstaetten"] .btn code { font-family: var(--mono); text-transform: none; letter-spacing: 0; font-size: .8rem; }
+
+/* cards: white, no frame, soft shadow */
+[data-theme="offene-werkstaetten"] .card,
+[data-theme="offene-werkstaetten"] .logo-tile { border: 0; box-shadow: 0 3px 12px rgba(0, 0, 0, .14); }
+[data-theme="offene-werkstaetten"] .card-link:hover,
+[data-theme="offene-werkstaetten"] .logo-tile:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, .2); }
+[data-theme="offene-werkstaetten"] .card p { color: var(--ink); }
+[data-theme="offene-werkstaetten"] .meta { font-family: var(--font); font-weight: 700; color: #a14b00; }
+[data-theme="offene-werkstaetten"] .badge { font-family: var(--heading-font); font-weight: 400; font-size: .95rem; border: 0; }
+[data-theme="offene-werkstaetten"] .badge-active { background: var(--accent); color: var(--ink); }
+[data-theme="offene-werkstaetten"] .event-date { border: 0; }
+[data-theme="offene-werkstaetten"] .event-day { font-family: var(--heading-font); font-weight: 400; font-size: 2.2rem; }
+[data-theme="offene-werkstaetten"] .link-list a,
+[data-theme="offene-werkstaetten"] .tag-list a,
+[data-theme="offene-werkstaetten"] .activity-item { border: 2px solid var(--accent); background: #fff; }
+[data-theme="offene-werkstaetten"] .link-list a:hover,
+[data-theme="offene-werkstaetten"] .tag-list a:hover,
+[data-theme="offene-werkstaetten"] .activity-item:hover { background: var(--accent); }
+[data-theme="offene-werkstaetten"] .prose img,
+[data-theme="offene-werkstaetten"] .project-image,
+[data-theme="offene-werkstaetten"] .gallery a,
+[data-theme="offene-werkstaetten"] .post-video,
+[data-theme="offene-werkstaetten"] .video-link,
+[data-theme="offene-werkstaetten"] .avatar { border: 0; }
+[data-theme="offene-werkstaetten"] .avatar { border-radius: 50%; }
+[data-theme="offene-werkstaetten"] .site-footer { border-top: 8px solid var(--accent); }
+
+/* ======================================================================
+   RFFLabs – after rfflabs.fr (Réseau Français des FabLabs):
+   white header with logo above a row of small capital links with hairlines, Lexend,
+   navy (#222D49) stage and footer, grey text, blue links, red/blue/green buttons,
+   rounded cards with a light shadow.
+   ====================================================================== */
+:root[data-theme="rfflabs"] {
+  --ink:      #222d49;
+  --ink-soft: #5c5959;
+  --muted:    #6b6767;
+  --bg:       #ffffff;
+  --paper:    #ffffff;
+  --accent:   #e2ecf7;
+  --accent-2: #d71f29;
+  --blue:     #2957cb;
+  --line:     #e2ecf7;
+  --radius:   10px;
+  --font:     'Lexend', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --heading-font: var(--font);
+  --shadow-color: transparent;
+  --header-bg:   #ffffff;
+  --header-ink:  #222d49;
+  --header-line: 1px solid #e2ecf7;
+  --nav-radius:  0;
+  --btn-radius:  6px;
+  --footer-bg:   #222d49;
+  --footer-ink:  #e2ecf7;
+  --footer-strong: #ffffff;
+  --footer-link: #9fb6e8;
+  --footer-link-hover: #ffffff;
+  --footer-note: #c9d4ec;
+  --footer-note-link: #ffffff;
+}
+[data-theme="rfflabs"] body { color: var(--ink-soft); font-weight: 300; }
+[data-theme="rfflabs"] strong, [data-theme="rfflabs"] b { font-weight: 600; }
+[data-theme="rfflabs"] .prose { line-height: 1.85; }
+[data-theme="rfflabs"] h1,
+[data-theme="rfflabs"] h2,
+[data-theme="rfflabs"] h3 { color: var(--muted); font-weight: 700; letter-spacing: 0; }
+[data-theme="rfflabs"] .page-header h1,
+[data-theme="rfflabs"] .member-head h1 { font-weight: 300; letter-spacing: 0; }
+[data-theme="rfflabs"] .card h3 { color: var(--ink); }
+
+/* header: logo on top, a row of small capitals with hairlines above */
+@media (min-width: 721px) {
+  [data-theme="rfflabs"] .header-inner { flex-direction: column; align-items: flex-start; gap: .6rem; padding-top: 1rem; padding-bottom: .9rem; }
+  [data-theme="rfflabs"] .site-nav { gap: .25rem 1.6rem; }
+}
+[data-theme="rfflabs"] .brand-mark {
+  font-family: var(--font); font-weight: 600; font-size: 1rem; color: #fff; background: var(--ink);
+  border: 0; border-radius: 10px; box-shadow: none; transform: none; padding: .3rem .55rem;
+}
+[data-theme="rfflabs"] .brand-name { font-weight: 500; }
+[data-theme="rfflabs"] .site-nav a,
+[data-theme="rfflabs"] .nav-group-toggle {
+  font-size: .8rem; font-weight: 500; text-transform: uppercase; letter-spacing: .03em;
+  padding: .3rem .1rem .2rem; border-top: 1px solid #b9c6e0;
+}
+[data-theme="rfflabs"] .nav-sub a { border-top: 0; padding: .35rem .6rem; }
+[data-theme="rfflabs"] .site-nav a:hover,
+[data-theme="rfflabs"] .site-nav a.active,
+[data-theme="rfflabs"] .nav-group-toggle:hover,
+[data-theme="rfflabs"] .nav-group-toggle.active,
+[data-theme="rfflabs"] .nav-group:focus-within .nav-group-toggle { background: none; color: var(--accent-2); border-top-color: var(--accent-2); }
+[data-theme="rfflabs"] .nav-sub { border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(34, 45, 73, .14); }
+@media (max-width: 1080px) and (min-width: 721px) {
+  [data-theme="rfflabs"] .site-nav a, [data-theme="rfflabs"] .nav-group-toggle { font-size: .78rem; padding: .3rem .1rem .2rem; }
+  [data-theme="rfflabs"] .brand-name { display: block; }
+}
+@media (max-width: 720px) {
+  [data-theme="rfflabs"] .site-nav a, [data-theme="rfflabs"] .nav-group-toggle { border-top: 0; font-size: .9rem; padding: .45rem .2rem; }
+}
+
+/* start page: navy stage, centred white headline, notch at the bottom */
+[data-theme="rfflabs"] .hero { position: relative; background: var(--ink); color: #fff; border-bottom: 0; text-align: center; }
+[data-theme="rfflabs"] .hero::after {
+  content: ''; position: absolute; left: 50%; bottom: -1px; width: 36px; height: 18px; margin-left: -18px;
+  background: var(--bg); clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+[data-theme="rfflabs"] .hero h1 { color: #fff; font-weight: 700; letter-spacing: -.01em; }
+[data-theme="rfflabs"] .hero .hl,
+[data-theme="rfflabs"] .slogan-char.hl-char { background: none; color: #9fb6e8; }
+[data-theme="rfflabs"] .slogan .slogan-char.scrambling { color: #fa6f76; }
+[data-theme="rfflabs"] .kicker { font-family: var(--font); color: #c9d4ec; }
+[data-theme="rfflabs"] .hero-text { color: #e2ecf7; margin-left: auto; margin-right: auto; }
+[data-theme="rfflabs"] .hero-actions { justify-content: center; }
+
+/* buttons: solid colour, white text, slightly rounded – red, blue, green like the three calls to action */
+[data-theme="rfflabs"] .btn {
+  font-weight: 600; color: #fff; background: var(--blue); border: 0; padding: .45rem 1rem; transition: filter .15s, transform .15s;
+}
+[data-theme="rfflabs"] .btn:hover { color: #fff; transform: scale(1.04); filter: brightness(1.08); }
+[data-theme="rfflabs"] .btn-ghost { color: var(--ink); background: #fff; box-shadow: inset 0 0 0 2px var(--ink); }
+[data-theme="rfflabs"] .btn-ghost:hover { color: var(--ink); }
+[data-theme="rfflabs"] .hero-actions .btn:nth-child(3n+1) { background: var(--accent-2); color: #fff; box-shadow: none; }
+[data-theme="rfflabs"] .hero-actions .btn:nth-child(3n+2) { background: var(--blue); color: #fff; box-shadow: none; }
+[data-theme="rfflabs"] .hero-actions .btn:nth-child(3n) { background: #067d3c; color: #fff; box-shadow: none; }
+[data-theme="rfflabs"] .btn-small { padding: .3rem .75rem; }
+
+/* cards: rounded, hairline, light shadow */
+[data-theme="rfflabs"] .card,
+[data-theme="rfflabs"] .logo-tile { border: 1px solid var(--line); box-shadow: 0 4px 18px rgba(34, 45, 73, .08); }
+[data-theme="rfflabs"] .card-link:hover,
+[data-theme="rfflabs"] .logo-tile:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(34, 45, 73, .16); }
+[data-theme="rfflabs"] .meta { font-family: var(--font); }
+[data-theme="rfflabs"] .badge { font-family: var(--font); font-weight: 600; border: 0; border-radius: 30px; padding: .15rem .65rem; }
+[data-theme="rfflabs"] .badge-active { background: #d8ffe9; color: #003319; }
+[data-theme="rfflabs"] .event-date { background: var(--ink); color: #fff; border: 0; }
+[data-theme="rfflabs"] .link-list a,
+[data-theme="rfflabs"] .activity-item { border: 1.5px solid #c9d4ec; border-radius: 30px; }
+[data-theme="rfflabs"] .link-list a:hover,
+[data-theme="rfflabs"] .tag-list a:hover,
+[data-theme="rfflabs"] .activity-item:hover { background: var(--accent); }
+[data-theme="rfflabs"] .tag-list a { font-family: var(--font); }
+[data-theme="rfflabs"] .prose img,
+[data-theme="rfflabs"] .project-image,
+[data-theme="rfflabs"] .gallery a,
+[data-theme="rfflabs"] .post-video,
+[data-theme="rfflabs"] .video-link,
+[data-theme="rfflabs"] .avatar { border: 0; }
+[data-theme="rfflabs"] .prose blockquote { border-left-color: var(--blue); }

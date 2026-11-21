@@ -40,6 +40,9 @@ var NeuFormular = (function () {
   var partner = function (name, label, x) { return chips(name, label, "partner", Object.assign({ platzhalter: "Partner suchen …" }, x)); };
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
   var persoenlich = function (hilfe) { return haken("persoenlich", "Persönlich", { hilfe: hilfe }); };
+  // look of the page (_data/themes.yml, assets/css/themes.css); "" = the site's default
+  var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"]];
+  var themeField = function () { return auswahl("theme", "🎨 Theme (Aussehen)", THEMES, { mehr: true, hilfe: "Besucher*innen können unten auf der Seite trotzdem selbst wählen" }); };
   var socialBild = function () { return text("social_media_preview_image", "Social-Media-Vorschaubild (1200×630 px)", { mehr: true, platzhalter: "/assets/images/og-….jpg – leer = erstes Bild oder Standard" }); };
 
   // ---------- values ----------
@@ -86,7 +89,8 @@ var NeuFormular = (function () {
       persoenlich("Privates Projekt aus dem Team: nur im Teamprofil, nicht in den Listen des Instituts"),
       inhalt("Ziel, Stand, was gebraucht wird …"),
       text("image", "Titelbild", { mehr: true, platzhalter: "/assets/images/projekte/<name>/01.jpg – ohne Metadaten" }),
-      socialBild()
+      socialBild(),
+      themeField()
     ];
   }
   var TYPEN = {
@@ -103,7 +107,8 @@ var NeuFormular = (function () {
         inhalt("Text in Markdown. Fotos als Galerie: ![Was zu sehen ist](/assets/images/news/<dateiname>/01.jpg) und darunter {: .gallery}"),
         adresse("original_url", "Original-Adresse", { mehr: true, hilfe: "nur bei übernommenen Beiträgen" }),
         text("original_site", "Original-Website", { mehr: true, platzhalter: "z. B. 35services.de" }),
-        socialBild()
+        socialBild(),
+        themeField()
       ]
     },
     termin: {
@@ -125,7 +130,8 @@ var NeuFormular = (function () {
           haken("nur_projekt", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
         inhalt("Was passiert, wer kann kommen, was mitbringen …"),
         text("date_label", "Text statt Datum", { mehr: true, platzhalter: "z. B. „Januar 2027 – genauer Termin folgt“" }),
-        socialBild()
+        socialBild(),
+        themeField()
       ]
     },
     projekt: {
@@ -161,7 +167,8 @@ var NeuFormular = (function () {
         text("image", "Foto", { mehr: true, platzhalter: "eigenes Foto ohne Metadaten – keine Hersteller- oder Shopfotos" }),
         text("image_alt", "Beschreibung des Fotos", { mehr: true }),
         haken("image_is_illustration", "Foto ist eine eigene SVG-Illustration", { mehr: true }),
-        socialBild()
+        socialBild(),
+        themeField()
       ],
       pruefe: function (w) {
         if (!(w.owner_team || []).length && !(w.owner_partner || []).length && !w.owner_name) return "Wem gehört das Gerät? Bitte mindestens eine Besitzer*in eintragen – das Institut besitzt selbst nichts.";
@@ -186,7 +193,8 @@ var NeuFormular = (function () {
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
         datum("geloest_am", "Gelöst am", { mehr: true }),
         feld("langtext", "loesung", "Lösung (Markdown)", { mehr: true, markdown: true, zeilen: 4 }),
-        socialBild()
+        socialBild(),
+        themeField()
       ]
     },
     team: {
@@ -200,7 +208,8 @@ var NeuFormular = (function () {
         inhalt("Was die Person macht und womit sie im Makespace hilft – keine Wohnadresse, keine privaten E-Mail-Adressen"),
         text("photo", "Foto", { mehr: true, platzhalter: "/assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis" }),
         text("photo_credit", "Bildnachweis", { mehr: true, hilfe: "Pflicht bei Fremdfotos (Presse, Agentur)" }),
-        socialBild()
+        socialBild(),
+        themeField()
       ]
     },
     presse: {
@@ -213,7 +222,8 @@ var NeuFormular = (function () {
         verlinkt(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
         text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/presse.yml" }),
-        socialBild()
+        socialBild(),
+        themeField()
       ]
     },
     partner: {
@@ -1397,6 +1407,6 @@ var NeuFormular = (function () {
     });
   }
 
-  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, alleFelder: alleFelder };
+  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder };
 })();
 if (typeof module !== "undefined") module.exports = NeuFormular;
