@@ -96,6 +96,12 @@ content:
         label: Kurzbeschreibung
         description: Erscheint in der Terminliste und im iCal-Kalender.
         type: text
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das erste Seitenbild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -179,6 +185,12 @@ content:
       - name: original_site
         label: Name der Originalseite
         type: string
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das erste Beitragsbild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -263,6 +275,12 @@ content:
       - name: image
         label: Bild
         type: image
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Projektbild, das erste Galeriebild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -335,6 +353,12 @@ content:
         label: Mini-Foto für den Kalender (quadratisch, 48 px, optional)
         description: Rundes Gesicht auf der Kalenderseite. Ohne Mini-Foto wird das normale Foto verkleinert.
         type: image
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen des Profils (og:image). Ohne Angabe wird das Profilfoto oder das Standardbild genutzt.
@@ -430,6 +454,12 @@ content:
         label: Foto ist eine eigene Illustration (SVG)
         description: Ohne freies Foto eine eigene SVG-Illustration nehmen – keine Hersteller- oder Shopfotos.
         type: boolean
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Gerätefoto oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -539,6 +569,12 @@ content:
       - name: loesung
         label: Lösung (wenn gelöst, Markdown)
         type: text
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen (og:image). Ohne Angabe wird das Standardbild genutzt.
@@ -596,6 +632,12 @@ content:
       - name: contact_email_anzeige
         label: Anzeigetext der E-Mail (z. B. name [at] example.org)
         type: string
+      - name: theme
+        label: Theme (Aussehen, optional)
+        description: "Wie die Seite aussieht, wenn Besucher*innen nichts anderes gewählt haben (Auswahl unten auf jeder Seite). Leer = wie die ganze Website (IfsMB). „offene-werkstaetten“ = im Stil des Verbunds Offener Werkstätten, „rfflabs“ = im Stil des Réseau Français des FabLabs. Liste: _data/themes.yml"
+        type: select
+        options:
+          values: ["", ifsmb, offene-werkstaetten, rfflabs]
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen der Pressemitteilung (og:image). Ohne Angabe wird das erste Bild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
