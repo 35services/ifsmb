@@ -1,4 +1,4 @@
-// Filter on /ausstattung/ (ausstattung/index.html): ?besitz=<key> shows the devices someone owns, ?standort=<key> the
+// Filter on /ausstattung/ (ausstattung/index.html): ?owner=<key> shows the devices someone owns, ?location=<key> the
 // devices located at a partner. Keys: _includes/equipment-keys.html (partner: last part of its page, e.g. 35services;
 // team members: their slug). Builds a small bar with every owner/location and its count. Without JS all devices show.
 (function () {
@@ -10,8 +10,8 @@
   var cards = Array.prototype.slice.call(document.querySelectorAll(".equipment-card"));
   // [URL parameter, data attribute, label key, German fallback, status key, status fallback]
   var FILTERS = [
-    ["besitz", "owners", "equipment.filter_owner", "Gehört:", "equipment.filter_active_owner", "Geräte von {name}"],
-    ["standort", "locations", "equipment.filter_location", "Steht bei:", "equipment.filter_active_location", "Geräte bei {name}"]
+    ["owner", "owners", "equipment.filter_owner", "Gehört:", "equipment.filter_active_owner", "Geräte von {name}"],
+    ["location", "locations", "equipment.filter_location", "Steht bei:", "equipment.filter_active_location", "Geräte bei {name}"]
   ];
 
   function tr(key, params, fallback) {

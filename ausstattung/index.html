@@ -16,7 +16,7 @@ lead: Womit wir arbeiten – und wem es gehört.
 {% assign scanners = items | where_exp: "it", "it.kategorie contains '3D-Scanner'" %}
 {% assign others = "" | split: "" %}
 {% for it in items %}{% unless it.kategorie contains '3D-Drucker' or it.kategorie contains '3D-Scanner' %}{% assign others = others | push: it %}{% endunless %}{% endfor %}
-{%- comment -%} filter by owner or location: ?besitz=<key> / ?standort=<key> (assets/js/equipment-filter.js) {%- endcomment -%}
+{%- comment -%} filter by owner or location: ?owner=<key> / ?location=<key> (assets/js/equipment-filter.js) {%- endcomment -%}
 <div class="equipment-filter" data-equipment-filter hidden></div>
 <script type="application/json" id="equipment-filter-labels">{% include equipment-key-labels.html items=items %}</script>
 <script src="{{ '/assets/js/equipment-filter.js' | relative_url }}" defer></script>
