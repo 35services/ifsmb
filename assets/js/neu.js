@@ -14,6 +14,12 @@
 var NeuFormular = (function () {
   "use strict";
   var F = typeof Formular !== "undefined" ? Formular : require("./formular.js");
+  // UI strings (assets/js/i18n.js, keys form.* / github.* in _data/i18n/*.yml) with the German text as fallback.
+  // Not yet translated: field labels/hints of the schemas below, photo slots, conflict boxes, most status lines.
+  var t = F.t;
+  var TYPE_KEYS = { beitrag: "post", termin: "event", projekt: "project", "projekt-vergangen": "past_project", geraet: "device",
+    herausforderung: "challenge", team: "team_profile", presse: "press_release", partner: "partner", pressebericht: "press_report" };
+  function typeName(typ, schema) { return TYPE_KEYS[typ] ? t("form.types." + TYPE_KEYS[typ], null, schema.titel) : schema.titel; }
   var esc = F.esc;
 
   // ---------- field factories ----------
@@ -408,21 +414,21 @@ var NeuFormular = (function () {
 
   // ---------- dialog ----------
   function baueDialog() {
-    d = F.dialog({ id: "neu-dialog", klasse: "neu-dialog", kopf: '<a class="neu-vorlage small" data-vorlage target="_blank" rel="noopener">Vorlage mit allen Feldern ↗</a>' });
+    d = F.dialog({ id: "neu-dialog", klasse: "neu-dialog", kopf: '<a class="neu-vorlage small" data-vorlage target="_blank" rel="noopener"></a>' });
     d.insertAdjacentHTML("beforeend",
       '<form class="neu-form" autocomplete="off">'
       + '<div class="neu-spalten"><div class="neu-links"><p class="neu-hinweis muted small"></p><div class="neu-felder"></div>'
-      + '<details class="neu-mehr"><summary>Weitere Felder</summary><div class="neu-felder"></div></details></div>'
-      + '<aside class="neu-rechts"><label class="form-feld"><span>Neue Datei</span><span class="neu-pfad"><code></code><input name="datei" type="text" required spellcheck="false"></span></label>'
-      + '<pre class="neu-vorschau" aria-label="Vorschau der Datei"></pre>'
-      + '<details class="neu-social" open><summary>Social-Media-Vorschau (WhatsApp, Signal, X …)</summary>'
+      + '<details class="neu-mehr"><summary>' + esc(t("form.more_fields", null, "Weitere Felder")) + '</summary><div class="neu-felder"></div></details></div>'
+      + '<aside class="neu-rechts"><label class="form-feld"><span></span><span class="neu-pfad"><code></code><input name="datei" type="text" required spellcheck="false"></span></label>'
+      + '<pre class="neu-vorschau" aria-label="' + esc(t("form.file_preview", null, "Vorschau der Datei")) + '"></pre>'
+      + '<details class="neu-social" open><summary>' + esc(t("form.social_preview", null, "Social-Media-Vorschau (WhatsApp, Signal, X …)")) + '</summary>'
       + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
       + '<div class="neu-social-text"><span class="neu-social-domain">ifsmb.de</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
-      + '<div class="form-photos" aria-label="Neue Fotos"></div>'
+      + '<div class="form-photos" aria-label="' + esc(t("form.new_photos", null, "Neue Fotos")) + '"></div>'
       + '<ol class="neu-schritte small"></ol></aside></div>'
       + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen></button>'
-      + '<button type="button" class="btn btn-small btn-ghost" data-github>🔑 GitHub verbinden</button>'
-      + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>📷 Fotos hinzufügen</button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-github>' + esc(t("github.connect", null, "🔑 GitHub verbinden")) + '</button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>' + esc(t("form.add_photos", null, "📷 Fotos hinzufügen")) + '</button>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
       + '<button type="submit" class="btn" data-submit></button></div></form>');
     form = d.querySelector("form");
@@ -479,7 +485,7 @@ var NeuFormular = (function () {
       if (aktiv.edit) { aktiv.w = JSON.parse(JSON.stringify(aktiv.edit.w0)); aktiv.beruehrt = allTouched(); }
       else { aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe); aktiv.beruehrt = {}; }
       folge(); baueFelder(); zeigeVorschau();
-      status.textContent = aktiv.edit ? "Änderungen verworfen." : "Neu angefangen.";
+      status.textContent = aktiv.edit ? t("form.discarded", null, "Änderungen verworfen.") : t("form.restarted", null, "Neu angefangen.");
     });
     // "close" fires a moment after close(); if the dialog was opened again meanwhile, leave the new form alone
     d.addEventListener("close", function () {
@@ -705,7 +711,7 @@ var NeuFormular = (function () {
       var marked = changedLines(aktiv.edit.source.replace(/\r\n/g, "\n"), text), count = marked.filter(Boolean).length;
       vorschau.innerHTML = text.split("\n").map(function (line, i) { return marked[i] ? '<mark class="changed-line">' + esc(line || " ") + "</mark>" : esc(line); }).join("\n");
       submitBtn.disabled = !count;
-      submitBtn.title = count ? "" : "Noch nichts geändert";
+      submitBtn.title = count ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
     } else vorschau.textContent = text;
     if (!socialBox) return;
     var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
@@ -720,7 +726,7 @@ var NeuFormular = (function () {
 
   function fehlt() {
     var leer = aktiv.felder.filter(function (f) { return isRequired(f) && f.typ === "chips" && !aktiv.w[f.name].length; })[0];
-    if (leer) return "Bitte „" + leer.label.replace(/^\W+\s*/, "") + "“ ausfüllen.";
+    if (leer) return t("form.fill_in", { field: leer.label.replace(/^\W+\s*/, "") }, "Bitte „" + leer.label.replace(/^\W+\s*/, "") + "“ ausfüllen.");
     return aktiv.schema.pruefe && aktiv.schema.pruefe(aktiv.w);
   }
   function anlegen() {
@@ -729,9 +735,10 @@ var NeuFormular = (function () {
     if (direct.active()) { direct.submit(); return; }
     if (aktiv.edit) {
       var newText = dateiInhalt();
-      if (newText === aktiv.edit.source) { status.textContent = "Noch nichts geändert."; return; }
+      if (newText === aktiv.edit.source) { status.textContent = t("form.unchanged", null, "Noch nichts geändert."); return; }
       F.kopierenUndOeffnen(newText, F.githubEdit(aktiv.path), status, function () { getSelection().selectAllChildren(vorschau); });
-      setTimeout(function () { if (/^Kopiert/.test(status.textContent)) status.textContent = "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."; }, 50);
+      var copiedMsg = t("form.copied_github", null, "Kopiert – GitHub ist in einem neuen Tab offen.");
+      setTimeout(function () { if (status.textContent === copiedMsg) status.textContent = t("form.copied_paste", null, "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."); }, 50);
       aktiv.gesendet = true;
       return;
     }
@@ -739,7 +746,7 @@ var NeuFormular = (function () {
     var url = F.githubNeu(s.ordner, datei, inhaltText), zuLang = url.length > 8000;
     if (zuLang) url = F.githubNeu(s.ordner, datei);
     F.kopierenUndOeffnen(inhaltText, url, status, function () { getSelection().selectAllChildren(vorschau); });
-    if (zuLang) status.textContent = "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.";
+    if (zuLang) status.textContent = t("form.too_long", null, "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.");
     aktiv.gesendet = true;
   }
 
@@ -761,7 +768,7 @@ var NeuFormular = (function () {
     showError: function (err) {
       status.textContent = (err.kind === "info" ? "ℹ️ " : "⚠️ ") + err.message + " ";
       if (err.kind === "auth") {
-        var b = F.el('<button type="button" class="btn btn-small">🔑 Neu verbinden</button>');
+        var b = F.el('<button type="button" class="btn btn-small">' + esc(t("github.reconnect", null, "🔑 Neu verbinden")) + "</button>");
         b.addEventListener("click", function () { GitHubApi.logout(); direct.update(); direct.connectDialog(); });
         status.appendChild(b);
       }
@@ -964,15 +971,15 @@ var NeuFormular = (function () {
     update: function () {
       if (!d || !aktiv) return;
       var on = direct.active();
-      githubBtn.textContent = on ? "🔑 GitHub ✓" : "🔑 GitHub verbinden";
+      githubBtn.textContent = on ? "🔑 GitHub ✓" : t("github.connect", null, "🔑 GitHub verbinden");
       if (on) GitHubApi.whoAmI().then(function (me) { if (direct.active()) githubBtn.textContent = "🔑 @" + me.login; }, function () {});
-      githubBtn.title = on ? "Mit GitHub verbunden – Pull Requests direkt von hier" : "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)";
+      githubBtn.title = on ? t("github.connected_title", null, "Mit GitHub verbunden – Pull Requests direkt von hier") : t("github.connect_title", null, "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)");
       fotosBtn.hidden = !direct.slots().length;
       if (on) {
-        submitBtn.textContent = aktiv.prBase ? "🚀 In #" + aktiv.prBase.number + " speichern" : aktiv.edit ? "🚀 Änderung als Pull Request" : "🚀 Als Pull Request anlegen";
-        stepsEl.innerHTML = "<li>„Als Pull Request“ legt einen neuen Branch mit "
-          + (aktiv.edit ? "der geänderten Datei" : "der neuen Datei") + " und allen verwendeten Fotos an und öffnet einen Pull Request.</li>"
-          + "<li>Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.</li>";
+        submitBtn.textContent = aktiv.prBase ? t("form.submit_pr_into", { number: aktiv.prBase.number }, "🚀 In #" + aktiv.prBase.number + " speichern") : aktiv.edit ? t("form.submit_pr_edit", null, "🚀 Änderung als Pull Request") : t("form.submit_pr_new", null, "🚀 Als Pull Request anlegen");
+        stepsEl.innerHTML = "<li>" + esc(aktiv.edit ? t("form.steps_pr_edit", null, "„Als Pull Request“ legt einen neuen Branch mit der geänderten Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")
+          : t("form.steps_pr_new", null, "„Als Pull Request“ legt einen neuen Branch mit der neuen Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")) + "</li>"
+          + "<li>" + esc(t("form.steps_pr_review", null, "Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.")) + "</li>";
       }
       direct.showPhotos();
     },
@@ -1064,7 +1071,7 @@ var NeuFormular = (function () {
         return;
       }
       if (aktiv.edit) {
-        if (newText === aktiv.edit.source) { status.textContent = "Noch nichts geändert."; return; }
+        if (newText === aktiv.edit.source) { status.textContent = t("form.unchanged", null, "Noch nichts geändert."); return; }
         path = aktiv.path;
         title = aktiv.schema.titel + " geändert: " + (aktiv.w.title || aktiv.w.name || path.split("/").pop());
       } else {
@@ -1279,24 +1286,26 @@ var NeuFormular = (function () {
       return window.ladeSkripte(["github-api.js"]).then(function () {
         var g = document.getElementById("github-connect");
         if (!g) {
-          g = F.dialog({ id: "github-connect", klasse: "github-dialog", titel: "🔑 Mit GitHub verbinden" });
+          // texts with <strong>/<code> come from the UI strings as HTML: they are our own strings, not user input
+          g = F.dialog({ id: "github-connect", klasse: "github-dialog", titel: t("github.dialog_title", null, "🔑 Mit GitHub verbinden") });
           g.insertAdjacentHTML("beforeend", '<div class="github-body">'
-            + '<p>Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.</p>'
-            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt (dazu <em>Issues</em>, um Aufgaben auf der Seite „Offen“ zu übernehmen). Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>' + esc(GitHubApi.repo()) + '</code> wählen, dann „Generate token“.</li>'
-            + "<li>Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.</li></ol>"
+            + "<p>" + t("github.intro_html", null, "Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.") + "</p>"
+            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">' + esc(t("github.create_token", null, "Token auf GitHub erstellen ↗")) + "</a> – "
+            + t("github.token_steps_html", { repo: "<code>" + esc(GitHubApi.repo()) + "</code>" }, "Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt (dazu <em>Issues</em>, um Aufgaben auf der Seite „Offen“ zu übernehmen). Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>" + esc(GitHubApi.repo()) + "</code> wählen, dann „Generate token“.") + "</li>"
+            + "<li>" + esc(t("github.paste_token", null, "Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.")) + "</li></ol>"
             + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>'
-            + '<label class="form-check"><input type="checkbox" data-remember><span>Auf diesem Gerät merken</span><small class="form-hilfe">Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.</small></label>'
+            + '<label class="form-check"><input type="checkbox" data-remember><span>' + esc(t("github.remember", null, "Auf diesem Gerät merken")) + '</span><small class="form-hilfe">' + esc(t("github.remember_hint", null, "Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.")) + "</small></label>"
             + '<p class="github-who small" aria-live="polite"></p>'
-            + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-logout>Abmelden</button><span class="muted small"></span><button type="button" class="btn" data-connect>Verbinden</button></div></div>');
+            + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-logout>' + esc(t("github.logout", null, "Abmelden")) + '</button><span class="muted small"></span><button type="button" class="btn" data-connect>' + esc(t("github.connect_button", null, "Verbinden")) + "</button></div></div>");
           g.querySelector("[data-token-link]").href = GitHubApi.tokenUrl();
         }
         var input = g.querySelector("input[type=password]"), who = g.querySelector(".github-who");
         function show() {
-          if (!GitHubApi.connected()) { who.textContent = "Nicht verbunden."; return; }
-          who.textContent = "Prüfe …";
+          if (!GitHubApi.connected()) { who.textContent = t("github.not_connected_short", null, "Nicht verbunden."); return; }
+          who.textContent = t("github.checking", null, "Prüfe …");
           GitHubApi.whoAmI().then(function (me) {
-            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"> Verbunden als <strong>@' + esc(me.login) + "</strong>"
-              + (me.canPush ? " – darf Pull Requests anlegen ✅" : " – hat <strong>keine Schreibrechte</strong> auf " + esc(GitHubApi.repo()) + " (Pull Requests aus Forks kommen später)");
+            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"> ' + t("github.connected_as_html", { login: "<strong>@" + esc(me.login) + "</strong>" }, "Verbunden als <strong>@" + esc(me.login) + "</strong>")
+              + (me.canPush ? " – " + esc(t("github.can_push", null, "darf Pull Requests anlegen ✅")) : " – " + t("github.cannot_push_html", { repo: esc(GitHubApi.repo()) }, "hat <strong>keine Schreibrechte</strong> auf " + esc(GitHubApi.repo()) + " (Pull Requests aus Forks kommen später)"));
           }, function (err) { who.textContent = "⚠️ " + err.message; });
         }
         g.querySelector("[data-connect]").onclick = function () {
@@ -1322,25 +1331,29 @@ var NeuFormular = (function () {
     nachAenderung();
   }
 
-  // step lists shown in the dialog (German UI text)
-  var STEPS_NEW = '<li>„Auf GitHub anlegen“ kopiert die Datei und öffnet GitHub mit dem fertigen Inhalt.</li>'
-    + "<li>Dort „Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
-    + "<li>Nach dem Merge erscheint die Seite nach ein paar Minuten auf der Website.</li>";
-  var STEPS_EDIT = "<li>„Auf GitHub speichern“ kopiert die geänderte Datei und öffnet sie im GitHub-Editor.</li>"
-    + "<li>Dort den ganzen Inhalt markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V).</li>"
-    + "<li>„Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.</li>"
-    + "<li>Nach dem Merge ist die Änderung nach ein paar Minuten auf der Website.</li>";
+  // step lists shown in the dialog (UI strings form.steps_*, German fallback; they contain <strong>)
+  function stepsNew() {
+    return "<li>" + t("form.steps_new_1", null, "„Auf GitHub anlegen“ kopiert die Datei und öffnet GitHub mit dem fertigen Inhalt.") + "</li>"
+      + "<li>" + t("form.steps_commit_html", null, "Dort „Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.") + "</li>"
+      + "<li>" + t("form.steps_new_3", null, "Nach dem Merge erscheint die Seite nach ein paar Minuten auf der Website.") + "</li>";
+  }
+  function stepsEdit() {
+    return "<li>" + t("form.steps_edit_1", null, "„Auf GitHub speichern“ kopiert die geänderte Datei und öffnet sie im GitHub-Editor.") + "</li>"
+      + "<li>" + t("form.steps_edit_2", null, "Dort den ganzen Inhalt markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V).") + "</li>"
+      + "<li>" + t("form.steps_edit_commit_html", null, "„Commit changes …“ → <strong>„Create a new branch … and start a pull request“</strong>.") + "</li>"
+      + "<li>" + t("form.steps_edit_4", null, "Nach dem Merge ist die Änderung nach ein paar Minuten auf der Website.") + "</li>";
+  }
   // switch the dialog between "new file" and "edit existing file"
   function setMode(editing) {
     d.querySelectorAll(".form-pr-notice, .form-conflicts").forEach(function (x) { x.remove(); });
-    stepsEl.innerHTML = editing ? STEPS_EDIT : STEPS_NEW;
-    discardBtn.textContent = editing ? "↩️ Änderungen verwerfen" : "🗑️ Neu anfangen";
-    submitBtn.textContent = editing ? "📋 Auf GitHub speichern" : "📋 Auf GitHub anlegen";
+    stepsEl.innerHTML = editing ? stepsEdit() : stepsNew();
+    discardBtn.textContent = editing ? t("form.discard", null, "↩️ Änderungen verwerfen") : t("form.restart", null, "🗑️ Neu anfangen");
+    submitBtn.textContent = editing ? t("form.submit_edit", null, "📋 Auf GitHub speichern") : t("form.submit_new", null, "📋 Auf GitHub anlegen");
     submitBtn.disabled = false; submitBtn.title = "";
     direct.update();
     dateiInput.readOnly = !!editing;
-    d.querySelector(".neu-pfad").previousElementSibling.textContent = editing ? "Datei" : "Neue Datei";
-    vorlageLink.textContent = editing ? "Auf GitHub ansehen ↗" : "Vorlage mit allen Feldern ↗";
+    d.querySelector(".neu-pfad").previousElementSibling.textContent = editing ? t("form.file", null, "Datei") : t("form.new_file", null, "Neue Datei");
+    vorlageLink.textContent = editing ? t("form.view_on_github", null, "Auf GitHub ansehen ↗") : t("form.template_link", null, "Vorlage mit allen Feldern ↗");
   }
   function allTouched() { var touched = {}; aktiv.felder.forEach(function (f) { touched[f.name] = true; }); return touched; }
 
@@ -1359,14 +1372,16 @@ var NeuFormular = (function () {
     folge();
 
     setMode(false);
-    d.titel("➕ " + (daten.label || schema.titel));
+    // label/hint of the ➕ button in the UI language (_includes/neu-button.html puts the keys into data-neu)
+    if (daten.i18n && window.I18n) { daten.label = t(daten.i18n + ".label", daten.i18nParams); daten.hinweis = t(daten.i18n + ".hint", daten.i18nParams); }
+    d.titel("➕ " + (daten.label || typeName(daten.typ, schema)));
     hinweisEl.textContent = daten.hinweis || "";
     hinweisEl.hidden = !daten.hinweis;
     vorlageLink.href = link.href;
     ordnerEl.textContent = schema.ordner + "/";
     baueFelder();
     zeigeVorschau();
-    status.textContent = entwurf ? "Entwurf wiederhergestellt." : "";
+    status.textContent = entwurf ? t("form.draft_restored", null, "Entwurf wiederhergestellt.") : "";
     if (!d.open) d.showModal();
     var erstes = form.querySelector(".neu-links input:not([type=checkbox]), .neu-links textarea");
     if (erstes) erstes.focus();
@@ -1390,14 +1405,14 @@ var NeuFormular = (function () {
       // a draft that no longer fits (the page changed since, or it belongs to an open PR) is never thrown away: it is
       // carried over onto the current state below (direct.restoreDraft), with a conflict box if both changed the same thing
       setMode(true);
-      d.titel("✏️ " + schema.titel + " bearbeiten");
-      hinweisEl.textContent = "Änderungen an " + data.path + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.";
+      d.titel(t("form.edit_title", { type: typeName(data.type, schema) }, "✏️ " + schema.titel + " bearbeiten"));
+      hinweisEl.textContent = t("form.edit_hint", { path: data.path }, "Änderungen an " + data.path + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.");
       hinweisEl.hidden = false;
       vorlageLink.href = F.githubFile(data.path);
       ordnerEl.textContent = folder + "/";
       baueFelder();
       zeigeVorschau();
-      status.textContent = draftFits ? "Entwurf wiederhergestellt." : "";
+      status.textContent = draftFits ? t("form.draft_restored", null, "Entwurf wiederhergestellt.") : "";
       if (!d.open) d.showModal();
       if (draft && !draftFits && draft.source) direct.restoreDraft(draft);
       if (!EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search + "#bearbeiten");

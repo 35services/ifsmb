@@ -54,10 +54,13 @@ var GitHubApi = (function () {
       + "&expires_in=30&contents=write&pull_requests=write&issues=write";
   }
 
+  // UI string (assets/js/i18n.js); German fallback without it. Commit messages and PR titles stay German.
+  function tr(key, params, fallback) { return typeof window !== "undefined" && window.I18n ? window.I18n.t(key, params) : fallback; }
+
   // ---------- requests ----------
   function call(method, path, body) {
     var t = token();
-    if (!t) return Promise.reject(new Error("Nicht mit GitHub verbunden."));
+    if (!t) return Promise.reject(new Error(tr("github.not_connected", null, "Nicht mit GitHub verbunden.")));
     return fetch(API + path, {
       method: method,
       headers: { "Authorization": "Bearer " + t, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
@@ -72,24 +75,26 @@ var GitHubApi = (function () {
         return data;
       });
     }, function () { // fetch itself failed: offline, DNS, blocked
-      throw failure("network", 0, "Keine Verbindung zu GitHub – bitte die Internetverbindung prüfen und nochmal versuchen.");
+      throw failure("network", 0, tr("github.network", null, "Keine Verbindung zu GitHub – bitte die Internetverbindung prüfen und nochmal versuchen."));
     });
   }
   // Error with a German message and a kind the form can react to: auth (connect again), rate (wait), permission,
   // notfound, conflict (422 – e.g. branch moved or file exists), network, other. err.status = HTTP status.
   function failure(kind, status, msg) { var err = new Error(msg); err.kind = kind; err.status = status; return err; }
   function explain(r, data) {
-    var gh = (data && data.message) || r.statusText || "Fehler";
-    if (r.status === 401) return failure("auth", 401, "Dein GitHub-Token ist abgelaufen oder ungültig. Bitte neu verbinden – deine Eingaben bleiben erhalten.");
+    var gh = (data && data.message) || r.statusText || tr("github.error", null, "Fehler");
+    if (r.status === 401) return failure("auth", 401, tr("github.auth", null, "Dein GitHub-Token ist abgelaufen oder ungültig. Bitte neu verbinden – deine Eingaben bleiben erhalten."));
     var remaining = r.headers.get("X-RateLimit-Remaining"), reset = +r.headers.get("X-RateLimit-Reset");
     if ((r.status === 403 || r.status === 429) && (remaining === "0" || r.headers.get("Retry-After"))) {
       var when = reset ? new Date(reset * 1000) : null;
-      return failure("rate", r.status, "GitHub bremst gerade (zu viele Anfragen)." + (when ? " Ab " + String(when.getHours()).padStart(2, "0") + ":" + String(when.getMinutes()).padStart(2, "0") + " Uhr geht es wieder." : " Bitte in ein paar Minuten nochmal versuchen."));
+      var hhmm = when ? String(when.getHours()).padStart(2, "0") + ":" + String(when.getMinutes()).padStart(2, "0") : "";
+      return failure("rate", r.status, tr("github.rate", null, "GitHub bremst gerade (zu viele Anfragen).") + " " + (when ? tr("github.rate_until", { time: hhmm }, "Ab " + hhmm + " Uhr geht es wieder.") : tr("github.rate_later", null, "Bitte in ein paar Minuten nochmal versuchen.")));
     }
-    if (r.status === 403) return failure("permission", 403, "Das Token darf das nicht (" + gh + "). Beim Token für " + repo() + " „Contents“ und „Pull requests“ auf „Read and write“ stellen.");
-    if (r.status === 404) return failure("notfound", 404, "Nicht gefunden (" + gh + ") – fehlt dem Token der Zugriff auf " + repo() + "?");
-    if (r.status === 409 || r.status === 422) return failure("conflict", r.status, "GitHub hat die Änderung abgelehnt: " + gh);
-    if (r.status >= 500) return failure("other", r.status, "GitHub hat gerade ein Problem (" + r.status + "). Bitte gleich nochmal versuchen.");
+    var p = { message: gh, repo: repo(), status: r.status };
+    if (r.status === 403) return failure("permission", 403, tr("github.permission", p, "Das Token darf das nicht (" + gh + "). Beim Token für " + repo() + " „Contents“ und „Pull requests“ auf „Read and write“ stellen."));
+    if (r.status === 404) return failure("notfound", 404, tr("github.not_found", p, "Nicht gefunden (" + gh + ") – fehlt dem Token der Zugriff auf " + repo() + "?"));
+    if (r.status === 409 || r.status === 422) return failure("conflict", r.status, tr("github.rejected", p, "GitHub hat die Änderung abgelehnt: " + gh));
+    if (r.status >= 500) return failure("other", r.status, tr("github.server", p, "GitHub hat gerade ein Problem (" + r.status + "). Bitte gleich nochmal versuchen."));
     return failure("other", r.status, gh);
   }
 
@@ -245,10 +250,10 @@ var GitHubApi = (function () {
   function createPullRequest(o) {
     var r = "/repos/" + repo(), step = o.onStep || function () {}, base = o.pr ? o.pr.branch : baseBranch(), branch, baseSha;
     return whoAmI().then(function (u) {
-      if (!u.canPush) throw new Error("@" + u.login + " darf in " + repo() + " keine Branches anlegen (Pull Requests aus Forks kommen später).");
+      if (!u.canPush) throw new Error(tr("github.no_push", { login: u.login, repo: repo() }, "@" + u.login + " darf in " + repo() + " keine Branches anlegen (Pull Requests aus Forks kommen später)."));
       branch = o.pr ? o.pr.branch : branchName(o.branchHint);
       if (o.parent) return { object: { sha: o.parent } }; // the commit the form merged against (see neu.js direct.submit)
-      step("Stand von " + base + " holen …");
+      step(tr("github.step_base", { branch: base }, "Stand von " + base + " holen …"));
       return call("GET", r + "/git/ref/heads/" + base.split("/").map(encodeURIComponent).join("/"));
     }).then(function (ref) {
       baseSha = ref.object.sha;
@@ -258,14 +263,15 @@ var GitHubApi = (function () {
       // blobs one after another: keeps it simple and stays far below GitHub's secondary rate limits
       return o.files.reduce(function (p, f) {
         return p.then(function (list) {
-          step("Datei " + (++n) + " von " + o.files.length + " hochladen …");
+          n++;
+          step(tr("github.step_upload", { n: n, total: o.files.length }, "Datei " + n + " von " + o.files.length + " hochladen …"));
           var content = f.blob ? blobToBase64(f.blob).then(function (b) { return { content: b, encoding: "base64" }; })
             : Promise.resolve({ content: f.text, encoding: "utf-8" });
           return content.then(function (c) { return call("POST", r + "/git/blobs", c); })
             .then(function (b) { return list.concat([{ path: f.path, mode: "100644", type: "blob", sha: b.sha }]); });
         });
       }, Promise.resolve([])).then(function (tree) {
-        step("Commit anlegen …");
+        step(tr("github.step_commit", null, "Commit anlegen …"));
         return call("POST", r + "/git/trees", { base_tree: commit.tree.sha, tree: tree });
       });
     }).then(function (tree) {
@@ -275,16 +281,16 @@ var GitHubApi = (function () {
       });
     }).then(function (commit) {
       if (o.pr) {
-        step("Pull Request #" + o.pr.number + " ergänzen …");
+        step(tr("github.step_update_pr", { number: o.pr.number }, "Pull Request #" + o.pr.number + " ergänzen …"));
         // force: false – if someone pushed to the branch meanwhile, GitHub refuses instead of losing their commit
         return call("PATCH", r + "/git/refs/heads/" + branch.split("/").map(encodeURIComponent).join("/"), { sha: commit.sha, force: false })
           .then(function () { return { pr: o.pr }; });
       }
-      step("Branch " + branch + " anlegen …");
+      step(tr("github.step_branch", { branch: branch }, "Branch " + branch + " anlegen …"));
       return call("POST", r + "/git/refs", { ref: "refs/heads/" + branch, sha: commit.sha });
     }).then(function (res) {
       if (res && res.pr) return { html_url: res.pr.url, number: res.pr.number, updated: true };
-      step("Pull Request öffnen …");
+      step(tr("github.step_open_pr", null, "Pull Request öffnen …"));
       return call("POST", r + "/pulls", { title: o.title, head: branch, base: base, body: o.body || "", maintainer_can_modify: true })
         .catch(function (err) { err.pendingBranch = branch; throw err; }); // branch exists → finishPullRequest can carry on
     }).then(function (pr) { return { url: pr.html_url, number: pr.number, branch: branch, updated: !!pr.updated }; });

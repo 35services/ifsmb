@@ -27,6 +27,7 @@ Oder direkt: `node --test _tests/e2e/*.test.js` (nach `bundle exec jekyll build`
 | `lib/browser.js` | Chrome über das DevTools-Protokoll (CDP): Kontexte („Personen“), Seiten, `evaluate`, `click`, `fill`, Dateiauswahl, Screenshots |
 | `lib/helpers.js` | `startEnv()`, `env.person(token)` und die Formular-Schritte (`openNew`, `openEdit`, `fill`, `addPhotos`, `toggleUse`, `submit`, `waitStatus` …) |
 | `baseline.test.js` | Grundszenarien (neuer Beitrag, Bearbeiten, Fotos, offener PR, doppelt senden, ohne Token) |
+| `i18n.test.js` | Sprachen der Bedienung: Erkennung aus den Browsersprachen, Umschalter (bleibt nach dem Neuladen), `?lang=`, Inhalte bleiben deutsch, ➕-Formular |
 | `fake-github.test.js` | Tests für das Fake selbst (Statuscodes, Merges, Konflikte, Fehler einschleusen) |
 | `open-work.test.js` | Übersicht „Offen“ (`/mitmachen/offen/`): PRs nach Checks/Konflikt gruppiert, Issues übernehmbar/in Arbeit, „Übernehmen“, Cache, Fehler, ohne Token keine Anfrage |
 

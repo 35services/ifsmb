@@ -8,15 +8,15 @@
   {%- if include.meta %}
   <p class="meta">
     {%- case include.badge -%}
-    {%- when "aktiv" %}<span class="badge badge-active">Aktuell</span>
-    {%- when "anfrage" %}<span class="badge badge-inquiry">Anfrage</span>
-    {%- when "idee" %}<span class="badge badge-idea">Idee</span>
-    {%- when "abgeschlossen" %}<span class="badge badge-past">Abgeschlossen</span>
-    {%- when "persoenlich" %}<span class="badge badge-personal">Persönlich</span>
+    {%- when "aktiv" %}<span class="badge badge-active" data-i18n="badge.active">{{ "badge.active" | t }}</span>
+    {%- when "anfrage" %}<span class="badge badge-inquiry" data-i18n="badge.inquiry">{{ "badge.inquiry" | t }}</span>
+    {%- when "idee" %}<span class="badge badge-idea" data-i18n="badge.idea">{{ "badge.idea" | t }}</span>
+    {%- when "abgeschlossen" %}<span class="badge badge-past" data-i18n="badge.completed">{{ "badge.completed" | t }}</span>
+    {%- when "persoenlich" %}<span class="badge badge-personal" data-i18n="badge.personal">{{ "badge.personal" | t }}</span>
     {%- endcase -%}
     {%- if p.zeitraum and include.badge == "abgeschlossen" or p.zeitraum and include.badge == "persoenlich" %} · {{ p.zeitraum }}{% endif -%}
     {%- if p.ort and include.badge != "persoenlich" and include.badge != "abgeschlossen" %} · {{ p.ort }}{% endif -%}
-    {%- if include.badge == "aktiv" or include.badge == "persoenlich" %}{% capture lu %}{% include projekt-letztes-update.html project=p %}{% endcapture %}{% if lu != "" %} · Update: {{ lu }}{% endif %}{% endif -%}
+    {%- if include.badge == "aktiv" or include.badge == "persoenlich" %}{% capture lu %}{% include projekt-letztes-update.html project=p %}{% endcapture %}{% if lu != "" %} · <span data-i18n="project.update_short">{{ "project.update_short" | t }}</span> {{ lu }}{% endif %}{% endif -%}
   </p>
   {%- endif %}
   <h3><a class="card-main-link" href="{{ p.url | relative_url }}">{{ p.title }}</a></h3>

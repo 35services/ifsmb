@@ -1,6 +1,8 @@
 ---
 layout: page
 title: Suche
+i18n_title: pages.search.title
+i18n_lead: pages.search.lead
 lead: Volltextsuche über Neuigkeiten, Projekte, Termine, Ausstattung, Team und mehr.
 suche: false
 ---
@@ -12,8 +14,7 @@ suche: false
 {%- endcomment -%}
 <link rel="stylesheet" href="{{ '/pagefind/pagefind-ui.css' | relative_url }}">
 <div id="search" class="search-ui"></div>
-<p id="search-missing" class="note" hidden>Der Suchindex fehlt: Er wird erst nach <code>jekyll build</code> mit
-<code>npx pagefind --site _site</code> erzeugt (siehe README).</p>
+<p id="search-missing" class="note" hidden data-i18n="pages.search.missing">{{ "pages.search.missing" | t_html: "<code>jekyll build</code>", "<code>npx pagefind --site _site</code>" }}</p>
 <script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}"
   onerror="document.getElementById('search-missing').hidden = false"></script>
 <script>
