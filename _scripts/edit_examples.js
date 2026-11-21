@@ -10,11 +10,29 @@ const ROOT = path.join(__dirname, "..");
 const FOLDERS = { _posts: "beitrag", _events: "termin", _projects: "projekt", _equipment: "geraet",
   _herausforderungen: "herausforderung", _team: "team", _press: "presse" };
 
-const results = [];
+// Plain pages with `layout: page` outside the collections – same rule as _plugins/source_files.rb (#154):
+// Markdown → "seite", HTML → "uebersicht".
+function plainPages(dir) {
+  return fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap((e) => {
+    const rel = dir ? dir + "/" + e.name : e.name;
+    if (e.isDirectory()) return /^[_.]|^(node_modules|vendor|assets)$/.test(e.name) ? [] : plainPages(rel);
+    const type = /\.(md|markdown)$/.test(e.name) ? "seite" : /\.html$/.test(e.name) ? "uebersicht" : null;
+    if (!type) return [];
+    const fm = fs.readFileSync(path.join(ROOT, rel), "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    return fm && /^layout:\s*page\s*$/m.test(fm[1]) && !/^edit_form:/m.test(fm[1]) ? [[rel, type]] : [];
+  });
+}
+
+const files = [];
 Object.keys(FOLDERS).forEach((folder) => {
-  const type = FOLDERS[folder];
-  fs.readdirSync(path.join(ROOT, folder)).filter((f) => /\.(md|markdown|html)$/.test(f)).sort().forEach((file) => {
-    const filePath = folder + "/" + file;
+  fs.readdirSync(path.join(ROOT, folder)).filter((f) => /\.(md|markdown|html)$/.test(f)).sort()
+    .forEach((file) => files.push([folder + "/" + file, FOLDERS[folder]]));
+});
+plainPages("").sort().forEach((x) => files.push(x));
+
+const results = [];
+files.forEach(([filePath, type]) => {
+  {
     const source = fs.readFileSync(path.join(ROOT, filePath), "utf8");
     const unchanged = Neu.editedFile(type, source, {}, filePath);
     if (!unchanged) { results.push({ path: filePath, type, no_front_matter: true }); return; }
@@ -28,6 +46,6 @@ Object.keys(FOLDERS).forEach((folder) => {
     results.push({ path: filePath, type, unchanged: unchanged.content === source.replace(/\r\n/g, "\n"),
       raw_fields: unchanged.rawFields, changes, list_field: listField ? listField.name : null,
       changed: changed.content, original: source });
-  });
+  }
 });
 process.stdout.write(JSON.stringify(results));

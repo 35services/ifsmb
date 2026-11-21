@@ -236,6 +236,17 @@ Jede Seite kann ein eigenes Aussehen haben. Welches gilt, entscheidet (das erste
   Kommentar in den Vorlagen (`_includes/vorlagen/`) und `THEMES` in `assets/js/neu.js` –
   `ruby _scripts/test_formulare.rb` prüft, dass alles zusammenpasst, `check_site.rb` meldet unbekannte Werte.
 
+## Einfache Seiten im ✏️-Formular
+
+Seiten außerhalb der Sammlungen mit `layout: page` lassen sich ebenfalls im ✏️-Formular bearbeiten (#154):
+
+| Datei | Formular | Felder |
+|---|---|---|
+| Markdown (`partner/<name>/index.md`, `angebot/index.md`, `spenden/index.md` …) | `seite` | `title`, `lead`, `verlinkt`, Text, `social_media_preview_image`, `theme` |
+| HTML (`team/index.html`, `partner/index.html`, `projekte/index.html` …) | `uebersicht` | `title`, `lead`, `social_media_preview_image`, `theme` und das HTML selbst (unter „Weitere Felder“, wird vor dem Speichern geprüft) |
+
+Alle anderen Felder (`i18n_title`, `suche` …) bleiben unverändert. `edit_form: false` im Front Matter lässt eine Seite beim GitHub-Editor. Vorlage für neue Markdown-Seiten: `_includes/vorlagen/seite.md`.
+
 ## Sichtbarkeit
 
 ```

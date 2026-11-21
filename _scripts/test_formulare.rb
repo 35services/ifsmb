@@ -22,6 +22,15 @@ ROOT = File.expand_path("..", __dir__)
 module Daten
   module_function
 
+  # edit forms against every real page (_scripts/edit_examples.js)
+  def edit_results
+    @edit_results ||= begin
+      out, err, status = Open3.capture3("node", File.join(ROOT, "_scripts/edit_examples.js"))
+      raise "edit_examples.js ist fehlgeschlagen:\n#{err}" unless status.success?
+      JSON.parse(out)
+    end
+  end
+
   def beispiele
     @beispiele ||= begin
       out, err, status = Open3.capture3("node", File.join(ROOT, "_scripts/formulare_beispiele.js"))
@@ -64,7 +73,11 @@ ZUORDNUNG = {
   # one file per partner in _data/partner/ – same fields as an entry of the CMS list file _data/partners.yml
   "partner" => { cms: "partners", vorlage: "partner.yml", ordner: "_data/partner" },
   # not in the CMS – checked against the template only
-  "pressebericht" => { cms: nil, vorlage: "pressebericht.yml", ordner: "_data/pressebericht" }
+  "pressebericht" => { cms: nil, vorlage: "pressebericht.yml", ordner: "_data/pressebericht" },
+  # plain pages outside the collections, edit only (#154): Markdown pages with a template for new ones,
+  # HTML overview pages without (their HTML is written by hand)
+  "seite" => { cms: nil, vorlage: "seite.md", ordner: "" },
+  "uebersicht" => { cms: nil, vorlage: nil, ordner: "", endung: "html" }
 }.freeze
 
 class FormulareTest < Minitest::Test
@@ -126,7 +139,7 @@ class FormulareTest < Minitest::Test
   def test_dateiname_und_ordner
     proben.each do |p|
       ort = "#{p['typ']} (#{p['fall']})"
-      endung = p["format"] == "yaml" ? "yml" : "md"
+      endung = p["format"] == "yaml" ? "yml" : (ZUORDNUNG.fetch(p["typ"])[:endung] || "md")
       assert_match(/\A[a-z0-9][a-z0-9-]*\.#{endung}\z/, p["datei"], "#{ort}: Dateiname")
       c = cms_eintrag(p["typ"])
       erwartet = ZUORDNUNG[p["typ"]][:ordner] || c["path"]
@@ -174,6 +187,8 @@ class FormulareTest < Minitest::Test
 
   def test_nur_felder_aus_der_vorlage
     typen.each do |typ, t|
+      next unless ZUORDNUNG.fetch(typ)[:vorlage]
+
       erlaubt = Daten.vorlage_felder(ZUORDNUNG.fetch(typ)[:vorlage])
       t["felder"].each do |f|
         assert_includes erlaubt, f["name"], "#{typ}: Feld „#{f['name']}“ steht nicht in _includes/vorlagen/#{ZUORDNUNG[typ][:vorlage]}"
@@ -184,6 +199,8 @@ class FormulareTest < Minitest::Test
   def test_auswahl_werte_sind_in_der_vorlage_beschrieben
     typen.each do |typ, t|
       # templates of the same CMS collection count together (projekt-vergangen.md only shows "abgeschlossen")
+      next unless ZUORDNUNG.fetch(typ)[:vorlage]
+
       geschwister = ZUORDNUNG.select { |_, z| z[:cms] && z[:cms] == ZUORDNUNG.fetch(typ)[:cms] }.map { |_, z| z[:vorlage] } | [ZUORDNUNG[typ][:vorlage]]
       vorlage = geschwister.map { |v| File.read(File.join(ROOT, "_includes/vorlagen", v)) }.join("\n")
       t["felder"].select { |f| f["typ"] == "auswahl" }.each do |f|
@@ -216,16 +233,13 @@ end
 #   - opening and saving without changes gives the same bytes,
 #   - after changing title, a list field and the text, Jekyll reads the new values and every other key is unchanged.
 class EditFormTest < Minitest::Test
-  def results
-    @@results ||= begin
-      out, err, status = Open3.capture3("node", File.join(ROOT, "_scripts/edit_examples.js"))
-      raise "edit_examples.js ist fehlgeschlagen:\n#{err}" unless status.success?
-      JSON.parse(out)
-    end
-  end
+  def results = Daten.edit_results
 
   def test_there_are_pages_to_edit
     assert_operator results.size, :>, 50
+    # plain pages (#154): Markdown pages and HTML overview pages
+    assert_operator results.count { |r| r["type"] == "seite" }, :>, 5
+    assert_operator results.count { |r| r["type"] == "uebersicht" }, :>, 10
   end
 
   def test_unchanged_file_stays_identical
@@ -279,6 +293,44 @@ end
 
 # Themes (_data/themes.yml): the form, Pages CMS and the templates offer exactly the themes the layout knows,
 # and setting a theme on an existing page with ✏️ only adds that one line.
+# HTML field of overview pages (#154): NeuFormular.checkHtml in assets/js/neu.js
+class HtmlCheckTest < Minitest::Test
+  def check(sources)
+    js = "const N=require('./assets/js/neu.js');process.stdout.write(JSON.stringify(#{sources.to_json}.map(N.checkHtml)))"
+    out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
+    assert status.success?, err
+    JSON.parse(out)
+  end
+
+  def test_no_false_alarm_on_existing_overview_pages
+    pages = Daten.edit_results.select { |r| r["type"] == "uebersicht" }
+    assert_operator pages.size, :>, 10
+    bodies = pages.map { |r| r["original"].sub(/\A---\n.*?\n---\n/m, "") }
+    check(bodies).zip(pages).each { |msg, r| assert_nil msg, "#{r['path']}: #{msg}" }
+  end
+
+  def test_finds_mistakes_with_line_numbers
+    msgs = check([
+      "<section>\n<div>\n</section>", "{% for x in y %}\n<p>{{ x }}", "{% for x in y %}\n{% endif %}",
+      "<p>{{ page.title </p>", "<p>{% if a </p>", "<p>x</p>{% endif %}", "<div>\n<span>"
+    ])
+    assert_match(/<\/section>.*Zeile 3.*<div>.*Zeile 2/, msgs[0])
+    assert_match(/\{% for %\}.*Zeile 1.*endfor/, msgs[1])
+    assert_match(/endif.*Zeile 2.*for/, msgs[2])
+    assert_match(/\{\{/, msgs[3])
+    assert_match(/\{%/, msgs[4])
+    assert_match(/endif.*keinen Anfang/, msgs[5])
+    assert_match(/<span>.*Zeile 2/, msgs[6])
+  end
+
+  def test_allows_what_html_allows
+    assert_equal [nil] * 4, check([
+      "<ul><li>a<li>b</ul>", "<p><img src=\"a.png\"><br></p>",
+      "<script>if (a < b) { x = \"</div>\"; }</script>", "{% comment %}<div>{% if %}{% endcomment %}<p>x"
+    ])
+  end
+end
+
 class ThemeTest < Minitest::Test
   def theme_ids
     YAML.safe_load(File.read(File.join(ROOT, "_data/themes.yml"))).map { |t| t["id"] }
@@ -300,7 +352,7 @@ class ThemeTest < Minitest::Test
 
   def test_content_types_have_a_theme_field
     ZUORDNUNG.each do |typ, z|
-      next unless z[:vorlage].end_with?(".md")
+      next unless z[:vorlage].to_s.end_with?(".md")
       assert_includes Daten.vorlage_felder(z[:vorlage]), "theme", "#{z[:vorlage]}: Feld theme fehlt"
       assert(Daten.beispiele["typen"].fetch(typ)["felder"].any? { |x| x["name"] == "theme" }, "#{typ}: Feld theme fehlt im Formular")
     end

@@ -39,6 +39,62 @@ var NeuFormular = (function () {
   function titel(platzhalter, x) { return text("title", "Titel", Object.assign({ pflicht: true, platzhalter: platzhalter, klasse: "form-feld-titel" }, x)); }
   function inhalt(platzhalter, x) { return feld("langtext", "text", "Text (Markdown)", Object.assign({ intern: true, markdown: true, zeilen: 10, platzhalter: platzhalter }, x)); }
 
+  // ---------- HTML/Liquid check for the HTML field of overview pages (#154) ----------
+  // A small sanity check, not a full parser: Liquid blocks ({% if %} … {% endif %}) and output ({{ … }}) must be closed,
+  // HTML elements must be closed in the right order. Elements HTML lets you leave open (p, li, td …) are fine.
+  // → German message for the status line, or null.
+  var LIQUID_BLOCKS = ["if", "unless", "case", "for", "capture", "comment", "raw", "tablerow"];
+  var VOID_ELEMENTS = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i;
+  var OPTIONAL_END = /^(p|li|dt|dd|option|optgroup|tr|td|th|thead|tbody|tfoot|colgroup|rb|rt|rp)$/i;
+  function lineAt(src, i) { return src.slice(0, i).split("\n").length; }
+  function blank(s) { return s.replace(/[^\n]/g, " "); } // same length and line breaks – positions stay right
+  function checkHtml(src) {
+    src = String(src || "");
+    var stack = [], m, re = /\{%-?\s*(end)?(\w+)[\s\S]*?-?%\}/g, skip = null;
+    // unclosed {% … %} / {{ … }}
+    for (var i = 0; (i = src.indexOf("{%", i)) >= 0; i += 2) if (src.indexOf("%}", i) < 0) return "Liquid-Tag „{%“ in Zeile " + lineAt(src, i) + " wird nicht mit „%}“ geschlossen.";
+    for (i = 0; (i = src.indexOf("{{", i)) >= 0; i += 2) {
+      var end = src.indexOf("}}", i), next = src.indexOf("{{", i + 2);
+      if (end < 0 || (next >= 0 && next < end)) return "Liquid-Ausgabe „{{“ in Zeile " + lineAt(src, i) + " wird nicht mit „}}“ geschlossen.";
+    }
+    while ((m = re.exec(src))) {
+      var name = m[2], isEnd = !!m[1];
+      if (skip) { if (isEnd && name === skip) { skip = null; stack.pop(); } continue; }
+      if (!isEnd && LIQUID_BLOCKS.indexOf(name) >= 0) {
+        stack.push({ name: name, line: lineAt(src, m.index) });
+        if (name === "comment" || name === "raw") skip = name;
+      } else if (isEnd && LIQUID_BLOCKS.indexOf(name) >= 0) {
+        var top = stack.pop();
+        if (!top) return "„{% end" + name + " %}“ in Zeile " + lineAt(src, m.index) + " hat keinen Anfang.";
+        if (top.name !== name) return "„{% end" + name + " %}“ in Zeile " + lineAt(src, m.index) + " passt nicht – offen ist „{% " + top.name + " %}“ aus Zeile " + top.line + ".";
+      }
+    }
+    if (stack.length) { var last = stack[stack.length - 1]; return "„{% " + last.name + " %}“ aus Zeile " + last.line + " wird nicht mit „{% end" + last.name + " %}“ geschlossen."; }
+    // HTML: Liquid, comments and script/style contents blanked out, then the tags in order
+    var html = src.replace(/\{%-?\s*comment[\s\S]*?endcomment\s*-?%\}|\{%[\s\S]*?%\}|\{\{[\s\S]*?\}\}|<!--[\s\S]*?-->/g, blank)
+      .replace(/(<(script|style)\b[^>]*>)([\s\S]*?)(<\/\2\s*>)/gi, function (all, a, tag, body, b) { return a + blank(body) + b; });
+    var tags = [], t = /<(\/?)([a-zA-Z][\w-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>/g;
+    while ((m = t.exec(html))) {
+      var tag = m[2].toLowerCase(), line = lineAt(html, m.index);
+      if (!m[1]) {
+        if (VOID_ELEMENTS.test(tag) || /\/\s*$/.test(m[3])) continue;
+        if (OPTIONAL_END.test(tag) && tags.length && tags[tags.length - 1].tag === tag) tags.pop(); // <li>…<li>
+        tags.push({ tag: tag, line: line });
+        continue;
+      }
+      if (VOID_ELEMENTS.test(tag)) continue;
+      var at = -1;
+      for (var k = tags.length - 1; k >= 0; k--) { if (tags[k].tag === tag) { at = k; break; } if (!OPTIONAL_END.test(tags[k].tag)) break; }
+      if (at < 0) {
+        var openTop = tags[tags.length - 1];
+        return "„</" + tag + ">“ in Zeile " + line + " passt nicht" + (openTop ? " – offen ist „<" + openTop.tag + ">“ aus Zeile " + openTop.line : " – dazu gibt es kein „<" + tag + ">“") + ".";
+      }
+      tags.length = at;
+    }
+    var left = tags.filter(function (x) { return !OPTIONAL_END.test(x.tag); }).pop(); // the innermost one
+    return left ? "„<" + left.tag + ">“ aus Zeile " + left.line + " wird nicht geschlossen." : null;
+  }
+
   // fields that many types share
   var stichworte = function (x) { return chips("tags", "🏷️ Stichworte", "stichworte", Object.assign({ platzhalter: "Stichwort suchen oder neu …" }, x)); };
   var verlinkt = function () { return chips("verlinkt", "🔗 Verknüpft (Termine, Beiträge, Geräte, Seiten …)", "seiten", { platzhalter: "Seite suchen oder /adresse/ …" }); };
@@ -244,6 +300,36 @@ var NeuFormular = (function () {
         haken("logo_dark", "Logo hat helle Elemente (dunkler Hintergrund)", { mehr: true }),
         text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partner/<name>/", hilfe: "Nur unsere eigene Unterseite (partner/<name>/index.md) – die Website des Partners gehört oben in „Website“." })
       ]
+    },
+    // Pages outside the collections, edit only (_plugins/source_files.rb sets page.edit_form, #154).
+    // Markdown pages (partner/<name>/index.md, angebot/, spenden/ …): title, lead, links, text.
+    seite: {
+      titel: "Seite", ordner: "",
+      datei: function (w) { return F.slugify(w.title, "name-der-seite") + ".md"; },
+      felder: [
+        titel("Titel der Seite"),
+        text("lead", "Unterzeile", { platzhalter: "Ein Satz unter dem Titel" }),
+        verlinkt(),
+        inhalt("Text der Seite in Markdown"),
+        socialBild(),
+        themeField()
+      ]
+    },
+    // HTML overview pages (team/, partner/, projekte/ …): only the front matter – the HTML with its lists stays as it
+    // is and is not shown in the form.
+    uebersicht: {
+      titel: "Übersichtsseite", ordner: "",
+      datei: function (w) { return F.slugify(w.title, "name-der-seite") + ".html"; },
+      felder: [
+        titel("Titel der Seite"),
+        text("lead", "Unterzeile", { platzhalter: "Ein Satz unter dem Titel" }),
+        feld("langtext", "text", "🧑‍💻 HTML der Seite", { intern: true, mehr: true, code: true, zeilen: 18, klasse: "form-field-code",
+          hilfe: "Für Mutige: Listen und Karten entstehen aus Liquid ({% for %} …). Vor dem Speichern wird geprüft, ob alle HTML-Tags und Liquid-Blöcke geschlossen sind." }),
+        socialBild(),
+        themeField()
+      ],
+      // only check the HTML when it was changed – a title change must never be blocked by the checker
+      pruefe: function (w) { return aktiv && aktiv.edit && w.text === aktiv.edit.w0.text ? null : checkHtml(w.text); }
     },
     pressebericht: {
       titel: "Wir in der Presse", ordner: "_data/pressebericht", format: "yaml",
@@ -529,7 +615,7 @@ var NeuFormular = (function () {
     if (f.typ === "auswahl") {
       eingabe = "<select" + attr + ">" + f.optionen.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === w ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join("") + "</select>";
     } else if (f.typ === "langtext") {
-      eingabe = "<textarea" + attr + ' rows="' + (f.zeilen || 8) + '">' + esc(w) + "</textarea>";
+      eingabe = "<textarea" + attr + ' rows="' + (f.zeilen || 8) + '"' + (f.code ? ' spellcheck="false" autocapitalize="off" wrap="off"' : "") + ">" + esc(w) + "</textarea>";
     } else {
       var typ = { text: "text", adresse: "url", datum: "date", zeit: "datetime-local", zahl: "number" }[f.typ];
       eingabe = '<input type="' + typ + '"' + attr + (f.liste ? ' list="neu-liste-' + f.liste + '"' : "") + ' value="' + esc(w) + '">';
@@ -721,7 +807,7 @@ var NeuFormular = (function () {
     bild = direct.previewFor(bild); // photos not uploaded yet: show the local preview
     if (socialImg.getAttribute("src") !== bild) socialImg.src = bild;
     socialTitel.textContent = w.title || aktiv.schema.titel;
-    socialBeschr.textContent = (w.summary || w.subtitle || w.role || ersteTextzeile(w.text) || "Institut für spontane Makespace Buildung").slice(0, 160);
+    socialBeschr.textContent = (w.summary || w.subtitle || w.role || w.lead || ersteTextzeile(w.text) || "Institut für spontane Makespace Buildung").slice(0, 160);
   }
 
   function fehlt() {
@@ -755,13 +841,15 @@ var NeuFormular = (function () {
   // With a GitHub token the submit button creates the pull request itself: the file (new or only the changed lines,
   // like before) plus new photos in one commit on a new branch. Without a token everything stays as it was
   // (copy → GitHub's editor). Photos need the token, because they can't be pasted into GitHub's editor.
-  var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen" };
+  var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen", seite: "seiten", uebersicht: "seiten" };
   var direct = {
     active: function () { return !!(window.GitHubApi && GitHubApi.connected()); },
     // which folder new photos go into: assets/images/<area>/<slug>/ – posts without the date in front, like today
     folder: function () {
       var area = IMAGE_FOLDERS[aktiv.typ] || "news", name = String(aktiv.w.datei || "").replace(/\.(md|ya?ml)$/, "");
       if (area === "news") name = name.replace(/^\d{4}-\d{2}-\d{2}-/, "");
+      // pages are all called index.md: name the folder after the page's path (partner/rfflabs/index.md → partner-rfflabs)
+      if (area === "seiten") name = String(aktiv.path || name).replace(/(^|\/)index\.(md|html)$/, "").replace(/\.(md|html)$/, "").replace(/\//g, "-");
       return "assets/images/" + area + "/" + (name || "neu") + "/";
     },
     // Error from GitHubApi (err.kind, see github-api.js): message in the status line, plus the matching next step
@@ -906,7 +994,7 @@ var NeuFormular = (function () {
       if (!aktiv) return [];
       var has = function (n) { return aktiv.felder.some(function (f) { return f.name === n; }) && !(aktiv.edit && aktiv.edit.rawFields[n]); };
       var s = [];
-      if (!aktiv.schema.format && has("text")) s.push({ id: "gallery", label: "🖼️ Galerie im Text", hilfe: "mehrere Fotos, erscheinen als Galerie" });
+      if (!aktiv.schema.format && has("text") && aktiv.felder.some(function (f) { return f.name === "text" && f.markdown; })) s.push({ id: "gallery", label: "🖼️ Galerie im Text", hilfe: "mehrere Fotos, erscheinen als Galerie" });
       if (has("image")) s.push({ id: "image", label: aktiv.typ === "geraet" ? "📸 Foto des Geräts" : "📸 Titelbild", feld: "image", alt: has("image_alt") && "image_alt" });
       if (has("photo")) s.push({ id: "photo", label: "🙂 Profilfoto", feld: "photo" });
       if (has("logo")) s.push({ id: "logo", label: "🏷️ Logo / Bild auf der Partnerkarte", feld: "logo" });
@@ -1424,7 +1512,7 @@ var NeuFormular = (function () {
     });
   }
 
-  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder,
+  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder, checkHtml: checkHtml,
     connect: function () { return direct.connectDialog(); } };
 })();
 if (typeof module !== "undefined") module.exports = NeuFormular;
