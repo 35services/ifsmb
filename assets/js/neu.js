@@ -490,6 +490,15 @@ var NeuFormular = (function () {
     });
   }
 
+  // The page being edited, in every spelling a link to it can have – never offered as a link to itself (#128).
+  function ownAddresses(url) {
+    if (!url) return [];
+    var path = url.replace(/^https?:\/\/[^/]+/, "").replace(/index\.html$/, ""), bare = path.replace(/\/$/, "");
+    var forms = [path, bare, bare + "/", bare + "/index.html"];
+    var hosts = ["https://ifsmb.de"].concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
+    return forms.concat.apply(forms, hosts.map(function (h) { return forms.map(function (x) { return h + x; }); }));
+  }
+
   // in edit mode a required field only stays required if the file had a value (old posts without date: …)
   function isRequired(f) { return f.pflicht && !(aktiv.edit && F.leer(aktiv.edit.w0[f.name])); }
   function baueFeld(f) {
@@ -502,6 +511,7 @@ var NeuFormular = (function () {
       return F.chipFeld({
         label: f.label + (isRequired(f) ? " *" : ""), quelle: f.quelle, placeholder: f.platzhalter, hilfe: f.hilfe, einzeln: f.einzeln,
         werte: function () { return aktiv.w[f.name]; },
+        ausser: f.quelle === "seiten" ? function () { return ownAddresses(aktiv.url); } : null,
         setze: function (a) { aktiv.w[f.name] = a; nachAenderung(); }
       });
     }
@@ -1264,14 +1274,15 @@ var NeuFormular = (function () {
       status.textContent = "";
     },
     // small dialog: paste a fine-grained token, check it, remember it (or not), disconnect
+    // → Promise of the open <dialog> (the overview /mitmachen/offen/ listens for "close", assets/js/open-work.js)
     connectDialog: function (then) {
-      window.ladeSkripte(["github-api.js"]).then(function () {
+      return window.ladeSkripte(["github-api.js"]).then(function () {
         var g = document.getElementById("github-connect");
         if (!g) {
           g = F.dialog({ id: "github-connect", klasse: "github-dialog", titel: "🔑 Mit GitHub verbinden" });
           g.insertAdjacentHTML("beforeend", '<div class="github-body">'
             + '<p>Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.</p>'
-            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt. Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>' + esc(GitHubApi.repo()) + '</code> wählen, dann „Generate token“.</li>'
+            + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">Token auf GitHub erstellen ↗</a> – Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt (dazu <em>Issues</em>, um Aufgaben auf der Seite „Offen“ zu übernehmen). Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>' + esc(GitHubApi.repo()) + '</code> wählen, dann „Generate token“.</li>'
             + "<li>Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.</li></ol>"
             + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>'
             + '<label class="form-check"><input type="checkbox" data-remember><span>Auf diesem Gerät merken</span><small class="form-hilfe">Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.</small></label>'
@@ -1295,9 +1306,10 @@ var NeuFormular = (function () {
           show(); direct.update();
           GitHubApi.whoAmI().then(function (me) { if (me.canPush && then) { g.close(); then(); } }, function () {});
         };
-        g.querySelector("[data-logout]").onclick = function () { GitHubApi.logout(); show(); direct.update(); setMode(!!(aktiv && aktiv.edit)); };
+        g.querySelector("[data-logout]").onclick = function () { GitHubApi.logout(); show(); direct.update(); if (d) setMode(!!(aktiv && aktiv.edit)); };
         show();
         g.showModal();
+        return g;
       });
     }
   };
@@ -1371,7 +1383,7 @@ var NeuFormular = (function () {
       if (!d) baueDialog();
       var folder = data.path.split("/").slice(0, -1).join("/");
       aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], edit: loaded, path: data.path,
-        schluessel: "ifsmb-edit:" + data.path };
+        url: data.url || (typeof location !== "undefined" ? location.pathname : ""), schluessel: "ifsmb-edit:" + data.path };
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
       var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
       aktiv.w = draftFits ? Object.assign(JSON.parse(JSON.stringify(loaded.w0)), draft.w) : JSON.parse(JSON.stringify(loaded.w0));
@@ -1397,6 +1409,7 @@ var NeuFormular = (function () {
     });
   }
 
-  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder };
+  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder,
+    connect: function () { return direct.connectDialog(); } };
 })();
 if (typeof module !== "undefined") module.exports = NeuFormular;
