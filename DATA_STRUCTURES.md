@@ -116,6 +116,8 @@ standort_partner: Kurt-Tucholsky-Grundschule   # verlinkt den Standort mit dem P
 - `owner_name` wird im Netzwerk ein Quadrat „Weitere Besitzer*innen“.
 - Das Institut selbst besitzt (noch) nichts – jedes Gerät braucht mindestens einen Besitz-Eintrag.
 
+**Filtern per Link:** `/ausstattung/?besitz=<schlüssel>` zeigt nur die Geräte einer Besitzer*in, `/ausstattung/?standort=<schlüssel>` die Geräte, die bei einem Partner stehen (`assets/js/equipment-filter.js`, Leiste mit allen Besitzer*innen und Standorten oben auf der Seite). Schlüssel: bei Partnern der letzte Teil ihrer Seite (`page: /partner/35services/` → `35services`), sonst der Name als Slug; bei Teammitgliedern das Kürzel (`falko-richter`); `owner_name` als Slug (`_includes/equipment-keys.html`). Partnerseiten verlinken das mit `{% include partner-equipment-links.html partner="35 services e. V." %}` – „Ausstattung von …“ und „Ausstattung bei …“ mit Anzahl, nichts, wenn der Partner keine Geräte hat.
+
 ## Projekte und Teilprojekte
 
 ```
