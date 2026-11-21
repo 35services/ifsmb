@@ -2,7 +2,7 @@
 
 Alles, worauf ifsmb.de angewiesen ist – im Browser, beim Bauen, in den Tests und in lokalen Skripten. Regeln in `CLAUDE.md` unter „Abhängigkeiten“: **Was hier nicht steht, wird nicht benutzt.** Neue, aktualisierte und entfernte Einträge kommen mit genauer Version auch ins `CHANGELOG.md` und in die PR-Beschreibung.
 
-Stand: 18.11.2026
+Stand: 21.11.2026
 
 ## 1. Im Browser (wird an Besucher*innen ausgeliefert)
 
@@ -35,6 +35,60 @@ Stand: 18.11.2026
 | Lizenz | MIT |
 | Benutzt von | `suche/`, `_includes/formular-config.html` (Volltextsuche in den Chip-Feldern der Formulare), `_includes/verknuepft.html`, `_includes/todos-knopf.html` |
 | Aktualisieren | Version in `pages.yml` ändern, nach dem Deployment `/suche/` und die Seitensuche in den Formularen testen |
+
+### VT323 – Schrift für Themes
+
+| | |
+|---|---|
+| Zweck | Theme „Offene Werkstätten“: Navigation, Überschriften, Buttons, Abzeichen (Pixelschrift wie auf offene-werkstaetten.org) |
+| Version | **5.3.0** – npm `@fontsource/vt323@5.3.0` (Fontsource, nur das Teilset „latin“ – enthält Umlaute, ß, „“ und –) |
+| Herkunft | https://fontsource.org · geholt mit `npm pack @fontsource/vt323@5.3.0` in einen leeren Ordner, daraus `files/vt323-latin-400-normal.woff2` und `LICENSE` (21.11.2026) – **nicht** von der Website der Organisation |
+| Liegt in | `assets/fonts/vt323/` (Schrift, `LICENSE`, `README.md`) |
+| SHA-256 | `8ddbebcc1048154132e1d78eb9b1f7850bca1b7d857035ccf1cb4318ebc615b6` |
+| Lizenz | SIL Open Font License 1.1 (Copyright 2011 The VT323 Project Authors), Lizenztext liegt daneben |
+| Größe | 20 KB (WOFF2) |
+| Benutzt von | `assets/css/themes.css` (`@font-face`) |
+| Wann geladen | nur, wenn das Theme aktiv ist – Browser laden eine Schrift erst, wenn ein Element sie benutzt; das Standard-Theme lädt nie eine |
+| Geprüft | reine Schriftdatei, keine externen Adressen; kein CSS von Fontsource übernommen (eigene `@font-face`-Regeln) |
+| Änderungen | keine – unveränderte Kopie |
+| Aktualisieren | `npm pack` mit neuer Version, Datei(en) ersetzen, SHA-256 hier und in der README daneben eintragen, Seiten mit `?theme=…` ansehen, `CHANGELOG.md` |
+| Entfernen | Ordner und `@font-face`-Regel löschen, Schrift aus den Variablen in `themes.css` nehmen – Theme fällt auf `ui-monospace` zurück |
+
+### Carlito – Schrift für Themes
+
+| | |
+|---|---|
+| Zweck | Theme „Offene Werkstätten“: Fließtext und die schräg-fette Hervorhebung im Slogan (wie auf offene-werkstaetten.org; Carlito ist metrisch gleich zu Calibri) |
+| Version | **5.3.0** – npm `@fontsource/carlito@5.3.0` (Fontsource, nur das Teilset „latin“ – enthält Umlaute, ß, „“ und –) |
+| Herkunft | https://fontsource.org · geholt mit `npm pack @fontsource/carlito@5.3.0` in einen leeren Ordner, daraus `files/carlito-latin-{400,700}-{normal,italic}.woff2 (4 Dateien)` und `LICENSE` (21.11.2026) – **nicht** von der Website der Organisation |
+| Liegt in | `assets/fonts/carlito/` (Schrift, `LICENSE`, `README.md`) |
+| SHA-256 | `a29c4a4e61863753cf6a10831efaa05f849dcaa8f580422dbc41bc058c3b6b64` (400-normal), `6bbdd83c5797d207bd2027f2687a70e428513c56130feaad1ffc0a1a7ace7c07` (400-italic), `af249cfe4107221070ff077c29a043004e8f2efea977dcbaaf217a24f3b7680e` (700-normal), `e1bbd00245b0b22d0c540413ac73a91f7afff587899260a683acec3564f06ac3` (700-italic) |
+| Lizenz | SIL Open Font License 1.1 (Copyright 2013 The Carlito Project Authors), Lizenztext liegt daneben |
+| Größe | 4 × 32 KB (WOFF2) |
+| Benutzt von | `assets/css/themes.css` (`@font-face`) |
+| Wann geladen | nur, wenn das Theme aktiv ist – Browser laden eine Schrift erst, wenn ein Element sie benutzt; das Standard-Theme lädt nie eine |
+| Geprüft | reine Schriftdatei, keine externen Adressen; kein CSS von Fontsource übernommen (eigene `@font-face`-Regeln) |
+| Änderungen | keine – unveränderte Kopie |
+| Aktualisieren | `npm pack` mit neuer Version, Datei(en) ersetzen, SHA-256 hier und in der README daneben eintragen, Seiten mit `?theme=…` ansehen, `CHANGELOG.md` |
+| Entfernen | Ordner und `@font-face`-Regel löschen, Schrift aus den Variablen in `themes.css` nehmen – Theme fällt auf Calibri/Segoe UI/Arial zurück |
+
+### Lexend – Schrift für Themes
+
+| | |
+|---|---|
+| Zweck | Theme „RFFLabs“: alle Texte (wie auf rfflabs.fr) |
+| Version | **5.3.0** – npm `@fontsource-variable/lexend@5.3.0` (Fontsource, nur das Teilset „latin“ – enthält Umlaute, ß, „“ und –) |
+| Herkunft | https://fontsource.org · geholt mit `npm pack @fontsource-variable/lexend@5.3.0` in einen leeren Ordner, daraus `files/lexend-latin-wght-normal.woff2 (variable Schrift, Gewichte 100–900)` und `LICENSE` (21.11.2026) – **nicht** von der Website der Organisation |
+| Liegt in | `assets/fonts/lexend/` (Schrift, `LICENSE`, `README.md`) |
+| SHA-256 | `b7e7538f59bff1812841d7627f8e49e70fe86438f9f7b397a028c0d05301c874` |
+| Lizenz | SIL Open Font License 1.1 (Copyright 2019 The Lexend Project Authors), Lizenztext liegt daneben |
+| Größe | 40 KB (WOFF2) |
+| Benutzt von | `assets/css/themes.css` (`@font-face`) |
+| Wann geladen | nur, wenn das Theme aktiv ist – Browser laden eine Schrift erst, wenn ein Element sie benutzt; das Standard-Theme lädt nie eine |
+| Geprüft | reine Schriftdatei, keine externen Adressen; kein CSS von Fontsource übernommen (eigene `@font-face`-Regeln) |
+| Änderungen | keine – unveränderte Kopie |
+| Aktualisieren | `npm pack` mit neuer Version, Datei(en) ersetzen, SHA-256 hier und in der README daneben eintragen, Seiten mit `?theme=…` ansehen, `CHANGELOG.md` |
+| Entfernen | Ordner und `@font-face`-Regel löschen, Schrift aus den Variablen in `themes.css` nehmen – Theme fällt auf system-ui zurück |
 
 ## 2. Bauen und Veröffentlichen (GitHub Actions)
 

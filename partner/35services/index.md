@@ -14,7 +14,7 @@ uuid: 08515cfe-c14b-4488-b136-cf67dfaae236
 
 <p class="partner-page-logo partner-page-logo-dark"><a href="https://35services.de/" target="_blank" rel="noopener"><img src="/assets/images/partner/35services.png" alt="Logo 35 services e. V."></a></p>
 
-[35services e.V.](https://35services.de/) ist eine Nachbarschaftswerkstatt in Moabit und Mitglied im Verbund Offener Werkstätten. Der Verein unterstützt die [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) bei der Organisation, und viele Geräte aus unserer [Ausstattung]({{ '/ausstattung/' | relative_url }}) gehören dem Verein.
+[35services e.V.](https://35services.de/) ist eine Nachbarschaftswerkstatt in Moabit und Mitglied im [Verbund Offener Werkstätten]({{ '/partner/offene-werkstaetten/' | relative_url }}). Der Verein unterstützt die [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) bei der Organisation, und viele Geräte aus unserer [Ausstattung]({{ '/ausstattung/' | relative_url }}) gehören dem Verein.
 
 ## Offene Repositories {#repositories}
 

@@ -11,6 +11,7 @@ Originale, unbearbeitete Logo-Dateien. Ausgeliefert werden nur die Kopien in `as
 | `partner/pc-spende.svg` | pc-spende.das-macht-schule.net (Header-Logo pcspende_logo.svg, abgerufen 06.11.2026) |
 | `partner/taschenstation.svg` | taschenstation.de (inline-SVG-Symbol `#cf-icon--logo` aus dem Seitenkopf extrahiert, Schriftzug „ReUseMe“, abgerufen 06.11.2026) |
 | `partner/bietenholz.jpeg` | bietenholz.design (Site-Icon logo_bietenholz2.jpeg, 512 × 512; für die Website auf 400 px verkleinert, abgerufen 06.11.2026) |
+| `partner/verbund-offene-werkstaetten.png` | vom Verbund Offener Werkstätten bereitgestellt (Logo-Paket von 2010, Nutzung abgestimmt). Aus `logo_VOW.tif` (CMYK, 2465 × 826, 300 dpi): Deckung aus dem Gelb-Kanal, Farben aus der offiziellen RGB-Datei (Rot `#bd1320`, Orange `#f29400`), transparenter Hintergrund, ohne Metadaten; für die Website auf 600 px Breite verkleinert. EPS/TIF/BMP-Originale nicht im Repo |
 | HeartLabs | **fehlt** – Printables blockiert automatische Abrufe, Instagram braucht Login; Text-Platzhalter wird angezeigt |
 | Förderverein der Kurt-Tucholsky-Grundschule | **fehlt** – Website hat kein Logo, Text-Platzhalter wird angezeigt |
 

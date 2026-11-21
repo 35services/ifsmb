@@ -276,3 +276,44 @@ class EditFormTest < Minitest::Test
     end
   end
 end
+
+# Themes (_data/themes.yml): the form, Pages CMS and the templates offer exactly the themes the layout knows,
+# and setting a theme on an existing page with ✏️ only adds that one line.
+class ThemeTest < Minitest::Test
+  def theme_ids
+    YAML.safe_load(File.read(File.join(ROOT, "_data/themes.yml"))).map { |t| t["id"] }
+  end
+
+  def test_form_offers_every_theme
+    Daten.beispiele["typen"].each do |typ, t|
+      f = t["felder"].find { |x| x["name"] == "theme" } or next
+      assert_equal [""] + theme_ids, f["optionen"], "#{typ}: Auswahl „theme“ in neu.js passt nicht zu _data/themes.yml"
+    end
+  end
+
+  def test_pages_cms_offers_every_theme
+    Daten.cms.each do |c|
+      f = (c["fields"] || []).find { |x| x["name"] == "theme" } or next
+      assert_equal [""] + theme_ids, f.dig("options", "values").map(&:to_s), "#{c['name']}: theme in .pages.yml passt nicht zu _data/themes.yml"
+    end
+  end
+
+  def test_content_types_have_a_theme_field
+    ZUORDNUNG.each do |typ, z|
+      next unless z[:vorlage].end_with?(".md")
+      assert_includes Daten.vorlage_felder(z[:vorlage]), "theme", "#{z[:vorlage]}: Feld theme fehlt"
+      assert(Daten.beispiele["typen"].fetch(typ)["felder"].any? { |x| x["name"] == "theme" }, "#{typ}: Feld theme fehlt im Formular")
+    end
+  end
+
+  def test_setting_a_theme_adds_one_line
+    source = "---\ntitle: Test\nstatus: offen\nart: frage\n---\n\nText\n"
+    js = "const N=require('./assets/js/neu.js');process.stdout.write(N.editedFile('herausforderung',#{source.to_json},{theme:'rfflabs'}).content)"
+    out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
+    assert status.success?, err
+    fm, text = Daten.front_matter(out)
+    assert_equal "rfflabs", fm["theme"]
+    assert_equal({ "title" => "Test", "status" => "offen", "art" => "frage" }, fm.reject { |k, _| k == "theme" })
+    assert_equal "Text", text.strip
+  end
+end

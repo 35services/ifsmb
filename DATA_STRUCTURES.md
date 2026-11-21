@@ -210,6 +210,32 @@ Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) als JSON in die Se
 - Gestrichelter Rand = persönlich, dicke Linie = Teilprojekt, rote Linie = gehört,
   blau gestrichelt = steht bei, Quadrate = Orte und weitere Besitzer*innen (aus Text).
 
+## Aussehen (Themes)
+
+Jede Seite kann ein eigenes Aussehen haben. Welches gilt, entscheidet (das erste, was passt, gewinnt):
+
+```
+ Besucher*in: „Aussehen“ im Footer        localStorage["ifsmb-theme"]   (überall, bis „Wie die Seite“)
+              oder Link mit ?theme=<id>   (setzt dieselbe Wahl; ?theme=auto vergisst sie)
+ Seite:       theme: <id>                 Front Matter jeder Seite (Beitrag, Termin, Projekt, Gerät,
+                                          Herausforderung, Person, Presse – auch normale Seiten)
+ Website:     default_theme: <id>         _config.yml (nicht `theme:` – das ist bei Jekyll ein Gem-Theme)
+ sonst:       ifsmb                       das gewohnte Aussehen (erster Eintrag in _data/themes.yml)
+```
+
+| id | Name | Vorbild |
+|---|---|---|
+| `ifsmb` | IfsMB (Standard) | – |
+| `offene-werkstaetten` | Offene Werkstätten | [offene-werkstaetten.org](https://offene-werkstaetten.org/de) |
+| `rfflabs` | RFFLabs | [rfflabs.fr](https://www.rfflabs.fr/) |
+
+- Liste: `_data/themes.yml`; das Layout schreibt `data-theme` und `data-page-theme` auf `<html>`, Stile in
+  `assets/css/themes.css`, Auswahl im Footer `assets/js/theme.js`.
+- `theme` ist keine Verbindung – es ändert nur das Aussehen, nicht die Inhalte oder die Links.
+- Neues Theme: Eintrag in `_data/themes.yml`, Block in `themes.css`, Auswahlwerte in `.pages.yml`,
+  Kommentar in den Vorlagen (`_includes/vorlagen/`) und `THEMES` in `assets/js/neu.js` –
+  `ruby _scripts/test_formulare.rb` prüft, dass alles zusammenpasst, `check_site.rb` meldet unbekannte Werte.
+
 ## Sichtbarkeit
 
 ```
