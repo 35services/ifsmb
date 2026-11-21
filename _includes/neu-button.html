@@ -1,6 +1,7 @@
 {%- comment -%}
   One "➕ new" button: a GitHub "new file" link with file name and content prefilled from a template.
-  Params: typ (beitrag, termin, projekt, geraet, herausforderung, team, presse), label, hint (tooltip) and the template params
+  Params: typ (beitrag, termin, projekt, geraet, herausforderung, team, presse), i18n (UI strings <i18n>.label and
+  <i18n>.hint = tooltip in _data/i18n/*.yml; i18n_quadrant=q1…q4 fills {quadrant}/{sub} in the matrix strings) and the template params
   (author, team, tags, verlinkt, projekte, partners, teil_von, owner_team, owner_partner, persoenlich, wichtig, dringend).
   klein=true renders only a small "➕" (label goes into aria-label), e.g. inside a quadrant of the Eisenhower matrix.
   Placeholders JJJJ-MM-TT / JJJJ / TZTZ are replaced at click time by the script in _includes/neu-buttons.html.
@@ -27,13 +28,22 @@
   {%- when 'presse' -%}{%- assign dir = '_press' -%}{%- assign datei = 'JJJJ-MM-TT-titel-der-mitteilung.md' -%}
     {%- capture inhalt -%}{% include vorlagen/presse.md tags=include.tags verlinkt=include.verlinkt %}{%- endcapture -%}
 {%- endcase -%}
+{%- assign nb_label_key = include.i18n | append: ".label" -%}{%- assign nb_hint_key = include.i18n | append: ".hint" -%}
+{%- if include.i18n_quadrant -%}
+  {%- assign nb_q_key = "matrix." | append: include.i18n_quadrant -%}{%- assign nb_sub_key = nb_q_key | append: "_sub" -%}
+  {%- assign nb_q = nb_q_key | t -%}{%- assign nb_sub = nb_sub_key | t -%}
+  {%- assign nb_label = nb_label_key | t: "quadrant", nb_q -%}{%- assign nb_hint = nb_hint_key | t: "quadrant", nb_q, "sub", nb_sub -%}
+  {%- capture nb_params -%}{"quadrant": {{ "@" | append: nb_q_key | jsonify }}, "sub": {{ "@" | append: nb_sub_key | jsonify }}}{%- endcapture -%}
+{%- else -%}
+  {%- assign nb_label = nb_label_key | t -%}{%- assign nb_hint = nb_hint_key | t -%}{%- assign nb_params = "{}" -%}
+{%- endif -%}
 {%- comment -%}
   data-neu: type and connection to this page for the pop-up form (assets/js/neu.js); the href stays as fallback
   without JS and as "Vorlage mit allen Feldern" link inside the form.
 {%- endcomment -%}
 {%- capture neu_daten -%}
-{"typ": {{ include.typ | jsonify }}, "label": {{ include.label | jsonify }}, "hinweis": {{ include.hint | jsonify }}, "werte": {"author": {{ include.author | jsonify }}, "team": {{ include.team | jsonify }}, "tags": {{ include.tags | jsonify }}, "verlinkt": {{ include.verlinkt | jsonify }}, "projekte": {{ include.projekte | jsonify }}, "partners": {{ include.partners | jsonify }}, "teil_von": {{ include.teil_von | jsonify }}, "owner_team": {{ include.owner_team | jsonify }}, "owner_partner": {{ include.owner_partner | jsonify }}, "persoenlich": {{ include.persoenlich | jsonify }}, "wichtig": {{ include.wichtig | jsonify }}, "dringend": {{ include.dringend | jsonify }}}}
+{"typ": {{ include.typ | jsonify }}, "label": {{ nb_label | jsonify }}, "hinweis": {{ nb_hint | jsonify }}, "i18n": {{ include.i18n | jsonify }}, "i18nParams": {{ nb_params }}, "werte": {"author": {{ include.author | jsonify }}, "team": {{ include.team | jsonify }}, "tags": {{ include.tags | jsonify }}, "verlinkt": {{ include.verlinkt | jsonify }}, "projekte": {{ include.projekte | jsonify }}, "partners": {{ include.partners | jsonify }}, "teil_von": {{ include.teil_von | jsonify }}, "owner_team": {{ include.owner_team | jsonify }}, "owner_partner": {{ include.owner_partner | jsonify }}, "persoenlich": {{ include.persoenlich | jsonify }}, "wichtig": {{ include.wichtig | jsonify }}, "dringend": {{ include.dringend | jsonify }}}}
 {%- endcapture -%}
 {%- comment -%} url_encode turns spaces into "+"; literal "+" is already %2B at that point, so only spaces are replaced {%- endcomment -%}
 <a class="{% if include.klein %}neu-btn neu-btn-klein{% else %}btn btn-ghost btn-small neu-btn{% endif %}" data-vorlage data-neu="{{ neu_daten | strip | escape }}" href="https://github.com/{{ site.repository }}/new/{{ site.branch | default: 'main' }}/{{ dir }}?filename={{ datei }}&amp;value={{ inhalt | strip | append: '
-' | url_encode | replace: '+', '%20' }}" target="_blank" rel="noopener" title="{{ include.hint | escape }}"{% if include.klein %} aria-label="{{ include.label | escape }}">➕{% else %}>➕ {{ include.label }}{% endif %}</a>
+' | url_encode | replace: '+', '%20' }}" target="_blank" rel="noopener" title="{{ nb_hint }}" data-i18n-params="{{ nb_params | escape }}"{% if include.klein %} aria-label="{{ nb_label }}" data-i18n-attr="title:{{ nb_hint_key }};aria-label:{{ nb_label_key }}">➕{% else %} data-i18n-attr="title:{{ nb_hint_key }}">➕ <span data-i18n="{{ nb_label_key }}">{{ nb_label }}</span>{% endif %}</a>

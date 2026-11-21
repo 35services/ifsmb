@@ -2,6 +2,8 @@
 suche: false # Übersichtsseite, nicht im Suchindex
 layout: page
 title: Vergangene Projekte
+i18n_title: pages.archive.title
+i18n_lead: pages.archive.lead
 lead: Was wir schon gebaut haben.
 ---
 {% assign past = site.projects | where: "status", "abgeschlossen" | where_exp: "p", "p.persoenlich != true" | where_exp: "p", "p.teil_von == nil" | sort: "start" | reverse %}
@@ -12,7 +14,7 @@ lead: Was wir schon gebaut haben.
   {% endfor %}
 </div>
 {% else %}
-<p>Noch keine abgeschlossenen Projekte.</p>
+<p data-i18n="pages.archive.empty">{{ "pages.archive.empty" | t }}</p>
 {% endif %}
 
-<p class="section-foot"><a href="{{ '/projekte/' | relative_url }}">← Aktuelle Projekte</a></p>
+<p class="section-foot"><a href="{{ '/projekte/' | relative_url }}" data-i18n="pages.archive.back">{{ "pages.archive.back" | t }}</a></p>

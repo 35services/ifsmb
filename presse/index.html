@@ -1,17 +1,19 @@
 ---
 layout: page
 title: Presse
+i18n_title: pages.press.title
+i18n_lead: pages.press.lead
 lead: Informationen, Pressemitteilungen und Material für Journalist*innen.
 uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
 ---
 <section class="press-section">
-  <h2>Kurzprofil</h2>
+  <h2 data-i18n="press.profile">{{ "press.profile" | t }}</h2>
   <p class="press-boilerplate">{{ site.data.presse.kurzprofil }}</p>
   <ul class="fact-list">
-    <li><strong>Name:</strong> {{ site.title }} ({{ site.short_title }})</li>
-    <li><strong>Sitz:</strong> Berlin-Moabit</li>
-    <li><strong>Team:</strong> {{ site.team.size }} Personen – <a href="{{ '/team/' | relative_url }}">zum Team</a></li>
-    <li><strong>Partner:</strong> {% for p in site.data.partners %}{{ p.name }}{% unless forloop.last %}, {% endunless %}{% endfor %}</li>
+    <li><strong data-i18n="press.fact_name">{{ "press.fact_name" | t }}</strong> {{ site.title }} ({{ site.short_title }})</li>
+    <li><strong data-i18n="press.fact_seat">{{ "press.fact_seat" | t }}</strong> Berlin-Moabit</li>
+    <li><strong data-i18n="press.fact_team">{{ "press.fact_team" | t }}</strong> <span data-i18n="press.people" data-i18n-params="{{ "n" | i18n_params: site.team.size }}">{{ "press.people" | t: "n", site.team.size }}</span> – <a href="{{ '/team/' | relative_url }}" data-i18n="press.to_team">{{ "press.to_team" | t }}</a></li>
+    <li><strong data-i18n="press.fact_partners">{{ "press.fact_partners" | t }}</strong> {% for p in site.data.partners %}{{ p.name }}{% unless forloop.last %}, {% endunless %}{% endfor %}</li>
     <li><strong>Website:</strong> <a href="{{ site.url }}">{{ site.url | remove: "https://" }}</a></li>
   </ul>
 </section>
@@ -21,30 +23,30 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
 </section>
 
 <section class="press-section">
-  <h2>Pressemitteilungen</h2>
+  <h2 data-i18n="press.releases">{{ "press.releases" | t }}</h2>
   {% assign releases = site.press | sort: "date" | reverse %}
   {% if releases.size > 0 %}
   <ul class="post-list">
     {% for r in releases %}
-    <li><span class="meta">{{ r.date | date: "%d.%m.%Y" }}</span> <a href="{{ r.url | relative_url }}">{{ r.title }}</a></li>
+    <li><span class="meta">{{ r.date | i18n_date }}</span> <a href="{{ r.url | relative_url }}">{{ r.title }}</a></li>
     {% endfor %}
   </ul>
   {% else %}
-  <p class="muted">Noch keine Pressemitteilungen.</p>
+  <p class="muted" data-i18n="press.no_releases">{{ "press.no_releases" | t }}</p>
   {% endif %}
 </section>
 
 <section class="press-section">
-  <h2>Wir in der Presse</h2>
+  <h2 data-i18n="press.coverage">{{ "press.coverage" | t }}</h2>
   <ul class="post-list">
     {% for b in site.data.presseberichte %}
-    <li>{% if b.datum %}<span class="meta">{{ b.datum | date: "%d.%m.%Y" }}</span> {% endif %}<a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.titel }}</a> <span class="muted small">– {{ b.medium }}{% if b.hinweis %} ({{ b.hinweis }}){% endif %}{% if b.anlass %} · <a href="{{ b.anlass | relative_url }}">mehr dazu</a>{% endif %}</span></li>
+    <li>{% if b.datum %}<span class="meta">{{ b.datum | i18n_date }}</span> {% endif %}<a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.titel }}</a> <span class="muted small">– {{ b.medium }}{% if b.hinweis %} ({{ b.hinweis }}){% endif %}{% if b.anlass %} · <a href="{{ b.anlass | relative_url }}" data-i18n="press.more_on_it">{{ "press.more_on_it" | t }}</a>{% endif %}</span></li>
     {% endfor %}
   </ul>
 </section>
 
 <section class="press-section">
-  <h2>Pressematerial</h2>
+  <h2 data-i18n="press.material">{{ "press.material" | t }}</h2>
   <p class="muted">Das Logo darf für die Berichterstattung über das Institut verwendet werden.{% if site.data.presse.bildnachweis != "" %} Bildnachweis: {{ site.data.presse.bildnachweis }}{% endif %}</p>
   <div class="grid-2">
     {% for m in site.data.pressematerial %}
@@ -52,14 +54,14 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
       {% if m.preview %}<span class="press-preview"><img src="{{ m.preview | relative_url }}" alt="Vorschau: {{ m.title }}" loading="lazy"></span>{% endif %}
       <strong>{{ m.title }}</strong>
       {% if m.description %}<span class="muted small">{{ m.description }}</span>{% endif %}
-      <span class="press-download">⬇ Herunterladen</span>
+      <span class="press-download" data-i18n="press.download">{{ "press.download" | t }}</span>
     </a>
     {% endfor %}
   </div>
 </section>
 
 <section class="press-section" id="badge">
-  <h2>Badge zum 3D-Drucken</h2>
+  <h2 data-i18n="press.badge">{{ "press.badge" | t }}</h2>
   {%- assign logo_badge = site.data.badges | where: "datei", "ifsmb-badge" | first %}
   <div class="badge-intro">
     <div>
@@ -76,7 +78,7 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
     </div>
   </div>
 
-  <h3>Badges mit Namen</h3>
+  <h3 data-i18n="press.badges_names">{{ "press.badges_names" | t }}</h3>
   <p>Für das Team gibt es das Badge mit Namen: Der schwarze Schatten ist unten zu einem Band verlängert, die Buchstaben des Namens sind darin ausgespart – dort scheint das Gelb durch. Auch hier bleibt es bei einem Farbwechsel.</p>
   <div class="grid-2">
     {%- for b in site.data.badges %}{% if b.aufschrift %}

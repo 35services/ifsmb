@@ -74,36 +74,52 @@ defaults:
     values:
       layout: "herausforderung"
 
+# Navigation: `key` = UI string in _data/i18n/*.yml (English/French in the browser, assets/js/i18n.js)
 nav:
   - title: Neuigkeiten
+    key: nav.news
     url: /news/
   - title: Kalender
+    key: nav.calendar
     url: /kalender/
   - title: Wir
+    key: nav.about_us
     children:
       - title: Netzwerk
+        key: nav.network
         url: /netzwerk/
       - title: Karte
+        key: nav.map
         url: /karte/
       - title: Projekte
+        key: nav.projects
         url: /projekte/
       - title: Projekt-Ideen
+        key: nav.project_ideas
         url: /projekte/ideen/
       - title: Herausforderungen
+        key: nav.challenges
         url: /herausforderungen/
       - title: Angebot
+        key: nav.offer
         url: /angebot/
       - title: Geld für Makespaces
+        key: nav.funding
         url: /geld-fuer-makespaces/
       - title: Ausstattung
+        key: nav.equipment
         url: /ausstattung/
       - title: Team
+        key: nav.team
         url: /team/
   - title: Partner
+    key: nav.partners
     url: /partner/
   - title: Presse
+    key: nav.press
     url: /presse/
   - title: Suche
+    key: nav.search
     url: /suche/
 
 # Pagefind-Index (_site/pagefind/) beim Neubauen nicht löschen – lokal mit `npx pagefind --site _site` erzeugt
