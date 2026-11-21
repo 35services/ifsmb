@@ -303,6 +303,17 @@ equipment:
   scanners: Scanners 3D
   others: Traceurs, appareils de mesure et plus
   back: ← Tout l’équipement
+  filter_owner: "Appartient à :"
+  filter_location: "Se trouve chez :"
+  filter_active_owner: "Équipement de {name}"
+  filter_active_location: "Équipement chez {name}"
+  filter_count:
+    one: "1 appareil"
+    other: "{n} appareils"
+  filter_none: aucun appareil pour ce filtre
+  filter_reset: Tout afficher
+  of_partner: "Équipement de {name}"
+  at_partner: "Équipement chez {name}"
 
 team:
   photo_of: Photo de {name}

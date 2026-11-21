@@ -305,6 +305,17 @@ equipment:
   scanners: 3D-Scanner
   others: Plotter, Messgeräte und mehr
   back: ← Alle Ausstattung
+  filter_owner: "Gehört:"
+  filter_location: "Steht bei:"
+  filter_active_owner: "Geräte von {name}"
+  filter_active_location: "Geräte bei {name}"
+  filter_count:
+    one: "1 Gerät"
+    other: "{n} Geräte"
+  filter_none: keine Geräte für diesen Filter
+  filter_reset: Alle zeigen
+  of_partner: "Ausstattung von {name}"
+  at_partner: "Ausstattung bei {name}"
 
 team:
   photo_of: Foto von {name}

@@ -302,6 +302,17 @@ equipment:
   scanners: 3D scanners
   others: Plotters, measuring devices and more
   back: ← All equipment
+  filter_owner: "Owned by:"
+  filter_location: "Located at:"
+  filter_active_owner: "Equipment of {name}"
+  filter_active_location: "Equipment at {name}"
+  filter_count:
+    one: "1 device"
+    other: "{n} devices"
+  filter_none: no devices for this filter
+  filter_reset: Show all
+  of_partner: "Equipment of {name}"
+  at_partner: "Equipment at {name}"
 
 team:
   photo_of: Photo of {name}
