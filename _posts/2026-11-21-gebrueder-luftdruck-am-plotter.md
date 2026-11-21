@@ -13,7 +13,9 @@ Falko sitzt gerade mit Flojo zusammen – und diese Zeichnung geht jetzt auf den
 
 ![Strichzeichnung zum Plotten: zwei Gesichter nebeneinander – links eine Person mit runder Brille und Kopfhörern, die breit lacht, rechts eine Person, die den Kopf an sie lehnt; oben rechts der Schriftzug „Gebrüder“, unten groß „Luftdruck“, oben links eine Sprechblase „Luft raus? Mach neu!“](/assets/images/news/gebrueder-luftdruck-am-plotter/01.svg)
 
-Ein Zeitraffer vom Plotten folgt gleich.
+Der Zeitraffer vom Plotten:
+
+![Zeitraffer: Der Stiftplotter zeichnet „Gebrüder Luftdruck“ mit einem rotbraunen Stift auf ein weißes Blatt, Strich für Strich, bis das fertige Bild daliegt](/assets/video/news/gebrueder-luftdruck-am-plotter/01.mp4)
 
 ## Und in 3D: Serpentine3D
 
