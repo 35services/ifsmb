@@ -29,7 +29,7 @@ videos:   # Videos, Liste aus src, poster, caption (720p-MP4 in assets/video/)
 updates:   # Stand / Updates: kurze Notizen mit Datum, neueste zuerst (Text in Markdown, auch mit Fotos als {: .gallery})
 #  - datum: JJJJ-MM-TT
 #    text: Was sich am Gerät getan hat.
-theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten oder rfflabs (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
+theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
 social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
 uuid: UUID-NEU   # zufällige Kennung für die Gelesen-Markierung – wird beim Klick erzeugt, nicht ändern
 ---
