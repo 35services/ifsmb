@@ -15,7 +15,7 @@ teil_von:{% if include.teil_von %} [{{ include.teil_von }}]{% endif %}   # leer 
 verwandt: []   # Dateinamen verwandter Projekte, z. B. [3d-druck-ag-ktg]
 team: [{{ include.team }}]   # Team-Kürzel der Beteiligten
 partners: [{{ include.partners }}]   # Namen aus _data/partners.yml, in Anführungszeichen
-verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/ausstattung/…/]
+verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/equipment/…/]
 image:   # Titelbild, z. B. /assets/images/projekte/<name>/01.jpg – ohne Metadaten
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
 social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg

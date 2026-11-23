@@ -16,9 +16,9 @@ partners:
 uuid: 2aaad3a9-4741-4880-a59e-b1f2e31d181c
 ---
 
-Ein neues Projekt von Falko für die [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}): ein **Notebook der KTG wiederbeleben**. Das **Displayscharnier hat eine Macke** – das Notebook sollte aber noch nutzbar sein, zumindest **stationär** auf dem Tisch.
+Ein neues Projekt von Falko für die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}): ein **Notebook der KTG wiederbeleben**. Das **Displayscharnier hat eine Macke** – das Notebook sollte aber noch nutzbar sein, zumindest **stationär** auf dem Tisch.
 
-Wie bei den [iPad-Stiften]({{ '/projekte/ipad-stifte-wiederbeleben/' | relative_url }}) gilt: Was an der Schule herumliegt und noch funktioniert, soll wieder genutzt werden.
+Wie bei den [iPad-Stiften]({{ '/projects/ipad-stifte-wiederbeleben/' | relative_url }}) gilt: Was an der Schule herumliegt und noch funktioniert, soll wieder genutzt werden.
 
 ![Seitenansicht des aufgeklappten Notebooks: Anschlüsse und das beschädigte Displayscharnier](/assets/images/news/notebook-ktg/01.jpg)
 {: .gallery}

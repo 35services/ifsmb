@@ -18,6 +18,6 @@ updates:
 uuid: 9a4f79a5-be36-4025-8180-fd1028753e45
 ---
 
-Falko evaluiert den [Creality CR-Scan Ferret SE]({{ '/ausstattung/creality-ferret-se/' | relative_url }}).
+Falko evaluiert den [Creality CR-Scan Ferret SE]({{ '/equipment/creality-ferret-se/' | relative_url }}).
 
-Wie sich der Ferret SE im Vergleich zum [Lynx]({{ '/ausstattung/3dmakerpro-lynx/' | relative_url }}) schlägt, steht im [ausführlichen Scanner-Vergleich]({{ '/ausstattung/3dmakerpro-lynx/' | relative_url }}#vergleich).
+Wie sich der Ferret SE im Vergleich zum [Lynx]({{ '/equipment/3dmakerpro-lynx/' | relative_url }}) schlägt, steht im [ausführlichen Scanner-Vergleich]({{ '/equipment/3dmakerpro-lynx/' | relative_url }}#vergleich).

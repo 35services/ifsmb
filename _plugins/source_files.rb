@@ -11,7 +11,7 @@ module IfsmbSourceFiles
 
   # Pages outside the collections get a form too (#154): every real file with `layout: page` (or `default`, the
   # start page) – Markdown pages
-  # (partner/<name>/index.md, angebot/ …) the form "seite", HTML overview pages (team/, partner/ …) "uebersicht".
+  # (partners/<name>/index.md, angebot/ …) the form "seite", HTML overview pages (team/, partners/ …) "uebersicht".
   # page.edit_form tells _includes/edit-buttons.html which one; generated pages have no file and get none.
   # `edit_form: false` in the front matter keeps a page on GitHub's editor (e.g. /mitmachen/offen/, mostly JS).
   # HTML sources are published as <path>.txt (page.edit_source): as .html they would be pages of their own – found

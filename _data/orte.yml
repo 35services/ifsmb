@@ -1,4 +1,4 @@
-# Orte für die Karte (/karte/).
+# Orte für die Karte (/map/).
 #
 # id:       kurzer Name, auf den Seiten mit `orte: [<id>]` verweisen können
 # name:     Anzeigename

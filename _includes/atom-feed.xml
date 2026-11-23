@@ -2,8 +2,8 @@
   Atom feed body, shared by /feed.xml and the feeds from _plugins/beitrag_feeds.rb.
   Parameters:
     titel=<text>        feed title
-    self=<path>         URL of the feed itself, e.g. /projekte/foo/feed.xml
-    alt=<path>          page the feed belongs to, e.g. /projekte/foo/
+    self=<path>         URL of the feed itself, e.g. /projects/foo/feed.xml
+    alt=<path>          page the feed belongs to, e.g. /projects/foo/
     beitraege=<posts>   posts, newest first
     projekt=<doc>       optional: also add the project's manual `updates:` as entries
     limit=<n>           max. entries (default 50)
@@ -45,7 +45,8 @@
     <title>Update: {{ u_html | strip_html | normalize_whitespace | truncatewords: 12 | xml_escape }}</title>
     <link href="{{ site.url }}{{ af_p.url }}#updates"/>
     <updated>{{ u.datum | date_to_xmlschema }}</updated>
-    <id>{{ site.url }}{{ af_p.url }}#update-{{ u.datum | date: "%Y-%m-%d" }}-{{ idx }}</id>
+    {%- comment -%} entry id stays as before the URL rename (/projekte/…), so feed readers don't show updates twice {%- endcomment %}
+    <id>{{ site.url }}{{ af_p.url | replace_first: "/projects/", "/projekte/" }}#update-{{ u.datum | date: "%Y-%m-%d" }}-{{ idx }}</id>
     <content type="html">{{ u_html | xml_escape }}</content>
   </entry>
   {%- endif %}

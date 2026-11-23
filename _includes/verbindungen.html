@@ -144,7 +144,7 @@
 {%- comment -%}--- plain pages (e.g. /geld-fuer-makespaces/), linked via `verlinkt`; partner pages are in the partner group ---{%- endcomment -%}
 {%- assign g_pages = "" | split: "" -%}
 {%- for x in site.html_pages -%}
-  {%- if x.url == P.url or x.url contains "/partner/" %}{% continue %}{% endif -%}
+  {%- if x.url == P.url or x.url contains "/partners/" %}{% continue %}{% endif -%}
   {%- assign x_links = x.verlinkt | join: "," | split: "," -%}
   {%- if p_links contains x.url or x_links contains me_url %}{% assign g_pages = g_pages | push: x %}{% endif -%}
 {%- endfor -%}

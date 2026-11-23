@@ -1,6 +1,6 @@
 ---
 title: "OpenFlexure Delta Stage"
-kategorie: Mikroskop   # gruppiert /ausstattung/: enthält „3D-Drucker“, „3D-Scanner“ oder etwas anderes
+kategorie: Mikroskop   # gruppiert /equipment/: enthält „3D-Drucker“, „3D-Scanner“ oder etwas anderes
 summary: Ein open hardware Mikroskop im Transmissionsmodus
 owner_partner:    # Name aus _data/partners.yml (Liste möglich)
 standort: Bei Philipp Zuhause   # wo das Gerät steht, z. B. „KTG, Raum 101“
@@ -11,7 +11,7 @@ image_alt:   # Beschreibung des Fotos
 image_caption:   # optionale Bildunterschrift
 image_is_illustration: false   # true = eigene SVG-Illustration statt Foto
 tags: [mikroskop, digital]   # Gerät, Gerätetyp, Besitzer*in, z. B. [bambu-lab-a1-mini, 3d-drucker]
-verlinkt: [/projekte/ideen/]   # weitere Seiten, z. B. [/projekte/…/]
+verlinkt: [/projects/ideas/]   # weitere Seiten, z. B. [/projects/…/]
 gallery:   # weitere Fotos, Liste aus image, thumb, alt
 #  - image: /assets/images/ausstattung/name/02.jpg
 #    thumb: /assets/images/ausstattung/name/02-600w.jpg

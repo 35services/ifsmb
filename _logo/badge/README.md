@@ -4,7 +4,7 @@ Das Logo „Logo (Badge) als SVG“ (`../institut/ifsmb-logo-badge.svg`) als fla
 
 ![Badge](../../assets/badge/ifsmb-badge-oben.png) ![Badge mit Namen](../../assets/badge/ifsmb-badge-falko-oben.png)
 
-Auf der Website: [/presse/#badge](https://ifsmb.de/presse/#badge) (drehbares 3D-Modell, Downloads) und im Teamprofil jeder Person mit Badge.
+Auf der Website: [/press/#badge](https://ifsmb.de/press/#badge) (drehbares 3D-Modell, Downloads) und im Teamprofil jeder Person mit Badge.
 
 | Datei | Inhalt |
 |---|---|

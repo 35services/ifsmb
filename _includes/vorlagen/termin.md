@@ -15,7 +15,7 @@ team: [{{ include.team }}]   # Team-Kürzel der Leute, die dabei sind – nur we
 tags: [{{ include.tags }}]   # Stichworte; das event_tag eines Projekts zeigt den Termin auf der Projektseite
 projekte: [{{ include.projekte }}]   # Projekt-Dateinamen, zusätzlich zu Projekten über die Stichworte
 partners: [{{ include.partners }}]   # Namen aus _data/partners.yml, in Anführungszeichen
-verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/projekte/…/]
+verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/projects/…/]
 persoenlich: {{ include.persoenlich | default: false }}   # true = privater Termin aus dem Team (braucht team): nur im Teamprofil
 nur_projekt: false   # true = interner Termin: vorher nur auf der Projektseite, danach normal unter „Vergangene Termine“
 gallery:   # Fotos nach dem Termin, Liste aus image, thumb, alt – unter assets/images/kalender/<termin>/

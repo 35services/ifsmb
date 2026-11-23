@@ -20,7 +20,7 @@ Wichtig: Ganz ohne Computer geht es auch damit nicht – ein Laptop oder PC ist 
 
 Wie gut das klappt, berichten wir, sobald wir es getestet haben.
 
-Weil wir gerade auch den [Creality Ferret SE]({{ '/ausstattung/creality-ferret-se/' | relative_url }}) testen, hat Falko einen ausführlichen Vergleich der beiden Scanner erstellen lassen – größtenteils mit KI. Hier ist der komplette Vergleich.
+Weil wir gerade auch den [Creality Ferret SE]({{ '/equipment/creality-ferret-se/' | relative_url }}) testen, hat Falko einen ausführlichen Vergleich der beiden Scanner erstellen lassen – größtenteils mit KI. Hier ist der komplette Vergleich.
 
 ## 3D-Scanner im Vergleich: Jimumeta (3DMakerpro) Lynx vs. Creality CR-Scan Ferret SE {#vergleich}
 

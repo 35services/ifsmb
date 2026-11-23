@@ -55,7 +55,7 @@ Im Browser (lokaler Server) `window.fetch` für `https://api.github.com` durch e
 
 - Token verbinden und PR anlegen klappte auf Anhieb (Partner „Zazza Moabit / Pajas Kaffee“).
 - Das Foto landete aber unter `assets/images/news/…` und war **nirgends eingetragen** (Partner haben kein Textfeld) → Anlass für die Foto-Ablage mit Verwendungen; ist behoben.
-- `page:` wurde mit der externen Website gefüllt – das Feld ist für eine eigene Partnerseite `/partner/<name>/`. → Hilfetext im Partner-Formular schärfen (siehe offene Punkte).
+- `page:` wurde mit der externen Website gefüllt – das Feld ist für eine eigene Partnerseite `/partners/<name>/`. → Hilfetext im Partner-Formular schärfen (siehe offene Punkte).
 - Ein „Foto als Logo“ (wie `bietenholz.jpg`) liegt bisher flach als `assets/images/partner/<name>.jpg`; die Ablage legt neue in `assets/images/partner/<name>/NN.jpg` ab – beides funktioniert, Konvention noch festlegen.
 
 ## Anmeldung – Optionen
@@ -177,7 +177,7 @@ Alle Konfliktfälle mit Soll-Verhalten und Stand der Umsetzung: [`EDITING_CONFLI
 
 ### Formulare & Inhalte
 
-19. ✅ (PR #118) Hilfetext im Partner-Formular: `page` = eigene Partnerseite `/partner/<name>/`, nicht die Website (Fehler aus #112).
+19. ✅ (PR #118) Hilfetext im Partner-Formular: `page` = eigene Partnerseite `/partners/<name>/`, nicht die Website (Fehler aus #112).
 20. **Verbindungen auf anderen Seiten** mitpflegen (z. B. beim neuen Partner die Termine/Projekte mit `partners:` ergänzen, Stichwort anlegen) – heute macht das Claude nach Suche über Pagefind. Idee: nach dem Anlegen Vorschläge aus der Suche anzeigen („Diese Seiten erwähnen Zazza – verbinden?“) und die Änderungen mit in den Commit nehmen.
 21. Neue Stichworte bekommen keinen Anzeigenamen in `_data/stichworte.yml` – im Formular mit anbieten.
 22. Todo-Editor (`todos.js`) nutzt noch Kopieren → GitHub – auf `GitHubApi.createPullRequest` umstellen.

@@ -13,10 +13,10 @@ tags: [prusa-mk3s, prusa-mk3s-heartlabs, 3d-drucker, 35services, heartlabs]
 uuid: 4c5d9773-f63e-44e6-b398-f44643a6ff28
 ---
 
-Falko hat diesen Prusa MK3S sehr günstig von [HeartLabs]({{ '/partner/' | relative_url }}#heartlabs) erworben. Gerade steht er bei 35services **in der Reparatur**: Das Kabel zum Druckbett war nach vielen Jahren durchgescheuert und wurde heiß – ein neues ist bestellt.
+Falko hat diesen Prusa MK3S sehr günstig von [HeartLabs]({{ '/partners/' | relative_url }}#heartlabs) erworben. Gerade steht er bei 35services **in der Reparatur**: Das Kabel zum Druckbett war nach vielen Jahren durchgescheuert und wurde heiß – ein neues ist bestellt.
 
 Wenn er wieder läuft, kann er auch **zu Events mitgenommen** oder **mal ausgeliehen** werden – ein robuster Drucker, der nicht fest in einer Werkstatt stehen muss.
 
-Den Stand der Reparatur findet ihr im Projekt [Prusa MK3S (HeartLabs) flott machen]({{ '/projekte/prusa-mk3s-heartlabs-flott-machen/' | relative_url }}).
+Den Stand der Reparatur findet ihr im Projekt [Prusa MK3S (HeartLabs) flott machen]({{ '/projects/prusa-mk3s-heartlabs-flott-machen/' | relative_url }}).
 
-Es gibt noch einen zweiten MK3S: den [Prusa MK3S (xHain)]({{ '/ausstattung/prusa-mk3s-xhain/' | relative_url }}), der mit gehärteter Düse im geschlossenen Bauraum druckt.
+Es gibt noch einen zweiten MK3S: den [Prusa MK3S (xHain)]({{ '/equipment/prusa-mk3s-xhain/' | relative_url }}), der mit gehärteter Düse im geschlossenen Bauraum druckt.

@@ -22,4 +22,4 @@ Unterstützt wird das Projekt von **Frau S.**
 
 <span class="todo">Fotos folgen.</span>
 
-Vom selben Team, dem Open Press Project, stammt auch BlockFace – unser zweites Teilprojekt: [Blockface-Stempel als Klassensatz]({{ '/projekte/blockface-klassensatz/' | relative_url }}).
+Vom selben Team, dem Open Press Project, stammt auch BlockFace – unser zweites Teilprojekt: [Blockface-Stempel als Klassensatz]({{ '/projects/blockface-klassensatz/' | relative_url }}).

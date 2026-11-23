@@ -35,9 +35,11 @@ ruby _scripts/check_site.rb --extern                                # zusätzlic
 | Wir in der Presse | `_data/presseberichte.yml` oder `_data/pressebericht/<name>.yml` (wird nach `datum` einsortiert) | neueste zuerst; `titel`, optional `datum`, `hinweis`,, `medium`, `url`, optional `anlass` (eigene Seite zum Anlass) |
 | Impressum | `impressum/index.md` | |
 
-Projekte mit `status: abgeschlossen` erscheinen automatisch unter **Vergangene Projekte** (`/projekte/archiv/`).
+Projekte mit `status: abgeschlossen` erscheinen automatisch unter **Vergangene Projekte** (`/projects/archive/`).
 
-Neue Inhalte brauchen **keinen Eintrag in `CHANGELOG.md`** – dort stehen nur Funktionen der Website. Welche Inhalte wann dazukamen, zeigt das [Netzwerk](https://ifsmb.de/netzwerk/) mit seiner Zeitleiste.
+**Adressen:** Die Ordner für Ressourcen-Typen sind englisch (`/projects/`, `/calendar/`, `/challenges/`, `/equipment/`, `/partners/`, `/press/`, `/news/personal/`, dazu `/search/`, `/network/`, `/map/`, `/tags/`), die Texte bleiben deutsch. Einzelne Textseiten wie `/angebot/` oder `/impressum/` behalten ihre deutsche Adresse. Die früheren deutschen Adressen (`/projekte/…`, `/kalender/…` usw.) leitet `_plugins/alte_adressen.rb` automatisch weiter; Kalender- und RSS-Feeds gibt es dort weiter als Kopie.
+
+Neue Inhalte brauchen **keinen Eintrag in `CHANGELOG.md`** – dort stehen nur Funktionen der Website. Welche Inhalte wann dazukamen, zeigt das [Netzwerk](https://ifsmb.de/network/) mit seiner Zeitleiste.
 
 Teamfotos: Original nach `_logo/team/` (wird nicht committet, enthält oft GPS-Daten), auf das Gesicht quadratisch zuschneiden und als `name-480w.jpg` + `name-960w.jpg` nach `assets/images/team/` legen; im Profil `photo` und `photo_2x` setzen.
 
@@ -52,14 +54,14 @@ Besucher*innen sehen an einem kleinen ✓, welche Seiten sie schon geöffnet hab
 
 ## Kalender (iCal)
 
-Alle Termine stehen als Abo unter **https://ifsmb.de/kalender.ics** (bzw. `webcal://ifsmb.de/kalender.ics`) bereit. Der Feed wird bei jedem Build neu erzeugt.
+Alle Termine stehen als Abo unter **https://ifsmb.de/calendar.ics** (bzw. `webcal://ifsmb.de/calendar.ics`) bereit. Der Feed wird bei jedem Build neu erzeugt.
 
 ## Suche
 
-Die Suche (`/suche/`) nutzt [Pagefind](https://pagefind.app): Der Index wird aus dem fertigen HTML nach `jekyll build` erzeugt (macht der Pages-Workflow) und liegt unter `/pagefind/` – alles lokal, keine externen Ressourcen. `jekyll serve` erzeugt keinen Index. Lokal einfach neben dem laufenden `jekyll serve` einmal ausführen (und nach größeren Änderungen wiederholen) – `keep_files: [pagefind]` in `_config.yml` sorgt dafür, dass Jekyll den Index beim Neubauen nicht löscht:
+Die Suche (`/search/`) nutzt [Pagefind](https://pagefind.app): Der Index wird aus dem fertigen HTML nach `jekyll build` erzeugt (macht der Pages-Workflow) und liegt unter `/pagefind/` – alles lokal, keine externen Ressourcen. `jekyll serve` erzeugt keinen Index. Lokal einfach neben dem laufenden `jekyll serve` einmal ausführen (und nach größeren Änderungen wiederholen) – `keep_files: [pagefind]` in `_config.yml` sorgt dafür, dass Jekyll den Index beim Neubauen nicht löscht:
 
 ```sh
-npx -y pagefind@1.5.2 --site _site   # danach funktioniert http://localhost:4000/suche/
+npx -y pagefind@1.5.2 --site _site   # danach funktioniert http://localhost:4000/search/
 ```
 
 **Wichtig:** Unter Settings → Pages → Build and deployment muss „Source: GitHub Actions“ stehen. Bei „Deploy from a branch“ baut GitHub zusätzlich selbst und überschreibt die Version mit Index – `/pagefind/` liefert dann 404 und die Suche zeigt nur „Der Suchindex fehlt“. Der Workflow bricht in diesem Fall mit einer Fehlermeldung ab.

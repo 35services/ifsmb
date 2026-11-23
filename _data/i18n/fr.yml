@@ -504,7 +504,7 @@ new:
     hint: Nouvel article sur nous – classé par date
   partners_partner:
     label: Partenaire
-    hint: Nouveau partenaire dans son propre fichier – apparaît sur /partner/ et dans le réseau
+    hint: Nouveau partenaire dans son propre fichier – apparaît sur /partners/ et dans le réseau
 
 read:
   check: lu

@@ -10,7 +10,7 @@ dringend: false   # true/false – wichtig+dringend = sofort, nur wichtig = einp
 team: [falko-richter, mr-e, gregor-dill]   # Team-Kürzel der Zuständigen – eine oder mehrere Personen
 projekte: [3d-druck-ag-ktg]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: []   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt
-verlinkt: [/herausforderungen/ktg-orca-slicer-hardware/, /news/2026/11/12/ki-server-pi4-proxy/]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/kalender/…/]
+verlinkt: [/challenges/ktg-orca-slicer-hardware/, /news/2026/11/12/ki-server-pi4-proxy/]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/calendar/…/]
 persoenlich: false   # true = aus einem privaten Projekt im Team
 loesung:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
 uuid: 24440234-1909-4c57-a10c-83caa3dc8238
@@ -18,14 +18,14 @@ uuid: 24440234-1909-4c57-a10c-83caa3dc8238
 
 Wir wollen in der KTG **auf HTTP-Basis auf den Drucker zugreifen**. Der Snapmaker U1 hat eine Weboberfläche (Fluidd) und eine offene Schnittstelle (Moonraker) – damit können die Kinder den Drucker auch **ohne [Snapmaker Orca](https://github.com/Snapmaker/OrcaSlicer/releases)** benutzen: Druckaufträge hochladen, den Druck verfolgen und das Kamerabild ansehen. Vielleicht installieren wir dann auch **andere Slicer**.
 
-Das hängt eng mit der Herausforderung [Software für die KTG AG](/herausforderungen/ktg-orca-slicer-hardware/) zusammen: Wir bekommen [Snapmaker Orca v2.4.1](https://github.com/Snapmaker/OrcaSlicer/releases/tag/v2.4.1) nicht auf die Schulrechner. Mit HTTP-Zugang reicht ein Browser.
+Das hängt eng mit der Herausforderung [Software für die KTG AG](/challenges/ktg-orca-slicer-hardware/) zusammen: Wir bekommen [Snapmaker Orca v2.4.1](https://github.com/Snapmaker/OrcaSlicer/releases/tag/v2.4.1) nicht auf die Schulrechner. Mit HTTP-Zugang reicht ein Browser.
 
 ## Was wir dafür brauchen
 
 - [ ] **Genehmigung der Schulleitung**
 - [ ] **Rücksprache mit dem IT-Dienstleister**
 - [ ] **Drucker und Computer im gleichen VLAN**
-- [ ] **Netzwerk am Drucker**: ein USB-LAN-Adapter am Drucker – oder der USB-3.0-Hub mit Gigabit-LAN, den wir gerade im [KI-Server-Projekt](/projekte/ki-server-anton/) verbaut haben ([Beitrag: Ein Raspberry Pi als Wecker](/news/2026/11/12/ki-server-pi4-proxy/))
+- [ ] **Netzwerk am Drucker**: ein USB-LAN-Adapter am Drucker – oder der USB-3.0-Hub mit Gigabit-LAN, den wir gerade im [KI-Server-Projekt](/projects/ki-server-anton/) verbaut haben ([Beitrag: Ein Raspberry Pi als Wecker](/news/2026/11/12/ki-server-pi4-proxy/))
 
 ## Was wir schon wissen
 

@@ -509,7 +509,7 @@ new:
     hint: "Neuer Bericht über uns – wird nach Datum einsortiert"
   partners_partner:
     label: "Partner"
-    hint: "Neuer Partner als eigene Datei – erscheint auf /partner/ und im Netzwerk"
+    hint: "Neuer Partner als eigene Datei – erscheint auf /partners/ und im Netzwerk"
 
 # assets/js/gelesen.js
 read:

@@ -5,7 +5,7 @@ layout: default
   <article>
     <header class="page-header">
       {%- assign ics_name = page.url | split: "/" | last %}
-      {%- assign ics_url = "/kalender/" | append: ics_name | append: ".ics" %}
+      {%- assign ics_url = "/calendar/" | append: ics_name | append: ".ics" %}
       <div class="termin-meta">
         <p class="meta">{% include termin-datum.html event=page %}</p>
         {% include kalender-abo.html ics=ics_url event=page %}
@@ -50,8 +50,8 @@ layout: default
     {%- endif %}
     {% include verknuepft.html tags=page.tags %}
     <p class="cal-subscribe">
-      <a class="btn btn-ghost" href="{{ '/kalender/#abonnieren' | relative_url }}" data-i18n="event.subscribe_all">{{ "event.subscribe_all" | t }}</a>
+      <a class="btn btn-ghost" href="{{ '/calendar/#abonnieren' | relative_url }}" data-i18n="event.subscribe_all">{{ "event.subscribe_all" | t }}</a>
     </p>
-    <a href="{{ '/kalender/' | relative_url }}" class="back-link" data-i18n="event.back">{{ "event.back" | t }}</a>
+    <a href="{{ '/calendar/' | relative_url }}" class="back-link" data-i18n="event.back">{{ "event.back" | t }}</a>
   </article>
 </main>

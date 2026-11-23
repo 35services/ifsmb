@@ -1,7 +1,7 @@
 ---
 title: Flojo
 order: 50
-verlinkt: [/ausstattung/axidraw-v3/, /partner/offene-werkstaetten/]
+verlinkt: [/equipment/axidraw-v3/, /partners/offene-werkstaetten/]
 nicht_im_team: true
 theme: offene-werkstaetten
 photo: /assets/images/team/flojo/01.jpg

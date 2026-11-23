@@ -10,7 +10,7 @@ dringend: true   # true/false – wichtig+dringend = sofort, nur wichtig = einpl
 team: [falko-richter, mr-e, gregor-dill]   # Team-Kürzel der Zuständigen – eine oder mehrere Personen
 projekte: [3d-druck-ag-ktg]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: []   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt
-verlinkt: []   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/kalender/…/]
+verlinkt: []   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/calendar/…/]
 persoenlich: false   # true = aus einem privaten Projekt im Team
 loesung:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
 uuid: 597d1b15-f640-4adc-999d-5de1569dcc2c
