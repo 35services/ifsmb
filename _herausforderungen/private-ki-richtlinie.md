@@ -8,5 +8,6 @@ dringend: true
 team: [falko-richter]
 verlinkt: [/partner/offene-werkstaetten/]
 persoenlich: true
+theme: slop
 uuid: 7d0495f1-b3a4-4e68-8d09-f534b554720c
 ---
