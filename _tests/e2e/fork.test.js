@@ -100,20 +100,16 @@ test("Token darf keinen Fork anlegen: verständliche Meldung, nichts angelegt", 
   assert.equal(env.control.state().pulls.length, 0);
 });
 
-test("Verbinden-Dialog: drei Token-Wege, ohne Schreibrechte ehrlicher Hinweis statt „kommen später“", async () => {
+test("Verbinden-Dialog: ein Token-Weg (klassisch, public_repo), ohne Schreibrechte ehrlicher Hinweis statt „kommen später“", async () => {
   env.control.setUser({ token: "token-carol", classic: true });
   const carol = await env.person("token-carol");
   await carol.open(editPage("beitrag").url);
-  await carol.page.waitFor(() => !!window.NeuFormular || !!document.querySelector("a[data-edit]"));
   await carol.page.evaluate(() => window.ladeSkripte(["formular.js", "neu.js"]).then(() => window.NeuFormular.connect()));
   await carol.page.waitFor(() => /beim ersten Senden wird dein eigener Fork angelegt/.test((document.querySelector("#github-connect .github-who") || {}).textContent || ""));
-  const links = await carol.page.evaluate(() => [...document.querySelectorAll("#github-connect [data-token-link]")].map((a) => [a.getAttribute("data-token-link"), a.getAttribute("href")]));
-  assert.deepEqual(links.map(([k]) => k), ["classic", "owner", "fork"]);
-  assert.match(links[0][1], /^https:\/\/github\.com\/settings\/tokens\/new\?scopes=public_repo/);
-  assert.match(links[1][1], /target_name=falkorichter/);
-  assert.doesNotMatch(links[2][1], /target_name/);
-  assert.match(links[2][1], /administration=write/);
-  assert.doesNotMatch(await carol.page.text("#github-connect"), /kommen später/);
+  const links = await carol.page.evaluate(() => [...document.querySelectorAll("#github-connect [data-token-link]")].map((a) => a.getAttribute("href")));
+  assert.deepEqual(links, ["https://github.com/settings/tokens/new?scopes=public_repo&description=ifsmb.de%20bearbeiten"]);
+  const text = await carol.page.text("#github-connect");
+  assert.doesNotMatch(text, /kommen später|target_name|Fine-grained Token für/);
 });
 
 test("Veralteter Fork: Hinweis im Verbinden-Dialog", async () => {
@@ -145,14 +141,14 @@ test("Fork lässt sich nicht abgleichen: Warnung mit „Sync fork“, Änderung 
   assert.equal(diffLines(original, env.control.readFile({ ref: sha, path: page.path }).text).added.length, 1);
 });
 
-test("Collaborator mit fine-grained Token: Hinweis auf klassischen Token, Senden geht über den Fork statt 403", async () => {
+test("Collaborator mit fine-grained Token: Hinweis auf neuen (klassischen) Token, Senden geht über den Fork statt 403", async () => {
   const page = editPage("beitrag");
   env.seedSource([page.path]);
   env.control.setUser({ token: "github_pat_susi", login: "susi", push: true, fineGrained: true });
   const susi = await env.person("github_pat_susi");
   await susi.openEdit(page.url);
   await susi.page.evaluate(() => window.NeuFormular.connect());
-  await susi.page.waitFor(() => /Collaborator.*fine-grained Token.*klassischen Token/s.test((document.querySelector("#github-connect .github-who") || {}).textContent || ""));
+  await susi.page.waitFor(() => /Collaborator.*fine-grained Token.*neuen Token erstellen/s.test((document.querySelector("#github-connect .github-who") || {}).textContent || ""));
   await susi.page.evaluate(() => document.getElementById("github-connect").close());
   await susi.fill({ title: "E2E Susi fine-grained" });
   await susi.submit();

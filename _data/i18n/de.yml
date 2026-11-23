@@ -576,7 +576,9 @@ form:
 
 # GitHub connection (assets/js/github-api.js, connect dialog in assets/js/neu.js)
 github:
-  collaborator_classic_html: "du bist Collaborator auf {repo}, aber dieser <strong>fine-grained Token</strong> gilt nur für deine eigenen Repositories. Für Pull Requests direkt im Repository oben einen <strong>klassischen Token</strong> nehmen – mit diesem geht es über deinen Fork."
+  create_token: "Token auf GitHub erstellen ↗"
+  token_classic_html: "<em>public_repo</em> ist schon angehakt, kurzes Ablaufdatum wählen (der Token gilt für alle öffentlichen Repositories, in die du schreiben darfst), „Generate token“. Geht mit jedem GitHub-Konto: mit Schreibrechten auf {repo} direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt."
+  collaborator_classic_html: "du bist Collaborator auf {repo}, aber dieser <strong>fine-grained Token</strong> gilt nur für deine eigenen Repositories. Für Pull Requests direkt im Repository oben einen neuen Token erstellen – mit diesem geht es über deinen Fork."
   fork_behind: "Dein Fork ist nicht auf dem neuesten Stand – er wird vor dem Senden abgeglichen, deine Änderung baut auf dem aktuellen Stand auf."
   fork_stale_html: "⚠️ Dein Fork {fork} ließ sich nicht automatisch auf den neuesten Stand bringen. Deine Änderung baut trotzdem auf dem aktuellen Stand auf – für später auf <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">GitHub</a> „Sync fork“ klicken."
   connect: 🔑 GitHub verbinden
@@ -611,13 +613,6 @@ github:
   step_update_pr: "Pull Request #{number} ergänzen …"
   step_branch: Branch {branch} anlegen …
   step_open_pr: Pull Request öffnen …
-  create_token_intro: "Token auf GitHub erstellen – je nach Konto:"
-  token_classic_link: "Klassischer Token ↗"
-  token_classic_html: "für <strong>jedes GitHub-Konto</strong>: <em>public_repo</em> ist schon angehakt, kurzes Ablaufdatum wählen (der Token gilt für alle öffentlichen Repositories, in die du schreiben darfst), „Generate token“. Mit Schreibrechten auf {repo} (Collaborator) geht es direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt."
-  token_owner_link: "Fine-grained Token für @{owner} ↗"
-  token_steps_html: "nur für das Konto, dem das Repository gehört: Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em>, <em>Pull requests</em> und <em>Issues</em> („Read and write“) sind ausgefüllt. Unter „Repository access“ <strong>„Only select repositories“</strong> und {repo} wählen, dann „Generate token“."
-  token_fork_link: "Fine-grained Token fürs eigene Konto ↗"
-  token_fork_html: "ohne Schreibrechte, wenn du keinen klassischen Token willst: „All repositories“, <em>Contents</em> und <em>Administration</em> auf „Read and write“. Der Fork wird angelegt; den Pull Request legst du am Ende mit einem Klick auf GitHub an (GitHub erlaubt das mit diesem Token nicht per Formular)."
   no_token_html: "Ganz ohne Token geht es mit jedem Konto auch: „📋 Auf GitHub speichern“ – GitHub legt dann selbst einen Fork an und bietet „Create pull request“ an. Hast du schon einen älteren Fork, dort vorher „Sync fork“ klicken."
   cannot_push_html: "hat keine Schreibrechte auf {repo} – beim ersten Senden wird <strong>dein eigener Fork</strong> angelegt ✅"
   cannot_push_fork_html: "hat keine Schreibrechte auf {repo} – Änderungen gehen über deinen Fork <strong>{fork}</strong> ✅"

@@ -567,7 +567,9 @@ form:
     press_report: In the press
 
 github:
-  collaborator_classic_html: "you are a collaborator on {repo}, but this <strong>fine-grained token</strong> only works for your own repositories. For pull requests directly in the repository, use a <strong>classic token</strong> above – with this one it goes through your fork."
+  create_token: "Create a token on GitHub ↗"
+  token_classic_html: "<em>public_repo</em> is already ticked, choose a short expiry date (the token works for all public repositories you may write to), “Generate token”. Works with any GitHub account: with write access to {repo} directly, otherwise through your own fork – it is created the first time you send."
+  collaborator_classic_html: "you are a collaborator on {repo}, but this <strong>fine-grained token</strong> only works for your own repositories. For pull requests directly in the repository, create a new token above – with this one it goes through your fork."
   fork_behind: "Your fork is not up to date – it is synced before sending, and your change is based on the current state."
   fork_stale_html: "⚠️ Your fork {fork} couldn’t be brought up to date automatically. Your change is still based on the current state – for later, click “Sync fork” on <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">GitHub</a>."
   connect: 🔑 Connect GitHub
@@ -602,13 +604,6 @@ github:
   step_update_pr: "Adding to pull request #{number} …"
   step_branch: Creating branch {branch} …
   step_open_pr: Opening pull request …
-  create_token_intro: "Create a token on GitHub – depending on your account:"
-  token_classic_link: "Classic token ↗"
-  token_classic_html: "for <strong>any GitHub account</strong>: <em>public_repo</em> is already ticked, choose a short expiry date (the token works for all public repositories you may write to), “Generate token”. With write access to {repo} (collaborator) it works directly, otherwise through your own fork – it is created the first time you send."
-  token_owner_link: "Fine-grained token for @{owner} ↗"
-  token_steps_html: "only for the account that owns the repository: name, lifetime (30 days) and the permissions <em>Contents</em>, <em>Pull requests</em> and <em>Issues</em> (“Read and write”) are filled in. Under “Repository access” pick <strong>“Only select repositories”</strong> and {repo}, then “Generate token”."
-  token_fork_link: "Fine-grained token for your own account ↗"
-  token_fork_html: "without write access, if you don’t want a classic token: “All repositories”, <em>Contents</em> and <em>Administration</em> set to “Read and write”. The fork is created; you open the pull request at the end with one click on GitHub (GitHub doesn’t allow that from the form with this token)."
   no_token_html: "Without any token it works with every account too: “📋 Save on GitHub” – GitHub then creates a fork itself and offers “Create pull request”. If you already have an older fork, click “Sync fork” there first."
   cannot_push_html: "has no write access to {repo} – <strong>your own fork</strong> is created the first time you send ✅"
   cannot_push_fork_html: "has no write access to {repo} – changes go through your fork <strong>{fork}</strong> ✅"

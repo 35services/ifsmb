@@ -568,7 +568,9 @@ form:
     press_report: On parle de nous
 
 github:
-  collaborator_classic_html: "tu es collaborateur·rice sur {repo}, mais ce <strong>jeton à granularité fine</strong> ne vaut que pour tes propres dépôts. Pour des pull requests directement dans le dépôt, prends un <strong>jeton classique</strong> ci-dessus – avec celui-ci, ça passe par ton fork."
+  create_token: "Créer un jeton sur GitHub ↗"
+  token_classic_html: "<em>public_repo</em> est déjà coché, choisis une date d’expiration courte (le jeton vaut pour tous les dépôts publics où tu peux écrire), « Generate token ». Marche avec n’importe quel compte GitHub : avec un accès en écriture à {repo} directement, sinon via ton propre fork – il est créé au premier envoi."
+  collaborator_classic_html: "tu es collaborateur·rice sur {repo}, mais ce <strong>jeton à granularité fine</strong> ne vaut que pour tes propres dépôts. Pour des pull requests directement dans le dépôt, crée un nouveau jeton ci-dessus – avec celui-ci, ça passe par ton fork."
   fork_behind: "Ton fork n’est pas à jour – il est synchronisé avant l’envoi, ta modification repose sur l’état actuel."
   fork_stale_html: "⚠️ Ton fork {fork} n’a pas pu être mis à jour automatiquement. Ta modification repose quand même sur l’état actuel – pour la suite, clique sur « Sync fork » sur <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">GitHub</a>."
   connect: 🔑 Connecter GitHub
@@ -603,13 +605,6 @@ github:
   step_update_pr: "Ajout à la pull request #{number} …"
   step_branch: Création de la branche {branch} …
   step_open_pr: Ouverture de la pull request …
-  create_token_intro: "Créer un jeton sur GitHub – selon ton compte :"
-  token_classic_link: "Jeton classique ↗"
-  token_classic_html: "pour <strong>n’importe quel compte GitHub</strong> : <em>public_repo</em> est déjà coché, choisis une date d’expiration courte (le jeton vaut pour tous les dépôts publics où tu peux écrire), « Generate token ». Avec un accès en écriture à {repo} (collaborateur·rice), ça marche directement, sinon via ton propre fork – il est créé au premier envoi."
-  token_owner_link: "Jeton à granularité fine pour @{owner} ↗"
-  token_steps_html: "uniquement pour le compte propriétaire du dépôt : nom, durée (30 jours) et les autorisations <em>Contents</em>, <em>Pull requests</em> et <em>Issues</em> (« Read and write ») sont remplis. Sous « Repository access », choisis <strong>« Only select repositories »</strong> et {repo}, puis « Generate token »."
-  token_fork_link: "Jeton à granularité fine pour ton propre compte ↗"
-  token_fork_html: "sans accès en écriture, si tu ne veux pas de jeton classique : « All repositories », <em>Contents</em> et <em>Administration</em> sur « Read and write ». Le fork est créé ; tu ouvres la pull request à la fin d’un clic sur GitHub (GitHub ne le permet pas depuis le formulaire avec ce jeton)."
   no_token_html: "Sans aucun jeton, ça marche aussi avec tous les comptes : « 📋 Enregistrer sur GitHub » – GitHub crée alors lui-même un fork et propose « Create pull request ». Si tu as déjà un ancien fork, clique d’abord sur « Sync fork »."
   cannot_push_html: "n’a pas d’accès en écriture à {repo} – <strong>ton propre fork</strong> est créé au premier envoi ✅"
   cannot_push_fork_html: "n’a pas d’accès en écriture à {repo} – les modifications passent par ton fork <strong>{fork}</strong> ✅"

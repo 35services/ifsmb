@@ -46,22 +46,12 @@ var GitHubApi = (function () {
     me = null;
   }
   function connected() { return !!token(); }
-  // Pages that create a token (fields may be pre-filled; GitHub ignores unknown ones). Which one fits (#186):
-  // - owner: fine-grained token for the repository owner's own account (only the owner can pick it as resource owner)
-  // - classic: classic token with public_repo – for collaborators (fine-grained tokens don't cover repositories of
-  //   another user) and for everyone else, because only it may open a pull request from a fork via the API
-  // - fork: fine-grained token for one's own account (forking needs "Administration: write"); the pull request is then
-  //   opened on GitHub's compare page
-  function tokenUrls() {
-    var owner = repo().split("/")[0], name = encodeURIComponent("ifsmb.de bearbeiten"), desc = encodeURIComponent("Pull Requests direkt von ifsmb.de aus");
-    var fine = "https://github.com/settings/personal-access-tokens/new?name=" + name + "&description=" + desc + "&expires_in=30";
-    return {
-      owner: fine + "&target_name=" + encodeURIComponent(owner) + "&contents=write&pull_requests=write&issues=write",
-      classic: "https://github.com/settings/tokens/new?scopes=public_repo&description=" + name,
-      fork: fine + "&contents=write&administration=write"
-    };
+  // Page that creates a classic token with public_repo – one way for every account (#186): the owner, collaborators
+  // (fine-grained tokens never reach another person's repository) and everyone else, who send through their own fork
+  // (only a classic token may open a pull request from a fork via the API). Fine-grained tokens still work if pasted.
+  function tokenUrl() {
+    return "https://github.com/settings/tokens/new?scopes=public_repo&description=" + encodeURIComponent("ifsmb.de bearbeiten");
   }
-  function tokenUrl() { return tokenUrls().owner; }
 
   // UI string (assets/js/i18n.js); German fallback without it. Commit messages and PR titles stay German.
   function tr(key, params, fallback) { return typeof window !== "undefined" && window.I18n ? window.I18n.t(key, params) : fallback; }
@@ -395,7 +385,7 @@ var GitHubApi = (function () {
   }
 
   return {
-    token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, tokenUrls: tokenUrls, repo: repo,
+    token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
     canPushKnown: canPushKnown, ensureFork: ensureFork, compareUrl: compareUrl,
     whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
     namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
