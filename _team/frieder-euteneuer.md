@@ -5,7 +5,7 @@ order: 5
 photo: /assets/images/team/frieder-euteneuer-480w.jpg
 photo_icon: /assets/images/team/frieder-euteneuer-48w.jpg
 photo_credit: "© Sergej Glanze / FUNKE Foto Services"
-verlinkt:
+linked:
   - /projects/makespace-tiergarten/
   - /equipment/snapmaker-u1/
   - /calendar/2026-03-09-schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/

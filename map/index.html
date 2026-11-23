@@ -1,5 +1,5 @@
 ---
-suche: false # Übersichtsseite, nicht im Suchindex
+search: false # Übersichtsseite, nicht im Suchindex
 layout: page
 title: Karte
 i18n_title: pages.map.title
@@ -10,12 +10,12 @@ permalink: /map/
 {%- comment -%}
   Map data is rendered by Jekyll: the places from _data/places.yml and every resource with the
   raw fields that can tie it to a place. assets/js/karte.js resolves resources to places
-  (explicit `orte`, then text in location/ort/standort, then partner names, posts via project tags).
+  (explicit `places`, then text in location/ort/standort, then partner names, posts via project tags).
 {%- endcomment -%}
 {%- capture daten -%}
-{"orte":[
+{"places":[
 {%- for o in site.data.places -%}
-{"id":{{ o.id | jsonify }},"name":{{ o.name | jsonify }},"address":{{ o.address | jsonify }},"lat":{{ o.lat | jsonify }},"lon":{{ o.lon | jsonify }},"partner":{{ o.partner | jsonify }},"finden":{{ o.match | jsonify }},"fern":{{ o.remote | default: false | jsonify }},"ungefaehr":{{ o.approximate | default: false | jsonify }}}{% unless forloop.last %},{% endunless %}
+{"id":{{ o.id | jsonify }},"name":{{ o.name | jsonify }},"address":{{ o.address | jsonify }},"lat":{{ o.lat | jsonify }},"lon":{{ o.lon | jsonify }},"partner":{{ o.partner | jsonify }},"match":{{ o.match | jsonify }},"remote":{{ o.remote | default: false | jsonify }},"approximate":{{ o.approximate | default: false | jsonify }}}{% unless forloop.last %},{% endunless %}
 {%- endfor -%}
 ],"partner":[
 {%- for pt in site.data.partners -%}
@@ -23,16 +23,16 @@ permalink: /map/
 {%- endfor -%}
 ],"seiten":[
 {%- for x in site.projects -%}
-{"url":{{ x.url | relative_url | jsonify }},"typ":"projekt","titel":{{ x.title | jsonify }},"persoenlich":{{ x.persoenlich | default: false | jsonify }},"datum":{{ x.start | date: "%Y-%m-%d" | jsonify }},"text":{{ x.ort | jsonify }},"partners":{{ x.partners | jsonify }},"orte":{{ x.orte | jsonify }},"event_tag":{{ x.event_tag | jsonify }}},
+{"url":{{ x.url | relative_url | jsonify }},"typ":"projekt","titel":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"datum":{{ x.start | date: "%Y-%m-%d" | jsonify }},"text":{{ x.location | jsonify }},"partners":{{ x.partners | jsonify }},"places":{{ x.places | jsonify }},"event_tag":{{ x.event_tag | jsonify }}},
 {%- endfor -%}
 {%- for x in site.events -%}
-{"url":{{ x.url | relative_url | jsonify }},"typ":"termin","titel":{{ x.title | jsonify }},"persoenlich":{{ x.persoenlich | default: false | jsonify }},"datum":{{ x.start | date: "%Y-%m-%d" | jsonify }},"text":{{ x.location | jsonify }},"partners":{{ x.partners | jsonify }},"orte":{{ x.orte | jsonify }},"projekte":{{ x.projekte | jsonify }},"tags":{{ x.tags | jsonify }}},
+{"url":{{ x.url | relative_url | jsonify }},"typ":"termin","titel":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"datum":{{ x.start | date: "%Y-%m-%d" | jsonify }},"text":{{ x.location | jsonify }},"partners":{{ x.partners | jsonify }},"places":{{ x.places | jsonify }},"projects":{{ x.projects | jsonify }},"tags":{{ x.tags | jsonify }}},
 {%- endfor -%}
 {%- for x in site.posts -%}
-{"url":{{ x.url | relative_url | jsonify }},"typ":"beitrag","titel":{{ x.title | jsonify }},"persoenlich":{{ x.persoenlich | default: false | jsonify }},"datum":{{ x.date | date: "%Y-%m-%d" | jsonify }},"orte":{{ x.orte | jsonify }},"projekte":{{ x.projekte | jsonify }},"tags":{{ x.tags | jsonify }}},
+{"url":{{ x.url | relative_url | jsonify }},"typ":"beitrag","titel":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"datum":{{ x.date | date: "%Y-%m-%d" | jsonify }},"places":{{ x.places | jsonify }},"projects":{{ x.projects | jsonify }},"tags":{{ x.tags | jsonify }}},
 {%- endfor -%}
 {%- for x in site.equipment -%}
-{"url":{{ x.url | relative_url | jsonify }},"typ":"ausstattung","titel":{{ x.title | jsonify }},"text":{{ x.standort | jsonify }},"standort_partner":{{ x.standort_partner | jsonify }},"owner_partner":{{ x.owner_partner | jsonify }},"orte":{{ x.orte | jsonify }}}{% unless forloop.last %},{% endunless %}
+{"url":{{ x.url | relative_url | jsonify }},"typ":"ausstattung","titel":{{ x.title | jsonify }},"text":{{ x.location | jsonify }},"location_partner":{{ x.location_partner | jsonify }},"owner_partner":{{ x.owner_partner | jsonify }},"places":{{ x.places | jsonify }}}{% unless forloop.last %},{% endunless %}
 {%- endfor -%}
 ]}
 {%- endcapture -%}

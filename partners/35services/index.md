@@ -2,7 +2,7 @@
 layout: page
 title: 35 services e. V.
 lead: Offene Werkstatt in Moabit
-verlinkt: [/news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/, /partners/jugend-hackt/, /partners/offene-werkstaetten/]
+linked: [/news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/, /partners/jugend-hackt/, /partners/offene-werkstaetten/]
 social_media_preview_image: /assets/images/seiten/partner-35services/01-social.jpg
 uuid: 08515cfe-c14b-4488-b136-cf67dfaae236
 ---

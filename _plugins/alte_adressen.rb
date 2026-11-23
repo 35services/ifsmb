@@ -3,7 +3,7 @@
 #
 # For every page and collection document under one of the new prefixes, this generator adds
 # a page at the old address:
-#   - HTML pages (…/ or .html) → redirect page (layout `weiterleitung`, `ziel` = new address)
+#   - HTML pages (…/ or .html) → redirect page (layout `weiterleitung`, `target` = new address)
 #   - feeds (.ics, .xml)       → a copy of the feed, because calendar apps and feed readers
 #                                can't follow an HTML redirect (e.g. /kalender.ics, /projekte/<name>.ics,
 #                                /projekte/<name>/feed.xml, /news/persoenlich/feed.xml)
@@ -79,9 +79,9 @@ module IfsmbAlteAdressen
       page = seite(site, alt)
       page.data.merge!(
         "layout" => "weiterleitung",
-        "ziel" => q.url,
-        "ziel_titel" => q.data["title"],
-        "suche" => false,
+        "target" => q.url,
+        "target_title" => q.data["title"],
+        "search" => false,
         "sitemap" => false
       )
       page.content = ""
@@ -92,7 +92,7 @@ module IfsmbAlteAdressen
       page = seite(site, alt)
       page.data.merge!(q.data.reject { |k, _| %w[permalink uuid].include?(k) })
       page.data["sitemap"] = false
-      page.data["suche"] = false
+      page.data["search"] = false
       page.content = q.content.dup
       page
     end

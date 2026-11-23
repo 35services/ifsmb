@@ -2,13 +2,13 @@
 title: "ifsmb.de"
 summary: Falkos Aufgaben rund um das Institut und diese Webseite – als Liste zum Abhaken.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-11-10
-zeitraum: seit November 2026
+period: seit November 2026
 event_tag: ifsmb-de
 team:
   - falko-richter
-verlinkt:
+linked:
   - /calendar/2027-01-01-eroeffnung-makespace-rosalind-franklin-gymnasium/
   - /news/2026/09/24/pc-spende-de-hardware-fuer-schulen/
   - /projects/3ddruck-iso-jugend-hackt/

@@ -3,9 +3,9 @@ title: "Blockface-Stempel als Klassensatz"
 summary: Modulare Buchstaben-Stempel zum Selberbauen – ein ganzer Klassensatz für Typografie und Druck. Dafür richten wir einen Lasercutter ein.
 status: aktuell
 start: 2026-11-10
-zeitraum: Schuljahr 2026/27
-ort: Kurt-Tucholsky-Grundschule, Moabit
-teil_von: [3d-druck-ag-ktg]
+period: Schuljahr 2026/27
+location: Kurt-Tucholsky-Grundschule, Moabit
+part_of: [3d-druck-ag-ktg]
 event_tag: blockface
 team:
   - falko-richter

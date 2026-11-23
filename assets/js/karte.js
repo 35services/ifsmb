@@ -39,7 +39,7 @@
   function storageDel(k) { try { window.localStorage.removeItem(k); } catch (e) { /* ignore */ } }
 
   // ---------- resolve resources to places ----------
-  var places = DATA.orte.filter(function (o) { return typeof o.lat === "number" && typeof o.lon === "number"; });
+  var places = DATA.places.filter(function (o) { return typeof o.lat === "number" && typeof o.lon === "number"; });
   var byId = {};
   places.forEach(function (o) {
     o.items = { projekt: [], termin: [], beitrag: [], ausstattung: [] };
@@ -66,9 +66,9 @@
 
   var projectPlaces = {}; // project slug or event_tag -> places
   function placesFor(x) {
-    var found = explicit(x.orte);
+    var found = explicit(x.places);
     if (!found.length) found = byText(x.text);
-    if (!found.length && x.typ === "ausstattung") found = byPartner(x.standort_partner);
+    if (!found.length && x.typ === "ausstattung") found = byPartner(x.location_partner);
     if (!found.length && x.typ === "ausstattung" && !x.text) found = byPartner(x.owner_partner);
     if (!found.length && (x.typ === "projekt" || x.typ === "termin")) found = byPartner(x.partners);
     return found;
@@ -91,7 +91,7 @@
   });
   function viaProjects(x) {
     var out = [];
-    list(x.projekte).forEach(function (s) { out = out.concat(projectPlaces["slug:" + s] || []); });
+    list(x.projects).forEach(function (s) { out = out.concat(projectPlaces["slug:" + s] || []); });
     list(x.tags).forEach(function (t) { out = out.concat(projectPlaces["tag:" + t] || []); });
     return out;
   }
@@ -122,7 +122,7 @@
   var selected = null;
 
   function visibleItems(o, typ) {
-    return o.items[typ].filter(function (x) { return showPersonal || !x.persoenlich; });
+    return o.items[typ].filter(function (x) { return showPersonal || !x.personal; });
   }
   function count(o) {
     return TYPES.reduce(function (n, t) { return n + visibleItems(o, t.key).length; }, 0);
@@ -191,7 +191,7 @@
           la.appendChild(document.createTextNode(" "));
           la.appendChild(el("span", "link-meta" + (x.datum >= TODAY ? " karte-kommt" : ""), x.datum >= TODAY ? "kommt · " + datumDE(x.datum) : datumDE(x.datum)));
         }
-        if (x.persoenlich) {
+        if (x.personal) {
           la.appendChild(document.createTextNode(" "));
           la.appendChild(el("span", "link-private", "persönlich"));
         }

@@ -2,9 +2,9 @@
 title: "Mogster-Teile aus dem Drucker"
 date: 2026-09-22 09:30:00 +0200
 author: falko-richter
-persoenlich: true
+personal: true
 tags: [mogster, rc-modellbau]
-verlinkt: [/equipment/prusa-mk3s-xhain/]
+linked: [/equipment/prusa-mk3s-xhain/]
 uuid: 715986e0-d120-4a05-87da-d041baf56f9c
 ---
 Für den [Mogster]({{ '/projects/3dsets-mogster-bauen/' | relative_url }}) laufen die Drucker: Auf dem [Prusa MK3S (xHain)]({{ '/equipment/prusa-mk3s-xhain/' | relative_url }}) mit gehärteter 0,4-mm-Stahldüse entstehen die großen Teile.

@@ -88,7 +88,7 @@ Für B gilt `CLAUDE.md`: der Dienst ist eine Abhängigkeit → vorher in `DEPEND
 | HEIC (iPhone) | Pillow (mit Plugin) | ✅ Safari, ❌ Chrome | Hinweis im Editor ist da |
 | „Makespace“ statt „Makerspace“, Inhalt prüfen | Claude/Durchsicht | Prüfliste im PR | Check in `pruefen.yml` |
 | Screenshots für den PR (`pr_vorschau.py`) | lokal | ❌ | Workflow, der Vorschaubilder an `web/*`-PRs hängt |
-| Verbindungen pflegen (`partners`, Stichworte, `verlinkt` auf anderen Seiten) | Claude sucht über Pagefind alle Erwähnungen und trägt sie beidseitig ein | ❌ nur in der eigenen Datei | siehe offene Punkte |
+| Verbindungen pflegen (`partners`, Stichworte, `linked` auf anderen Seiten) | Claude sucht über Pagefind alle Erwähnungen und trägt sie beidseitig ein | ❌ nur in der eigenen Datei | siehe offene Punkte |
 
 ✋ = von Hand · 🤖 = automatischer Vorschlag (immer selbst prüfen) · Verpixelt wird grob (ca. 10 Blöcke über den Bereich) – nicht zurückrechenbar, anders als ein leichter Weichzeichner.
 

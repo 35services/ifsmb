@@ -1,9 +1,9 @@
 ---
 title: Bambu Lab A1 mini (Platanus Schule)
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 summary: Der Drucker der 3D-Druck-AG an der Platanus Schule.
 owner_name: der Platanus Schule
-standort: Platanus Schule, Berlin
+location: Platanus Schule, Berlin
 image: /assets/images/ausstattung/bambu-lab-a1-mini-platanus/01.jpg
 thumb: /assets/images/ausstattung/bambu-lab-a1-mini-platanus/01-600w.jpg
 image_alt: "Der Bambu Lab A1 mini mit grünen Teilen in einem Klassenraum der Platanus Schule"

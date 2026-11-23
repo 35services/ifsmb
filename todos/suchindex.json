@@ -5,7 +5,7 @@ permalink: /todos/suchindex.json
 {%- comment -%}
   Autocomplete data for the pop-up forms (assets/js/formular.js: todo editor and "➕ new" forms), loaded lazily
   on first use: people (with round photo), projects, tags, partners, equipment categories and every page that
-  `verlinkt` may point to.
+  `linked` may point to.
 {%- endcomment -%}
 {%- assign tags_all = "" | split: "" -%}
 {%- for p in site.posts %}{% assign tags_all = tags_all | concat: p.tags %}{% endfor -%}
@@ -15,7 +15,7 @@ permalink: /todos/suchindex.json
 {%- for p in site.projects %}{% if p.event_tag %}{% assign tags_all = tags_all | push: p.event_tag %}{% endif %}{% endfor -%}
 {%- for t in site.data.tags %}{% assign tags_all = tags_all | push: t[0] %}{% endfor -%}
 {%- assign tags_all = tags_all | compact | uniq | sort -%}
-{%- assign kategorien = site.equipment | map: "kategorie" | compact | uniq | sort -%}
+{%- assign kategorien = site.equipment | map: "category" | compact | uniq | sort -%}
 {
   "personen": [
     {%- for m in site.team -%}

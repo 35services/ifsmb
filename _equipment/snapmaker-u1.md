@@ -1,10 +1,10 @@
 ---
 title: Snapmaker U1 mit Einhausung
-kategorie: 3D-Drucker (FDM, Mehrfarbe, Werkzeugwechsler)
+category: 3D-Drucker (FDM, Mehrfarbe, Werkzeugwechsler)
 summary: Unser 4-Kopf-4-Farb-4-Material-Drucker an der KTG – komplett über Spenden finanziert.
 owner_partner: 35 services e. V.
-standort_partner: Kurt-Tucholsky-Grundschule
-standort: Kurt-Tucholsky-Grundschule (3D-Druck AG)
+location_partner: Kurt-Tucholsky-Grundschule
+location: Kurt-Tucholsky-Grundschule (3D-Druck AG)
 image: /assets/images/ausstattung/snapmaker-u1/01.jpg
 thumb: /assets/images/ausstattung/snapmaker-u1/01-600w.jpg
 image_alt: "Der Snapmaker U1 mit Einhausung unterwegs im Kofferraum eines Autos"

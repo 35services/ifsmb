@@ -1,10 +1,10 @@
 ---
 title: Laser am Anycubic installieren
-art: aufgabe
+kind: aufgabe
 status: in-arbeit
-seit: 2026-07-01
+since: 2026-07-01
 team: [falko-richter]
-projekte: [blockface-klassensatz]
+projects: [blockface-klassensatz]
 social_media_preview_image: /assets/images/herausforderungen/laser-am-anycubic-installieren/01-social.jpg
 uuid: 5cfacbf0-9f46-4221-b6af-3b34f992466e
 ---

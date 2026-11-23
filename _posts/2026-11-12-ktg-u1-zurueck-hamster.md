@@ -3,7 +3,7 @@ title: "Der Drucker ist zurück – mit dem Lastenrad und einer Ladung Hamster"
 date: 2026-11-12 21:21:00 +0100
 author: falko-richter
 tags: [ktg, u1]
-verlinkt: [/equipment/snapmaker-u1/]
+linked: [/equipment/snapmaker-u1/]
 uuid: a6332385-446a-430f-998b-8019387150c7
 ---
 Nach den Herbstferien ist unser [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}) wieder zurück in der 3D-Druck AG an der KTG. Falko hat ihn **standesgemäß mit dem Lastenrad** zur Schule gefahren.

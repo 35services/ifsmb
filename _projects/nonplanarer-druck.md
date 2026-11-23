@@ -2,9 +2,9 @@
 title: "Non-Planar 3D Druck"
 summary: Falko, Alexander und Jan ergründen nonplanaren 3D-Druck. Alexander druckt schon zweifarbig nonplanar und hat mit Impasto ein Werkzeug gebaut, das auf fertig geslicten G-Code eine zusätzliche Dekorschicht legt – bis zu vier Farben.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-11-15
-zeitraum: seit November 2026
+period: seit November 2026
 event_tag: nonplanar
 tags: [nonplanar, impasto, 3d-drucker, bambu-lab-a1-mini, 35services]
 team:
@@ -13,17 +13,17 @@ team:
   - jan
 partners:
   - 35 services e. V.
-verlinkt:
+linked:
   - /todos/#falko-richter/non-planar-slicing
   - /equipment/35services-bambu-lab-a1-mini/
   - /press/#badge
 updates:
-  - datum: 2026-11-17
+  - date: 2026-11-17
     text: |-
       **Das Werkzeug hat jetzt einen Namen:** Aus dem Arbeitstitel „Non-Planar GCoder" ist **Impasto** geworden – der Malerbegriff für Farbe, die so dick aufgetragen ist, dass die Pinselspur aus der Fläche steht. Version 0.4.0 liegt offen auf GitHub: [3p1cball-code/impasto](https://github.com/3p1cball-code/impasto) (AGPL-3.0-or-later).
 
       Neben dem Namen ist einiges dazugekommen: eine Kollisionsprüfung gegen Kopfprofile, echte Prioritätsregeln bei überlappenden Elementen, ein Wipe beim Rückzug gegen Oozing, ein Schrägen-Ausgleich und ein Warp-Ausgleich, der die Düse über einem verzogenen Bauteil nicht schleifen lässt.
-  - datum: 2026-11-15
+  - date: 2026-11-15
     text: |-
       **Eigener Prozess für nachträglich angepassten G-Code:** Aus verschiedenen Quellen aus dem Netz, seinen eigenen Vorlieben und den Funktionen, die er braucht, hat [Alexander](/team/alexander-riedel/) einen eigenen Prozess entwickelt, um G-Code im Nachhinein anzupassen („Non-Planar GCoder“). Damit behält man die gewohnte Qualität und den normalen Druckprozess aus Bambu Studio – plus optional eine **nonplanare Deckschicht (Top Layer)** auf der gewölbten Oberfläche.
 

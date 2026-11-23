@@ -3,8 +3,8 @@ title: "Mural – einen Wandplotter bauen"
 summary: Ein Open-Source-Roboter, der an zwei Riemen an der Wand hängt und mit Filzstiften große Bilder malt – endlich eine Verwendung für unsere Schrittmotoren.
 status: idee
 start: 2026-11-12
-zeitraum: Idee aus dem November 2026
-ort: 35services e.V.
+period: Idee aus dem November 2026
+location: 35services e.V.
 event_tag: mural
 tags: [plotter]
 team:
@@ -12,7 +12,7 @@ team:
   - anton
 partners:
   - 35 services e. V.
-verlinkt: [/equipment/axidraw-v3/]
+linked: [/equipment/axidraw-v3/]
 uuid: ead407ea-bc9f-4466-a59c-2b55eaa22b54
 ---
 

@@ -2,12 +2,12 @@
 title: Vorstand beim VOW
 status: aktuell
 start: 2026-11-23
-zeitraum: seit 2026
+period: seit 2026
 event_tag: vorstand-beim-vow
 team: [falko-richter]
 partners: [Verbund Offener Werkstätten]
-verlinkt: [/challenges/private-ki-richtlinie/, /projects/ki-server-anton/]
-persoenlich: true
+linked: [/challenges/private-ki-richtlinie/, /projects/ki-server-anton/]
+personal: true
 social_media_preview_image: /assets/images/projekte/vorstand-beim-vow/01-social.jpg
 uuid: 57697294-112c-4215-93fb-01815b55d5c8
 ---

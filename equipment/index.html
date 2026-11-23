@@ -1,5 +1,5 @@
 ---
-suche: false # Übersichtsseite, nicht im Suchindex
+search: false # Übersichtsseite, nicht im Suchindex
 layout: page
 title: Ausstattung
 i18n_title: pages.equipment.title
@@ -12,10 +12,10 @@ lead: Womit wir arbeiten – und wem es gehört.
 </div>
 
 {% assign items = site.equipment | sort: "title" %}
-{% assign printers = items | where_exp: "it", "it.kategorie contains '3D-Drucker'" %}
-{% assign scanners = items | where_exp: "it", "it.kategorie contains '3D-Scanner'" %}
+{% assign printers = items | where_exp: "it", "it.category contains '3D-Drucker'" %}
+{% assign scanners = items | where_exp: "it", "it.category contains '3D-Scanner'" %}
 {% assign others = "" | split: "" %}
-{% for it in items %}{% unless it.kategorie contains '3D-Drucker' or it.kategorie contains '3D-Scanner' %}{% assign others = others | push: it %}{% endunless %}{% endfor %}
+{% for it in items %}{% unless it.category contains '3D-Drucker' or it.category contains '3D-Scanner' %}{% assign others = others | push: it %}{% endunless %}{% endfor %}
 {%- comment -%} filter by owner or location: ?owner=<key> / ?location=<key> (assets/js/equipment-filter.js) {%- endcomment -%}
 <div class="equipment-filter" data-equipment-filter hidden></div>
 <script type="application/json" id="equipment-filter-labels">{% include equipment-key-labels.html items=items %}</script>
@@ -35,10 +35,10 @@ lead: Womit wir arbeiten – und wem es gehört.
     {%- capture location_keys %}{% include equipment-keys.html item=it field="location" %}{% endcapture %}
     <a class="card card-link equipment-card" href="{{ it.url | relative_url }}" data-owners="{{ owner_keys | strip }}" data-locations="{{ location_keys | strip }}">
       {% if it.thumb or it.image %}<span class="equipment-thumb"><img src="{{ it.thumb | default: it.image | relative_url }}" alt="" loading="lazy"></span>{% endif %}
-      <span class="meta">{% if it.status == "in-aussicht" %}<span class="badge badge-inquiry" data-i18n="badge.prospect">{{ "badge.prospect" | t }}</span> {% elsif it.status == "in-reparatur" %}<span class="badge badge-inquiry" data-i18n="badge.in_repair">{{ "badge.in_repair" | t }}</span> {% elsif it.status == "im-test" %}<span class="badge badge-inquiry" data-i18n="badge.testing">{{ "badge.testing" | t }}</span> {% endif %}{{ it.kategorie }}</span>
+      <span class="meta">{% if it.status == "in-aussicht" %}<span class="badge badge-inquiry" data-i18n="badge.prospect">{{ "badge.prospect" | t }}</span> {% elsif it.status == "in-reparatur" %}<span class="badge badge-inquiry" data-i18n="badge.in_repair">{{ "badge.in_repair" | t }}</span> {% elsif it.status == "im-test" %}<span class="badge badge-inquiry" data-i18n="badge.testing">{{ "badge.testing" | t }}</span> {% endif %}{{ it.category }}</span>
       <h3>{{ it.title }}</h3>
       <span class="muted small">{% include besitz.html item=it plain=true %}</span>
-      {% if it.standort %}<span class="muted small">📍 {{ it.standort }}</span>{% endif %}
+      {% if it.location %}<span class="muted small">📍 {{ it.location }}</span>{% endif %}
     </a>
     {% endfor %}
   </div>

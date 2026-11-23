@@ -2,14 +2,14 @@
 title: "3D-Druck-Stick: Linux zum Mitnehmen"
 summary: Falko baut auf Basis des Jugend-hackt-Images ein Linux für USB-Sticks, das ganz auf CAD, 3D-Druck und Plotten ausgerichtet ist – damit alte Laptops wieder Werkzeuge werden.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-10-12
-zeitraum: seit Oktober 2026
+period: seit Oktober 2026
 event_tag: 3ddruck-iso
 tags: [3ddruck-iso, jugend-hackt, heartlabs, laptops, ktg]
 team:
   - falko-richter
-verlinkt:
+linked:
   - /team/opa-andi/
 partners:
   - Jugend hackt
@@ -17,14 +17,14 @@ partners:
   - Kurt-Tucholsky-Grundschule
   - 35 services e. V.
 updates:
-  - datum: 2026-10-12
+  - date: 2026-10-12
     text: >-
       Start: eigener Zweig des Jugend-hackt-Images auf GitHub –
       [35services/3ddruck-jugend-hackt-iso](https://github.com/35services/3ddruck-jugend-hackt-iso).
-  - datum: 2026-10-13
+  - date: 2026-10-13
     text: >-
       Die ersten Laptops der 3D-Druck AG an der KTG starten vom Stick – das klappt hervorragend.
-  - datum: 2026-10-14
+  - date: 2026-10-14
     text: >-
       Experiment mit **MX Linux** auf einem alten 12″-MacBook: läuft spürbar besser auf
       alter Hardware. Vielleicht wird eine spätere Version des Sticks darauf aufbauen.

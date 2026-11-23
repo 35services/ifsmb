@@ -1,10 +1,10 @@
 ---
 title: Falko und Frau S sind verabredet um den Laser umzurüsten
 date: 2026-11-19 07:50:00 +0100
-persoenlich: true
+personal: true
 author: falko-richter
 tags: [blockface]
-verlinkt: [/equipment/lasercutter-ktg/, /challenges/laser-am-anycubic-installieren/]
+linked: [/equipment/lasercutter-ktg/, /challenges/laser-am-anycubic-installieren/]
 social_media_preview_image: /assets/images/news/falko-und-frau-s-sind-verabredet-um-den-laser-umzurusten/01-social.jpg
 uuid: eaade6f7-4036-431b-854a-d4d1fdf14779
 ---

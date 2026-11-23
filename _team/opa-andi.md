@@ -2,10 +2,10 @@
 title: Opa Andi
 role: Falkos Papa, 3D-Druck & RC-Modellbau
 order: 90
-nicht_im_team: true
+not_in_team: true
 photo: /assets/images/team/opa-andi-480w.jpg
 photo_icon: /assets/images/team/opa-andi-48w.jpg
-verlinkt:
+linked:
   - /projects/3ddruck-iso-jugend-hackt/
   - /equipment/laptops-druck-sticks/
   - /spenden/

@@ -2,7 +2,7 @@
 title: "Klemmbaustein-Enterprise gescannt und gedruckt"
 date: 2026-11-07 11:00:00 +0100
 author: falko-richter
-persoenlich: true
+personal: true
 tags: [3d-scanner-evaluieren, 3d-scanner, creality-ferret-se, u1]
 uuid: 39a9965b-8544-4bef-b34d-1b13fa0f6432
 ---

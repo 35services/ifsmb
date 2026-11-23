@@ -3,15 +3,15 @@ title: "Einen OpenScan bauen?"
 summary: Ein 3D-Scanner zum Selberbauen – Open Source, modular und mit Fotogrammetrie statt Streifenlicht.
 status: idee
 start: 2026-05-23
-zeitraum: Idee seit Mai 2026
-ort: 35services e.V.
+period: Idee seit Mai 2026
+location: 35services e.V.
 event_tag: openscan
 tags: [3d-scanner]
 team:
   - falko-richter
 partners:
   - 35 services e. V.
-verlinkt: [/news/2026/05/25/open-hardware-summit-2026/]
+linked: [/news/2026/05/25/open-hardware-summit-2026/]
 uuid: c33afcf3-ae35-49c2-994e-bfa740c1dc7b
 ---
 

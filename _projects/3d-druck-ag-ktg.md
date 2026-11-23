@@ -3,8 +3,8 @@ title: "3D-Druck AG an der KTG"
 summary: Ehrenamtliche 3D-Druck- und CAD-AG für Kinder an der Kurt-Tucholsky-Grundschule in Moabit – komplett über Spenden finanziert.
 status: aktuell
 start: 2023-01-01
-zeitraum: seit 2023
-ort: Kurt-Tucholsky-Grundschule, Moabit
+period: seit 2023
+location: Kurt-Tucholsky-Grundschule, Moabit
 event_tag: ktg
 team:
   - falko-richter
@@ -15,7 +15,7 @@ partners:
   - Kurt-Tucholsky-Grundschule
   - 35 services e. V.
 updates:
-  - datum: 2026-09-29
+  - date: 2026-09-29
     text: |-
       **Dracheneier aus dem 3D-Drucker:** Ein schwarzes Ei mit Schuppen lässt sich öffnen – darin liegt zusammengerollt ein beweglicher Drache aus schimmerndem Filament.
 

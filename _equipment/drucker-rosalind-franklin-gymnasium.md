@@ -1,10 +1,10 @@
 ---
 title: Drucker am Rosalind-Franklin-Gymnasium
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 summary: Sechs Drucker für den Makespace am Rosalind-Franklin-Gymnasium – vier Bambu Lab A1 mini und zwei Bambu Lab P2S mit AMS.
 owner_partner: [Rosalind-Franklin-Gymnasium]
-standort_partner: Rosalind-Franklin-Gymnasium
-standort: Makespace am Rosalind-Franklin-Gymnasium
+location_partner: Rosalind-Franklin-Gymnasium
+location: Makespace am Rosalind-Franklin-Gymnasium
 image: /assets/images/ausstattung/drucker-rosalind-franklin-gymnasium/01.jpg
 thumb: /assets/images/ausstattung/drucker-rosalind-franklin-gymnasium/01-600w.jpg
 image_alt: "Ein Bambu Lab P2S mit AMS-Filamentwechsler, daneben ein Bambu Lab A1 mini im Makespace des Rosalind-Franklin-Gymnasiums"

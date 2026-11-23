@@ -1,11 +1,11 @@
 ---
 title: Lasercutter für die KTG
-kategorie: Lasercutter
+category: Lasercutter
 status: im-test
 summary: Ein Lasercutter für die 3D-Druck AG an der KTG – schon da, muss aber noch getestet und eingerichtet werden.
 owner_partner: 35 services e. V.
-standort_partner: Kurt-Tucholsky-Grundschule
-standort: Kurt-Tucholsky-Grundschule (3D-Druck AG)
+location_partner: Kurt-Tucholsky-Grundschule
+location: Kurt-Tucholsky-Grundschule (3D-Druck AG)
 image: /assets/images/ausstattung/lasercutter-ktg/illustration.svg
 image_alt: "Illustration eines Lasercutters mit geöffnetem Deckel, Laserkopf und einem ausgeschnittenen Stempel (kein Foto des Geräts)"
 image_is_illustration: true

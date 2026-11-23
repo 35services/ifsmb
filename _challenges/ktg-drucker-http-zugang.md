@@ -1,18 +1,18 @@
 ---
 title: "HTTP-Zugang zum Drucker in der KTG"
 summary: Wir wollen auf HTTP-Basis auf den Snapmaker U1 zugreifen – auch ohne Snapmaker Orca
-art: aufgabe   # aufgabe, problem oder frage
+kind: aufgabe   # aufgabe, problem oder frage
 status: offen   # offen, in-arbeit oder geloest
-seit: 2026-11-18   # seit wann die Herausforderung besteht
-geloest_am:   # Datum, wenn gelöst
-wichtig: true   # Eisenhower-Matrix: true/false
-dringend: false   # true/false – wichtig+dringend = sofort, nur wichtig = einplanen, nur dringend = abgeben, keins = später
+since: 2026-11-18   # seit wann die Herausforderung besteht
+solved_on:   # Datum, wenn gelöst
+important: true   # Eisenhower-Matrix: true/false
+urgent: false   # true/false – wichtig+dringend = sofort, nur wichtig = einplanen, nur dringend = abgeben, keins = später
 team: [falko-richter, mr-e, gregor-dill]   # Team-Kürzel der Zuständigen – eine oder mehrere Personen
-projekte: [3d-druck-ag-ktg]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
+projects: [3d-druck-ag-ktg]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: []   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt
-verlinkt: [/challenges/ktg-orca-slicer-hardware/, /news/2026/11/12/ki-server-pi4-proxy/]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/calendar/…/]
-persoenlich: false   # true = aus einem privaten Projekt im Team
-loesung:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
+linked: [/challenges/ktg-orca-slicer-hardware/, /news/2026/11/12/ki-server-pi4-proxy/]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/calendar/…/]
+personal: false   # true = aus einem privaten Projekt im Team
+solution:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
 uuid: 24440234-1909-4c57-a10c-83caa3dc8238
 ---
 

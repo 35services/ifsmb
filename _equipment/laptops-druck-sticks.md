@@ -1,15 +1,15 @@
 ---
 title: Laptops & 3D-Druck-Sticks
-kategorie: Laptops
+category: Laptops
 summary: Alte Laptops, die sonst im Müll gelandet wären – mit unserem 3D-Druck-Stick werden sie zu Arbeitsplätzen für CAD und 3D-Druck.
 owner_team: falko-richter
-standort: 3D-Druck AG an der KTG
-standort_partner: Kurt-Tucholsky-Grundschule
+location: 3D-Druck AG an der KTG
+location_partner: Kurt-Tucholsky-Grundschule
 image: /assets/images/ausstattung/laptops-druck-sticks/illustration.svg
 image_alt: "Illustration eines aufgeklappten Laptops mit eingestecktem USB-Stick (kein Foto der Geräte)"
 image_is_illustration: true
 tags: [laptops, 3ddruck-iso, ktg]
-verlinkt:
+linked:
   - /team/opa-andi/
 uuid: c232dbdd-1c8f-4344-a3de-85d35023a271
 ---

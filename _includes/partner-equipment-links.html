@@ -9,7 +9,7 @@
 {%- assign pe_owned = 0 -%}{%- assign pe_located = 0 -%}
 {%- for it in site.equipment -%}
   {%- assign pe_o = it.owner_partner | join: "|" | split: "|" -%}
-  {%- assign pe_l = it.standort_partner | join: "|" | split: "|" -%}
+  {%- assign pe_l = it.location_partner | join: "|" | split: "|" -%}
   {%- if pe_o contains pe_name -%}{%- assign pe_owned = pe_owned | plus: 1 -%}{%- endif -%}
   {%- if pe_l contains pe_name -%}{%- assign pe_located = pe_located | plus: 1 -%}{%- endif -%}
 {%- endfor -%}

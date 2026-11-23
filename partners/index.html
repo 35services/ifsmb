@@ -19,8 +19,8 @@ uuid: 27acbb70-b7ee-43c0-9d16-ff70e7ea93e6
       {%- assign p_eq = site.equipment | where: "owner_partner", p.name -%}
       {% if p_eq.size > 0 %}<p class="small"><span data-i18n="partner.equipment">{{ "partner.equipment" | t }}</span> {% for it in p_eq %}<a href="{{ it.url | relative_url }}">{{ it.title }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}</p>{% endif %}
       {%- assign p_pr = site.projects | where_exp: "pr", "pr.partners contains p.name" | sort: "start" | reverse -%}
-      {% if p_pr.size > 0 %}<p class="small"><span data-i18n="partner.projects">{{ "partner.projects" | t }}</span> {% for it in p_pr %}<a href="{{ it.url | relative_url }}">{{ it.title }}</a>{% if it.persoenlich %} (<span data-i18n="connections.personal">{{ "connections.personal" | t }}</span>){% endif %}{% unless forloop.last %}, {% endunless %}{% endfor %}</p>{% endif %}
-      {%- assign p_ev = site.events | where_exp: "e", "e.partners contains p.name" | where_exp: "e", "e.persoenlich != true" | sort: "start" | reverse -%}
+      {% if p_pr.size > 0 %}<p class="small"><span data-i18n="partner.projects">{{ "partner.projects" | t }}</span> {% for it in p_pr %}<a href="{{ it.url | relative_url }}">{{ it.title }}</a>{% if it.personal %} (<span data-i18n="connections.personal">{{ "connections.personal" | t }}</span>){% endif %}{% unless forloop.last %}, {% endunless %}{% endfor %}</p>{% endif %}
+      {%- assign p_ev = site.events | where_exp: "e", "e.partners contains p.name" | where_exp: "e", "e.personal != true" | sort: "start" | reverse -%}
       {% if p_ev.size > 0 %}<p class="small"><span data-i18n="partner.events">{{ "partner.events" | t }}</span> {% for it in p_ev %}<a href="{{ it.url | relative_url }}">{{ it.title }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}</p>{% endif %}
       {% if p.page %}<p><a href="{{ p.page | relative_url }}" class="more-link" data-i18n="partner.more">{{ "partner.more" | t }}</a></p>{% endif %}
       <p class="muted small">{{ p.url | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</p>

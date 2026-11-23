@@ -1,10 +1,10 @@
 ---
 title: Prusa MK3S (xHain)
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 summary: Ein sehr günstig gekaufter MK3S mit gehärteter Düse – er druckt in einem geschlossenen Bauraum bei 35services.
 owner_team: falko-richter
-standort_partner: 35 services e. V.
-standort: 35services e.V. (offene Werkstatt)
+location_partner: 35 services e. V.
+location: 35services e.V. (offene Werkstatt)
 image: /assets/video/ausstattung/prusa-mk3s-xhain/01.jpg
 image_alt: "Ein pinker „Infinite Cube“ aus PETG auf dem Druckbett des Prusa MK3S, im Hintergrund die mit Alufolie ausgekleidete Einhausung"
 videos:

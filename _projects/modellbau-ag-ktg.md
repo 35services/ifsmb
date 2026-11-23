@@ -2,15 +2,15 @@
 title: "Modellbau-AG an der KTG"
 summary: "Falkos private Modellbau-AG an der Kurt-Tucholsky-Grundschule: Für 40 Euro im Monat pro Kind bauen wir 3D-gedruckte ferngesteuerte Fahrzeuge – inspiriert von unserer Ideensammlung, den RC-Projekten im Team und CyberBrick."
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-11-15
-zeitraum: seit November 2026
-ort: Kurt-Tucholsky-Grundschule, Moabit
+period: seit November 2026
+location: Kurt-Tucholsky-Grundschule, Moabit
 event_tag: modellbau-ag-ktg
 tags: [rc-modellbau, 3d-drucker, ktg, u1]
 partners:
   - Kurt-Tucholsky-Grundschule
-verlinkt:
+linked:
   - /project/ideas/
   - /projects/rc-tractor-professorboots/
   - /projects/3dsets-mogster-bauen/

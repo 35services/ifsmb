@@ -2,7 +2,7 @@
 layout: page
 title: Zazza Moabit / Pajas Kaffee
 lead: Partner – das Nachbarschaftscafé am Platz der Nachbarschaft
-verlinkt: [/partners/35services/]
+linked: [/partners/35services/]
 uuid: 4b4d55a7-cae8-42f4-ab3d-03b432d457dd
 ---
 <div class="prose" markdown="1">

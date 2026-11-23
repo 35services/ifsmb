@@ -3,7 +3,7 @@ title: "Mitschreiben leicht gemacht: Beiträge direkt auf ifsmb.de schreiben und
 date: 2026-11-17 10:30:00 +0100
 author: falko-richter
 tags: [ifsmb-de]
-verlinkt: [/news/, /calendar/, /projects/, /challenges/, /impressum/, /partners/zazza/]
+linked: [/news/, /calendar/, /projects/, /challenges/, /impressum/, /partners/zazza/]
 uuid: 545b983e-f39f-440d-9f92-f773987d53fc
 ---
 

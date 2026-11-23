@@ -1,13 +1,13 @@
 ---
 title: Wie kann man an vielen Schulen wirken?
 summary: Falko sucht einen Job, Quereinstieg? Honorarkraft? Was ist rechtlich und real möglich?
-art: aufgabe
+kind: aufgabe
 status: offen
-seit: 2025-11-01
-wichtig: true
+since: 2025-11-01
+important: true
 team: [falko-richter]
-projekte: [ifsmb-de]
-verlinkt: [/projects/3d-druck-ag-platanus-schule/, /projects/3d-druck-ag-rosalind-franklin-gymnasium/, /news/2026/10/19/jugend-hackt-congress-2026/]
+projects: [ifsmb-de]
+linked: [/projects/3d-druck-ag-platanus-schule/, /projects/3d-druck-ag-rosalind-franklin-gymnasium/, /news/2026/10/19/jugend-hackt-congress-2026/]
 uuid: ea46fe73-45ee-4ad3-95b1-fdf740f627e8
 ---
 

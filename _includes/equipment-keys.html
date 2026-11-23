@@ -6,7 +6,7 @@
 {%- endcomment -%}
 {%- assign it = include.item -%}
 {%- if include.field == "location" -%}
-  {%- assign k_partners = it.standort_partner | join: "|" | split: "|" -%}
+  {%- assign k_partners = it.location_partner | join: "|" | split: "|" -%}
   {%- assign k_team = "" | split: "" -%}{%- assign k_names = "" | split: "" -%}
 {%- else -%}
   {%- assign k_partners = it.owner_partner | join: "|" | split: "|" -%}

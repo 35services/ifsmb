@@ -3,8 +3,8 @@ title: "KTG AG Jahr 1 (2023/24)"
 summary: Der Start der „DIY – 3D-Druck und Elektronik AG“ an der KTG – mit ferngesteuerten Baggern und Kipplastern aus dem 3D-Drucker.
 status: abgeschlossen
 start: 2024-04-08
-zeitraum: April – Juli 2024 (Schuljahr 2023/24)
-ort: Kurt-Tucholsky-Grundschule, Moabit
+period: April – Juli 2024 (Schuljahr 2023/24)
+location: Kurt-Tucholsky-Grundschule, Moabit
 event_tag: ktg-ag-jahr-1
 image: /assets/images/news/diy-eine-3d-druck-und-elektronik-ag-an-der-ktg/06.png
 tags: [ktg, zazza]

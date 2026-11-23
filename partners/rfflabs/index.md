@@ -3,7 +3,7 @@ layout: page
 title: RFFLabs
 lead: Partner – das französische Netzwerk der FabLabs und Makerspaces
 theme: rfflabs
-verlinkt: [/partners/offene-werkstaetten/, /team/falko-richter/]
+linked: [/partners/offene-werkstaetten/, /team/falko-richter/]
 uuid: bccf44ea-62cc-4957-81a9-4987b5472059
 ---
 <div class="prose" markdown="1">

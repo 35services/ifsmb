@@ -375,13 +375,13 @@ class ThemeTest < Minitest::Test
   end
 
   def test_setting_a_theme_adds_one_line
-    source = "---\ntitle: Test\nstatus: offen\nart: frage\n---\n\nText\n"
+    source = "---\ntitle: Test\nstatus: offen\nkind: frage\n---\n\nText\n"
     js = "const N=require('./assets/js/neu.js');process.stdout.write(N.editedFile('herausforderung',#{source.to_json},{theme:'rfflabs'}).content)"
     out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
     assert status.success?, err
     fm, text = Daten.front_matter(out)
     assert_equal "rfflabs", fm["theme"]
-    assert_equal({ "title" => "Test", "status" => "offen", "art" => "frage" }, fm.reject { |k, _| k == "theme" })
+    assert_equal({ "title" => "Test", "status" => "offen", "kind" => "frage" }, fm.reject { |k, _| k == "theme" })
     assert_equal "Text", text.strip
   end
 end

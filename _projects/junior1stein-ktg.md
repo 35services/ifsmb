@@ -3,9 +3,9 @@ title: "junior1stein für die KTG?"
 summary: Falko fragt bei der Berliner MINT-Initiative junior1stein nach, welche Möglichkeiten es für die Kurt-Tucholsky-Grundschule gibt – so wie für die Schulen im Cluster Mitte.
 status: aktuell
 start: 2026-11-09
-zeitraum: seit November 2026
-ort: Kurt-Tucholsky-Grundschule, Moabit
-teil_von: [3d-druck-ag-ktg]
+period: seit November 2026
+location: Kurt-Tucholsky-Grundschule, Moabit
+part_of: [3d-druck-ag-ktg]
 event_tag: junior1stein-ktg
 tags: [ktg, junior1stein]
 team:
@@ -14,7 +14,7 @@ partners:
   - Kurt-Tucholsky-Grundschule
   - Förderverein der Kurt-Tucholsky-Grundschule
 updates:
-  - datum: 2026-11-09
+  - date: 2026-11-09
     text: >-
       Anfrage über das Kontaktformular von junior1stein geschickt. Wir warten auf Antwort.
 uuid: f296d854-6bcd-4f99-80b6-f5d0b1221f94

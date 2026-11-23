@@ -14,7 +14,7 @@
 {%- comment -%}sort posts and manual updates together by "date|kind|index" keys, like the project page{%- endcomment -%}
 {%- assign af_keys = "" | split: "" -%}
 {%- for po in af_posts -%}{%- capture k %}{{ po.date | date: "%Y-%m-%d %H:%M" }}|p|{{ forloop.index0 }}{% endcapture %}{%- assign af_keys = af_keys | push: k -%}{%- endfor -%}
-{%- if af_p -%}{%- for u in af_p.updates -%}{%- capture k %}{{ u.datum | date: "%Y-%m-%d" }} 00:00|u|{{ forloop.index0 }}{% endcapture %}{%- assign af_keys = af_keys | push: k -%}{%- endfor -%}{%- endif -%}
+{%- if af_p -%}{%- for u in af_p.updates -%}{%- capture k %}{{ u.date | date: "%Y-%m-%d" }} 00:00|u|{{ forloop.index0 }}{% endcapture %}{%- assign af_keys = af_keys | push: k -%}{%- endfor -%}{%- endif -%}
 {%- assign af_keys = af_keys | sort | reverse -%}
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="de" xml:base="{{ site.url }}/">
@@ -44,9 +44,9 @@
   <entry>
     <title>Update: {{ u_html | strip_html | normalize_whitespace | truncatewords: 12 | xml_escape }}</title>
     <link href="{{ site.url }}{{ af_p.url }}#updates"/>
-    <updated>{{ u.datum | date_to_xmlschema }}</updated>
+    <updated>{{ u.date | date_to_xmlschema }}</updated>
     {%- comment -%} entry id stays as before the URL rename (/projekte/…), so feed readers don't show updates twice {%- endcomment %}
-    <id>{{ site.url }}{{ af_p.url | replace_first: "/projects/", "/projekte/" }}#update-{{ u.datum | date: "%Y-%m-%d" }}-{{ idx }}</id>
+    <id>{{ site.url }}{{ af_p.url | replace_first: "/projects/", "/projekte/" }}#update-{{ u.date | date: "%Y-%m-%d" }}-{{ idx }}</id>
     <content type="html">{{ u_html | xml_escape }}</content>
   </entry>
   {%- endif %}

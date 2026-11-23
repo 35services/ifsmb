@@ -3,7 +3,7 @@ title: "Fabmaker-Slicer geknackt: So schaltet der Drucker seine zwei Düsen"
 date: 2026-11-15 15:00:00 +0100
 author: falko-richter
 tags: [fabmaker]
-verlinkt: [/equipment/fabmaker/]
+linked: [/equipment/fabmaker/]
 uuid: 5a6d41de-2604-4f30-b743-3da25dd83161
 ---
 

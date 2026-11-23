@@ -2,12 +2,12 @@
 title: "RC Tractor von ProfessorBoots bauen"
 summary: "Falko und Opa Andi bauen gemeinsam den 3D-gedruckten RC Tractor von ProfessorBoots für #septembersister – mit modifizierter Motorhaube (später mit Namen und Panda-Logo) und NinjaFlex-Reifen aus dem LulzBot Mini."
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-11-14
-zeitraum: seit November 2026
+period: seit November 2026
 event_tag: rc-tractor-professorboots
 tags: [rc-modellbau, lulzbot-mini, flexibles-filament, u1, 3d-drucker]
-verlinkt:
+linked:
   - /equipment/lulzbot-mini/
   - /equipment/snapmaker-u1-falko/
   - /project/ideas/
@@ -15,7 +15,7 @@ team:
   - falko-richter
   - opa-andi
 updates:
-  - datum: 2026-11-15
+  - date: 2026-11-15
     text: |-
       **Die ersten Teile sind fertig gedruckt:** Karosserie, Führerhaus, die modifizierte Motorhaube und eine Felge sind aus dem Drucker gekommen – einmal noch mit den Baum-Stützstrukturen direkt vom Druckbett und einmal schon zusammengesteckt. Um weitere Teile kümmert sich jetzt [Opa Andi](/team/opa-andi/).
 

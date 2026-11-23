@@ -1,6 +1,6 @@
 ---
 title: Jimumeta / 3DMakerpro Lynx
-kategorie: 3D-Scanner
+category: 3D-Scanner
 summary: Ein Handscanner für große Objekte – von Autoteilen bis zu Möbeln. Mit Mobil-Adapter, den wir testen wollen, und ausführlichem Vergleich zum Creality Ferret SE.
 owner_team: falko-richter
 image: /assets/images/ausstattung/3d-scanner/illustration.svg

@@ -3,11 +3,11 @@ title: "iPad-Stifte testen am Rosalind-Franklin-Gymnasium"
 summary: 20 iPad-Stifte aus der KTG sind als Leihgabe zum Testen am Rosalind-Franklin-Gymnasium – aufladen, durchtesten, Stifte mit totem Akku aussortieren.
 status: aktuell
 start: 2026-11-10
-zeitraum: seit November 2026
-ort: Rosalind-Franklin-Gymnasium, Moabit
-teil_von: [3d-druck-ag-rosalind-franklin-gymnasium]
+period: seit November 2026
+location: Rosalind-Franklin-Gymnasium, Moabit
+part_of: [3d-druck-ag-rosalind-franklin-gymnasium]
 event_tag: ipad-stifte-rfg
-verwandt: [ipad-stifte-wiederbeleben]
+related: [ipad-stifte-wiederbeleben]
 partners:
   - Rosalind-Franklin-Gymnasium
   - Kurt-Tucholsky-Grundschule
