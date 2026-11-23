@@ -125,7 +125,7 @@ pages:
     lead: Was wir gerade anpacken – pro Person in der Eisenhower-Matrix. Verschieben, bearbeiten, als Pull Request speichern.
   network:
     title: Netzwerk
-    lead: Wie unsere Projekte, Herausforderungen, Todos, Termine, Beiträge, Menschen, Partner und Geräte zusammenhängen. Ziehen, zoomen, anklicken – und von Punkt zu Punkt weiterwandern.
+    lead: Wie unsere Projekte, Herausforderungen, Termine, Beiträge, Menschen, Partner und Geräte zusammenhängen. Ziehen, zoomen, anklicken – und von Punkt zu Punkt weiterwandern.
     data_file: "Das ganze Netzwerk als eine Datei: {0} – alle Knoten mit ihren Verbindungsfeldern, für andere Makespaces und Werkzeuge (Föderation)."
     load_error: "Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden."
   map:

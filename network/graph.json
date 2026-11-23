@@ -6,18 +6,14 @@ permalink: /network/graph.json
   The network as one file: one node per resource with its raw link fields (part_of, related, team, partners,
   owner_*, event_tag/tags, linked …). assets/js/netzwerk.js loads it and derives the edges (same rules as
   _includes/verbindungen.html); other sites can read it too (federation). Node ids are site-relative URLs –
-  resolve them against "site". Todos live in Markdown files (todos/todo-<person>.md, format: TodoFormat in
-  assets/js/todos.js) and are listed under "todos".
+  resolve them against "site". Todos are not part of the network (they stay local and are too abstract).
 {%- endcomment -%}
-{%- assign todo_people = "" | split: "" -%}
-{%- for f in site.static_files -%}{%- if f.extname == ".md" and f.path contains "/todos/todo-" -%}{%- assign tp = f.basename | remove_first: "todo-" -%}{%- assign todo_people = todo_people | push: tp -%}{%- endif -%}{%- endfor -%}
 {
 "format": "ifsmb-network",
 "version": 1,
 "site": {{ site.url | append: site.baseurl | jsonify }},
 "title": {{ site.title | jsonify }},
 "generated": {{ site.time | date_to_xmlschema | jsonify }},
-"todos": {"base": {{ '/todos/' | relative_url | jsonify }}, "people": {{ todo_people | jsonify }}},
 "nodes": [
 {%- for x in site.projects -%}
 {"id":{{ x.url | relative_url | jsonify }},"type":"projekt","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"event_tag":{{ x.event_tag | jsonify }},"part_of":{{ x.part_of | jsonify }},"related":{{ x.related | jsonify }},"team":{{ x.team | jsonify }},"partners":{{ x.partners | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},

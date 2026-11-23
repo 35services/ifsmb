@@ -122,7 +122,7 @@ pages:
     lead: What we’re tackling right now – per person in an Eisenhower matrix. Move, edit, save as a pull request.
   network:
     title: Network
-    lead: How our projects, challenges, todos, events, posts, people, partners and devices are connected. Drag, zoom, click – and wander from point to point.
+    lead: How our projects, challenges, events, posts, people, partners and devices are connected. Drag, zoom, click – and wander from point to point.
     data_file: "The whole network as a single file: {0} – every node with its connection fields, for other makespaces and tools (federation)."
     load_error: "The network could not be loaded. Please reload the page."
   map:
