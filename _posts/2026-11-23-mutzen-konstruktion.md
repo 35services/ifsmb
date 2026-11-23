@@ -14,4 +14,5 @@ uuid: 252fae38-c776-4ec2-9c3c-5bab7053a003
 ![Gedruckte 🐹](/assets/images/news/mutzen-konstruktion/03.jpg)
 ![Gedruckte 🐹](/assets/images/news/mutzen-konstruktion/04.jpg)
 ![Gedruckte 🐹](/assets/images/news/mutzen-konstruktion/05.jpg)
+![wir drucken Mützen](/assets/images/news/mutzen-konstruktion/06.jpg)
 {: .gallery}
