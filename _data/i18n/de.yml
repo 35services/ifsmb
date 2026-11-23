@@ -127,6 +127,7 @@ pages:
     title: Netzwerk
     lead: Wie unsere Projekte, Herausforderungen, Termine, Beiträge, Menschen, Partner und Geräte zusammenhängen. Ziehen, zoomen, anklicken – und von Punkt zu Punkt weiterwandern.
     data_file: "Das ganze Netzwerk als eine Datei: {0} – alle Knoten mit ihren Verbindungsfeldern, für andere Makespaces und Werkzeuge (Föderation)."
+    meta_file: "Einstieg für andere Makespaces: {0} verweist auf alle Netzwerk-Dateien und den Suchindex dieser Seite."
     load_error: "Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden."
   map:
     title: Karte

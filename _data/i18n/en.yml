@@ -124,6 +124,7 @@ pages:
     title: Network
     lead: How our projects, challenges, events, posts, people, partners and devices are connected. Drag, zoom, click – and wander from point to point.
     data_file: "The whole network as a single file: {0} – every node with its connection fields, for other makespaces and tools (federation)."
+    meta_file: "Entry point for other makespaces: {0} points to every network file and the search index of this site."
     load_error: "The network could not be loaded. Please reload the page."
   map:
     title: Map

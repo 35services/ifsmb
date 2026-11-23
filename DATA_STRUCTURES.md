@@ -202,6 +202,17 @@ Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) in eine eigene Dat
 `assets/js/netzwerk.js` lädt sie und macht daraus die Linien – nach denselben Regeln wie
 `_includes/verbindungen.html` – und zeichnet sie ohne externe Bibliothek auf ein Canvas.
 
+Für andere Instanzen gibt es einen Einstieg: [`/meta_graph.json`](https://ifsmb.de/meta_graph.json)
+(`meta_graph.json`) verweist auf alle Graphen der Seite (`graphs`, je mit `url`, `format` und `node_types` –
+eine Seite könnte z. B. getrennte Graphen für Team, Partner und Ausstattung haben, wir haben einen), auf den
+Suchindex (`search_index` → `/search/index.json`) und auf die Volltextsuche (`fulltext_search` → Pagefind).
+
+```
+ /meta_graph.json ──▶ graphs[]: /network/graph.json  (nodes: projekt, termin, beitrag, person, …)
+                  ├─▶ search_index: /search/index.json
+                  └─▶ fulltext_search: /pagefind/
+```
+
 ```
  Jekyll-Build                          Browser
  ─────────────                         ────────────────────────────────────────

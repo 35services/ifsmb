@@ -125,6 +125,7 @@ pages:
     title: Réseau
     lead: Comment nos projets, défis, rendez-vous, articles, personnes, partenaires et appareils sont reliés. Faites glisser, zoomez, cliquez – et passez d’un point à l’autre.
     data_file: "Tout le réseau dans un seul fichier : {0} – chaque nœud avec ses champs de liens, pour d’autres makespaces et outils (fédération)."
+    meta_file: "Point d’entrée pour d’autres makespaces : {0} renvoie à tous les fichiers de réseau et à l’index de recherche de ce site."
     load_error: "Impossible de charger le réseau. Merci de recharger la page."
   map:
     title: Carte
