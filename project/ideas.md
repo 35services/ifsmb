@@ -2,7 +2,7 @@
 layout: page
 title: Projekt-Ideen
 lead: Was man alles mit einem 3D-Drucker bauen kann – unsere Sammlung zum Stöbern und Nachbauen.
-permalink: /projects/ideas/
+permalink: /project/ideas/
 uuid: b3745d30-8b69-4c76-b404-53a480f39aae
 ---
 <div class="prose ideas" markdown="1">

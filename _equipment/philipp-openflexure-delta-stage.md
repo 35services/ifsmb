@@ -11,7 +11,7 @@ image_alt:   # Beschreibung des Fotos
 image_caption:   # optionale Bildunterschrift
 image_is_illustration: false   # true = eigene SVG-Illustration statt Foto
 tags: [mikroskop, digital]   # Gerät, Gerätetyp, Besitzer*in, z. B. [bambu-lab-a1-mini, 3d-drucker]
-verlinkt: [/projects/ideas/]   # weitere Seiten, z. B. [/projects/…/]
+verlinkt: [/project/ideas/]   # weitere Seiten, z. B. [/projects/…/]
 gallery:   # weitere Fotos, Liste aus image, thumb, alt
 #  - image: /assets/images/ausstattung/name/02.jpg
 #    thumb: /assets/images/ausstattung/name/02-600w.jpg

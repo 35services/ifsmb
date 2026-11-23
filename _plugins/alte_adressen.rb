@@ -17,7 +17,7 @@ module IfsmbAlteAdressen
   PREFIXES = [
     ["/projects/archive/", "/projekte/archiv/"],
     ["/projects/personal/", "/projekte/persoenlich/"],
-    ["/projects/ideas/", "/projekte/ideen/"],
+    ["/project/ideas/", "/projekte/ideen/"],
     ["/projects/", "/projekte/"],
     ["/news/personal/", "/news/persoenlich/"],
     ["/calendar.ics", "/kalender.ics"],
