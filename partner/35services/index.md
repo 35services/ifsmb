@@ -1,13 +1,9 @@
 ---
 layout: page
 title: 35 services e. V.
-lead: Partner – Nachbarschaftswerkstatt in Moabit
-verlinkt:
-  - /news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/
-  - /news/2024/04/19/der-axidraw-malt-die-mona-lisa/
-  - /ausstattung/laptops-druck-sticks/
-  - /ausstattung/lulzbot-taz-6/
-  - /partner/jugend-hackt/
+lead: Offene Werkstatt in Moabit
+verlinkt: [/news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/, /partner/jugend-hackt/, /partner/offene-werkstaetten/]
+social_media_preview_image: /assets/images/seiten/partner-35services/01-social.jpg
 uuid: 08515cfe-c14b-4488-b136-cf67dfaae236
 ---
 <div class="prose" markdown="1">
