@@ -24,7 +24,8 @@ HOST = URI.parse(YAML.load_file(File.expand_path("../_config.yml", __dir__))["ur
 CHECK_EXTERNAL = ARGV.include?("--extern")
 
 # Seiten, die absichtlich nicht verlinkt sein müssen
-ORPHAN_OK = %w[/404.html].freeze
+# /news/personal/ and /projects/personal/ are only linked while personal posts/projects exist (an instance may have none)
+ORPHAN_OK = %w[/404.html /news/personal/ /projects/personal/].freeze
 # Pfade, die erst im CI entstehen (Pagefind-Index)
 GENERATED_PREFIXES = %w[/pagefind/].freeze
 # Pages whose #fragment is a JS route, not an HTML id (e.g. /todos/#<person>/<todo>)

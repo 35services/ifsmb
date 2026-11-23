@@ -23,7 +23,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projects
 
 ### Bagger, Kipplaster und Baustelle
 
-- ✅ **RC Skid Steer V2.0** (Mini-Bagger) – [auf Printables](https://www.printables.com/model/544937-v20-3d-printed-rc-skidsteer), [Bauanleitung auf Instructables](https://www.instructables.com/3D-Printed-RC-SkidSteer-V20/), [Video](https://youtu.be/3jgQ9fDi1nY) – gebaut in der [KTG-AG Jahr 1]({{ '/projects/ktg-ag-jahr-1/' | relative_url }})
+- ✅ **RC Skid Steer V2.0** (Mini-Bagger) – [auf Printables](https://www.printables.com/model/544937-v20-3d-printed-rc-skidsteer), [Bauanleitung auf Instructables](https://www.instructables.com/3D-Printed-RC-SkidSteer-V20/), [Video](https://youtu.be/3jgQ9fDi1nY) – gebaut in der [KTG-AG Jahr 1](https://ifsmb.de/projects/ktg-ag-jahr-1/)
   - Teile: TPU 95A für die Ketten ([Beispiel](https://www.amazon.com/gp/product/B00TI3JUTM)), Getriebemotoren „100rpm 6V N20“ ([Suche bei AliExpress](https://de.aliexpress.com/w/wholesale-100rpm-6v-N20.html)), Motortreiber DRV8833 ([Doku](https://spacehal.github.io/docs/motor/drv8833))
 - ✅ **RC Dump Truck** – der passende Kipplaster dazu ([Video](https://youtu.be/DEg1vcA16jw)) – ebenfalls in der KTG-AG Jahr 1
 - **RC Skid Steer** auf youmagine – ein richtig erwachsenes Projekt ([Modell](https://youmagine.com/designs/f33b782a-935b-499d-b0d5-0b94b3e6fa24#overview))
@@ -80,7 +80,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projects
 
 ## Für die Werkstatt
 
-- **3D-Scanner mit Drehteller** fürs Smartphone ([Thingiverse](https://www.thingiverse.com/thing:1762299), [Drehteller-Video](https://www.youtube.com/watch?v=UGwlAmcAsJ4), [30-$-Scanner zusammenbauen](https://www.youtube.com/watch?v=zzcjlBCsNWY)) – siehe auch unsere Idee [Einen OpenScan bauen?]({{ '/projects/openscan-bauen/' | relative_url }})
+- **3D-Scanner mit Drehteller** fürs Smartphone ([Thingiverse](https://www.thingiverse.com/thing:1762299), [Drehteller-Video](https://www.youtube.com/watch?v=UGwlAmcAsJ4), [30-$-Scanner zusammenbauen](https://www.youtube.com/watch?v=zzcjlBCsNWY)) – siehe auch unsere Idee [Einen OpenScan bauen?](https://ifsmb.de/projects/openscan-bauen/)
 - **Löt-Helfer („Soldering fingers“)** ([Thingiverse](https://www.thingiverse.com/thing:1725308))
 - **Schraubstock** ([Thingiverse](https://www.thingiverse.com/thing:2064269))
 - **Schleifpapier-Halter** ([Thingiverse](https://www.thingiverse.com/thing:2404850))
