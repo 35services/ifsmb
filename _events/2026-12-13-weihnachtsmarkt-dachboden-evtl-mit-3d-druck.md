@@ -10,4 +10,4 @@ nur_projekt: true
 uuid: 196920d2-5c32-4481-82dd-ce772598b0ba
 ---
 
-Philipp und Falko stellen aus.
+Philipp und Falko stellen aus und verkaufen Kunstdrucke und kleine 3D-gedruckte Gimmicks.
