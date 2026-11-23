@@ -3,9 +3,9 @@ title: "OpenFlexure Delta Stage"
 kategorie: Mikroskop   # gruppiert /ausstattung/: enthält „3D-Drucker“, „3D-Scanner“ oder etwas anderes
 summary: Ein open hardware Mikroskop im Transmissionsmodus
 owner_partner:    # Name aus _data/partners.yml (Liste möglich)
-owner_name: philipp-schalldach  # andere Besitzer*innen als freier Text
+owner_name: team/philipp-schalldach  # andere Besitzer*innen als freier Text
 standort:   # wo das Gerät steht, z. B. „KTG, Raum 101“
-standort_partner: philipp-schalldach  # Partnername, wenn das Gerät bei einem Partner steht
+standort_partner: team/philipp-schalldach  # Partnername, wenn das Gerät bei einem Partner steht
 status: einsatzbereit  # leer, in-aussicht, in-reparatur oder im-test
 image:   # eigenes Foto (ohne Metadaten) – keine Hersteller- oder Shopfotos
 thumb:   # kleines Vorschaubild, z. B. …-600w.jpg
