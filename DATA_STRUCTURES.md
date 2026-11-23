@@ -22,7 +22,7 @@ beide Richtungen (ein Eintrag auf einer der beiden Seiten reicht).
 ```
 
 Frühere deutsche Adressen (`/projekte/…`, `/kalender/…`, `/herausforderungen/…`, `/ausstattung/…`,
-`/partner/…`, `/presse/…`, `/news/persoenlich/`) leitet `_plugins/alte_adressen.rb` automatisch weiter.
+`/partner/…`, `/presse/…`, `/news/persoenlich/`, `/suche/`, `/netzwerk/`, `/karte/`, `/stichworte/`) leitet `_plugins/alte_adressen.rb` automatisch weiter.
 
 ## Wie sie zusammenhängen
 
@@ -70,7 +70,7 @@ Die Zielseite zeigt die Verbindung ebenfalls an.
 
 ## Orte auf der Karte
 
-`/karte/` zeigt die Orte aus `_data/orte.yml`. Wie eine Seite zu ihrem Ort kommt (die erste
+`/map/` zeigt die Orte aus `_data/orte.yml`. Wie eine Seite zu ihrem Ort kommt (die erste
 passende Regel gewinnt):
 
 ```
@@ -195,9 +195,9 @@ Termin, Beitrag mit Beitrag oder Ausstattung mit Partnerseite.
 
 ## Netzwerk-Ansicht
 
-`/netzwerk/` (Menü „Wir“ → „Netzwerk“) zeigt alle Ressourcen als Punkte und alle Verbindungen als
+`/network/` (Menü „Wir“ → „Netzwerk“) zeigt alle Ressourcen als Punkte und alle Verbindungen als
 Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) als JSON in die Seite
-(`netzwerk/index.html`), `assets/js/netzwerk.js` macht daraus die Linien – nach denselben Regeln wie
+(`network/index.html`), `assets/js/netzwerk.js` macht daraus die Linien – nach denselben Regeln wie
 `_includes/verbindungen.html` – und zeichnet sie ohne externe Bibliothek auf ein Canvas.
 
 ```
@@ -210,7 +210,7 @@ Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) als JSON in die Se
 ```
 
 - Klick auf einen Punkt: Verbindungen rechts als Buttons, Klick darauf springt weiter.
-- Doppelklick oder „Seite öffnen“: zur Seite. Die Adresse `/netzwerk/#/projects/<name>/` öffnet
+- Doppelklick oder „Seite öffnen“: zur Seite. Die Adresse `/network/#/projects/<name>/` öffnet
   das Netzwerk direkt mit diesem Punkt.
 - Gestrichelter Rand = persönlich, dicke Linie = Teilprojekt, rote Linie = gehört,
   blau gestrichelt = steht bei, Quadrate = Orte und weitere Besitzer*innen (aus Text).

@@ -1,5 +1,5 @@
 /*
- * Network view of all connections (/netzwerk/).
+ * Network view of all connections (/network/).
  * No libraries: a small force-directed layout drawn on a canvas.
  * Node data comes from the JSON rendered by Jekyll in netzwerk/index.html; edges are derived here
  * with the same rules as _includes/verbindungen.html. Todos (todos/todo-<person>.md) are not rendered by

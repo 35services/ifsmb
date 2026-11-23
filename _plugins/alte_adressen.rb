@@ -25,7 +25,11 @@ module IfsmbAlteAdressen
     ["/challenges/", "/herausforderungen/"],
     ["/equipment/", "/ausstattung/"],
     ["/partners/", "/partner/"],
-    ["/press/", "/presse/"]
+    ["/press/", "/presse/"],
+    ["/search/", "/suche/"],
+    ["/network/", "/netzwerk/"],
+    ["/map/", "/karte/"],
+    ["/tags/", "/stichworte/"]
   ].freeze
 
   def self.alte_adresse(url)

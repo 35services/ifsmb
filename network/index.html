@@ -5,7 +5,7 @@ title: Netzwerk
 i18n_title: pages.network.title
 i18n_lead: pages.network.lead
 lead: Wie unsere Projekte, Herausforderungen, Todos, Termine, Beiträge, Menschen, Partner und Geräte zusammenhängen. Ziehen, zoomen, anklicken – und von Punkt zu Punkt weiterwandern.
-permalink: /netzwerk/
+permalink: /network/
 ---
 {%- comment -%}
   Graph data is rendered by Jekyll: one node per resource with its raw link fields.
@@ -49,7 +49,7 @@ permalink: /netzwerk/
     <label class="netz-toggle"><input type="checkbox" id="netz-persoenlich" checked> Persönliches zeigen</label>
     <p class="netz-legend" aria-hidden="true"><span class="netz-line netz-line-besitz"></span> gehört <span class="netz-line netz-line-standort"></span> steht bei <span class="netz-line netz-line-teil"></span> Teilprojekt <span class="netz-line"></span> verbunden</p>
     <button type="button" class="btn btn-ghost netz-reset" id="netz-reset">Alles zeigen</button>
-    <a class="btn btn-ghost netz-reset" href="{{ '/karte/' | relative_url }}">🗺️ Auf der Karte</a>
+    <a class="btn btn-ghost netz-reset" href="{{ '/map/' | relative_url }}">🗺️ Auf der Karte</a>
   </div>
   <div class="netz-stage">
     <canvas id="netz-canvas" aria-label="Netzwerk aller Verbindungen – die Liste rechts ist die zugängliche Variante" role="img"></canvas>

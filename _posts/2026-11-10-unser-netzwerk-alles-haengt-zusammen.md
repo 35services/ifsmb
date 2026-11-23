@@ -6,7 +6,7 @@ tags: [netzwerk]
 verlinkt: []
 uuid: d8248438-758f-4d0d-a0e5-cd334196612e
 ---
-Was als 3D-Druck AG an einer Grundschule angefangen hat, ist inzwischen ein ganzes Geflecht: AGs an mehreren Schulen, Ausflüge, Partner, Geräte, die bei verschiedenen Leuten stehen, und viele Menschen, die mitmachen. Damit man das auch **sehen** kann, gibt es jetzt eine neue Seite: das **[Netzwerk]({{ '/netzwerk/' | relative_url }})** (im Menü unter „Wir“).
+Was als 3D-Druck AG an einer Grundschule angefangen hat, ist inzwischen ein ganzes Geflecht: AGs an mehreren Schulen, Ausflüge, Partner, Geräte, die bei verschiedenen Leuten stehen, und viele Menschen, die mitmachen. Damit man das auch **sehen** kann, gibt es jetzt eine neue Seite: das **[Netzwerk]({{ '/network/' | relative_url }})** (im Menü unter „Wir“).
 
 ![Das Netzwerk mit der 3D-Druck AG an der KTG in der Mitte: Ihre Verbindungen zu Teilprojekten, Terminen, Beiträgen, Menschen, Partnern und Geräten leuchten auf, rechts stehen sie als Buttons](/assets/images/news/netzwerk/02.jpg)
 {: .gallery}
@@ -37,4 +37,4 @@ Damit das Netzwerk entstehen konnte, haben wir aufgeräumt, wie die Seiten mitei
 
 Wir wollen unsere Aktivitäten dokumentieren – nicht nur einzelne Beiträge, sondern wie alles zusammenhängt. Das Netzwerk zeigt, wie viele Menschen, Schulen, Vereine und Partner hier ehrenamtlich zusammenarbeiten, und wie aus einer AG, einem geliehenen Drucker oder einem Ausflug immer wieder Neues entsteht. Je mehr wir eintragen, desto dichter wird es.
 
-Schaut es euch an: **[zum Netzwerk]({{ '/netzwerk/' | relative_url }})**. Und wenn ihr irgendwo dazugehört und noch nicht drin seid – meldet euch!
+Schaut es euch an: **[zum Netzwerk]({{ '/network/' | relative_url }})**. Und wenn ihr irgendwo dazugehört und noch nicht drin seid – meldet euch!

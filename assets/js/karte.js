@@ -1,4 +1,4 @@
-// Map of the network (/karte/): a small slippy map without libraries.
+// Map of the network (/map/): a small slippy map without libraries.
 // Tiles come from tile.openstreetmap.org and are only requested after the visitor agrees.
 (function () {
   "use strict";
