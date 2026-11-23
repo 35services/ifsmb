@@ -4,9 +4,9 @@ title: Geld für Makespaces
 lead: Wie kommt eine Schule an Drucker, Plotter und Material? Wege, die wir selbst gegangen sind oder die andere uns empfohlen haben.
 partners: [PC-Spende – Das macht Schule]
 linked:
-  - /news/2026/09/24/pc-spende-de-hardware-fuer-schulen/
+  - https://ifsmb.de/news/2026/09/24/pc-spende-de-hardware-fuer-schulen/
   - https://ifsmb.de/news/2026/11/07/40-monitore-von-der-bundesdruckerei/
-  - /equipment/laptops-druck-sticks/
+  - https://ifsmb.de/equipment/laptops-druck-sticks/
   - /spenden/
 uuid: 81e1f490-46a0-4e07-9cc1-d7adaef79c9e
 ---
@@ -48,11 +48,11 @@ uuid: 81e1f490-46a0-4e07-9cc1-d7adaef79c9e
 ## 🚀 Einfach anfangen: der IfsMB-Weg
 {: #bootstrapping}
 
-Unser Name ist Programm: *spontane* Makespace Buildung heißt, mit dem anzufangen, was da ist – ohne monatelang auf einen Förderbescheid zu warten. Die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) ist komplett so entstanden, bis hin zum [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}), einem 4-Farb-Drucker. Was dabei funktioniert hat:
+Unser Name ist Programm: *spontane* Makespace Buildung heißt, mit dem anzufangen, was da ist – ohne monatelang auf einen Förderbescheid zu warten. Die [3D-Druck AG an der KTG](https://ifsmb.de/projects/3d-druck-ag-ktg/) ist komplett so entstanden, bis hin zum [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}), einem 4-Farb-Drucker. Was dabei funktioniert hat:
 
 1. **Mit einem Gerät und einer AG starten.** Ein Drucker, ein paar alte Laptops, eine Stunde pro Woche. Ehrenamtliche AG-Leitung kostet die Schule nichts.
 2. **Spenden über einen Verein sammeln.** Schulen und Privatpersonen können schlecht Spendenquittungen ausstellen – ein gemeinnütziger Verein schon. Bei uns läuft das über [35services e.V.](https://35services.de/ag/) und eine [Spendenseite bei betterplace]({{ '/spenden/' | relative_url }}). Auch der Förderverein der Schule ist ein guter Partner.
-3. **Die Kinder machen mit.** In der AG haben die Kinder selbst Sponsoren gesucht, eine Kasse geführt und ausgerechnet, was ein Projekt kostet ([AG-Jahr 1]({{ '/projects/ktg-ag-jahr-1/' | relative_url }})). Das ist gleichzeitig Unterricht – und überzeugt Spender*innen mehr als jeder Antrag.
+3. **Die Kinder machen mit.** In der AG haben die Kinder selbst Sponsoren gesucht, eine Kasse geführt und ausgerechnet, was ein Projekt kostet ([AG-Jahr 1](https://ifsmb.de/projects/ktg-ag-jahr-1/)). Das ist gleichzeitig Unterricht – und überzeugt Spender*innen mehr als jeder Antrag.
 4. **Lokale Sponsoren fragen.** Restaurants, Läden und Firmen aus dem Kiez, Eltern, Platinenhersteller – kleine Beträge und Sachspenden summieren sich.
 5. **Ergebnisse zeigen.** Fotos, Beiträge, ein Besuch vom [Schulstadtrat](https://ifsmb.de/calendar/2026-03-09-schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/): Wer sieht, was aus dem Geld wird, spendet wieder. Deshalb gibt es diese Website.
 6. **Notfalls vorstrecken – aber transparent.** Manchmal ist ein Gerät nötig, bevor die Spenden reichen. Falko ist dann privat in Vorleistung gegangen; sobald genug Spenden da sind, übernimmt der Verein die Kosten und das Gerät gehört ihm (siehe [Spenden]({{ '/spenden/' | relative_url }})).
@@ -121,8 +121,8 @@ Aus dem Maker-Space-Newsletter vom April 2026 – nützlich für die Planung und
 
 Ein Makespace braucht nicht nur Drucker, sondern auch Rechner für CAD und Slicer. Die müssen nicht neu sein:
 
-- **[PC-Spende – Das macht Schule](https://pc-spende.das-macht-schule.net/):** Firmen inserieren aussortierte Hardware, Schulen bewerben sich, „Das macht Schule“ klärt die Rahmenbedingungen. **Beispiel:** Über „Das macht Schule“ kommen gerade [40 Monitore von der Bundesdruckerei](https://ifsmb.de/news/2026/11/07/40-monitore-von-der-bundesdruckerei/) an eine Berliner Schule. Mehr im Beitrag [„pc-spende.de – Hardware für Schulen“]({{ '/news/2026/09/24/pc-spende-de-hardware-fuer-schulen/' | relative_url }}).
-- **Alte Laptops mit Linux vom Stick:** Die [Laptops der 3D-Druck AG]({{ '/equipment/laptops-druck-sticks/' | relative_url }}) wären sonst im Müll gelandet – mit einem USB-Stick, von dem Linux startet, laufen sie für CAD und Slicer.
+- **[PC-Spende – Das macht Schule](https://pc-spende.das-macht-schule.net/):** Firmen inserieren aussortierte Hardware, Schulen bewerben sich, „Das macht Schule“ klärt die Rahmenbedingungen. **Beispiel:** Über „Das macht Schule“ kommen gerade [40 Monitore von der Bundesdruckerei](https://ifsmb.de/news/2026/11/07/40-monitore-von-der-bundesdruckerei/) an eine Berliner Schule. Mehr im Beitrag [„pc-spende.de – Hardware für Schulen“](https://ifsmb.de/news/2026/09/24/pc-spende-de-hardware-fuer-schulen/).
+- **Alte Laptops mit Linux vom Stick:** Die [Laptops der 3D-Druck AG](https://ifsmb.de/equipment/laptops-druck-sticks/) wären sonst im Müll gelandet – mit einem USB-Stick, von dem Linux startet, laufen sie für CAD und Slicer.
 - **Materialspenden an uns:** Laptops, Monitore, 3D-Drucker, kabelgebundene Mäuse und USB-Sticks nehmen wir gerne und geben sie an Schulen weiter (siehe [Materialspenden]({{ '/spenden/' | relative_url }}#materialspenden)).
 
 ## Noch zu recherchieren

@@ -12,7 +12,7 @@ tags: [u1, 3d-drucker, mehrfarbdruck, ktg, 35services]
 uuid: 2beec856-6fe0-4ef8-a3e9-819cdd0f99a7
 ---
 
-Der Snapmaker U1 ist der Drucker der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}): ein **Werkzeugwechsler mit vier Druckköpfen**. Statt Filament umzuspulen, tauscht er einfach den kompletten Druckkopf – so kann er **vier Farben oder vier verschiedene Materialien** in einem Druck verarbeiten und ist **extrem gut im Mehrfarbdruck**. Dank **Einhausung** bleibt die Wärme im Bauraum und neugierige Finger bleiben draußen.
+Der Snapmaker U1 ist der Drucker der [3D-Druck AG an der KTG](https://ifsmb.de/projects/3d-druck-ag-ktg/): ein **Werkzeugwechsler mit vier Druckköpfen**. Statt Filament umzuspulen, tauscht er einfach den kompletten Druckkopf – so kann er **vier Farben oder vier verschiedene Materialien** in einem Druck verarbeiten und ist **extrem gut im Mehrfarbdruck**. Dank **Einhausung** bleibt die Wärme im Bauraum und neugierige Finger bleiben draußen.
 
 Der Drucker gehört [35services e.V.]({{ '/partners/' | relative_url }}#35-services-e-v) und steht an der [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule). Er wurde **komplett über Spenden finanziert** – auch mit Fundraising-Aktionen der Kinder. Den Aufbau haben die Schüler*innen der AG selbst übernommen; über Nacht hat er dann seinen ersten 4-Farb-Testdruck-Drachen fertiggestellt.
 
@@ -23,7 +23,7 @@ Der Drucker gehört [35services e.V.]({{ '/partners/' | relative_url }}#35-servi
 
 ### Mehr zum Drucker an der KTG
 
-- [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) – das Projekt
+- [3D-Druck AG an der KTG](https://ifsmb.de/projects/3d-druck-ag-ktg/) – das Projekt
 - [Pressemitteilung: Schulstadtrat Benjamin Fritz zu Besuch bei der 3D-Druck AG](https://ifsmb.de/press/schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/) – mit dem Unboxing am 16.02.2026
 - [3D-Druck für unsere offene Werkstatt]({{ '/news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/' | relative_url }}) – wie wir die Drucker gemeinsam nutzen
 - [Spenden für die AG]({{ '/spenden/' | relative_url }}) – damit die AG weiter Material hat

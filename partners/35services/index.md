@@ -10,7 +10,7 @@ uuid: 08515cfe-c14b-4488-b136-cf67dfaae236
 
 <p class="partner-page-logo partner-page-logo-dark"><a href="https://35services.de/" target="_blank" rel="noopener"><img src="/assets/images/partner/35services.png" alt="Logo 35 services e. V."></a></p>
 
-[35services e.V.](https://35services.de/) ist eine Nachbarschaftswerkstatt in Moabit und Mitglied im [Verbund Offener Werkstätten]({{ '/partners/offene-werkstaetten/' | relative_url }}). Der Verein unterstützt die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) bei der Organisation, und viele Geräte aus unserer [Ausstattung]({{ '/equipment/' | relative_url }}) gehören dem Verein.
+[35services e.V.](https://35services.de/) ist eine Nachbarschaftswerkstatt in Moabit und Mitglied im [Verbund Offener Werkstätten]({{ '/partners/offene-werkstaetten/' | relative_url }}). Der Verein unterstützt die [3D-Druck AG an der KTG](https://ifsmb.de/projects/3d-druck-ag-ktg/) bei der Organisation, und viele Geräte aus unserer [Ausstattung]({{ '/equipment/' | relative_url }}) gehören dem Verein.
 
 {% include partner-equipment-links.html partner="35 services e. V." %}
 
@@ -20,10 +20,10 @@ Unsere Konstruktionen, Druckdateien, Werkstatt-Infrastruktur und Notizen dokumen
 
 ### 3D-Druck & Plotter
 
-- **[3D-Druck in der Werkstatt (`35services/3d`)]({{ '/projects/35services-3d/' | relative_url }})** – Ersatzteile und Absaugadapter für Maschinen, Gridfinity/openGrid, Druckplatten für die Schul-AG und Mehrfarbdruck ([GitHub](https://github.com/35services/3d))
-- **[2D-Projekte mit dem Stiftplotter (`35services/2d`)]({{ '/projects/35services-2d/' | relative_url }})** – Zeichnungen, Gutscheine und Trophäen mit dem [AxiDraw V3]({{ '/equipment/axidraw-v3/' | relative_url }}), z. B. die [Mona Lisa]({{ '/news/2024/04/19/der-axidraw-malt-die-mona-lisa/' | relative_url }}) ([GitHub](https://github.com/35services/2d))
+- **[3D-Druck in der Werkstatt (`35services/3d`)](https://ifsmb.de/projects/35services-3d/)** – Ersatzteile und Absaugadapter für Maschinen, Gridfinity/openGrid, Druckplatten für die Schul-AG und Mehrfarbdruck ([GitHub](https://github.com/35services/3d))
+- **[2D-Projekte mit dem Stiftplotter (`35services/2d`)](https://ifsmb.de/projects/35services-2d/)** – Zeichnungen, Gutscheine und Trophäen mit dem [AxiDraw V3](https://ifsmb.de/equipment/axidraw-v3/), z. B. die [Mona Lisa](https://ifsmb.de/news/2024/04/19/der-axidraw-malt-die-mona-lisa/) ([GitHub](https://github.com/35services/2d))
 - **[`fabmaker-rettung`](https://github.com/35services/fabmaker-rettung)** – Wir wollen einen alten Fabmaker-Drucker wieder zum Leben bringen: Notizen, Slicer und Wartungsprogramme
-- **[`prusaslicer-lulzbot-taz`](https://github.com/35services/prusaslicer-lulzbot-taz)** – PrusaSlicer-Profile für LulzBot-TAZ-Drucker wie unseren [LulzBot TAZ 6]({{ '/equipment/lulzbot-taz-6/' | relative_url }}) (Fork)
+- **[`prusaslicer-lulzbot-taz`](https://github.com/35services/prusaslicer-lulzbot-taz)** – PrusaSlicer-Profile für LulzBot-TAZ-Drucker wie unseren [LulzBot TAZ 6](https://ifsmb.de/equipment/lulzbot-taz-6/) (Fork)
 
 ### Gemeinsam drucken: Infrastruktur auf dem Raspberry Pi
 
@@ -36,9 +36,9 @@ Wie das zusammenspielt, steht im Beitrag [3D-Druck für unsere offene Werkstatt]
 
 ### Für die 3D-Druck AG, die Schule und Jugend hackt
 
-- **[3D-Druck-Stick (`3ddruck-jugend-hackt-iso`)]({{ '/projects/3ddruck-iso-jugend-hackt/' | relative_url }})** – Linux-Live-System auf USB-Stick für CAD und 3D-Druck, aufbauend auf dem Image von [Jugend hackt]({{ '/partners/jugend-hackt/' | relative_url }}); läuft auf den [Laptops der AG]({{ '/equipment/laptops-druck-sticks/' | relative_url }}) ([GitHub](https://github.com/35services/3ddruck-jugend-hackt-iso))
+- **[3D-Druck-Stick (`3ddruck-jugend-hackt-iso`)](https://ifsmb.de/projects/3ddruck-iso-jugend-hackt/)** – Linux-Live-System auf USB-Stick für CAD und 3D-Druck, aufbauend auf dem Image von [Jugend hackt]({{ '/partners/jugend-hackt/' | relative_url }}); läuft auf den [Laptops der AG](https://ifsmb.de/equipment/laptops-druck-sticks/) ([GitHub](https://github.com/35services/3ddruck-jugend-hackt-iso))
 - **[`3ddruck-geteilter-ordner`](https://github.com/35services/3ddruck-geteilter-ordner)** – ein „Geteilter Ordner“ auf allen Rechnern der AG, per Syncthing abgeglichen, mit Signal-Nachricht bei Änderungen
-- **[Programmierwerkstatt (`programmierwerkstatt`)]({{ '/projects/programmierwerkstatt-lessing-gymnasium/' | relative_url }})** – Ablauf und Hinweise für eine Scratch-Programmierwerkstatt mit Schüler*innen ([GitHub](https://github.com/35services/programmierwerkstatt))
+- **[Programmierwerkstatt (`programmierwerkstatt`)](https://ifsmb.de/projects/programmierwerkstatt-lessing-gymnasium/)** – Ablauf und Hinweise für eine Scratch-Programmierwerkstatt mit Schüler*innen ([GitHub](https://github.com/35services/programmierwerkstatt))
 
 ### Werkstatt & Verein
 

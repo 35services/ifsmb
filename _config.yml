@@ -97,9 +97,9 @@ nav:
       - title: Projekt-Ideen
         key: nav.project_ideas
         url: /project/ideas/
-      - title: Herausforderungen
-        key: nav.challenges
-        url: /challenges/
+      - title: Todos
+        key: nav.todos
+        url: /todos/
       - title: Angebot
         key: nav.offer
         url: /angebot/

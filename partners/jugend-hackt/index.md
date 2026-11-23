@@ -12,8 +12,8 @@ uuid: 33908aa5-0210-4eaf-973d-3ad00d2f1da4
 
 ## Was wir gemeinsam machen
 
-- **Der 3D-Druck-Stick:** Jugend hackt hat ein Linux-Live-System für USB-Sticks gebaut, mit dem auf ihren Veranstaltungen gearbeitet wird. Darauf baut Falko den [3D-Druck-Stick]({{ '/projects/3ddruck-iso-jugend-hackt/' | relative_url }}) für unsere AGs auf – offen, zum Nachmachen.
-- **Jugend Hackt Congress 2026:** 35services hat den Congress mit Hardware und Freiwilligen unterstützt – mit LulzBot-Druckern und dem AxiDraw. → [Bericht vom Congress]({{ '/news/2026/10/19/jugend-hackt-congress-2026/' | relative_url }})
+- **Der 3D-Druck-Stick:** Jugend hackt hat ein Linux-Live-System für USB-Sticks gebaut, mit dem auf ihren Veranstaltungen gearbeitet wird. Darauf baut Falko den [3D-Druck-Stick](https://ifsmb.de/projects/3ddruck-iso-jugend-hackt/) für unsere AGs auf – offen, zum Nachmachen.
+- **Jugend Hackt Congress 2026:** 35services hat den Congress mit Hardware und Freiwilligen unterstützt – mit LulzBot-Druckern und dem AxiDraw. → [Bericht vom Congress](https://ifsmb.de/news/2026/10/19/jugend-hackt-congress-2026/)
 
 → [jugendhackt.org](https://jugendhackt.org/)
 
