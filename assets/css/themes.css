@@ -13,6 +13,8 @@
 @font-face { font-family: 'Carlito'; font-style: italic; font-weight: 400; font-display: swap; src: url(../fonts/carlito/carlito-latin-400-italic.woff2) format('woff2'); }
 @font-face { font-family: 'Carlito'; font-style: normal; font-weight: 700; font-display: swap; src: url(../fonts/carlito/carlito-latin-700-normal.woff2) format('woff2'); }
 @font-face { font-family: 'Carlito'; font-style: italic; font-weight: 700; font-display: swap; src: url(../fonts/carlito/carlito-latin-700-italic.woff2) format('woff2'); }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(../fonts/inter/InterVariable.woff2) format('woff2-variations'), url(../fonts/inter/InterVariable.woff2) format('woff2'); }
+@font-face { font-family: 'Instrument Serif'; font-style: italic; font-weight: 400; font-display: swap; src: url(../fonts/instrument-serif/InstrumentSerif-Italic.woff2) format('woff2'); }
 @font-face { font-family: 'Lexend'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(../fonts/lexend/lexend-latin-wght-normal.woff2) format('woff2-variations'), url(../fonts/lexend/lexend-latin-wght-normal.woff2) format('woff2'); }
 
 /* theme picker in the footer – same in every theme */
@@ -290,7 +292,7 @@
    purple/cyan glow orbs, washed-out slate-400 text, gradient headings with an italic
    serif word, emoji in front of every heading, pill "eyebrows", frosted glass cards with
    a thick gradient stripe on the left and a rotating conic border beam, gradient pill
-   buttons with glow and shimmer, glowing badges. No extra fonts: system fonts only.
+   buttons with glow and shimmer, glowing badges. Fonts Inter and Instrument Serif Italic are self-hosted (assets/fonts/).
    ====================================================================== */
 @property --slop-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 @keyframes slop-spin { to { --slop-angle: 360deg; } }
