@@ -499,10 +499,10 @@ content:
         options:
           format: markdown
 
-  - name: herausforderungen
+  - name: challenges
     label: Herausforderungen
     type: collection
-    path: _herausforderungen
+    path: _challenges
     filename: "{primary}.md"
     view:
       fields: [title, status, art]

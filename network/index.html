@@ -28,7 +28,7 @@ permalink: /network/
 {%- for x in site.equipment -%}
 {"id":{{ x.url | relative_url | jsonify }},"type":"ausstattung","title":{{ x.title | jsonify }},"owner_partner":{{ x.owner_partner | jsonify }},"standort_partner":{{ x.standort_partner | jsonify }},"owner_team":{{ x.owner_team | jsonify }},"owner_name":{{ x.owner_name | jsonify }},"standort":{{ x.standort | jsonify }},"status":{{ x.status | jsonify }},"tags":{{ x.tags | jsonify }},"verlinkt":{{ x.verlinkt | jsonify }}},
 {%- endfor -%}
-{%- for x in site.herausforderungen -%}
+{%- for x in site.challenges -%}
 {"id":{{ x.url | relative_url | jsonify }},"type":"herausforderung","title":{{ x.title | jsonify }},"status":{{ x.status | jsonify }},"persoenlich":{{ x.persoenlich | default: false | jsonify }},"date":{{ x.seit | date: "%Y-%m-%d" | jsonify }},"projekte":{{ x.projekte | jsonify }},"team":{{ x.team | jsonify }},"tags":{{ x.tags | jsonify }},"verlinkt":{{ x.verlinkt | jsonify }}},
 {%- endfor -%}
 {%- for x in site.press -%}

@@ -66,7 +66,7 @@ layout: default
     </ul>
     {% endif %}
     {%- assign member_ch = "" | split: "" -%}{%- assign member_ch_done = "" | split: "" -%}
-    {%- for h in site.herausforderungen -%}{%- assign ht = h.team | join: "," | split: "," -%}{%- if ht contains page.slug -%}{%- if h.status == "geloest" %}{% assign member_ch_done = member_ch_done | push: h %}{% else %}{% assign member_ch = member_ch | push: h %}{% endif -%}{%- endif -%}{%- endfor -%}
+    {%- for h in site.challenges -%}{%- assign ht = h.team | join: "," | split: "," -%}{%- if ht contains page.slug -%}{%- if h.status == "geloest" %}{% assign member_ch_done = member_ch_done | push: h %}{% else %}{% assign member_ch = member_ch | push: h %}{% endif -%}{%- endif -%}{%- endfor -%}
     {%- assign member_ch = member_ch | concat: member_ch_done -%}
     {% if member_ch.size > 0 %}
     <h2 id="herausforderungen" data-i18n="challenge.heading">{{ "challenge.heading" | t }}</h2>

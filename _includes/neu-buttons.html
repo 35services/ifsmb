@@ -33,7 +33,7 @@
 {%- elsif c == 'equipment' -%}
   {% include neu-button.html typ="beitrag" i18n="new.device_post" tags=tags verlinkt=page.url %}
   {% include neu-button.html typ="herausforderung" i18n="new.device_challenge" verlinkt=page.url %}
-{%- elsif c == 'herausforderungen' -%}
+{%- elsif c == 'challenges' -%}
   {%- assign team = page.team | join: ', ' -%}
   {%- assign proj = page.projekte | join: ', ' -%}
   {%- assign auth = nil -%}{%- if team != '' -%}{%- assign auth = '[' | append: team | append: ']' -%}{%- endif -%}

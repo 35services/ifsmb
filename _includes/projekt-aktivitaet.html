@@ -21,7 +21,7 @@
 {%- assign n_eq = 0 -%}
 {%- if pa.event_tag -%}{%- for x in site.equipment -%}{%- if x.tags contains pa.event_tag %}{% assign n_eq = n_eq | plus: 1 %}{% endif -%}{%- endfor -%}{%- endif -%}
 {%- assign n_ch = 0 -%}
-{%- for x in site.herausforderungen -%}
+{%- for x in site.challenges -%}
   {%- if x.status == "geloest" %}{% continue %}{% endif -%}
   {%- assign xp = x.projekte | join: "," | split: "," -%}{%- assign xt = x.tags | join: "," | split: "," -%}
   {%- if xp contains pa.slug or pa.event_tag and xt contains pa.event_tag %}{% assign n_ch = n_ch | plus: 1 %}{% endif -%}

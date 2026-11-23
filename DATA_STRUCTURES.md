@@ -15,7 +15,7 @@ beide Richtungen (ein Eintrag auf einer der beiden Seiten reicht).
  BEITRAG        _posts/<datum>-<name>.md       /news/<jahr>/<monat>/<tag>/<name>/
  PERSON         _team/<name>.md                /team/<name>/
  AUSSTATTUNG    _equipment/<name>.md           /equipment/<name>/
- HERAUSFORDERUNG _herausforderungen/<name>.md  /challenges/<name>/
+ HERAUSFORDERUNG _challenges/<name>.md  /challenges/<name>/
  PRESSE         _press/<name>.md               /press/<name>/
  PARTNER        _data/partners.yml (+ Seite    /partners/<name>/  (wenn `page:` gesetzt)
                 partners/<name>/index.md)
@@ -205,7 +205,7 @@ Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) als JSON in die Se
  ─────────────                         ────────────────────────────────────────
  _projects, _events, _posts,   ──►     JSON  ──►  Linien aus den Feldern  ──►  Canvas
  _team, _equipment, _press,            (eine Zeile    (teil_von, verwandt,       (Kräfte-Layout,
- _herausforderungen,                   pro Seite)      team, verlinkt, …)          Zoom, Filter)
+ _challenges,                   pro Seite)      team, verlinkt, …)          Zoom, Filter)
  _data/partners.yml
 ```
 

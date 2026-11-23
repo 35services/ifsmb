@@ -36,7 +36,7 @@ var OpenWork = (function () {
   // not built yet (new in a pull request) get their future address from the permalinks in _config.yml – the same
   // collections as the ✏️ forms (_includes/edit-buttons.html, neu.js).
   var COLLECTIONS = { _team: "/team/", _projects: "/projects/", _events: "/calendar/", _equipment: "/equipment/",
-    _herausforderungen: "/challenges/", _press: "/press/" };
+    _challenges: "/challenges/", _press: "/press/" };
   // → { url, title, isNew } | { asset: true, image } | null (no page, e.g. a script)
   function pageFor(file, pages) {
     var hit = pages && pages[file];

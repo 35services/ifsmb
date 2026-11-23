@@ -51,7 +51,7 @@ layout: default
     {% endif %}
     {%- comment -%}Challenges of this project: `projekte` contains the slug, or `tags` contains the event_tag. Open ones first.{%- endcomment -%}
     {%- assign ch_open = "" | split: "" -%}{%- assign ch_done = "" | split: "" -%}
-    {%- assign ch_all = site.herausforderungen | sort: "title" -%}
+    {%- assign ch_all = site.challenges | sort: "title" -%}
     {%- for h in ch_all -%}
       {%- assign hp = h.projekte | join: "," | split: "," -%}{%- assign ht = h.tags | join: "," | split: "," -%}
       {%- if hp contains page.slug or page.event_tag and ht contains page.event_tag -%}

@@ -33,7 +33,7 @@ collections:
   equipment:
     output: true
     permalink: /equipment/:name/
-  herausforderungen:
+  challenges:
     output: true
     permalink: /challenges/:name/
 
@@ -70,7 +70,7 @@ defaults:
       layout: "equipment"
   - scope:
       path: ""
-      type: "herausforderungen"
+      type: "challenges"
     values:
       layout: "herausforderung"
 

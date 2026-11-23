@@ -237,7 +237,7 @@ var NeuFormular = (function () {
       }
     },
     herausforderung: {
-      titel: "Herausforderung", ordner: "_herausforderungen",
+      titel: "Herausforderung", ordner: "_challenges",
       datei: function (w) { return F.slugify(w.title, "kurzer-name") + ".md"; },
       felder: [
         titel("Was ist die Herausforderung? (kurz, gern als Frage)"),

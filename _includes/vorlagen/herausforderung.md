@@ -1,5 +1,5 @@
 {%- comment -%}
-  Template for a new challenge (_herausforderungen/). Params: team, projekte, tags, verlinkt, persoenlich, wichtig, dringend ("true"/"false").
+  Template for a new challenge (_challenges/). Params: team, projekte, tags, verlinkt, persoenlich, wichtig, dringend ("true"/"false").
   JJJJ-MM-TT is replaced with today's date by JS when the button is clicked.
 {%- endcomment -%}
 ---

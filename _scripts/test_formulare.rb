@@ -67,7 +67,7 @@ ZUORDNUNG = {
   "projekt" => { cms: "projects", vorlage: "projekt.md" },
   "projekt-vergangen" => { cms: "projects", vorlage: "projekt-vergangen.md" },
   "geraet" => { cms: "equipment", vorlage: "geraet.md" },
-  "herausforderung" => { cms: "herausforderungen", vorlage: "herausforderung.md" },
+  "herausforderung" => { cms: "challenges", vorlage: "herausforderung.md" },
   "team" => { cms: "team", vorlage: "team.md" },
   "presse" => { cms: "press", vorlage: "presse.md" },
   # one file per partner in _data/partner/ – same fields as an entry of the CMS list file _data/partners.yml

@@ -17,7 +17,7 @@
     {%- capture inhalt -%}{% include vorlagen/projekt-vergangen.md team=include.team partners=include.partners verlinkt=include.verlinkt persoenlich=include.persoenlich %}{%- endcapture -%}
   {%- when 'geraet' -%}{%- assign dir = '_equipment' -%}{%- assign datei = 'hersteller-modell.md' -%}
     {%- capture inhalt -%}{% include vorlagen/geraet.md owner_team=include.owner_team owner_partner=include.owner_partner tags=include.tags verlinkt=include.verlinkt %}{%- endcapture -%}
-  {%- when 'herausforderung' -%}{%- assign dir = '_herausforderungen' -%}{%- assign datei = 'kurzer-name.md' -%}
+  {%- when 'herausforderung' -%}{%- assign dir = '_challenges' -%}{%- assign datei = 'kurzer-name.md' -%}
     {%- capture inhalt -%}{% include vorlagen/herausforderung.md team=include.team projekte=include.projekte tags=include.tags verlinkt=include.verlinkt persoenlich=include.persoenlich wichtig=include.wichtig dringend=include.dringend %}{%- endcapture -%}
   {%- when 'partner' -%}{%- assign dir = '_data/partner' -%}{%- assign datei = 'name-des-partners.yml' -%}
     {%- capture inhalt -%}{% include vorlagen/partner.yml %}{%- endcapture -%}

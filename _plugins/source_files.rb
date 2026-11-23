@@ -5,7 +5,7 @@
 # The files are copied after the build (no Liquid, no layout) and are not part of site.static_files.
 module IfsmbSourceFiles
   # collections with an edit form (same list as _includes/edit-buttons.html)
-  COLLECTIONS = %w[posts events projects equipment herausforderungen team press].freeze
+  COLLECTIONS = %w[posts events projects equipment challenges team press].freeze
   # data files edited from the site itself (slogan editor: _includes/slogan-editor.html)
   DATA_FILES = %w[_data/slogans.yml].freeze
 

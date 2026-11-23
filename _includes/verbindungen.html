@@ -90,7 +90,7 @@
 
 {%- comment -%}--- challenges (Herausforderungen) ---{%- endcomment -%}
 {%- assign g_challenges = "" | split: "" -%}
-{%- for x in site.herausforderungen -%}
+{%- for x in site.challenges -%}
   {%- if x.url == P.url %}{% continue %}{% endif -%}
   {%- assign x_links = x.verlinkt | join: "," | split: "," -%}
   {%- assign x_proj = x.projekte | join: "," | split: "," -%}
