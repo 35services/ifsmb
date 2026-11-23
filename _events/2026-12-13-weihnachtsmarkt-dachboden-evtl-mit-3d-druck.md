@@ -9,6 +9,7 @@ persoenlich: true
 nur_projekt: true
 summary: Philipp und Falko stellen aus und verkaufen Kunstdrucke und kleine 3D-gedruckte Gimmicks.
 social_media_preview_image: /assets/images/kalender/2026-12-13-weihnachtsmarkt-dachboden-evtl-mit-3d-druck/01-social.jpg
+tags: [2d-druck, 3d-druck]
 uuid: 196920d2-5c32-4481-82dd-ce772598b0ba
 ---
 
