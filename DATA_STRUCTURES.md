@@ -230,6 +230,7 @@ Jede Seite kann ein eigenes Aussehen haben. Welches gilt, entscheidet (das erste
 | `ifsmb` | IfsMB (Standard) | – |
 | `offene-werkstaetten` | Offene Werkstätten | [offene-werkstaetten.org](https://offene-werkstaetten.org/de) |
 | `rfflabs` | RFFLabs | [rfflabs.fr](https://www.rfflabs.fr/) |
+| `slop` | Slop ✨ | [Slopstrap](https://slopstrap.mikelacher.com/) (Parodie auf den „vibecoded“-Look; nur nachgebaut, kein Code übernommen) |
 
 - Liste: `_data/themes.yml`; das Layout schreibt `data-theme` und `data-page-theme` auf `<html>`, Stile in
   `assets/css/themes.css`, Auswahl im Footer `assets/js/theme.js`.

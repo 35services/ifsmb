@@ -103,7 +103,7 @@ var NeuFormular = (function () {
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
   var persoenlich = function (hilfe) { return haken("persoenlich", "Persönlich", { hilfe: hilfe }); };
   // look of the page (_data/themes.yml, assets/css/themes.css); "" = the site's default
-  var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"]];
+  var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"], ["slop", "Slop ✨"]];
   var themeField = function () { return auswahl("theme", "🎨 Theme (Aussehen)", THEMES, { mehr: true, hilfe: "Besucher*innen können unten auf der Seite trotzdem selbst wählen" }); };
   var socialBild = function () { return text("social_media_preview_image", "Social-Media-Vorschaubild (1200×630 px)", { mehr: true, platzhalter: "/assets/images/og-….jpg – leer = erstes Bild oder Standard" }); };
 
