@@ -39,7 +39,7 @@ Der Quelltext liegt offen auf GitHub: **[35services/3ddruck-jugend-hackt-iso](ht
 
 - **CAD:** [OpenSCAD](https://openscad.org/) und [FreeCAD](https://www.freecad.org/)
 - **Slicer:** PrusaSlicer, UltiMaker Cura und Snapmaker Orca – passend zu unserem [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }})
-- **Plotten:** Inkscape mit der Erweiterung für den [AxiDraw]({{ '/equipment/axidraw-v3/' | relative_url }})
+- **Plotten:** Inkscape mit der Erweiterung für den [AxiDraw](https://ifsmb.de/equipment/axidraw-v3/)
 - Ein **Willkommenstext** auf dem Schreibtisch, damit die Kinder sofort loslegen können
 - **Persistenz:** Was die Kinder speichern, bleibt auf dem Stick – auch nach dem Neustart
 - Dazu Helfer, um Laptops mit fester Installation gleich einzurichten, und der „Geteilte Ordner“, über den die AG-Leitung Dateien zwischen den Laptops verteilt
@@ -48,7 +48,7 @@ Programme, die die AG nicht braucht (Entwicklungsumgebungen, Spiele-Engines …)
 
 ## Die Laptops
 
-Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **[Falkos Vater („Opa Andi“)](https://ifsmb.de/team/opa-andi/)**, ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**. Viele kamen ohne Festplatte – mit dem Stick ist das egal. Mehr dazu im Beitrag [„Linux-Laptops für die 3D-Druck AG“]({{ '/news/2026/10/13/linux-laptops-fuer-die-3d-druck-ag/' | relative_url }}) und auf der Seite [Laptops & Druck-Sticks]({{ '/equipment/laptops-druck-sticks/' | relative_url }}).
+Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **[Falkos Vater („Opa Andi“)](https://ifsmb.de/team/opa-andi/)**, ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**. Viele kamen ohne Festplatte – mit dem Stick ist das egal. Mehr dazu im Beitrag [„Linux-Laptops für die 3D-Druck AG“]({{ '/news/2026/10/13/linux-laptops-fuer-die-3d-druck-ag/' | relative_url }}) und auf der Seite [Laptops & Druck-Sticks](https://ifsmb.de/equipment/laptops-druck-sticks/).
 
 **Danke an [HeartLabs]({{ '/partners/' | relative_url }}#heartlabs)** für den Laptop, auf dem Falko die Images baut und die Sticks beschreibt!
 

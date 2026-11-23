@@ -25,7 +25,7 @@ Am **8. April 2024** startete an der Kurt-Tucholsky-Grundschule die **„DIY –
 
 **Was wir gemacht haben:**
 
-- **Kennenlernen:** Was ist ein Roboter? Ein Kind wurde zum Roboter und wurde „programmiert“. Am [AxiDraw]({{ '/equipment/axidraw-v3/' | relative_url }}) haben wir gesehen, wie ein 2D-Drucker funktioniert – und warum ein Roboter eigentlich nicht viel kann.
+- **Kennenlernen:** Was ist ein Roboter? Ein Kind wurde zum Roboter und wurde „programmiert“. Am [AxiDraw](https://ifsmb.de/equipment/axidraw-v3/) haben wir gesehen, wie ein 2D-Drucker funktioniert – und warum ein Roboter eigentlich nicht viel kann.
 - **Auf dem Weg zum 3D-Druck:** Malen mit dem 3D-Druck-Stift (Vorsicht, heiß!) – ein 3D-Drucker ist im Grunde ein 2D-Drucker mit Druckstift.
 - **Sponsoren finden:** Die Kinder haben selbst Sponsoren gesucht, eine Kasse geführt und ausgerechnet, was ein Fahrzeug kostet. Unterstützt haben uns unter anderem das [Zazza]({{ '/partners/zazza/' | relative_url }}), der KTG-Förderverein, eurocircuits (Platinen), Das Paradise, Brille und Glas und viele Eltern.
 - **Ausflug:** [Zu Max in seine 3D-Druck-Manufaktur in der Stephanstraße](https://ifsmb.de/calendar/2024-04-29-ausflug-zu-max-in-der-stephanstrasse/).

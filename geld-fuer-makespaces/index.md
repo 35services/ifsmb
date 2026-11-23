@@ -6,7 +6,7 @@ partners: [PC-Spende – Das macht Schule]
 linked:
   - /news/2026/09/24/pc-spende-de-hardware-fuer-schulen/
   - https://ifsmb.de/news/2026/11/07/40-monitore-von-der-bundesdruckerei/
-  - /equipment/laptops-druck-sticks/
+  - https://ifsmb.de/equipment/laptops-druck-sticks/
   - /spenden/
 uuid: 81e1f490-46a0-4e07-9cc1-d7adaef79c9e
 ---
@@ -122,7 +122,7 @@ Aus dem Maker-Space-Newsletter vom April 2026 – nützlich für die Planung und
 Ein Makespace braucht nicht nur Drucker, sondern auch Rechner für CAD und Slicer. Die müssen nicht neu sein:
 
 - **[PC-Spende – Das macht Schule](https://pc-spende.das-macht-schule.net/):** Firmen inserieren aussortierte Hardware, Schulen bewerben sich, „Das macht Schule“ klärt die Rahmenbedingungen. **Beispiel:** Über „Das macht Schule“ kommen gerade [40 Monitore von der Bundesdruckerei](https://ifsmb.de/news/2026/11/07/40-monitore-von-der-bundesdruckerei/) an eine Berliner Schule. Mehr im Beitrag [„pc-spende.de – Hardware für Schulen“]({{ '/news/2026/09/24/pc-spende-de-hardware-fuer-schulen/' | relative_url }}).
-- **Alte Laptops mit Linux vom Stick:** Die [Laptops der 3D-Druck AG]({{ '/equipment/laptops-druck-sticks/' | relative_url }}) wären sonst im Müll gelandet – mit einem USB-Stick, von dem Linux startet, laufen sie für CAD und Slicer.
+- **Alte Laptops mit Linux vom Stick:** Die [Laptops der 3D-Druck AG](https://ifsmb.de/equipment/laptops-druck-sticks/) wären sonst im Müll gelandet – mit einem USB-Stick, von dem Linux startet, laufen sie für CAD und Slicer.
 - **Materialspenden an uns:** Laptops, Monitore, 3D-Drucker, kabelgebundene Mäuse und USB-Sticks nehmen wir gerne und geben sie an Schulen weiter (siehe [Materialspenden]({{ '/spenden/' | relative_url }}#materialspenden)).
 
 ## Noch zu recherchieren

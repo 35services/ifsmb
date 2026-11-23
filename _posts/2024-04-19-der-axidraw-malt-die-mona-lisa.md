@@ -6,7 +6,7 @@ tags: [ktg, ktg-ag-jahr-1, 35services, 35services-2d, axidraw, plotter, 2d-druck
 uuid: 19b2ead9-4d30-441f-8c7b-e3e8931706c5
 ---
 
-In den ersten Stunden der [3D-Druck- und Elektronik-AG an der KTG]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}) haben wir uns angeschaut, wie unser Stiftplotter [AxiDraw V3]({{ '/equipment/axidraw-v3/' | relative_url }}) funktioniert – denn ein 3D-Drucker ist im Grunde auch nichts anderes als ein 2D-Drucker, der Schicht für Schicht mit einem heißen Stift übereinander malt.
+In den ersten Stunden der [3D-Druck- und Elektronik-AG an der KTG]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}) haben wir uns angeschaut, wie unser Stiftplotter [AxiDraw V3](https://ifsmb.de/equipment/axidraw-v3/) funktioniert – denn ein 3D-Drucker ist im Grunde auch nichts anderes als ein 2D-Drucker, der Schicht für Schicht mit einem heißen Stift übereinander malt.
 
 Dabei kam eine Herausforderung aus der Runde: **Ein Kind aus der AG hat gewettet, dass der AxiDraw keine Mona Lisa malen kann.**
 

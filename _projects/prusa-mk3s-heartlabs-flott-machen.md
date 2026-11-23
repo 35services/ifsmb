@@ -24,6 +24,6 @@ partners:
 uuid: 8f46d01b-411f-49eb-a53f-d60e35fd1a1f
 ---
 
-Falko hat sehr günstig einen [Prusa MK3S]({{ '/equipment/prusa-mk3s-heartlabs/' | relative_url }}) von HeartLabs erworben. Der Drucker steht jetzt bei 35services und wird dort repariert.
+Falko hat sehr günstig einen [Prusa MK3S](https://ifsmb.de/equipment/prusa-mk3s-heartlabs/) von HeartLabs erworben. Der Drucker steht jetzt bei 35services und wird dort repariert.
 
 Ziel: Der Drucker soll wieder zuverlässig drucken, damit wir ihn **zu Events mitnehmen** oder **ausleihen** können.

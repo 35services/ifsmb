@@ -19,7 +19,7 @@ partners:
 uuid: 0817e72a-78c5-4ee0-b624-c639b67aa874
 ---
 
-Im offenen GitHub-Repository **[35services/2d](https://github.com/35services/2d)** dokumentiert [Falko]({{ '/team/falko-richter/' | relative_url }}) seit **April 2024** die 2D- und Plotter-Projekte aus der Nachbarschaftswerkstatt [35services e. V.]({{ '/partners/35services/' | relative_url }}) – vor allem für unseren Stiftplotter **[AxiDraw V3]({{ '/equipment/axidraw-v3/' | relative_url }})**.
+Im offenen GitHub-Repository **[35services/2d](https://github.com/35services/2d)** dokumentiert [Falko]({{ '/team/falko-richter/' | relative_url }}) seit **April 2024** die 2D- und Plotter-Projekte aus der Nachbarschaftswerkstatt [35services e. V.]({{ '/partners/35services/' | relative_url }}) – vor allem für unseren Stiftplotter **[AxiDraw V3](https://ifsmb.de/equipment/axidraw-v3/)**.
 
 Anders als ein normaler Drucker setzt der Stiftplotter keine Pixel aufs Papier, sondern fährt **Vektorpfade** mit echten Stiften ab. Im Repo liegen deshalb nicht nur die fertigen SVG-Dateien, sondern auch die Zwischenschritte und Einstellungen: Wie wird aus einem Foto, einem Vereinslogo oder einem KI-Bild eine Zeichnung aus Linien?
 
@@ -35,7 +35,7 @@ Anders als ein normaler Drucker setzt der Stiftplotter keine Pixel aufs Papier, 
 
 1. **Vorlage in Linien übersetzen:** Fotos oder Grafiken werden mit **Vinilo** (Schraffuren, Spiralen, durchgehende Einlinien-Pfade) oder **Super Vectorizer** in SVG-Pfade umgewandelt.
 2. **In Inkscape aufbereiten:** Hintergrundpfade entfernen, Ebenen nach Stiftfarben trennen, Füllmuster über `Gekachelte Klone` (`Create Tile Clones`) anlegen und Text mit **[Hershey Text](https://wiki.evilmadscientist.com/Hershey_Text)** in echte Einlinienschrift übersetzen (damit der Stift Buchstaben in einem Zug schreibt, statt nur ihre Umrisse nachzufahren).
-3. **Plotten auf dem [AxiDraw V3]({{ '/equipment/axidraw-v3/' | relative_url }}):** Gezeichnet wird mit Finelinern, Textmarkern, Metallic-Stiften oder wasserfesten Markern (Sharpie) – nicht nur auf Papier, sondern auch auf ungewöhnlichen Oberflächen.
+3. **Plotten auf dem [AxiDraw V3](https://ifsmb.de/equipment/axidraw-v3/):** Gezeichnet wird mit Finelinern, Textmarkern, Metallic-Stiften oder wasserfesten Markern (Sharpie) – nicht nur auf Papier, sondern auch auf ungewöhnlichen Oberflächen.
 
 ## Die Projekte im Repository
 
