@@ -449,7 +449,7 @@ Priorität: **Muss** = Datenverlust oder doppelte/kaputte PRs im normalen Gebrau
   > ⚠️ **Einen Beitrag mit dieser Adresse gibt es schon:** [„Treffen“ ansehen ↗]
   > [**Dateinamen `…-treffen-2.md` verwenden**] · [Den bestehenden Beitrag bearbeiten] · [Selbst umbenennen]
 
-  Besser schon beim Tippen (nach dem Laden von `todos/suchindex.json`, das alle Seiten kennt) – ohne GitHub-Anfrage.
+  Besser schon beim Tippen (nach dem Laden von `/search/index.json` (`search/index.json`), das alle Seiten kennt) – ohne GitHub-Anfrage.
 - **Erkennung:** wie heute; zusätzlich Suchindex.
 - **Priorität:** Kann
 - **Testaufbau:** `main` mit `_posts/2026-11-18-treffen.md`; ➕ Beitrag, Datum 18.11.2026, Titel „Treffen“, Senden. **Soll:** Button „…-treffen-2.md verwenden“ → PR mit Datei `_posts/2026-11-18-treffen-2.md`, Bilderordner `assets/images/news/treffen-2/`.
@@ -506,7 +506,7 @@ Priorität: **Muss** = Datenverlust oder doppelte/kaputte PRs im normalen Gebrau
 - **Ausgangslage:** `main`: `_posts/2025-05-01-treffen.md` mit `assets/images/news/treffen/01.jpg` (`direct.folder` lässt bei Beiträgen das Datum weg).
 - **Ablauf:** ➕ Beitrag „Treffen“ am 18.11.2026, Foto, Senden.
 - **Heutiges Verhalten:** `nextNumber` → `02.jpg` im Ordner des alten Beitrags. Nichts geht verloren, aber zwei Beiträge teilen sich einen Ordner (Aufräumen/Löschen wird gefährlich).
-- **Gewünschtes Verhalten:** Ordner gehört einer anderen Seite (gefunden über `todos/suchindex.json` oder Bildpfade in anderen Seiten) → Ordner `treffen-2026-11-18/` vorschlagen:
+- **Gewünschtes Verhalten:** Ordner gehört einer anderen Seite (gefunden über `/search/index.json` (`search/index.json`) oder Bildpfade in anderen Seiten) → Ordner `treffen-2026-11-18/` vorschlagen:
   > ℹ️ Den Bilderordner `treffen/` nutzt schon „Treffen“ vom 1.5.2025 – Fotos kommen nach `treffen-2026-11-18/`.
 - **Erkennung:** `listFolder(folder)` nicht leer bei einer *neuen* Datei.
 - **Priorität:** Kann

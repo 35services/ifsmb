@@ -4,7 +4,7 @@
 {%- endcomment -%}
 <script type="application/json" id="formular-daten">
 {
-  "suchindex": {{ '/todos/suchindex.json' | relative_url | jsonify }},
+  "suchindex": {{ '/search/index.json' | relative_url | jsonify }},
   "pagefind": {{ '/pagefind/pagefind.js' | relative_url | jsonify }},
   "github": {{ site.repository | prepend: "https://github.com/" | jsonify }},
   "branch": {{ site.branch | default: "main" | jsonify }},

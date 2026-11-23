@@ -1,9 +1,8 @@
 /*
  * Network view of all connections (/network/).
  * No libraries: a small force-directed layout drawn on a canvas.
- * Node data comes from the JSON rendered by Jekyll in netzwerk/index.html; edges are derived here
- * with the same rules as _includes/verbindungen.html. Todos (todos/todo-<person>.md) are not rendered by
- * Jekyll: they are fetched first and parsed with TodoFormat from assets/js/todos.js (see the loader at the end).
+ * Node data comes from /network/graph.json (network/graph.json, rendered by Jekyll); edges are derived here
+ * with the same rules as _includes/verbindungen.html. Todos are deliberately not part of the network.
  */
 (function () {
   'use strict';
@@ -12,7 +11,6 @@
   var TYPES = {
     projekt:     { label: 'Projekte', one: 'Projekt',     color: '#ffcc00', icon: '🔧' },
     herausforderung: { label: 'Herausforderungen', one: 'Herausforderung', color: '#ff9f1c', icon: '🧗' },
-    todo:        { label: 'Todos', one: 'Todo',            color: '#8fd16a', icon: '📋' },
     termin:      { label: 'Termine', one: 'Termin',      color: '#2f5bea', icon: '📅' },
     beitrag:     { label: 'Beiträge', one: 'Beitrag',     color: '#2bb673', icon: '📰' },
     person:      { label: 'Personen', one: 'Person',     color: '#ff5a36', icon: '👤' },
@@ -83,10 +81,6 @@
     list(n.team).forEach(function (s) { link(n, personBySlug[s]); });
     list(n.author).forEach(function (s) { link(n, personBySlug[s]); });
     list(n.partners).forEach(function (s) { link(n, partnerByName[s]); });
-    if (n.type === 'todo') {               // main person "owns" the todo, helping hands are plain links
-      link(n, personBySlug[n.person], 'besitz');
-      list(n.helpers).forEach(function (s) { link(n, personBySlug[s]); });
-    }
     if (n.type === 'ausstattung') {
       list(n.owner_partner).forEach(function (s) { link(n, partnerByName[s], 'besitz'); });
       list(n.owner_team).forEach(function (s) { link(n, personBySlug[s], 'besitz'); });
@@ -107,8 +101,8 @@
     e.source.links.push(e.target); e.target.links.push(e.source);
     e.source.kinds[e.target.id] = e.kind; e.target.kinds[e.source.id] = e.kind;
   });
-  // challenges and todos are small steps inside projects: little nodes
-  var KLEIN = { herausforderung: 1, todo: 1 };
+  // challenges are small steps inside projects: little nodes
+  var KLEIN = { herausforderung: 1 };
   nodes.forEach(function (n) { n.r = KLEIN[n.type] ? 3 + Math.min(3, Math.sqrt(n.links.length)) : 5 + Math.min(14, Math.sqrt(n.links.length) * 2.6); });
 
   // ---------- filters ----------
@@ -649,21 +643,14 @@
   scrollTimeline();
   }
 
-  // ---------- loader: Jekyll data + todo files ----------
-  var raw = JSON.parse(document.getElementById('netz-daten').textContent);
-  var cfgEl = document.getElementById('netz-todos');
-  var cfg = cfgEl ? JSON.parse(cfgEl.textContent) : null;
-  if (!cfg || !cfg.dateien.length || !window.TodoFormat || !window.fetch) { netzStart(raw); return; }
-  Promise.all(cfg.dateien.map(function (person) {
-    return fetch(cfg.basis + 'todo-' + encodeURIComponent(person) + '.md')
-      .then(function (r) { return r.ok ? r.text() : ''; })
-      .then(function (md) {
-        return window.TodoFormat.parse(md).todos.map(function (t) {
-          var f = t.felder;
-          return { id: 'todo:' + person + '/' + t.id, url: cfg.basis + '#' + person + '/' + t.id, type: 'todo', title: t.titel,
-            status: f.status, date: f.since, person: person, helpers: f.helpers, projects: f.projects, tags: f.tags, linked: f.linked };
-        });
-      })
-      .catch(function () { return []; });
-  })).then(function (listen) { netzStart(raw.concat([].concat.apply([], listen))); }, function () { netzStart(raw); });
+  // ---------- loader: /network/graph.json ----------
+  var graphUrl = document.getElementById('netz').getAttribute('data-graph');
+  fetch(graphUrl)
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (graph) { netzStart(graph.nodes); })
+    .catch(function (err) {
+      var panel = document.getElementById('netz-panel');
+      if (panel) panel.innerHTML = '<p class="muted">' + (window.I18n ? window.I18n.t('pages.network.load_error') : 'Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden.') + '</p>';
+      if (window.console) console.error('network: ' + graphUrl, err);
+    });
 })();
