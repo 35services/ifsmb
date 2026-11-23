@@ -2,14 +2,14 @@
 layout: page
 title: Projekt-Ideen
 lead: Was man alles mit einem 3D-Drucker bauen kann – unsere Sammlung zum Stöbern und Nachbauen.
-permalink: /projekte/ideen/
+permalink: /projects/ideas/
 uuid: b3745d30-8b69-4c76-b404-53a480f39aae
 ---
 <div class="prose ideas" markdown="1">
 
 Hier sammeln wir Projekte, die uns begeistern – für AGs, Workshops oder einfach zum Nachbauen. ✅ heißt: Haben wir schon gebaut; 🕒 heißt: Bauen wir gerade. Die meisten Links führen zu [YouTube](https://www.youtube.com/), [Printables](https://www.printables.com/), [Thingiverse](https://www.thingiverse.com/) oder [Instructables](https://www.instructables.com/); wir binden nichts davon direkt ein.
 
-Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte/' | relative_url }}) vorbei oder [meldet euch]({{ '/angebot/' | relative_url }}).
+Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projects/' | relative_url }}) vorbei oder [meldet euch]({{ '/angebot/' | relative_url }}).
 
 ## Fundgruben
 
@@ -23,7 +23,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 
 ### Bagger, Kipplaster und Baustelle
 
-- ✅ **RC Skid Steer V2.0** (Mini-Bagger) – [auf Printables](https://www.printables.com/model/544937-v20-3d-printed-rc-skidsteer), [Bauanleitung auf Instructables](https://www.instructables.com/3D-Printed-RC-SkidSteer-V20/), [Video](https://youtu.be/3jgQ9fDi1nY) – gebaut in der [KTG-AG Jahr 1]({{ '/projekte/ktg-ag-jahr-1/' | relative_url }})
+- ✅ **RC Skid Steer V2.0** (Mini-Bagger) – [auf Printables](https://www.printables.com/model/544937-v20-3d-printed-rc-skidsteer), [Bauanleitung auf Instructables](https://www.instructables.com/3D-Printed-RC-SkidSteer-V20/), [Video](https://youtu.be/3jgQ9fDi1nY) – gebaut in der [KTG-AG Jahr 1]({{ '/projects/ktg-ag-jahr-1/' | relative_url }})
   - Teile: TPU 95A für die Ketten ([Beispiel](https://www.amazon.com/gp/product/B00TI3JUTM)), Getriebemotoren „100rpm 6V N20“ ([Suche bei AliExpress](https://de.aliexpress.com/w/wholesale-100rpm-6v-N20.html)), Motortreiber DRV8833 ([Doku](https://spacehal.github.io/docs/motor/drv8833))
 - ✅ **RC Dump Truck** – der passende Kipplaster dazu ([Video](https://youtu.be/DEg1vcA16jw)) – ebenfalls in der KTG-AG Jahr 1
 - **RC Skid Steer** auf youmagine – ein richtig erwachsenes Projekt ([Modell](https://youmagine.com/designs/f33b782a-935b-499d-b0d5-0b94b3e6fa24#overview))
@@ -33,7 +33,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 - **Scarab** von milli – ein geniales Projekt ([milli.wtf](https://www.milli.wtf/products/scarab))
 - **1:8-Auto** – [Instagram-Reel](https://www.instagram.com/reel/DfQVfaNo42B/), dasselbe als [YouTube-Short](https://youtube.com/shorts/6jFfDikJ6gw)
 - **Print-in-Place-RC-Auto** – in einem Stück gedruckt ([Video](https://youtu.be/196DbFc4tKE))
-- **Tarmo5** – ein 3D-gedrucktes RC-Auto, jetzt als [Projektidee]({{ '/projekte/tarmo5/' | relative_url }}) ([Printables](https://www.printables.com/model/348623-3d-printed-rc-car-tarmo5), [Video](https://www.youtube.com/watch?v=kef8Hit1EH0), [Diskussion auf Reddit](https://www.reddit.com/r/EngineeringNS/comments/zvellk/tarmo5/))
+- **Tarmo5** – ein 3D-gedrucktes RC-Auto, jetzt als [Projektidee]({{ '/projects/tarmo5/' | relative_url }}) ([Printables](https://www.printables.com/model/348623-3d-printed-rc-car-tarmo5), [Video](https://www.youtube.com/watch?v=kef8Hit1EH0), [Diskussion auf Reddit](https://www.reddit.com/r/EngineeringNS/comments/zvellk/tarmo5/))
 - **DKS-Pro** – ein komplett 3D-gedrucktes 1:10-Chassis ([Video](https://m.youtube.com/watch?v=KSIvDbwBDEk))
 - **CRAMER Truggy RC 4x4** – komplett 3D-gedruckt ([Modell auf Cults](https://cults3d.com/es/modelo-3d/juegos/cramer-truggy-rc-4x4-full-3d-printed), [Video](https://www.youtube.com/watch?v=pMaItQeN5LY)), dazu ein [Body-Kit](https://cults3d.com/es/modelo-3d/juegos/body-kit-cramer) ([Video, Spanisch](https://youtu.be/nkvjXQsBAxw))
 - **3DSets Bamboo 4x4** – ein komplett 3D-gedruckter 1:8-Truck ([Video](https://www.youtube.com/watch?v=yoFo4Qadtdk)) – wow!
@@ -55,7 +55,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 - **4x4 Mini-RC-Crawler mit eigener Fernsteuerung** – 3D-gedruckter Crawler mit kleinen N20-Getriebemotoren und selbstgebautem RC-Controller von Pro Know ([Video](https://www.youtube.com/watch?v=nN-Kt9q44bw))
 - **Kettenfahrzeuge** ([Video 1](https://www.youtube.com/watch?v=q3XNYwNZ97w), [Video 2](https://youtu.be/6lUlWxRsPhI))
 - **RC Avatar Scorpion V2** ([Cults](https://cults3d.com/en/3d-model/game/rc-avatar-scorpion-v2), [Video](https://youtu.be/UkFCE25-XTs))
-- 🕒 **RC Tractor von ProfessorBoots** – wird gerade gebaut: [RC Tractor von ProfessorBoots bauen]({{ '/projekte/rc-tractor-professorboots/' | relative_url }}) ([Printables](https://www.printables.com/model/1714813-rc-tractor), [John Deere Hood Mod](https://www.printables.com/model/1813353-john-deere-hood-mod-for-the-rc-tractor/files))
+- 🕒 **RC Tractor von ProfessorBoots** – wird gerade gebaut: [RC Tractor von ProfessorBoots bauen]({{ '/projects/rc-tractor-professorboots/' | relative_url }}) ([Printables](https://www.printables.com/model/1714813-rc-tractor), [John Deere Hood Mod](https://www.printables.com/model/1813353-john-deere-hood-mod-for-the-rc-tractor/files))
 - **OpenRC Tractor** – empfohlen von [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
 - **Pistenraupe** ([youmagine](https://youmagine.com/designs/34c46679-cdef-402c-94d7-eb25388172c3)) und [Bambu Labs „Santa's Snowcat“](https://www.youtube.com/watch?v=45_44t7ZurE) ([Video](https://youtu.be/nZYnPq2CSUg))
 
@@ -80,7 +80,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projekte
 
 ## Für die Werkstatt
 
-- **3D-Scanner mit Drehteller** fürs Smartphone ([Thingiverse](https://www.thingiverse.com/thing:1762299), [Drehteller-Video](https://www.youtube.com/watch?v=UGwlAmcAsJ4), [30-$-Scanner zusammenbauen](https://www.youtube.com/watch?v=zzcjlBCsNWY)) – siehe auch unsere Idee [Einen OpenScan bauen?]({{ '/projekte/openscan-bauen/' | relative_url }})
+- **3D-Scanner mit Drehteller** fürs Smartphone ([Thingiverse](https://www.thingiverse.com/thing:1762299), [Drehteller-Video](https://www.youtube.com/watch?v=UGwlAmcAsJ4), [30-$-Scanner zusammenbauen](https://www.youtube.com/watch?v=zzcjlBCsNWY)) – siehe auch unsere Idee [Einen OpenScan bauen?]({{ '/projects/openscan-bauen/' | relative_url }})
 - **Löt-Helfer („Soldering fingers“)** ([Thingiverse](https://www.thingiverse.com/thing:1725308))
 - **Schraubstock** ([Thingiverse](https://www.thingiverse.com/thing:2064269))
 - **Schleifpapier-Halter** ([Thingiverse](https://www.thingiverse.com/thing:2404850))

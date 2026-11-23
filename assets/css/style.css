@@ -421,7 +421,7 @@ a.link-tot::after { content: "🪦"; content: "🪦" / "(Link tot)"; text-decora
 .cal-heading-abo { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; margin: 2.5rem 0 1.25rem; }
 .cal-heading-abo h2 { margin: 0; }
 .abo-open { white-space: nowrap; }
-/* subscribe dialog on /kalender/ (native <dialog>) */
+/* subscribe dialog on /calendar/ (native <dialog>) */
 .abo-dialog {
   margin: auto;
   max-width: min(560px, calc(100vw - 2rem));
@@ -1126,7 +1126,7 @@ body.todos-ziehen, body.todos-ziehen * { cursor: grabbing !important; user-selec
 .neu-vorschau mark.changed-line { background: #fff1a8; color: inherit; border-radius: 2px; box-shadow: -.3rem 0 0 #fff1a8, .3rem 0 0 #fff1a8; }
 [data-submit]:disabled { opacity: .5; cursor: not-allowed; }
 
-/* Eisenhower matrix of challenges (/herausforderungen/): columns dringend / nicht dringend, rows wichtig / nicht wichtig.
+/* Eisenhower matrix of challenges (/challenges/): columns dringend / nicht dringend, rows wichtig / nicht wichtig.
    Own hm-* classes so the todo matrix (.todos-*) stays independent. */
 .hm-matrix { display: grid; grid-template-columns: 2rem 1fr 1fr; grid-template-rows: auto 1fr 1fr; gap: .6rem; margin: 1rem 0 1.5rem; }
 .hm-axis { font-family: var(--mono); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }

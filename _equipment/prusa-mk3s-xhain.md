@@ -29,4 +29,4 @@ Die gehärtete Düse verträgt auch abrasive Filamente (zum Beispiel mit Carbonf
 - **Düse:** gehärtet
 - **Steuerung:** OctoPrint mit Kamera
 
-Es gibt noch einen zweiten MK3S: den [Prusa MK3S (HeartLabs)]({{ '/ausstattung/prusa-mk3s-heartlabs/' | relative_url }}), der gerade repariert wird.
+Es gibt noch einen zweiten MK3S: den [Prusa MK3S (HeartLabs)]({{ '/equipment/prusa-mk3s-heartlabs/' | relative_url }}), der gerade repariert wird.

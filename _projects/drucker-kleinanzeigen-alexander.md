@@ -12,7 +12,7 @@ team:
 verwandt:
   - monocell
 verlinkt:
-  - /projekte/monocell/
+  - /projects/monocell/
 image: /assets/images/projekte/drucker-kleinanzeigen-alexander/01.jpg
 updates:
   - datum: 2026-11-17
@@ -32,7 +32,7 @@ Alexander hat das Gerät über Kleinanzeigen bekommen, samt Original-Handbuch un
 
 Weil er etwas kann, was kein Tinten- oder Laserdrucker kann: **Durchschläge**. Und weil das Geräusch dazugehört – ein Nadeldrucker klingt nach Arbeit.
 
-Der eigentliche Grund ist aber ein anderer. In [Monocell]({{ '/projekte/monocell/' | relative_url }}) gibt es einen Writer, der bereits auf genau diese Druckerfamilie vorbereitet ist: **PPDS**, also der Proprinter-Befehlssatz, 24-Nadel-Bitgrafik mit 180 dpi, Zeichensatz 2 für Umlaute, Seitenvorschübe. Der Textverarbeitung fehlt also nur noch der Drucker – und dem Drucker der Strom.
+Der eigentliche Grund ist aber ein anderer. In [Monocell]({{ '/projects/monocell/' | relative_url }}) gibt es einen Writer, der bereits auf genau diese Druckerfamilie vorbereitet ist: **PPDS**, also der Proprinter-Befehlssatz, 24-Nadel-Bitgrafik mit 180 dpi, Zeichensatz 2 für Umlaute, Seitenvorschübe. Der Textverarbeitung fehlt also nur noch der Drucker – und dem Drucker der Strom.
 
 ## Der zweite Schritt: ein Druckserver
 

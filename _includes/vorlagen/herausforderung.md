@@ -14,7 +14,7 @@ dringend: {{ include.dringend | default: false }}   # true/false – wichtig+dri
 team: [{{ include.team }}]   # Team-Kürzel der Zuständigen – eine oder mehrere Personen
 projekte: [{{ include.projekte }}]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: [{{ include.tags }}]   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt
-verlinkt: [{{ include.verlinkt }}]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/kalender/…/]
+verlinkt: [{{ include.verlinkt }}]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/calendar/…/]
 persoenlich: {{ include.persoenlich | default: false }}   # true = aus einem privaten Projekt im Team
 loesung:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen

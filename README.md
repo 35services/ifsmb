@@ -35,7 +35,9 @@ ruby _scripts/check_site.rb --extern                                # zusätzlic
 | Wir in der Presse | `_data/presseberichte.yml` oder `_data/pressebericht/<name>.yml` (wird nach `datum` einsortiert) | neueste zuerst; `titel`, optional `datum`, `hinweis`,, `medium`, `url`, optional `anlass` (eigene Seite zum Anlass) |
 | Impressum | `impressum/index.md` | |
 
-Projekte mit `status: abgeschlossen` erscheinen automatisch unter **Vergangene Projekte** (`/projekte/archiv/`).
+Projekte mit `status: abgeschlossen` erscheinen automatisch unter **Vergangene Projekte** (`/projects/archive/`).
+
+**Adressen:** Die Ordner für Ressourcen-Typen sind englisch (`/projects/`, `/calendar/`, `/challenges/`, `/equipment/`, `/partners/`, `/press/`, `/news/personal/`), die Texte bleiben deutsch. Einzelne Textseiten wie `/angebot/` oder `/impressum/` behalten ihre deutsche Adresse. Die früheren deutschen Adressen (`/projekte/…`, `/kalender/…` usw.) leitet `_plugins/alte_adressen.rb` automatisch weiter; Kalender- und RSS-Feeds gibt es dort weiter als Kopie.
 
 Neue Inhalte brauchen **keinen Eintrag in `CHANGELOG.md`** – dort stehen nur Funktionen der Website. Welche Inhalte wann dazukamen, zeigt das [Netzwerk](https://ifsmb.de/netzwerk/) mit seiner Zeitleiste.
 
@@ -52,7 +54,7 @@ Besucher*innen sehen an einem kleinen ✓, welche Seiten sie schon geöffnet hab
 
 ## Kalender (iCal)
 
-Alle Termine stehen als Abo unter **https://ifsmb.de/kalender.ics** (bzw. `webcal://ifsmb.de/kalender.ics`) bereit. Der Feed wird bei jedem Build neu erzeugt.
+Alle Termine stehen als Abo unter **https://ifsmb.de/calendar.ics** (bzw. `webcal://ifsmb.de/calendar.ics`) bereit. Der Feed wird bei jedem Build neu erzeugt.
 
 ## Suche
 

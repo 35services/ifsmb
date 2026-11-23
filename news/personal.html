@@ -5,13 +5,13 @@ title: Persönliche Blogs
 i18n_title: pages.personal_news.title
 i18n_lead: pages.personal_news.lead
 lead: Private Makespace-Updates aus dem Team – was wir zu Hause und nebenbei bauen.
-permalink: /news/persoenlich/
+permalink: /news/personal/
 ---
 {% assign pers_posts = site.posts | where: "persoenlich", true %}
 {%- capture link_team %}<a href="{{ '/team/' | relative_url }}" data-i18n="nav.team">{{ "nav.team" | t }}</a>{% endcapture -%}
 {%- capture link_news %}<a href="{{ '/news/' | relative_url }}" data-i18n="nav.news">{{ "nav.news" | t }}</a>{% endcapture %}
 <p class="muted" data-i18n="pages.personal_news.intro">{{ "pages.personal_news.intro" | t_html: link_team, link_news }}</p>
-<div class="feed-abo-zeile">{% include feed-abo.html feed="/news/persoenlich/feed.xml" title_key="feed.title_personal" %}</div>
+<div class="feed-abo-zeile">{% include feed-abo.html feed="/news/personal/feed.xml" title_key="feed.title_personal" %}</div>
 {% assign members = site.team | sort: "order" %}
 {% for m in members %}
   {% assign mp = pers_posts | where: "author", m.slug %}

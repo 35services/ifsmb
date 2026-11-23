@@ -11,7 +11,7 @@
 {%- when "equipment" -%}{%- assign bereich = "Ausstattung" -%}
 {%- when "herausforderungen" -%}{%- assign bereich = "Herausforderungen" -%}
 {%- when "press" -%}{%- assign bereich = "Presse" -%}
-{%- else -%}{%- if p.url contains "/partner/" -%}{%- assign bereich = "Partner" -%}{%- else -%}{%- assign bereich = "Seiten" -%}{%- endif -%}
+{%- else -%}{%- if p.url contains "/partners/" -%}{%- assign bereich = "Partner" -%}{%- else -%}{%- assign bereich = "Seiten" -%}{%- endif -%}
 {%- endcase %}
 <span data-pagefind-filter="Bereich:{{ bereich }}" hidden></span>
 {%- if p.collection == "posts" or p.collection == "press" %}

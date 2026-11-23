@@ -3,7 +3,7 @@ layout: page
 title: RFFLabs
 lead: Partner – das französische Netzwerk der FabLabs und Makerspaces
 theme: rfflabs
-verlinkt: [/partner/offene-werkstaetten/, /team/falko-richter/]
+verlinkt: [/partners/offene-werkstaetten/, /team/falko-richter/]
 uuid: bccf44ea-62cc-4957-81a9-4987b5472059
 ---
 <div class="prose" markdown="1">
@@ -16,7 +16,7 @@ Das Netzwerk steht für Lernen durch Machen, das Recht, Fehler zu machen, offene
 
 ## Was uns verbindet
 
-- **Kennengelernt beim Verbund:** Bei der Jahreshauptversammlung des [Verbunds Offener Werkstätten]({{ '/partner/offene-werkstaetten/' | relative_url }}) hat [Falko]({{ '/team/falko-richter/' | relative_url }}) ganz liebe Kolleg*innen von RFFLabs aus Frankreich getroffen.
+- **Kennengelernt beim Verbund:** Bei der Jahreshauptversammlung des [Verbunds Offener Werkstätten]({{ '/partners/offene-werkstaetten/' | relative_url }}) hat [Falko]({{ '/team/falko-richter/' | relative_url }}) ganz liebe Kolleg*innen von RFFLabs aus Frankreich getroffen.
 - **Die Seite des Instituts mitnutzen:** Dabei kam Interesse auf, die Seite des Instituts auch für die eigene Arbeit zu nutzen – Projekte, Herausforderungen und Geräte lassen sich hier gemeinsam sammeln.
 - **Das Aussehen dieser Seite:** Sie erscheint im Theme „RFFLabs“, angelehnt an den Stil von [rfflabs.fr](https://www.rfflabs.fr/). Unten auf der Seite lässt sich das Aussehen umstellen.
 
@@ -26,4 +26,4 @@ Das Netzwerk steht für Lernen durch Machen, das Recht, Fehler zu machen, offene
 
 {% include verbindungen.html partner="RFFLabs" %}
 
-<a href="{{ '/partner/' | relative_url }}" class="back-link">← Alle Partner</a>
+<a href="{{ '/partners/' | relative_url }}" class="back-link">← Alle Partner</a>

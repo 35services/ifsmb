@@ -33,7 +33,7 @@ layout: default
     <h2 id="badge" data-i18n="team.badge">{{ "team.badge" | t }}</h2>
     <div class="member-badge">
       {% include badge-3d.html b=member_badge %}
-      {%- capture badge_link %}<a href="{{ '/presse/#badge' | relative_url }}" data-i18n="team.badge_more">{{ "team.badge_more" | t }}</a>{% endcapture %}
+      {%- capture badge_link %}<a href="{{ '/press/#badge' | relative_url }}" data-i18n="team.badge_more">{{ "team.badge_more" | t }}</a>{% endcapture %}
       <p class="muted small" data-i18n="team.badge_help">{{ "team.badge_help" | t_html: badge_link }}</p>
     </div>
     {% endif %}

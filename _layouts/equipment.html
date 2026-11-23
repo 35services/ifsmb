@@ -11,7 +11,7 @@ layout: default
       <h1>{{ page.title }}</h1>
       {% if page.summary %}<p class="lead">{{ page.summary }}</p>{% endif %}
       {% if page.standort or sp %}
-      <p class="equipment-location">📍 <span data-i18n="equipment.location">{{ "equipment.location" | t }}</span> {% if sp %}<a href="{{ '/partner/' | relative_url }}#{{ sp.name | slugify }}">{{ page.standort | default: sp.name }}</a>{% else %}{{ page.standort }}{% endif %}</p>
+      <p class="equipment-location">📍 <span data-i18n="equipment.location">{{ "equipment.location" | t }}</span> {% if sp %}<a href="{{ '/partners/' | relative_url }}#{{ sp.name | slugify }}">{{ page.standort | default: sp.name }}</a>{% else %}{{ page.standort }}{% endif %}</p>
       {% endif %}
       {% include stichworte.html tags=page.tags %}
     </header>
@@ -66,6 +66,6 @@ layout: default
     {%- if rel_tags.size == 0 -%}{%- assign rel_tags = page.tags -%}{%- endif %}
     {% include verbindungen.html %}
     {% include verknuepft.html tags=rel_tags %}
-    <a href="{{ '/ausstattung/' | relative_url }}" class="back-link" data-i18n="equipment.back">{{ "equipment.back" | t }}</a>
+    <a href="{{ '/equipment/' | relative_url }}" class="back-link" data-i18n="equipment.back">{{ "equipment.back" | t }}</a>
   </article>
 </main>

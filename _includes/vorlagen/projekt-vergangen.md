@@ -1,11 +1,11 @@
 {%- comment -%}
-  Template for a finished project (_projects/, status: abgeschlossen → /projekte/archiv/). Params: team, partners, verlinkt, persoenlich.
+  Template for a finished project (_projects/, status: abgeschlossen → /projects/archive/). Params: team, partners, verlinkt, persoenlich.
   The start date is an example in the past on purpose – today's date would be wrong for a finished project.
 {%- endcomment -%}
 ---
 title: "Name des Projekts (Zeitraum)"
 summary: Ein bis zwei Sätze, worum es ging – erscheint auf der Projektkarte im Archiv.
-status: abgeschlossen   # erscheint unter „Vergangene Projekte“ (/projekte/archiv/)
+status: abgeschlossen   # erscheint unter „Vergangene Projekte“ (/projects/archive/)
 persoenlich: {{ include.persoenlich | default: false }}   # true = privates Projekt aus dem Team (Person unter team): nur im Teamprofil
 start: 2025-09-01   # Beginn des Projekts – bitte anpassen, wird zum Sortieren genutzt
 zeitraum: Schuljahr 2025/26   # Text, z. B. „Herbst 2025“, „April – Juli 2024“ oder „Schuljahr 2024/25“
@@ -16,7 +16,7 @@ teil_von:   # leer lassen! Nur für Teilprojekte: [dateiname-des-elternprojekts]
 verwandt: []   # Dateinamen verwandter Projekte, z. B. das Folgejahr: [ktg-ag-jahr-2]
 team: [{{ include.team }}]   # Team-Kürzel der Beteiligten
 partners: [{{ include.partners }}]   # Namen aus _data/partners.yml, in Anführungszeichen
-verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/kalender/…/, /news/…/]
+verlinkt: [{{ include.verlinkt }}]   # weitere Seiten, z. B. [/calendar/…/, /news/…/]
 image:   # Titelbild für die Projektkarte, z. B. /assets/images/projekte/<name>/01.jpg – ohne Metadaten, Kindergesichter unkenntlich
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
 social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg

@@ -18,7 +18,7 @@ lead: Workshops, offene Werkstatt-Termine und alles, wo man vorbeikommen kann.
 
 <div class="cal-heading-abo">
   <h2 class="cal-heading" data-i18n="calendar.upcoming">{{ "calendar.upcoming" | t }}</h2>
-  {% include kalender-abo.html ics="/kalender.ics" title_key="calendar.title_institute" %}
+  {% include kalender-abo.html ics="/calendar.ics" title_key="calendar.title_institute" %}
 </div>
 <ul class="event-list" id="events-upcoming">
   {%- for e in upcoming %}{% include termin-karte.html event=e versteckt=e.nur_projekt %}{% endfor %}

@@ -33,7 +33,7 @@ lead: Woran wir gerade arbeiten.
 
 {% if ideas.size > 0 %}
 <h2 class="cal-heading" data-i18n="pages.projects.ideas">{{ "pages.projects.ideas" | t }}</h2>
-{%- capture link_ideas %}<a href="{{ '/projekte/ideen/' | relative_url }}" data-i18n="nav.project_ideas">{{ "nav.project_ideas" | t }}</a>{% endcapture %}
+{%- capture link_ideas %}<a href="{{ '/projects/ideas/' | relative_url }}" data-i18n="nav.project_ideas">{{ "nav.project_ideas" | t }}</a>{% endcapture %}
 <p class="muted" data-i18n="pages.projects.ideas_intro">{{ "pages.projects.ideas_intro" | t_html: link_ideas }}</p>
 <div class="grid-2">
   {% for p in ideas %}
@@ -42,7 +42,7 @@ lead: Woran wir gerade arbeiten.
 </div>
 {% endif %}
 
-<p class="section-foot"><a href="{{ '/projekte/archiv/' | relative_url }}" data-i18n="pages.projects.archive_link">{{ "pages.projects.archive_link" | t }}</a></p>
+<p class="section-foot"><a href="{{ '/projects/archive/' | relative_url }}" data-i18n="pages.projects.archive_link">{{ "pages.projects.archive_link" | t }}</a></p>
 {% if personal.size > 0 %}
-<p class="section-foot"><a href="{{ '/projekte/persoenlich/' | relative_url }}" data-i18n="pages.projects.personal_link" data-i18n-params="{{ "n" | i18n_params: personal.size }}">{{ "pages.projects.personal_link" | t: "n", personal.size }}</a></p>
+<p class="section-foot"><a href="{{ '/projects/personal/' | relative_url }}" data-i18n="pages.projects.personal_link" data-i18n-params="{{ "n" | i18n_params: personal.size }}">{{ "pages.projects.personal_link" | t: "n", personal.size }}</a></p>
 {% endif %}

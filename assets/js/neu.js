@@ -298,11 +298,11 @@ var NeuFormular = (function () {
         adresse("instagram", "Instagram", { mehr: true }),
         text("logo", "Logo", { mehr: true, platzhalter: "/assets/images/partner/<name>.png" }),
         haken("logo_dark", "Logo hat helle Elemente (dunkler Hintergrund)", { mehr: true }),
-        text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partner/<name>/", hilfe: "Nur unsere eigene Unterseite (partner/<name>/index.md) – die Website des Partners gehört oben in „Website“." })
+        text("page", "Eigene Partnerseite", { mehr: true, platzhalter: "/partners/<name>/", hilfe: "Nur unsere eigene Unterseite (partners/<name>/index.md) – die Website des Partners gehört oben in „Website“." })
       ]
     },
     // Pages outside the collections, edit only (_plugins/source_files.rb sets page.edit_form, #154).
-    // Markdown pages (partner/<name>/index.md, angebot/, spenden/ …): title, lead, links, text.
+    // Markdown pages (partners/<name>/index.md, angebot/, spenden/ …): title, lead, links, text.
     seite: {
       titel: "Seite", ordner: "",
       datei: function (w) { return F.slugify(w.title, "name-der-seite") + ".md"; },
@@ -853,7 +853,7 @@ var NeuFormular = (function () {
     folder: function () {
       var area = IMAGE_FOLDERS[aktiv.typ] || "news", name = String(aktiv.w.datei || "").replace(/\.(md|ya?ml)$/, "");
       if (area === "news") name = name.replace(/^\d{4}-\d{2}-\d{2}-/, "");
-      // pages are all called index.md: name the folder after the page's path (partner/rfflabs/index.md → partner-rfflabs)
+      // pages are all called index.md: name the folder after the page's path (partners/rfflabs/index.md → partners-rfflabs)
       if (area === "seiten") name = String(aktiv.path || name).replace(/(^|\/)index\.(md|html)$/, "").replace(/\.(md|html)$/, "").replace(/\//g, "-");
       return "assets/images/" + area + "/" + (name || "neu") + "/";
     },

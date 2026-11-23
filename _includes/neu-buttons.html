@@ -52,16 +52,16 @@
   {%- else -%}
     {%- case page.url -%}
       {%- when '/team/' -%}{% include neu-button.html typ="team" i18n="new.team_profile" %}
-      {%- when '/projekte/' -%}{% include neu-button.html typ="projekt" i18n="new.projects_project" %}
-      {%- when '/projekte/archiv/' -%}{% include neu-button.html typ="projekt-vergangen" i18n="new.archive_project" %}
-      {%- when '/projekte/persoenlich/' -%}{% include neu-button.html typ="projekt" i18n="new.personal_project" persoenlich=true %}
+      {%- when '/projects/' -%}{% include neu-button.html typ="projekt" i18n="new.projects_project" %}
+      {%- when '/projects/archive/' -%}{% include neu-button.html typ="projekt-vergangen" i18n="new.archive_project" %}
+      {%- when '/projects/personal/' -%}{% include neu-button.html typ="projekt" i18n="new.personal_project" persoenlich=true %}
       {%- when '/news/' -%}{% include neu-button.html typ="beitrag" i18n="new.news_post" %}
-      {%- when '/news/persoenlich/' -%}{% include neu-button.html typ="beitrag" i18n="new.personal_post" persoenlich=true %}
-      {%- when '/kalender/' -%}{% include neu-button.html typ="termin" i18n="new.calendar_event" %}
-      {%- when '/herausforderungen/' -%}{% include neu-button.html typ="herausforderung" i18n="new.challenges_challenge" %}
-      {%- when '/ausstattung/' -%}{% include neu-button.html typ="geraet" i18n="new.equipment_device" %}
-      {%- when '/presse/' -%}{% include neu-button.html typ="presse" i18n="new.press_release" %}{% include neu-button.html typ="pressebericht" i18n="new.press_report" %}
-      {%- when '/partner/' -%}{% include neu-button.html typ="partner" i18n="new.partners_partner" %}
+      {%- when '/news/personal/' -%}{% include neu-button.html typ="beitrag" i18n="new.personal_post" persoenlich=true %}
+      {%- when '/calendar/' -%}{% include neu-button.html typ="termin" i18n="new.calendar_event" %}
+      {%- when '/challenges/' -%}{% include neu-button.html typ="herausforderung" i18n="new.challenges_challenge" %}
+      {%- when '/equipment/' -%}{% include neu-button.html typ="geraet" i18n="new.equipment_device" %}
+      {%- when '/press/' -%}{% include neu-button.html typ="presse" i18n="new.press_release" %}{% include neu-button.html typ="pressebericht" i18n="new.press_report" %}
+      {%- when '/partners/' -%}{% include neu-button.html typ="partner" i18n="new.partners_partner" %}
     {%- endcase -%}
   {%- endif -%}
 {%- endif -%}

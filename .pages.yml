@@ -57,7 +57,7 @@ content:
         type: boolean
         default: false
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
+        label: Verlinkt mit (Adressen, z. B. /projects/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
@@ -165,7 +165,7 @@ content:
         description: "Kleines Projekt-Update: erscheint nicht unter Neuigkeiten, auf der Startseite und im RSS-Feed, sondern nur auf der Projektseite (über die Kategorie)."
         type: boolean
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
+        label: Verlinkt mit (Adressen, z. B. /projects/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
@@ -299,7 +299,7 @@ content:
         options:
           format: markdown
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
+        label: Verlinkt mit (Adressen, z. B. /projects/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
@@ -380,7 +380,7 @@ content:
         options:
           format: markdown
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
+        label: Verlinkt mit (Adressen, z. B. /projects/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
@@ -465,7 +465,7 @@ content:
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Gerätefoto oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
         type: image
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
+        label: Verlinkt mit (Adressen, z. B. /projects/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
@@ -558,7 +558,7 @@ content:
         label: Persönlich (aus einem privaten Projekt im Team)
         type: boolean
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /kalender/…/ oder /ausstattung/…/)
+        label: Verlinkt mit (Adressen, z. B. /calendar/…/ oder /equipment/…/)
         description: Beliebige Seiten verlinken – Termine, Beiträge, Geräte, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten.
         type: string
         list: true
@@ -614,7 +614,7 @@ content:
         options:
           format: "yyyy-MM-dd"
       - name: verlinkt
-        label: Verlinkt mit (Adressen, z. B. /projekte/openpress-bauen/ oder /team/anton/)
+        label: Verlinkt mit (Adressen, z. B. /projects/openpress-bauen/ oder /team/anton/)
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
@@ -729,8 +729,8 @@ content:
         label: Logo braucht dunklen Hintergrund
         type: boolean
       - name: page
-        label: Eigene Seite (optional, z. B. /partner/taschenstation/)
-        description: Pfad zu einer Unterseite mit mehr Infos zur Zusammenarbeit. Die Seite selbst liegt als Datei unter partner/<name>/index.md.
+        label: Eigene Seite (optional, z. B. /partners/taschenstation/)
+        description: Pfad zu einer Unterseite mit mehr Infos zur Zusammenarbeit. Die Seite selbst liegt als Datei unter partners/<name>/index.md.
         type: string
       - name: description
         label: Beschreibung

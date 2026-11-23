@@ -13,7 +13,7 @@ photo_credit:   # Bildnachweis – Pflicht bei Fremdfotos (Presse, Agentur)
 links:   # Links zur Person, Liste aus title und url
 #  - title: GitHub
 #    url: https://github.com/…
-verlinkt: []   # weitere Seiten, z. B. [/projekte/3d-druck-ag-ktg/]
+verlinkt: []   # weitere Seiten, z. B. [/projects/3d-druck-ag-ktg/]
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
 social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
 uuid: UUID-NEU   # zufällige Kennung für die Gelesen-Markierung – wird beim Klick erzeugt, nicht ändern

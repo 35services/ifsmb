@@ -503,7 +503,7 @@ new:
     hint: New report about us – sorted in by date
   partners_partner:
     label: Partner
-    hint: New partner as its own file – appears on /partner/ and in the network
+    hint: New partner as its own file – appears on /partners/ and in the network
 
 read:
   check: read

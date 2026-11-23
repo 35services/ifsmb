@@ -17,7 +17,7 @@ seit: 2026-11-13
 helfer: [gregor-dill]
 projekte: [ktg-ag]
 tags: [ktg]
-verlinkt: [/kalender/2027-01-04-besuch-bei-max-2027/]
+verlinkt: [/calendar/2027-01-04-besuch-bei-max-2027/]
 ```
 
 Termin kommunizieren und organisieren für Januar
@@ -53,7 +53,7 @@ status: offen
 seit: 2026-11-14
 projekte: [ifsmb-de]
 tags: [software]
-verlinkt: [/projekte/ifsmb-de/]
+verlinkt: [/projects/ifsmb-de/]
 ```
 
 Vielleicht auch nochmal vergleichen was wir beim Lastenlaufradrennen gebaut haben
@@ -124,7 +124,7 @@ seit: 2026-11-13
 faellig: 2027-01-27
 projekte: [3d-druck-ag-platanus-schule]
 tags: [platanus]
-verlinkt: [/projekte/3d-druck-ag-platanus-schule/, /news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
+verlinkt: [/projects/3d-druck-ag-platanus-schule/, /news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
 ```
 
 https://www.platanus-schule.de/tag-der-offenen-tuer/
@@ -137,7 +137,7 @@ status: offen
 seit: 2026-11-14
 projekte: [3d-druck-ag-rosalind-franklin-gymnasium]
 tags: [rosalind-franklin-gym]
-verlinkt: [/kalender/2026-11-11-besuch-gustav-falke-grundschule/]
+verlinkt: [/calendar/2026-11-11-besuch-gustav-falke-grundschule/]
 ```
 
 [Deckel Video](https://youtu.be/MLQvEFuRu9Y?is=vqGTS-Xs0ATl15Da)
@@ -168,10 +168,10 @@ status: in-arbeit
 seit: 2026-11-13
 helfer: [anton]
 tags: [fabmaker]
-verlinkt: [/ausstattung/fabmaker/]
+verlinkt: [/equipment/fabmaker/]
 ```
 
-Unsere zwei [Fabmaker](/ausstattung/fabmaker/) lassen sich nur mit dem **Fabmaker Slicer** für Windows ansteuern (`SetupFabmakerSlicer_1.1.1.9.exe`), und den Hersteller gibt es nicht mehr. Falko und Anton wollen das Programm mit **Claude Code** oder **OpenCode** per Reverse Engineering untersuchen, damit die Drucker auch **auf dem Mac/linux oder im Browser** nutzbar werden.
+Unsere zwei [Fabmaker](/equipment/fabmaker/) lassen sich nur mit dem **Fabmaker Slicer** für Windows ansteuern (`SetupFabmakerSlicer_1.1.1.9.exe`), und den Hersteller gibt es nicht mehr. Falko und Anton wollen das Programm mit **Claude Code** oder **OpenCode** per Reverse Engineering untersuchen, damit die Drucker auch **auf dem Mac/linux oder im Browser** nutzbar werden.
 
 - Installer und Wartungsprogramme aus [35services/fabmaker-rettung](https://github.com/35services/fabmaker-rettung) auseinandernehmen: Womit ist der Slicer gebaut, steckt ein bekannter Slicer darunter?
 - Herausfinden, welches Dateiformat und welches Protokoll der Drucker erwartet (G-Code? eigenes Format? USB, Netzwerk, Speicherkarte?)
@@ -212,7 +212,7 @@ seit: 2026-11-13
 helfer: [anton]
 projekte: [35services-3d]
 tags: [35services-3d]
-verlinkt: [/partner/35services/, /ausstattung/35services-bambu-lab-a1-mini/, /ausstattung/prusa-mk3s-xhain/, /projekte/prusa-mk3s-heartlabs-flott-machen/]
+verlinkt: [/partners/35services/, /equipment/35services-bambu-lab-a1-mini/, /equipment/prusa-mk3s-xhain/, /projects/prusa-mk3s-heartlabs-flott-machen/]
 ```
 
 https://youtu.be/cRSoVq_reGQ?is=4-7OQB8jc_aDTww_

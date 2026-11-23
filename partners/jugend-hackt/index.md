@@ -12,7 +12,7 @@ uuid: 33908aa5-0210-4eaf-973d-3ad00d2f1da4
 
 ## Was wir gemeinsam machen
 
-- **Der 3D-Druck-Stick:** Jugend hackt hat ein Linux-Live-System für USB-Sticks gebaut, mit dem auf ihren Veranstaltungen gearbeitet wird. Darauf baut Falko den [3D-Druck-Stick]({{ '/projekte/3ddruck-iso-jugend-hackt/' | relative_url }}) für unsere AGs auf – offen, zum Nachmachen.
+- **Der 3D-Druck-Stick:** Jugend hackt hat ein Linux-Live-System für USB-Sticks gebaut, mit dem auf ihren Veranstaltungen gearbeitet wird. Darauf baut Falko den [3D-Druck-Stick]({{ '/projects/3ddruck-iso-jugend-hackt/' | relative_url }}) für unsere AGs auf – offen, zum Nachmachen.
 - **Jugend Hackt Congress 2026:** 35services hat den Congress mit Hardware und Freiwilligen unterstützt – mit LulzBot-Druckern und dem AxiDraw. → [Bericht vom Congress]({{ '/news/2026/10/19/jugend-hackt-congress-2026/' | relative_url }})
 
 → [jugendhackt.org](https://jugendhackt.org/)
@@ -24,7 +24,7 @@ uuid: 33908aa5-0210-4eaf-973d-3ad00d2f1da4
 {% assign jh_tags = "jugend-hackt" | split: "," %}
 {% include verknuepft.html tags=jh_tags %}
 
-<a href="{{ '/partner/' | relative_url }}" class="back-link">← Alle Partner</a>
+<a href="{{ '/partners/' | relative_url }}" class="back-link">← Alle Partner</a>
 
 https://jugendhackt.org/spenden/
 Termine verknüpfen 

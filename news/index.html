@@ -25,5 +25,5 @@ lead: Was gerade im Institut passiert.
 {% endif %}
 
 {% if pers_posts.size > 0 %}
-<p class="section-foot"><a href="{{ '/news/persoenlich/' | relative_url }}" data-i18n="pages.news.personal_link" data-i18n-params="{{ "n" | i18n_params: pers_posts.size }}">{{ "pages.news.personal_link" | t: "n", pers_posts.size }}</a></p>
+<p class="section-foot"><a href="{{ '/news/personal/' | relative_url }}" data-i18n="pages.news.personal_link" data-i18n-params="{{ "n" | i18n_params: pers_posts.size }}">{{ "pages.news.personal_link" | t: "n", pers_posts.size }}</a></p>
 {% endif %}

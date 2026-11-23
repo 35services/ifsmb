@@ -14,15 +14,15 @@ verlinkt:
 uuid: c232dbdd-1c8f-4344-a3de-85d35023a271
 ---
 
-Für die [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) hat Falko eine kleine Laptop-Flotte zusammengestellt:
+Für die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) hat Falko eine kleine Laptop-Flotte zusammengestellt:
 
 - Ein Teil der Laptops kommt von **[Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }})**.
-- Ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partner/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**.
+- Ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**.
 - Darunter sind drei **Acer TravelMate P653-M** – ohne Festplatte, deshalb starten sie von USB-Stick.
 
-Auf den Sticks läuft der [3D-Druck-Stick]({{ '/projekte/3ddruck-iso-jugend-hackt/' | relative_url }}): ein Linux auf Basis des Systems von [Jugend hackt]({{ '/partner/jugend-hackt/' | relative_url }}) mit OpenSCAD, FreeCAD, Slicern und der AxiDraw-Erweiterung.
+Auf den Sticks läuft der [3D-Druck-Stick]({{ '/projects/3ddruck-iso-jugend-hackt/' | relative_url }}): ein Linux auf Basis des Systems von [Jugend hackt]({{ '/partners/jugend-hackt/' | relative_url }}) mit OpenSCAD, FreeCAD, Slicern und der AxiDraw-Erweiterung.
 
-Gebaut und beschrieben werden die Sticks auf einem Laptop, den uns **[HeartLabs]({{ '/partner/' | relative_url }}#heartlabs)** geschenkt hat – danke!
+Gebaut und beschrieben werden die Sticks auf einem Laptop, den uns **[HeartLabs]({{ '/partners/' | relative_url }}#heartlabs)** geschenkt hat – danke!
 
 Die USB-Sticks hat Falko privat vorgestreckt. → [Spenden]({{ '/spenden/' | relative_url }})
 

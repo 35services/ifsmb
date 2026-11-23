@@ -30,4 +30,4 @@ Quelle: die AG-Seite von 35services ([35services.de/ag](https://35services.de/ag
 
 <span class="todo">[Fotos und ein paar Sätze zu den Ergebnissen des Jahres – Details folgen.]</span>
 
-Davor: [das erste AG-Jahr]({{ '/projekte/ktg-ag-jahr-1/' | relative_url }}). Danach: die [aktuelle 3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}).
+Davor: [das erste AG-Jahr]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}). Danach: die [aktuelle 3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}).

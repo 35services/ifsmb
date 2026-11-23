@@ -14,7 +14,7 @@ partners:
 uuid: 3d959bac-ed7f-45b1-9552-93c25c52e323
 ---
 
-Wir haben dem Rosalind-Franklin-Gymnasium **20 Eingabestifte fürs iPad zum Testen ausgeliehen**. Sie stammen aus dem Projekt [iPad-Stifte wiederbeleben]({{ '/projekte/ipad-stifte-wiederbeleben/' | relative_url }}) an der Kurt-Tucholsky-Grundschule, wo viele Stifte lange ungenutzt herumlagen. Es sind **keine originalen Apple Pencils**, sondern einfache kompatible Stifte ohne Neigungs- und Druckerkennung.
+Wir haben dem Rosalind-Franklin-Gymnasium **20 Eingabestifte fürs iPad zum Testen ausgeliehen**. Sie stammen aus dem Projekt [iPad-Stifte wiederbeleben]({{ '/projects/ipad-stifte-wiederbeleben/' | relative_url }}) an der Kurt-Tucholsky-Grundschule, wo viele Stifte lange ungenutzt herumlagen. Es sind **keine originalen Apple Pencils**, sondern einfache kompatible Stifte ohne Neigungs- und Druckerkennung.
 
 Am Gymnasium gilt dasselbe Vorgehen:
 

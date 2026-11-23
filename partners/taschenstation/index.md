@@ -20,4 +20,4 @@ Im September 2026 hat ReUseMe die Station per Videocall in der 3D-Druck AG an de
 
 {% include verbindungen.html partner="Taschenstation (ReUseMe)" %}
 
-<a href="{{ '/partner/' | relative_url }}" class="back-link">← Alle Partner</a>
+<a href="{{ '/partners/' | relative_url }}" class="back-link">← Alle Partner</a>

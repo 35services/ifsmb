@@ -22,14 +22,14 @@ Jeder Punkt ist eine Seite von ifsmb.de, jede Linie eine Verbindung:
 - ⚫ **Ausstattung** – rote Linien zeigen, wem ein Gerät gehört, blau gestrichelte, wo es steht
 - ⬜ **Orte**
 
-Je größer ein Punkt, desto mehr hängt an ihm. Klickt man darauf, leuchten seine Verbindungen auf, und rechts erscheinen sie als Liste – ein Klick darauf, und man wandert zum nächsten Punkt weiter. So kann man zum Beispiel von der [3D-Druck AG an der KTG]({{ '/projekte/3d-druck-ag-ktg/' | relative_url }}) über einen Ausflug zu einem Partner und von dort zu den Geräten springen, die dort stehen. Filter blenden einzelne Bereiche aus, die Suche findet jeden Punkt, und persönliche Projekte und Beiträge aus dem Team lassen sich ein- und ausschalten.
+Je größer ein Punkt, desto mehr hängt an ihm. Klickt man darauf, leuchten seine Verbindungen auf, und rechts erscheinen sie als Liste – ein Klick darauf, und man wandert zum nächsten Punkt weiter. So kann man zum Beispiel von der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) über einen Ausflug zu einem Partner und von dort zu den Geräten springen, die dort stehen. Filter blenden einzelne Bereiche aus, die Suche findet jeden Punkt, und persönliche Projekte und Beiträge aus dem Team lassen sich ein- und ausschalten.
 
 ## Was sich dafür auf der Seite geändert hat
 
 Damit das Netzwerk entstehen konnte, haben wir aufgeräumt, wie die Seiten miteinander verbunden sind:
 
 - **Alles kann mit allem verbunden werden.** Projekte, Termine, Beiträge, Menschen, Geräte, Pressemitteilungen und Partnerseiten lassen sich gegenseitig verlinken. Die Verbindungen stehen unten auf jeder Seite – immer gleich gestaltet und immer in beide Richtungen.
-- **Teilprojekte.** Große Projekte haben jetzt Teilprojekte. Die KTG-AG zum Beispiel baut gerade eine [Open Press]({{ '/projekte/openpress-bauen/' | relative_url }}), plant einen [Klassensatz Blockface-Stempel]({{ '/projekte/blockface-klassensatz/' | relative_url }}) und belebt [alte iPad-Stifte wieder]({{ '/projekte/ipad-stifte-wiederbeleben/' | relative_url }}). Ein Teilprojekt kann auch zu mehreren Projekten gehören.
+- **Teilprojekte.** Große Projekte haben jetzt Teilprojekte. Die KTG-AG zum Beispiel baut gerade eine [Open Press]({{ '/projects/openpress-bauen/' | relative_url }}), plant einen [Klassensatz Blockface-Stempel]({{ '/projects/blockface-klassensatz/' | relative_url }}) und belebt [alte iPad-Stifte wieder]({{ '/projects/ipad-stifte-wiederbeleben/' | relative_url }}). Ein Teilprojekt kann auch zu mehreren Projekten gehören.
 - **Termine gehören zu Projekten, Partnern und Menschen.** Ausflüge einer AG stehen erst nach dem Termin im öffentlichen Kalender – vorher sehen sie Kinder und Eltern auf der Projektseite.
 - **Geräte können mehreren gehören.** Besitz und Standort sind eigene Verbindungen – im Netzwerk sieht man auf einen Blick, wem ein Gerät gehört und wo es steht. Das Institut selbst besitzt (noch) nichts: Alles, was wir nutzen, gehört Partnern oder Menschen aus dem Team.
 

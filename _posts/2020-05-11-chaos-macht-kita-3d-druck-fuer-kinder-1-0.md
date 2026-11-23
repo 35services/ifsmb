@@ -24,7 +24,7 @@ Am Donnerstag den 21.05.2020 (Himmelfahrt) um 10:00 gibt es einen Stream zum The
 
 ## Wann? – 21.05.2020 10:00
 
-→ [Termin im Kalender]({{ '/kalender/2020-05-21-chaos-macht-kita-stream/' | relative_url }})
+→ [Termin im Kalender]({{ '/calendar/2020-05-21-chaos-macht-kita-stream/' | relative_url }})
 
 ## WO? – HIER:
 

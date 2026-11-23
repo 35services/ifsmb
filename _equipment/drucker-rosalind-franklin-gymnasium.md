@@ -12,7 +12,7 @@ tags: [rosalind-franklin-gym, 3d-drucker, bambu-lab-a1-mini]
 uuid: 0acf9116-6ff8-435e-9f7c-a72e6900acd1
 ---
 
-Der Makespace am [Rosalind-Franklin-Gymnasium]({{ '/projekte/3d-druck-ag-rosalind-franklin-gymnasium/' | relative_url }}) hat **sechs 3D-Drucker**:
+Der Makespace am [Rosalind-Franklin-Gymnasium]({{ '/projects/3d-druck-ag-rosalind-franklin-gymnasium/' | relative_url }}) hat **sechs 3D-Drucker**:
 
 - **4 × Bambu Lab A1 mini** – kompakt und schnell, ideal für den Einstieg
 - **2 × Bambu Lab P2S mit AMS** – geschlossener Bauraum, mit Filamentwechsler für mehrere Farben und Materialien

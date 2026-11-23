@@ -11,6 +11,8 @@
   <meta name="robots" content="noindex">
   <link rel="canonical" href="{{ site.url }}{{ ziel_url }}">
   <meta http-equiv="refresh" content="0; url={{ ziel_url }}">
+  {%- comment -%} keep ?query and #anchor of the old address (e.g. /projekte/x/#abonnieren), unless ziel has its own {%- endcomment %}
+  <script>(function () { var z = {{ ziel_url | jsonify }}; if (z.indexOf("#") < 0) { location.replace(z + location.search + location.hash); } })();</script>
 </head>
 <body>
   <p>Diese Seite gibt es nicht mehr – weiter zu <a href="{{ ziel_url }}">{{ page.ziel_titel | default: ziel_url }}</a>.</p>

@@ -12,7 +12,7 @@ team:
   - anton
 partners:
   - 35 services e. V.
-verlinkt: [/ausstattung/axidraw-v3/]
+verlinkt: [/equipment/axidraw-v3/]
 uuid: ead407ea-bc9f-4466-a59c-2b55eaa22b54
 ---
 
@@ -22,7 +22,7 @@ uuid: ead407ea-bc9f-4466-a59c-2b55eaa22b54
 ![Handskizze aus der Projektdokumentation: Der Roboter hängt an zwei Riemen, eingezeichnet sind die Kräfte F_L, F_R und F_G und die Winkel](/assets/images/projekte/mural-wandplotter/02.jpg)
 {: .gallery}
 
-**Warum für uns?** Wir können **endlich mal Schrittmotoren verwerten**. Mural braucht zwei NEMA-17-Motoren (im Original flache „Pancake“-Motoren), dazu einen ESP32-Controller mit FluidNC, Riemen, Pulleys und ein paar Schrauben. Das Gehäuse wird **3D-gedruckt**. Wie beim [AxiDraw]({{ '/ausstattung/axidraw-v3/' | relative_url }}) sieht man beim Plotten genau, wie ein Gerät mit Motoren und Koordinaten zeichnet – nur eben an der Wand und richtig groß.
+**Warum für uns?** Wir können **endlich mal Schrittmotoren verwerten**. Mural braucht zwei NEMA-17-Motoren (im Original flache „Pancake“-Motoren), dazu einen ESP32-Controller mit FluidNC, Riemen, Pulleys und ein paar Schrauben. Das Gehäuse wird **3D-gedruckt**. Wie beim [AxiDraw]({{ '/equipment/axidraw-v3/' | relative_url }}) sieht man beim Plotten genau, wie ein Gerät mit Motoren und Koordinaten zeichnet – nur eben an der Wand und richtig groß.
 
 Die Idee kommt von Falko und Anton und soll bei 35services gebaut werden.
 
