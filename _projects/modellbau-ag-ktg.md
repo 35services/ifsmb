@@ -2,16 +2,16 @@
 title: "Modellbau-AG an der KTG"
 summary: "Falkos private Modellbau-AG an der Kurt-Tucholsky-Grundschule: Für 40 Euro im Monat pro Kind bauen wir 3D-gedruckte ferngesteuerte Fahrzeuge – inspiriert von unserer Ideensammlung, den RC-Projekten im Team und CyberBrick."
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-11-15
-zeitraum: seit November 2026
-ort: Kurt-Tucholsky-Grundschule, Moabit
+period: seit November 2026
+location: Kurt-Tucholsky-Grundschule, Moabit
 event_tag: modellbau-ag-ktg
 tags: [rc-modellbau, 3d-drucker, ktg, u1]
 partners:
   - Kurt-Tucholsky-Grundschule
-verlinkt:
-  - /projects/ideas/
+linked:
+  - /project/ideas/
   - /projects/rc-tractor-professorboots/
   - /projects/3dsets-mogster-bauen/
   - /projects/ktg-ag-jahr-1/
@@ -35,11 +35,11 @@ Gedruckt wird unter anderem auf dem [Snapmaker U1 an der KTG]({{ '/equipment/sna
 
 ## Inspiration aus unseren Projekt-Ideen und aus dem Team
 
-Was genau gebaut wird, schöpft aus unserer Sammlung unter **[Projekt-Ideen – Ferngesteuerte Fahrzeuge]({{ '/projects/ideas/' | relative_url }}#ferngesteuerte-fahrzeuge)** und den laufenden RC-Projekten im Team:
+Was genau gebaut wird, schöpft aus unserer Sammlung unter **[Projekt-Ideen – Ferngesteuerte Fahrzeuge]({{ '/project/ideas/' | relative_url }}#ferngesteuerte-fahrzeuge)** und den laufenden RC-Projekten im Team:
 
 - **Traktoren & Landmaschinen:** Der **[RC Tractor von ProfessorBoots]({{ '/projects/rc-tractor-professorboots/' | relative_url }})**, den [Falko]({{ '/team/falko-richter/' | relative_url }}) und [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) gerade gemeinsam drucken (mit modifizierter Motorhaube und flexiblen Reifen), oder der von Opa Andi empfohlene **[OpenRC Tractor](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20)**.
 - **Bagger, Kipplaster & Baustelle:** Bereits im [ersten Jahr der KTG-AG (2023/24)]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}) haben Kinder erfolgreich den **[RC Skid Steer V2.0](https://www.printables.com/model/544937-v20-3d-printed-rc-skidsteer)** (Mini-Bagger mit TPU-Ketten) und den passenden **[RC Dump Truck](https://www.printables.com/model/649741-v20-3d-printed-rc-dumptruck)** gebaut.
-- **Geländewagen, Crawler & Buggys:** Im Team entstehen mit dem **[3DSets Mogster 4x4 Tipper]({{ '/projects/3dsets-mogster-bauen/' | relative_url }})** von [Falko]({{ '/team/falko-richter/' | relative_url }}), [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) und [Anton]({{ '/team/anton/' | relative_url }}) ausgewachsene 1:8-Geländefahrzeuge mit Portalachsen und Kippmulde. Für die AG bieten sich außerdem kompaktere Modelle aus unserer [Ideenliste]({{ '/projects/ideas/' | relative_url }}) an – vom **4x4 Mini-RC-Crawler** über ein **Print-in-Place-RC-Auto** bis hin zur Projektidee **[Tarmo5]({{ '/projects/tarmo5/' | relative_url }})**.
+- **Geländewagen, Crawler & Buggys:** Im Team entstehen mit dem **[3DSets Mogster 4x4 Tipper]({{ '/projects/3dsets-mogster-bauen/' | relative_url }})** von [Falko]({{ '/team/falko-richter/' | relative_url }}), [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) und [Anton]({{ '/team/anton/' | relative_url }}) ausgewachsene 1:8-Geländefahrzeuge mit Portalachsen und Kippmulde. Für die AG bieten sich außerdem kompaktere Modelle aus unserer [Ideenliste]({{ '/project/ideas/' | relative_url }}) an – vom **4x4 Mini-RC-Crawler** über ein **Print-in-Place-RC-Auto** bis hin zur Projektidee **[Tarmo5]({{ '/projects/tarmo5/' | relative_url }})**.
 
 ## Elektronik: Von N20-Motoren bis CyberBrick
 

@@ -36,7 +36,7 @@ var OpenWork = (function () {
   // not built yet (new in a pull request) get their future address from the permalinks in _config.yml – the same
   // collections as the ✏️ forms (_includes/edit-buttons.html, neu.js).
   var COLLECTIONS = { _team: "/team/", _projects: "/projects/", _events: "/calendar/", _equipment: "/equipment/",
-    _herausforderungen: "/challenges/", _press: "/press/" };
+    _challenges: "/challenges/", _press: "/press/" };
   // → { url, title, isNew } | { asset: true, image } | null (no page, e.g. a script)
   function pageFor(file, pages) {
     var hit = pages && pages[file];
@@ -48,7 +48,7 @@ var OpenWork = (function () {
       return { url: COLLECTIONS[m[1]] + name + "/", isNew: true };
     }
     if (/^_data\/(partner\/|partners\.yml$)/.test(file)) return { url: "/partners/", title: "Partner", isNew: false };
-    if (/^_data\/(pressebericht\/|presseberichte\.yml$)/.test(file)) return { url: "/press/", title: "Presse", isNew: false };
+    if (/^_data\/(press_report\/|press_reports\.yml$)/.test(file)) return { url: "/press/", title: "Presse", isNew: false };
     if (/^todos\/todo-[^/]+\.md$/.test(file)) return { url: "/todos/", title: "Todos", isNew: false };
     if (/^assets\//.test(file)) return { asset: true, image: /\.(jpe?g|png|gif|webp|svg)$/i.test(file) };
     return null;

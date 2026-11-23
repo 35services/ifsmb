@@ -1,5 +1,5 @@
 ---
-suche: false # Übersichtsseite, nicht im Suchindex
+search: false # Übersichtsseite, nicht im Suchindex
 layout: default
 ---
 <main>
@@ -60,7 +60,7 @@ layout: default
 {%- assign next_events = "" | split: "" -%}
 {%- assign sorted_events = site.events | sort: "start" -%}
 {%- for e in sorted_events -%}
-  {%- if e.nur_projekt or e.persoenlich %}{% continue %}{% endif -%}
+  {%- if e.project_only or e.personal %}{% continue %}{% endif -%}
   {%- if e.end and e.end != "" %}{% assign end_s = e.end | date: "%s" | plus: 0 %}{% else %}{% assign end_s = e.start | date: "%s" | plus: 7200 %}{% endif -%}
   {%- if end_s >= now_s %}{% assign next_events = next_events | push: e %}{% endif -%}
 {%- endfor -%}
@@ -83,7 +83,7 @@ layout: default
 </section>
 {% endif %}
 
-{% assign active = site.projects | where_exp: "p", "p.status != 'abgeschlossen'" | where_exp: "p", "p.status != 'anfrage'" | where_exp: "p", "p.status != 'idee'" | where_exp: "p", "p.persoenlich != true" | where_exp: "p", "p.teil_von == nil" %}
+{% assign active = site.projects | where_exp: "p", "p.status != 'abgeschlossen'" | where_exp: "p", "p.status != 'anfrage'" | where_exp: "p", "p.status != 'idee'" | where_exp: "p", "p.personal != true" | where_exp: "p", "p.part_of == nil" %}
 {% if active.size > 0 %}
 <section class="container section">
   <div class="section-head">
@@ -98,7 +98,7 @@ layout: default
 </section>
 {% endif %}
 
-{% assign home_posts = site.posts | where_exp: "p", "p.persoenlich != true" | where_exp: "p", "p.nur_projekt != true" %}
+{% assign home_posts = site.posts | where_exp: "p", "p.personal != true" | where_exp: "p", "p.project_only != true" %}
 {% if home_posts.size > 0 %}
 <section class="container section">
   <div class="section-head">

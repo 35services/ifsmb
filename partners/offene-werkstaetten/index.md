@@ -3,7 +3,7 @@ layout: page
 title: Verbund Offener Werkstätten
 lead: Partner – Dachverband und Netzwerk der offenen Werkstätten in Deutschland
 theme: offene-werkstaetten
-verlinkt: [/partners/35services/]
+linked: [/partners/35services/]
 uuid: de03bd94-2265-4f6c-b3d7-7007b8bf4779
 ---
 <div class="prose" markdown="1">

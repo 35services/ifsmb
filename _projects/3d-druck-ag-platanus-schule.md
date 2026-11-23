@@ -3,8 +3,8 @@ title: "3D-Druck AG an der Platanus Schule"
 summary: Seit September 2026 gibt es an der Platanus Schule eine wöchentliche 3D-Druck-AG mit einem Bambu Lab A1 mini.
 status: aktuell
 start: 2026-09-01
-zeitraum: seit September 2026
-ort: Platanus Schule, Berlin
+period: seit September 2026
+location: Platanus Schule, Berlin
 event_tag: platanus
 team:
   - falko-richter

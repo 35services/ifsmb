@@ -3,7 +3,7 @@ title: "Mehrfarbdruck mit dem A1 mini an der Platanus Schule"
 date: 2026-11-04 16:30:00 +0100
 author: falko-richter
 tags: [platanus]
-verlinkt: [/equipment/bambu-lab-a1-mini-platanus/]
+linked: [/equipment/bambu-lab-a1-mini-platanus/]
 uuid: 3f1fce1c-1eea-4fe4-934d-377635a9b744
 ---
 Neues aus der [3D-Druck AG an der Platanus Schule]({{ '/projects/3d-druck-ag-platanus-schule/' | relative_url }}): Wir drucken **mehrfarbig** – mit dem [Bambu Lab A1 mini]({{ '/equipment/bambu-lab-a1-mini-platanus/' | relative_url }}) der Schule und ohne automatischen Filamentwechsler. Der Drucker pausiert an der richtigen Stelle, wir **wechseln das Filament per Hand**, und weiter geht's in der nächsten Farbe. So entstehen zum Beispiel Anhänger mit Rand und Schrift in einer anderen Farbe.

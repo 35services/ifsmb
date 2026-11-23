@@ -2,19 +2,19 @@
 title: "Moldlay drucken"
 summary: Falko und Philipp drucken mit Moldlay – einem wachsähnlichen Filament für Gussformen.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-09-24
-zeitraum: seit September 2026
+period: seit September 2026
 event_tag: moldlay
 tags: [moldlay, 3d-drucker, prusa-mk4]
-verlinkt:
+linked:
   - /equipment/prusa-mk4-mmu/
   - /news/2026/09/24/moldlay-drucken-die-ersten-versuche/
 team:
   - falko-richter
   - philipp-schalldach
 updates:
-  - datum: 2026-11-16
+  - date: 2026-11-16
     text: |-
       **Austausch auf der MUTEC & denkmal mit der Kunstgießerei Gebr. Ihle:** Ploenne und [Falko](/team/falko-richter/) waren auf der Fachmesse [MUTEC](https://www.mutec.de/) in Leipzig und haben nebenan noch ein bisschen auf der [denkmal](https://www.denkmal-leipzig.de/) gestöbert. Am Stand der **[Kunstgießerei Gebr. Ihle](https://www.bildguss.de/)** aus Dresden haben wir mit Thomas Ihle über 3D-Druck für den Metallguss und unsere Erfahrungen mit **Moldlay** gesprochen:
 

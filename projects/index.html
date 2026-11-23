@@ -1,15 +1,15 @@
 ---
-suche: false # Übersichtsseite, nicht im Suchindex
+search: false # Übersichtsseite, nicht im Suchindex
 layout: page
 title: Projekte
 i18n_title: pages.projects.title
 i18n_lead: pages.projects.lead
 lead: Woran wir gerade arbeiten.
 ---
-{% assign active = site.projects | where_exp: "p", "p.status != 'abgeschlossen'" | where_exp: "p", "p.status != 'anfrage'" | where_exp: "p", "p.status != 'idee'" | where_exp: "p", "p.persoenlich != true" | where_exp: "p", "p.teil_von == nil" | sort: "start" | reverse %}
-{% assign ideas = site.projects | where: "status", "idee" | where_exp: "p", "p.persoenlich != true" | where_exp: "p", "p.teil_von == nil" | sort: "start" | reverse %}
-{% assign inquiries = site.projects | where: "status", "anfrage" | where_exp: "p", "p.persoenlich != true" | where_exp: "p", "p.teil_von == nil" | sort: "start" | reverse %}
-{% assign personal = site.projects | where: "persoenlich", true %}
+{% assign active = site.projects | where_exp: "p", "p.status != 'abgeschlossen'" | where_exp: "p", "p.status != 'anfrage'" | where_exp: "p", "p.status != 'idee'" | where_exp: "p", "p.personal != true" | where_exp: "p", "p.part_of == nil" | sort: "start" | reverse %}
+{% assign ideas = site.projects | where: "status", "idee" | where_exp: "p", "p.personal != true" | where_exp: "p", "p.part_of == nil" | sort: "start" | reverse %}
+{% assign inquiries = site.projects | where: "status", "anfrage" | where_exp: "p", "p.personal != true" | where_exp: "p", "p.part_of == nil" | sort: "start" | reverse %}
+{% assign personal = site.projects | where: "personal", true %}
 {% if active.size > 0 %}
 <div class="gelesen-fortschritt" data-bereich=".gelesen-projekte" hidden><div class="gelesen-fortschritt-balken"><span></span></div><span class="gelesen-fortschritt-text"></span></div>
 <div class="grid-2 gelesen-projekte">
@@ -33,7 +33,7 @@ lead: Woran wir gerade arbeiten.
 
 {% if ideas.size > 0 %}
 <h2 class="cal-heading" data-i18n="pages.projects.ideas">{{ "pages.projects.ideas" | t }}</h2>
-{%- capture link_ideas %}<a href="{{ '/projects/ideas/' | relative_url }}" data-i18n="nav.project_ideas">{{ "nav.project_ideas" | t }}</a>{% endcapture %}
+{%- capture link_ideas %}<a href="{{ '/project/ideas/' | relative_url }}" data-i18n="nav.project_ideas">{{ "nav.project_ideas" | t }}</a>{% endcapture %}
 <p class="muted" data-i18n="pages.projects.ideas_intro">{{ "pages.projects.ideas_intro" | t_html: link_ideas }}</p>
 <div class="grid-2">
   {% for p in ideas %}

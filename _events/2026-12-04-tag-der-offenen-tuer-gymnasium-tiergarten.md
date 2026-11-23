@@ -8,7 +8,7 @@ location_url: https://gymnasium-tiergarten.de/tag-der-offenen-tuer-2026/
 summary: Tag der offenen Tür am Gymnasium Tiergarten – dabei kann man auch den Makespace der Schule besuchen.
 tags: [makespace-tiergarten]
 team: [frieder-euteneuer]
-verlinkt: [/news/2025/12/05/tag-der-offenen-tuer-2025-im-makespace-tiergarten/]
+linked: [/news/2025/12/05/tag-der-offenen-tuer-2025-im-makespace-tiergarten/]
 uuid: defc5e10-3682-4496-8581-656c0610e95f
 ---
 

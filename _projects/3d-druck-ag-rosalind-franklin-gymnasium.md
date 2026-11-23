@@ -3,8 +3,8 @@ title: "3D-Druck AG am Rosalind-Franklin-Gymnasium"
 summary: Am Rosalind-Franklin-Gymnasium gibt es einen Makespace mit 6 Druckern, 2 Schneidplottern und einer 3D-Druck-AG – im Einsatz seit Beginn des Schuljahres 2026/27.
 status: aktuell
 start: 2026-08-01
-zeitraum: seit Schuljahr 2026/27
-ort: Rosalind-Franklin-Gymnasium, Moabit
+period: seit Schuljahr 2026/27
+location: Rosalind-Franklin-Gymnasium, Moabit
 event_tag: rosalind-franklin-gym
 team:
   - falko-richter

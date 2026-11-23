@@ -31,7 +31,7 @@ module BeitragFeeds
       end
 
       add(site, "/news/personal/", "content" =>
-        "{%- assign pers = site.posts | where: \"persoenlich\", true -%}\n" \
+        "{%- assign pers = site.posts | where: \"personal\", true -%}\n" \
         "{%- assign t = site.short_title | append: \" – Persönliche Blogs aus dem Team\" -%}\n" \
         "{%- include atom-feed.xml titel=t self=page.url alt=\"/news/personal/\" beitraege=pers -%}\n")
     end
@@ -46,7 +46,7 @@ module BeitragFeeds
       page.data.merge!(data)
       page.data["layout"] = nil
       page.data["sitemap"] = false
-      page.data["suche"] = false
+      page.data["search"] = false
       site.pages << page
     end
   end

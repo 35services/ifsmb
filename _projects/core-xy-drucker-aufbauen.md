@@ -3,8 +3,8 @@ title: "Core-XY-Drucker von Anton aufbauen"
 summary: Anton braucht seinen Core-XY-Drucker nicht mehr – vielleicht bauen wir ihn bei 35services gemeinsam komplett auf.
 status: idee
 start: 2026-11-01
-zeitraum: Idee aus dem November 2026
-ort: 35services e.V.
+period: Idee aus dem November 2026
+location: 35services e.V.
 event_tag: core-xy-anton
 team:
   - falko-richter

@@ -61,4 +61,4 @@ cd _logo/badge
 python3 export_colored.py "Vorname"      # -> assets/badge/ifsmb-badge-vorname.*
 ```
 
-Dann in `_data/badges.yml` eintragen (`aufschrift`, `datei`, optional `team` = Team-Kürzel → erscheint im Teamprofil).
+Dann in `_data/badges.yml` eintragen (`label`, `file`, optional `team` = Team-Kürzel → erscheint im Teamprofil).

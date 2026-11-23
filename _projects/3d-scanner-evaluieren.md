@@ -2,15 +2,15 @@
 title: "3D-Scanner evaluieren"
 summary: Falko testet den Creality Ferret SE.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-11-06
-zeitraum: seit November 2026
+period: seit November 2026
 event_tag: 3d-scanner-evaluieren
 tags: [3d-scanner, creality-ferret-se]
 team:
   - falko-richter
 updates:
-  - datum: 2026-11-07
+  - date: 2026-11-07
     text: >-
       Erster Test: eine Enterprise aus Klemmbausteinen gescannt und auf dem Snapmaker U1
       wieder ausgedruckt – mit Videos im Beitrag

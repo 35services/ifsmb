@@ -1,11 +1,11 @@
 ---
 title: Prusa MK3S (HeartLabs)
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 status: in-reparatur
 summary: Ein MK3S von HeartLabs – wird gerade bei 35services wieder flott gemacht und soll danach auch mobil eingesetzt werden.
 owner_team: falko-richter
-standort_partner: 35 services e. V.
-standort: 35services e.V. (in Reparatur)
+location_partner: 35 services e. V.
+location: 35services e.V. (in Reparatur)
 image: /assets/images/ausstattung/illustration-drucker.svg
 image_alt: "Illustration eines kartesischen 3D-Druckers (kein Foto des Geräts)"
 image_is_illustration: true

@@ -2,7 +2,7 @@
 title: Alexander Riedel
 role: Software, Hardware und 3D-Druck
 order: 91
-nicht_im_team: false
+not_in_team: false
 photo: /assets/images/team/alexander-riedel-480w.jpg
 photo_icon: /assets/images/team/alexander-riedel-48w.jpg
 links:
@@ -10,7 +10,7 @@ links:
     url: https://github.com/3p1cball-code
   - title: augenrahmen.de
     url: https://augenrahmen.de/
-verlinkt:
+linked:
   - /projects/3d-druck-ag-ktg/
   - /projects/3d-druck-ag-rosalind-franklin-gymnasium/
 uuid: 4bc4f850-4053-4273-8327-79d380388892

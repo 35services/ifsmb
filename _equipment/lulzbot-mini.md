@@ -1,6 +1,6 @@
 ---
 title: LulzBot Mini
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 summary: Ein kleiner, robuster Drucker mit Flexystruder – mega für flexibles Filament, braucht aber immer einen Computer.
 owner_team: falko-richter
 image: /assets/images/ausstattung/lulzbot-mini/01.jpg

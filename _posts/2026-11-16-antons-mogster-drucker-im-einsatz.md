@@ -2,9 +2,9 @@
 title: "Antons Mogster: drei Drucker im Einsatz"
 date: 2026-11-16 10:15:00 +0100
 author: falko-richter
-persoenlich: true
+personal: true
 tags: [mogster, rc-modellbau, prusa-mk4, prusa-mk3s, 35services]
-verlinkt:
+linked:
   - /team/anton/
   - /equipment/prusa-mk4-mmu/
   - /equipment/prusa-mk3s-xhain/

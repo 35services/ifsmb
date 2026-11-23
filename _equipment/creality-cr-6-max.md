@@ -1,13 +1,13 @@
 ---
 title: Creality CR-6 Max
-kategorie: Großformat-3D-Drucker (FDM)
+category: Großformat-3D-Drucker (FDM)
 summary: Ein kartesischer Großformatdrucker mit 400 × 400 × 400 mm Bauraum und Bondtech-LGX-Lite-Arrow-Extruder – früher in der Werkstatt von 35services, heute bei Opa Andi.
 owner_team: opa-andi
 image: /assets/images/ausstattung/illustration-drucker.svg
 image_alt: "Illustration eines kartesischen 3D-Druckers (kein Foto des Geräts)"
 image_is_illustration: true
 tags: [creality-cr-6-max, 3d-drucker, 35services]
-verlinkt:
+linked:
   - /projects/35services-3d/
   - /team/jan/
 uuid: 62d91487-f8f8-46c0-9d8c-e5cf273f5b12

@@ -57,7 +57,7 @@ module TerminIcs
       page.data.merge!(data)
       page.data["layout"] = nil
       page.data["sitemap"] = false
-      page.data["suche"] = false
+      page.data["search"] = false
       page.content = NL + content + "END:VCALENDAR{{ nl -}}\n"
       site.pages << page
     end

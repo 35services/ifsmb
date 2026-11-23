@@ -1,10 +1,10 @@
 ---
 title: Core-XY-Drucker von Anton
-kategorie: 3D-Drucker (FDM, CoreXY, Eigenbau)
+category: 3D-Drucker (FDM, CoreXY, Eigenbau)
 summary: Anton braucht diesen Drucker nicht mehr – vielleicht bauen wir ihn bei 35services komplett auf.
 owner_team: anton
-standort: 35services e.V.
-standort_partner: 35 services e. V.
+location: 35services e.V.
+location_partner: 35 services e. V.
 image: /assets/images/ausstattung/core-xy-anton/01.jpg
 thumb: /assets/images/ausstattung/core-xy-anton/01-600w.jpg
 image_alt: "Falko sitzt lachend am Steuer seines Autos, auf der Rückbank der Rahmen des Core-XY-Druckers – er holt den Drucker bei Anton ab"

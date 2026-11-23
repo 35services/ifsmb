@@ -8,7 +8,7 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
 ---
 <section class="press-section">
   <h2 data-i18n="press.profile">{{ "press.profile" | t }}</h2>
-  <p class="press-boilerplate">{{ site.data.presse.kurzprofil }}</p>
+  <p class="press-boilerplate">{{ site.data.press.short_profile }}</p>
   <ul class="fact-list">
     <li><strong data-i18n="press.fact_name">{{ "press.fact_name" | t }}</strong> {{ site.title }} ({{ site.short_title }})</li>
     <li><strong data-i18n="press.fact_seat">{{ "press.fact_seat" | t }}</strong> Berlin-Moabit</li>
@@ -39,17 +39,17 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
 <section class="press-section">
   <h2 data-i18n="press.coverage">{{ "press.coverage" | t }}</h2>
   <ul class="post-list">
-    {% for b in site.data.presseberichte %}
-    <li>{% if b.datum %}<span class="meta">{{ b.datum | i18n_date }}</span> {% endif %}<a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.titel }}</a> <span class="muted small">– {{ b.medium }}{% if b.hinweis %} ({{ b.hinweis }}){% endif %}{% if b.anlass %} · <a href="{{ b.anlass | relative_url }}" data-i18n="press.more_on_it">{{ "press.more_on_it" | t }}</a>{% endif %}</span></li>
+    {% for b in site.data.press_reports %}
+    <li>{% if b.date %}<span class="meta">{{ b.date | i18n_date }}</span> {% endif %}<a href="{{ b.url }}" target="_blank" rel="noopener">{{ b.title }}</a> <span class="muted small">– {{ b.medium }}{% if b.note %} ({{ b.note }}){% endif %}{% if b.occasion %} · <a href="{{ b.occasion | relative_url }}" data-i18n="press.more_on_it">{{ "press.more_on_it" | t }}</a>{% endif %}</span></li>
     {% endfor %}
   </ul>
 </section>
 
 <section class="press-section">
   <h2 data-i18n="press.material">{{ "press.material" | t }}</h2>
-  <p class="muted">Das Logo darf für die Berichterstattung über das Institut verwendet werden.{% if site.data.presse.bildnachweis != "" %} Bildnachweis: {{ site.data.presse.bildnachweis }}{% endif %}</p>
+  <p class="muted">Das Logo darf für die Berichterstattung über das Institut verwendet werden.{% if site.data.press.photo_credit != "" %} Bildnachweis: {{ site.data.press.photo_credit }}{% endif %}</p>
   <div class="grid-2">
-    {% for m in site.data.pressematerial %}
+    {% for m in site.data.press_kit %}
     <a class="card card-link press-asset" href="{{ m.file | relative_url }}" download>
       {% if m.preview %}<span class="press-preview"><img src="{{ m.preview | relative_url }}" alt="Vorschau: {{ m.title }}" loading="lazy"></span>{% endif %}
       <strong>{{ m.title }}</strong>
@@ -62,7 +62,7 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
 
 <section class="press-section" id="badge">
   <h2 data-i18n="press.badge">{{ "press.badge" | t }}</h2>
-  {%- assign logo_badge = site.data.badges | where: "datei", "ifsmb-badge" | first %}
+  {%- assign logo_badge = site.data.badges | where: "file", "ifsmb-badge" | first %}
   <div class="badge-intro">
     <div>
       {% include badge-3d.html b=logo_badge %}
@@ -81,10 +81,10 @@ uuid: 2c17f045-db90-4951-b818-cd5a3c8cc4d2
   <h3 data-i18n="press.badges_names">{{ "press.badges_names" | t }}</h3>
   <p>Für das Team gibt es das Badge mit Namen: Der schwarze Schatten ist unten zu einem Band verlängert, die Buchstaben des Namens sind darin ausgespart – dort scheint das Gelb durch. Auch hier bleibt es bei einem Farbwechsel.</p>
   <div class="grid-2">
-    {%- for b in site.data.badges %}{% if b.aufschrift %}
+    {%- for b in site.data.badges %}{% if b.label %}
     {%- assign b_person = nil %}{% if b.team %}{% assign b_person = site.team | where: "slug", b.team | first %}{% endif %}
     <div class="card badge-karte">
-      <h3>{% if b_person %}<a href="{{ b_person.url | relative_url }}#badge">{{ b.aufschrift }}</a>{% else %}{{ b.aufschrift }}{% endif %}</h3>
+      <h3>{% if b_person %}<a href="{{ b_person.url | relative_url }}#badge">{{ b.label }}</a>{% else %}{{ b.label }}{% endif %}</h3>
       {% include badge-3d.html b=b %}
     </div>
     {%- endif %}{% endfor %}

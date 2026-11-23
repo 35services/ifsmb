@@ -1,9 +1,9 @@
 ---
 title: LulzBot TAZ 6
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 summary: Ein robuster Open-Source-Drucker mit großem Bauraum – unser Spezialist für superweiches TPU, den wir auf Events mitnehmen.
 owner_team: falko-richter
-standort: Unterwegs auf Events
+location: Unterwegs auf Events
 image: /assets/images/ausstattung/illustration-drucker.svg
 image_alt: "Illustration eines kartesischen 3D-Druckers (kein Foto des Geräts)"
 image_is_illustration: true

@@ -8,7 +8,7 @@ location_url: https://rosalind-franklin-gymnasium.de/veranstaltungen/
 summary: Nachmittag der offenen Tür am Rosalind-Franklin-Gymnasium – mit Führungen, Programm in der Aula und dem Makespace der Schule.
 tags: [rosalind-franklin-gym]
 partners: [Rosalind-Franklin-Gymnasium]
-verlinkt: [/calendar/2026-11-28-tag-der-offenen-tuer-rosalind-franklin-gymnasium/]
+linked: [/calendar/2026-11-28-tag-der-offenen-tuer-rosalind-franklin-gymnasium/]
 uuid: e3888523-d4ae-4508-951e-e92058834f40
 ---
 

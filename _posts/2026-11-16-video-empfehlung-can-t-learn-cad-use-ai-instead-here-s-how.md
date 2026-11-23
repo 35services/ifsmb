@@ -1,10 +1,10 @@
 ---
 title: 'Video-Empfehlung: „Can''t learn CAD? Use AI instead! Here''s how…"'
 date: 2026-11-16 00:03:00 +0100
-persoenlich: true
+personal: true
 author: falko-richter
 tags: [ki-cad, 3d-scanner]
-verlinkt: [/projects/3d-scanner-evaluieren/]
+linked: [/projects/3d-scanner-evaluieren/]
 uuid: 02d8b9a3-6adf-4845-8689-e45db0189255
 ---
 

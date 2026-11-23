@@ -3,8 +3,8 @@ title: "KTG AG Jahr 2 (2024/25)"
 summary: Das zweite Jahr der 3D-Druck- und Elektronik-AG an der KTG – Konstruieren mit Tinkercad, und Gregor kommt als Co-AG-Leiter dazu.
 status: abgeschlossen
 start: 2024-09-01
-zeitraum: Schuljahr 2024/25
-ort: Kurt-Tucholsky-Grundschule, Moabit
+period: Schuljahr 2024/25
+location: Kurt-Tucholsky-Grundschule, Moabit
 event_tag: ktg-ag-jahr-2
 tags: [ktg]
 team:

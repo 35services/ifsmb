@@ -1,13 +1,13 @@
 ---
 title: "Kontakt mit greenlab Tegel wegen Keramik drucken "
 summary: "Vielleicht spannend für das Netzwerk "
-art: frage
+kind: frage
 status: in-arbeit
-seit: 2026-11-19
-wichtig: true
+since: 2026-11-19
+important: true
 team: [falko-richter,ploenne]
-verlinkt: [/news/2026/11/18/die-keramik-ag-war-zu-besuch/, /news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
-persoenlich: true
+linked: [/news/2026/11/18/die-keramik-ag-war-zu-besuch/, /news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
+personal: true
 social_media_preview_image: /assets/images/herausforderungen/kontakt-mit-greenlab-tegel-wegen-keramik-drucken/04-social.jpg
 uuid: d57d7a18-9b7e-4ae8-b4da-65525f060abb
 ---

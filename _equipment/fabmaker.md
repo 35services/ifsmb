@@ -1,16 +1,16 @@
 ---
 title: Zwei Fabmaker-Drucker
-kategorie: 3D-Drucker (FDM)
+category: 3D-Drucker (FDM)
 summary: Zwei Fabmaker-Drucker, deren Hersteller insolvent ist – wir wollen sie wieder zum Leben bringen. Einer ist ein Geschenk vom Rosalind-Franklin-Gymnasium.
 owner_team: falko-richter
-standort_partner: Kurt-Tucholsky-Grundschule
-standort: Kurt-Tucholsky-Grundschule (3D-Druck AG)
+location_partner: Kurt-Tucholsky-Grundschule
+location: Kurt-Tucholsky-Grundschule (3D-Druck AG)
 status: in-reparatur
 image: /assets/images/ausstattung/fabmaker/01.jpg
 thumb: /assets/images/ausstattung/fabmaker/01-600w.jpg
 image_alt: "Ein Fabmaker-3D-Drucker mit rotem Deckel und Display in einem Fahrradanhänger, angehängt an ein Lastenrad auf Kopfsteinpflaster"
 tags: [fabmaker, 3d-drucker, ktg]
-verlinkt: [/projects/3d-druck-ag-ktg/, /projects/3d-druck-ag-rosalind-franklin-gymnasium/, /todos/]
+linked: [/projects/3d-druck-ag-ktg/, /projects/3d-druck-ag-rosalind-franklin-gymnasium/, /todos/]
 uuid: 0d1fe4e6-359e-4b9c-8f04-15d94c945750
 ---
 

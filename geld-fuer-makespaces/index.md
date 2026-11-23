@@ -3,7 +3,7 @@ layout: page
 title: Geld für Makespaces
 lead: Wie kommt eine Schule an Drucker, Plotter und Material? Wege, die wir selbst gegangen sind oder die andere uns empfohlen haben.
 partners: [PC-Spende – Das macht Schule]
-verlinkt:
+linked:
   - /news/2026/09/24/pc-spende-de-hardware-fuer-schulen/
   - /news/2026/11/07/40-monitore-von-der-bundesdruckerei/
   - /equipment/laptops-druck-sticks/

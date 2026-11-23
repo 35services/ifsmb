@@ -2,10 +2,10 @@
 title: "Mogster: PC-Blend drucken"
 summary: Teile für den Mogster aus PC-Blend drucken – schwierig, aber die Zahnräder sehen schon gut aus.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2026-09-13
-zeitraum: seit September 2026
-teil_von: [3dsets-mogster-bauen]
+period: seit September 2026
+part_of: [3dsets-mogster-bauen]
 event_tag: mogster-pc-blend
 team:
   - falko-richter

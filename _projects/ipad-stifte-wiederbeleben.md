@@ -3,11 +3,11 @@ title: "iPad-Stifte wiederbeleben"
 summary: Die KTG hat viele Eingabestifte fürs iPad in der Schublade. Wir laden alle auf, testen sie durch und sortieren die Stifte mit totem Akku aus.
 status: aktuell
 start: 2026-11-10
-zeitraum: seit November 2026
-ort: Kurt-Tucholsky-Grundschule, Moabit
-teil_von: [3d-druck-ag-ktg]
+period: seit November 2026
+location: Kurt-Tucholsky-Grundschule, Moabit
+part_of: [3d-druck-ag-ktg]
 event_tag: ipad-stifte
-verwandt: [ipad-stifte-rosalind-franklin-gymnasium]
+related: [ipad-stifte-rosalind-franklin-gymnasium]
 team:
   - falko-richter
   - mr-e

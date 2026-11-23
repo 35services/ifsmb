@@ -9,7 +9,7 @@ summary: Tag der offenen Tür am Rosalind-Franklin-Gymnasium – schaut im Makes
 tags: [rosalind-franklin-gym]
 partners: [Rosalind-Franklin-Gymnasium]
 team: [falko-richter]
-verlinkt: [/equipment/drucker-rosalind-franklin-gymnasium/]
+linked: [/equipment/drucker-rosalind-franklin-gymnasium/]
 gallery:
   - image: /assets/images/kalender/2026-11-28-tag-der-offenen-tuer-rosalind-franklin-gymnasium/druckauftrag.jpg
     thumb: /assets/images/kalender/2026-11-28-tag-der-offenen-tuer-rosalind-franklin-gymnasium/druckauftrag-600w.jpg

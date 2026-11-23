@@ -7,7 +7,7 @@ location: "Musik- und Kongresshalle (MuK), Lübeck"
 location_url: https://makerfaire-luebeck.de/
 summary: Die erste Maker Faire Lübeck – zwei Tage Mitmachen und Selbermachen in der MuK an der Trave. Werkstätten und Initiativen können kostenfrei ausstellen.
 partners: ["Verbund Offener Werkstätten"]
-verlinkt: [/partners/offene-werkstaetten/]
+linked: [/partners/offene-werkstaetten/]
 tags: [maker-faire]
 uuid: 7f608357-0200-400d-97ba-aadafdac6a10
 ---

@@ -2,15 +2,15 @@
 title: "augenrahmen – 3D-gedruckte Brillen aus Moabit"
 summary: Brillenfassungen aus dem 3D-Drucker – individuell angepasst, auf Abruf in Berlin gedruckt und aus einem Biopolymer, das im Boden vollständig zerfällt.
 status: aktuell
-persoenlich: true
+personal: true
 start: 2022-01-01
-zeitraum: seit Januar 2022
-ort: Berlin-Moabit
+period: seit Januar 2022
+location: Berlin-Moabit
 event_tag: augenrahmen
 tags: [augenrahmen, 3d-drucker, pha]
 team:
   - alexander-riedel
-verlinkt:
+linked:
   - /projects/3d-druck-ag-ktg/
   - /projects/3d-druck-ag-rosalind-franklin-gymnasium/
   - /calendar/2026-10-05-augenrahmen-zu-besuch-in-der-ag/

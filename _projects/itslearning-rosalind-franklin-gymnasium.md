@@ -3,9 +3,9 @@ title: "Die AG organisiert sich über itslearning"
 summary: Die 3D-Druck und CAD AG am Rosalind-Franklin-Gymnasium plant ihre Themen auf itslearning, der Lernplattform der Berliner Schulen – vom Slicer über Tinkercad bis zu externen Anfragen.
 status: aktuell
 start: 2026-11-10
-zeitraum: seit Schuljahr 2026/27
-ort: Rosalind-Franklin-Gymnasium, Moabit
-teil_von: [3d-druck-ag-rosalind-franklin-gymnasium]
+period: seit Schuljahr 2026/27
+location: Rosalind-Franklin-Gymnasium, Moabit
+part_of: [3d-druck-ag-rosalind-franklin-gymnasium]
 event_tag: itslearning-rfg
 team:
   - falko-richter

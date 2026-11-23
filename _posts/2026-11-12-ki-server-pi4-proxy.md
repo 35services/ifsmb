@@ -2,9 +2,9 @@
 title: "KI-Server: Ein Raspberry Pi als Wecker"
 date: 2026-11-12 21:12:00 +0100
 author: falko-richter
-persoenlich: true
+personal: true
 tags: [ki-server]
-projekte: [ki-server-anton]
+projects: [ki-server-anton]
 team: [anton]
 uuid: be8c2968-e528-4dee-988f-f5d8fd7c75d3
 ---

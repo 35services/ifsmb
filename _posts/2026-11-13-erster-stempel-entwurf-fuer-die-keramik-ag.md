@@ -3,9 +3,9 @@ title: "Erster Stempel-Entwurf in Bambu Studio für die Keramik AG"
 date: 2026-11-13 12:31:00 +0100
 author: falko-richter
 tags: [platanus]
-projekte: [3d-druck-ag-platanus-schule]
-nur_projekt: true
-verlinkt: [/equipment/bambu-lab-a1-mini-platanus/, /news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
+projects: [3d-druck-ag-platanus-schule]
+project_only: true
+linked: [/equipment/bambu-lab-a1-mini-platanus/, /news/2026/11/11/post-von-der-keramik-ag-und-ein-erster-schluesselanhaenger/]
 uuid: 2ebaa2bb-a45f-45da-81e0-50896cf4542e
 ---
 

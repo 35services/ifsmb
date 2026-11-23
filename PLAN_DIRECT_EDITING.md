@@ -88,7 +88,7 @@ Für B gilt `CLAUDE.md`: der Dienst ist eine Abhängigkeit → vorher in `DEPEND
 | HEIC (iPhone) | Pillow (mit Plugin) | ✅ Safari, ❌ Chrome | Hinweis im Editor ist da |
 | „Makespace“ statt „Makerspace“, Inhalt prüfen | Claude/Durchsicht | Prüfliste im PR | Check in `pruefen.yml` |
 | Screenshots für den PR (`pr_vorschau.py`) | lokal | ❌ | Workflow, der Vorschaubilder an `web/*`-PRs hängt |
-| Verbindungen pflegen (`partners`, Stichworte, `verlinkt` auf anderen Seiten) | Claude sucht über Pagefind alle Erwähnungen und trägt sie beidseitig ein | ❌ nur in der eigenen Datei | siehe offene Punkte |
+| Verbindungen pflegen (`partners`, Stichworte, `linked` auf anderen Seiten) | Claude sucht über Pagefind alle Erwähnungen und trägt sie beidseitig ein | ❌ nur in der eigenen Datei | siehe offene Punkte |
 
 ✋ = von Hand · 🤖 = automatischer Vorschlag (immer selbst prüfen) · Verpixelt wird grob (ca. 10 Blöcke über den Bereich) – nicht zurückrechenbar, anders als ein leichter Weichzeichner.
 
@@ -179,7 +179,7 @@ Alle Konfliktfälle mit Soll-Verhalten und Stand der Umsetzung: [`EDITING_CONFLI
 
 19. ✅ (PR #118) Hilfetext im Partner-Formular: `page` = eigene Partnerseite `/partners/<name>/`, nicht die Website (Fehler aus #112).
 20. **Verbindungen auf anderen Seiten** mitpflegen (z. B. beim neuen Partner die Termine/Projekte mit `partners:` ergänzen, Stichwort anlegen) – heute macht das Claude nach Suche über Pagefind. Idee: nach dem Anlegen Vorschläge aus der Suche anzeigen („Diese Seiten erwähnen Zazza – verbinden?“) und die Änderungen mit in den Commit nehmen.
-21. Neue Stichworte bekommen keinen Anzeigenamen in `_data/stichworte.yml` – im Formular mit anbieten.
+21. Neue Stichworte bekommen keinen Anzeigenamen in `_data/tags.yml` – im Formular mit anbieten.
 22. Todo-Editor (`todos.js`) nutzt noch Kopieren → GitHub – auf `GitHubApi.createPullRequest` umstellen.
 23. Check „Makespace statt Makerspace“ und fremde E-Mail-Adressen in `pruefen.yml`.
 24. Vorschaubilder (`pr_vorschau.py`) automatisch an `web/*`-PRs hängen (Workflow).

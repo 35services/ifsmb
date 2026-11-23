@@ -2,9 +2,9 @@
 title: "Besuch bei Jugend hackt in der OKF"
 date: 2026-11-12 15:14:00 +0100
 author: falko-richter
-persoenlich: true
+personal: true
 tags: [jugend-hackt, ki-server]
-verlinkt: [/partners/jugend-hackt/, /projects/ki-server-anton/, /calendar/2026-10-17-jugend-hackt-congress-2026/, /news/2026/10/19/jugend-hackt-congress-2026/]
+linked: [/partners/jugend-hackt/, /projects/ki-server-anton/, /calendar/2026-10-17-jugend-hackt-congress-2026/, /news/2026/10/19/jugend-hackt-congress-2026/]
 uuid: f35b7632-09a7-4b05-816f-fd6043c8ca31
 ---
 Heute war ich bei der Open Knowledge Foundation (OKF) und habe [Jugend hackt]({{ '/partners/jugend-hackt/' | relative_url }}) besucht – und dabei meine Beamer vom Hackathon abgeholt – sie waren beim [Jugend Hackt Congress 2026]({{ '/news/2026/10/19/jugend-hackt-congress-2026/' | relative_url }}) im Einsatz.

@@ -12,4 +12,4 @@ Am **Donnerstag, 8. Oktober**, war Falko zu Gast in der Computer AG. Die AG ist 
 
 Wir hoffen, dass auf den Computern der Schule endlich **Snapmaker Orca** installiert wird, die Software für unseren [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}). Dann können die Schüler*innen mit Henning auch mal kleine Experimente wagen.
 
-Auf jeden Fall will Henning als kleine Herausforderung mit den Computer-Kids auf [printables.com](https://www.printables.com/), [makerworld.com](https://makerworld.com/) (Account nötig) oder [thingiverse.com](https://www.thingiverse.com/) recherchieren. Große Projekte, die dabei auftauchen, übertragen wir dann in unsere [Projektideen]({{ '/projects/ideas/' | relative_url }}).
+Auf jeden Fall will Henning als kleine Herausforderung mit den Computer-Kids auf [printables.com](https://www.printables.com/), [makerworld.com](https://makerworld.com/) (Account nötig) oder [thingiverse.com](https://www.thingiverse.com/) recherchieren. Große Projekte, die dabei auftauchen, übertragen wir dann in unsere [Projektideen]({{ '/project/ideas/' | relative_url }}).

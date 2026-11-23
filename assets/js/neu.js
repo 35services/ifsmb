@@ -1,7 +1,7 @@
 // "➕ new" forms: one pop-up per resource type, built from the schemas in TYPEN with the building blocks of
 // assets/js/formular.js (chip fields with autocomplete, dialog, YAML). Loaded on the first click on a ➕ link
 // (_includes/neu-buttons.html). Each link carries data-neu = { typ, label, hinweis, werte } – werte is the connection
-// to the current page (author, team, tags, projekte …). Without JS the link opens GitHub with the full template.
+// to the current page (author, team, tags, projects …). Without JS the link opens GitHub with the full template.
 // The form writes the new file (front matter + Markdown, or plain YAML), shows it live, keeps a draft in
 // localStorage and creates it through GitHub's "new file" editor (→ pull request).
 // NeuFormular.datei(typ, werte) builds a file without DOM – used by the tests (_scripts/test_formulare.rb).
@@ -97,11 +97,11 @@ var NeuFormular = (function () {
 
   // fields that many types share
   var stichworte = function (x) { return chips("tags", "🏷️ Stichworte", "stichworte", Object.assign({ platzhalter: "Stichwort suchen oder neu …" }, x)); };
-  var verlinkt = function () { return chips("verlinkt", "🔗 Verknüpft (Termine, Beiträge, Geräte, Seiten …)", "seiten", { platzhalter: "Seite suchen oder /adresse/ …" }); };
+  var verlinkt = function () { return chips("linked", "🔗 Verknüpft (Termine, Beiträge, Geräte, Seiten …)", "seiten", { platzhalter: "Seite suchen oder /adresse/ …" }); };
   var leute = function (name, label, x) { return chips(name, label, "personen", Object.assign({ platzhalter: "Name aus dem Team …" }, x)); };
   var partner = function (name, label, x) { return chips(name, label, "partner", Object.assign({ platzhalter: "Partner suchen …" }, x)); };
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
-  var persoenlich = function (hilfe) { return haken("persoenlich", "Persönlich", { hilfe: hilfe }); };
+  var persoenlich = function (hilfe) { return haken("personal", "Persönlich", { hilfe: hilfe }); };
   // look of the page (_data/themes.yml, assets/css/themes.css); "" = the site's default
   var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"], ["slop", "Slop ✨"]];
   var themeField = function () { return auswahl("theme", "🎨 Theme (Aussehen)", THEMES, { mehr: true, hilfe: "Besucher*innen können unten auf der Seite trotzdem selbst wählen" }); };
@@ -122,7 +122,7 @@ var NeuFormular = (function () {
   }
   function ohneT(v) { return v ? v.replace("T", " ").slice(0, 16) : ""; }
   function tag(v) { return String(v || "").slice(0, 10); }
-  // one value as a plain scalar, several as a list (author, standort_partner – single-value fields in .pages.yml)
+  // one value as a plain scalar, several as a list (author, location_partner – single-value fields in .pages.yml)
   function einerOderListe(v) { return v && v.length === 1 ? v[0] : v; }
   // free text into a list (owner_name is `list: true` in .pages.yml)
   function alsEintrag(v) { return v ? [v] : ""; }
@@ -140,13 +140,13 @@ var NeuFormular = (function () {
       titel("Name des Projekts"),
       text("summary", "Kurzbeschreibung (Projektkarte)", { platzhalter: "Ein bis zwei Sätze, worum es geht" }),
       [auswahl("status", "Status", STATUS_PROJEKT), datum("start", "Start", { pflicht: true, standard: F.heute, hilfe: "wird zum Sortieren genutzt" }),
-        text("zeitraum", "Zeitraum", { platzhalter: "z. B. Herbst 2026", folgt: function (w) { return w.status === "abgeschlossen" || !w.start ? "" : "seit " + w.start.slice(0, 4); } })],
-      [text("ort", "Ort", { platzhalter: "z. B. Kurt-Tucholsky-Grundschule, Moabit – keine Wohnadressen" }),
+        text("period", "Zeitraum", { platzhalter: "z. B. Herbst 2026", folgt: function (w) { return w.status === "abgeschlossen" || !w.start ? "" : "seit " + w.start.slice(0, 4); } })],
+      [text("location", "Ort", { platzhalter: "z. B. Kurt-Tucholsky-Grundschule, Moabit – keine Wohnadressen" }),
         text("event_tag", "Eigenes Stichwort (event_tag)", { folgt: function (w) { return F.slugify(w.title); }, hilfe: "Beiträge und Termine mit diesem Stichwort erscheinen auf der Projektseite – nie ein allgemeines wie 35services" })],
       leute("team", "👥 Beteiligte"),
       partner("partners", "🤝 Partner"),
-      projekte("teil_von", "🧩 Teil von", { hilfe: "Nur für Teilprojekte – erscheinen dann nicht in den Übersichten" }),
-      projekte("verwandt", "↔️ Verwandte Projekte", { mehr: true }),
+      projekte("part_of", "🧩 Teil von", { hilfe: "Nur für Teilprojekte – erscheinen dann nicht in den Übersichten" }),
+      projekte("related", "↔️ Verwandte Projekte", { mehr: true }),
       verlinkt(),
       persoenlich("Privates Projekt aus dem Team: nur im Teamprofil, nicht in den Listen des Instituts"),
       inhalt("Ziel, Stand, was gebraucht wird …"),
@@ -184,12 +184,12 @@ var NeuFormular = (function () {
         [text("location", "Ort", { platzhalter: "Ort, Straße (keine Wohnadressen)" }), adresse("location_url", "Link zum Ort")],
         text("summary", "Kurzbeschreibung (Terminliste & iCal)"),
         leute("team", "👥 Dabei", { hilfe: "nur wer wirklich da ist/war" }),
-        projekte("projekte", "🔧 Projekte"),
+        projekte("projects", "🔧 Projekte"),
         stichworte(),
         partner("partners", "🤝 Partner"),
         verlinkt(),
         [persoenlich("Privater Termin aus dem Team (braucht „Dabei“): nur im Teamprofil"),
-          haken("nur_projekt", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
+          haken("project_only", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
         inhalt("Was passiert, wer kann kommen, was mitbringen …"),
         text("date_label", "Text statt Datum", { mehr: true, platzhalter: "z. B. „Januar 2027 – genauer Termin folgt“" }),
         socialBild(),
@@ -215,14 +215,14 @@ var NeuFormular = (function () {
       datei: function (w) { return F.slugify(w.title, "hersteller-modell") + ".md"; },
       felder: [
         titel("Hersteller Modell"),
-        [text("kategorie", "Kategorie", { liste: "kategorien", platzhalter: "z. B. 3D-Drucker" }),
+        [text("category", "Kategorie", { liste: "kategorien", platzhalter: "z. B. 3D-Drucker" }),
           auswahl("status", "Status", [["", "Im Einsatz"], ["in-aussicht", "🔭 In Aussicht"], ["im-test", "🧪 Im Test"], ["in-reparatur", "🔧 In Reparatur"]])],
         text("summary", "Kurzbeschreibung", { platzhalter: "Was das Gerät kann und wofür wir es nutzen" }),
         leute("owner_team", "🔑 Gehört (Team)"),
         partner("owner_partner", "🔑 Gehört (Partner)"),
         text("owner_name", "🔑 Gehört (andere)", { platzhalter: "freier Name", ausgabe: alsEintrag }),
-        [text("standort", "Standort", { platzhalter: "z. B. KTG, Raum 101" }),
-          partner("standort_partner", "📍 Steht bei Partner", { einzeln: true, ausgabe: einerOderListe })],
+        [text("location", "Standort", { platzhalter: "z. B. KTG, Raum 101" }),
+          partner("location_partner", "📍 Steht bei Partner", { einzeln: true, ausgabe: einerOderListe })],
         stichworte({ hilfe: "Gerät, Gerätetyp, Besitzer*in, z. B. bambu-lab-a1-mini, 3d-drucker" }),
         verlinkt(),
         inhalt("Was das Gerät kann, Erfahrungen, Tipps …"),
@@ -237,24 +237,24 @@ var NeuFormular = (function () {
       }
     },
     herausforderung: {
-      titel: "Herausforderung", ordner: "_herausforderungen",
+      titel: "Herausforderung", ordner: "_challenges",
       datei: function (w) { return F.slugify(w.title, "kurzer-name") + ".md"; },
       felder: [
         titel("Was ist die Herausforderung? (kurz, gern als Frage)"),
         text("summary", "Kurz (ein Satz für die Karte)"),
-        [auswahl("art", "Art", [["frage", "❓ Frage"], ["aufgabe", "📋 Aufgabe"], ["problem", "⚠️ Problem"]]),
+        [auswahl("kind", "Art", [["frage", "❓ Frage"], ["aufgabe", "📋 Aufgabe"], ["problem", "⚠️ Problem"]]),
           auswahl("status", "Status", [["offen", "Offen"], ["in-arbeit", "In Arbeit"], ["geloest", "Gelöst"]]),
-          datum("seit", "Seit", { standard: F.heute })],
-        [haken("wichtig", "Wichtig", { hilfe: "allein 📌 einplanen, mit dringend 🔥 sofort" }),
-          haken("dringend", "Dringend", { hilfe: "allein 🤝 abgeben, keins von beiden 💤 später" })],
+          datum("since", "Seit", { standard: F.heute })],
+        [haken("important", "Wichtig", { hilfe: "allein 📌 einplanen, mit dringend 🔥 sofort" }),
+          haken("urgent", "Dringend", { hilfe: "allein 🤝 abgeben, keins von beiden 💤 später" })],
         leute("team", "👥 Zuständig"),
-        projekte("projekte", "🔧 Projekte"),
+        projekte("projects", "🔧 Projekte"),
         stichworte(),
         verlinkt(),
         persoenlich("Aus einem privaten Projekt im Team"),
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
-        datum("geloest_am", "Gelöst am", { mehr: true }),
-        feld("langtext", "loesung", "Lösung (Markdown)", { mehr: true, markdown: true, zeilen: 4 }),
+        datum("solved_on", "Gelöst am", { mehr: true }),
+        feld("langtext", "solution", "Lösung (Markdown)", { mehr: true, markdown: true, zeilen: 4 }),
         socialBild(),
         themeField()
       ]
@@ -266,7 +266,7 @@ var NeuFormular = (function () {
         text("title", "Name", { pflicht: true, platzhalter: "Vorname Nachname", klasse: "form-feld-titel", hilfe: "Der Dateiname wird das Team-Kürzel für team, author, owner_team" }),
         [text("role", "Rolle", { platzhalter: "z. B. hilft in der KTG-AG" }), zahl("order", "Reihenfolge", { standard: "50", hilfe: "kleiner = weiter vorne" })],
         verlinkt(),
-        haken("nicht_im_team", "Nicht auf /team/ auflisten (nur eigene Seite zum Verlinken)"),
+        haken("not_in_team", "Nicht auf /team/ auflisten (nur eigene Seite zum Verlinken)"),
         inhalt("Was die Person macht und womit sie im Makespace hilft – keine Wohnadresse, keine privaten E-Mail-Adressen"),
         text("photo", "Foto", { mehr: true, platzhalter: "/assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis" }),
         text("photo_credit", "Bildnachweis", { mehr: true, hilfe: "Pflicht bei Fremdfotos (Presse, Agentur)" }),
@@ -283,7 +283,7 @@ var NeuFormular = (function () {
         stichworte(),
         verlinkt(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
-        text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/presse.yml" }),
+        text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/press.yml" }),
         socialBild(),
         themeField()
       ]
@@ -332,14 +332,14 @@ var NeuFormular = (function () {
       pruefe: function (w) { return aktiv && aktiv.edit && w.text === aktiv.edit.w0.text ? null : checkHtml(w.text); }
     },
     pressebericht: {
-      titel: "Wir in der Presse", ordner: "_data/pressebericht", format: "yaml",
-      datei: function (w) { return (w.datum ? w.datum + "-" : "") + F.slugify(w.medium, "medium") + ".yml"; },
+      titel: "Wir in der Presse", ordner: "_data/press_report", format: "yaml",
+      datei: function (w) { return (w.date ? w.date + "-" : "") + F.slugify(w.medium, "medium") + ".yml"; },
       felder: [
-        text("titel", "Überschrift des Berichts", { pflicht: true, klasse: "form-feld-titel" }),
-        [text("medium", "Medium", { pflicht: true, platzhalter: "Zeitung, Website oder Kanal" }), datum("datum", "Erschienen am", { standard: F.heute })],
+        text("title", "Überschrift des Berichts", { pflicht: true, klasse: "form-feld-titel" }),
+        [text("medium", "Medium", { pflicht: true, platzhalter: "Zeitung, Website oder Kanal" }), datum("date", "Erschienen am", { standard: F.heute })],
         adresse("url", "Link zum Bericht", { pflicht: true, hilfe: "ohne Tracking-Parameter (?si=, utm_ …)" }),
-        chips("anlass", "🔗 Anlass (eigene Seite)", "seiten", { einzeln: true, ausgabe: einerOderListe, platzhalter: "Termin oder Beitrag suchen …" }),
-        text("hinweis", "Hinweis", { platzhalter: "erscheint in Klammern hinter dem Eintrag" })
+        chips("occasion", "🔗 Anlass (eigene Seite)", "seiten", { einzeln: true, ausgabe: einerOderListe, platzhalter: "Termin oder Beitrag suchen …" }),
+        text("note", "Hinweis", { platzhalter: "erscheint in Klammern hinter dem Eintrag" })
       ]
     }
   };

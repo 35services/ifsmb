@@ -1,6 +1,6 @@
 ---
 title: Creality CR-Scan Ferret SE
-kategorie: 3D-Scanner
+category: 3D-Scanner
 status: im-test
 summary: Ein kompakter, schneller 3D-Scanner mit Farbe – ideal für kleine Teile und Figuren. Wird gerade getestet.
 owner_team: falko-richter

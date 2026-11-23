@@ -3,11 +3,11 @@ title: "Ein Notebook der KTG wiederbeleben"
 summary: Ein altes Notebook der KTG soll wieder laufen – das Displayscharnier hat eine Macke, stationär sollte es aber noch gut nutzbar sein.
 status: aktuell
 start: 2026-11-02
-zeitraum: seit November 2026
-ort: Kurt-Tucholsky-Grundschule, Moabit
-teil_von: [3d-druck-ag-ktg]
+period: seit November 2026
+location: Kurt-Tucholsky-Grundschule, Moabit
+part_of: [3d-druck-ag-ktg]
 event_tag: notebook-ktg
-verwandt: [ipad-stifte-wiederbeleben]
+related: [ipad-stifte-wiederbeleben]
 team:
   - falko-richter
   - mr-e

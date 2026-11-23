@@ -2,9 +2,9 @@
 title: "Standanmeldung für den Treffpunkt Modellbau 2027 ist da"
 date: 2026-11-11 07:30:00 +0100
 author: falko-richter
-persoenlich: true
+personal: true
 tags: [rc-modellbau, mogster]
-verlinkt: [/calendar/2027-02-13-treffpunkt-modellbau-paaren-im-glien/]
+linked: [/calendar/2027-02-13-treffpunkt-modellbau-paaren-im-glien/]
 uuid: 0019ffdf-dd5a-4fea-8a48-af29e6fae25b
 ---
 
