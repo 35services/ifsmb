@@ -1,9 +1,6 @@
 # Wird auf /press/ und unter jeder Pressemitteilung angezeigt.
 short_profile: >-
-  Das Institut für spontane Makespace Buildung (IfsMB) richtet gemeinsam mit Schulen,
-  Vereinen und offenen Werkstätten in Berlin-Moabit Makespaces ein: Orte, an denen Kinder
-  und Jugendliche löten, programmieren, 3D-drucken und Dinge selbst bauen können.
-  Das Institut arbeitet ehrenamtlich und ohne lange Anträge – mit dem, was gerade da ist.
+  35services e.V.
 contact_name: "Vorstand 35services e.V."
 # E-Mail base64-kodiert eintragen: printf 'vorstand@35services.de' | base64
 contact_email_b64: "dm9yc3RhbmRAMzVzZXJ2aWNlcy5kZQ==
