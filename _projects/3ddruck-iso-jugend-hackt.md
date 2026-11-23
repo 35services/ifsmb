@@ -10,7 +10,7 @@ tags: [3ddruck-iso, jugend-hackt, heartlabs, laptops, ktg]
 team:
   - falko-richter
 linked:
-  - /team/opa-andi/
+  - https://ifsmb.de/team/opa-andi/
 partners:
   - Jugend hackt
   - HeartLabs
@@ -48,7 +48,7 @@ Programme, die die AG nicht braucht (Entwicklungsumgebungen, Spiele-Engines …)
 
 ## Die Laptops
 
-Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **[Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }})**, ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**. Viele kamen ohne Festplatte – mit dem Stick ist das egal. Mehr dazu im Beitrag [„Linux-Laptops für die 3D-Druck AG“]({{ '/news/2026/10/13/linux-laptops-fuer-die-3d-druck-ag/' | relative_url }}) und auf der Seite [Laptops & Druck-Sticks]({{ '/equipment/laptops-druck-sticks/' | relative_url }}).
+Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **[Falkos Vater („Opa Andi“)](https://ifsmb.de/team/opa-andi/)**, ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**. Viele kamen ohne Festplatte – mit dem Stick ist das egal. Mehr dazu im Beitrag [„Linux-Laptops für die 3D-Druck AG“]({{ '/news/2026/10/13/linux-laptops-fuer-die-3d-druck-ag/' | relative_url }}) und auf der Seite [Laptops & Druck-Sticks]({{ '/equipment/laptops-druck-sticks/' | relative_url }}).
 
 **Danke an [HeartLabs]({{ '/partners/' | relative_url }}#heartlabs)** für den Laptop, auf dem Falko die Images baut und die Sticks beschreibt!
 
@@ -56,7 +56,7 @@ Die Laptops hätten sonst niemand mehr gebraucht: Ein Teil kommt von **[Falkos V
 
 - **Nichts wegwerfen:** Aus Laptops, die im Müll gelandet wären, werden Werkzeuge für Kinder.
 - **Auf den Schultern von anderen:** Wir erfinden nichts neu, sondern bauen auf der Arbeit von Jugend hackt auf – und geben unsere Änderungen offen zurück.
-- **Viele Hände:** Jugend hackt liefert die Grundlage, HeartLabs den Bau-Laptop, [Falkos Vater]({{ '/team/opa-andi/' | relative_url }}) und die KTG die Geräte, 35services die AG. Das Institut bringt alles zusammen.
+- **Viele Hände:** Jugend hackt liefert die Grundlage, HeartLabs den Bau-Laptop, [Falkos Vater](https://ifsmb.de/team/opa-andi/) und die KTG die Geräte, 35services die AG. Das Institut bringt alles zusammen.
 - **Spontan:** Kein Antrag, keine Ausschreibung – Falko hat einfach angefangen und die USB-Sticks erstmal selbst bezahlt.
 - **Zum Nachmachen:** Andere Schulen und Makespaces können den Stick genauso bauen.
 

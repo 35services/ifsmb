@@ -17,7 +17,7 @@ Der **Creality CR-6 Max** ist ein kartesischer Großformat-3D-Drucker mit einem 
 
 Er stand zunächst in der Werkstatt von [35services e. V.]({{ '/partners/35services/' | relative_url }}): Im Repository [35services/3d]({{ '/projects/35services-3d/' | relative_url }}) ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max)) hat [Jan]({{ '/team/jan/' | relative_url }}) das PrusaSlicer-Profil für den Drucker hinterlegt und das Upgrade auf den **Bondtech LGX Lite Arrow Extruder** dokumentiert.
 
-Später wurde der Drucker an **[Opa Andi]({{ '/team/opa-andi/' | relative_url }})** weiterverkauft, der damit große Teile druckt.
+Später wurde der Drucker an **[Opa Andi](https://ifsmb.de/team/opa-andi/)** weiterverkauft, der damit große Teile druckt.
 
 - **Bauraum:** 400 × 400 × 400 mm
 - **Extruder-Upgrade:** [Bondtech LGX Lite Arrow für Creality](https://www.bondtech.se/product/lgx-lite-arrow-upgrade-kit-for-creality/) (Direct-Drive)

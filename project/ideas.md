@@ -33,7 +33,7 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projects
 - **Scarab** von milli – ein geniales Projekt ([milli.wtf](https://www.milli.wtf/products/scarab))
 - **1:8-Auto** – [Instagram-Reel](https://www.instagram.com/reel/DfQVfaNo42B/), dasselbe als [YouTube-Short](https://youtube.com/shorts/6jFfDikJ6gw)
 - **Print-in-Place-RC-Auto** – in einem Stück gedruckt ([Video](https://youtu.be/196DbFc4tKE))
-- **Tarmo5** – ein 3D-gedrucktes RC-Auto, jetzt als [Projektidee]({{ '/projects/tarmo5/' | relative_url }}) ([Printables](https://www.printables.com/model/348623-3d-printed-rc-car-tarmo5), [Video](https://www.youtube.com/watch?v=kef8Hit1EH0), [Diskussion auf Reddit](https://www.reddit.com/r/EngineeringNS/comments/zvellk/tarmo5/))
+- **Tarmo5** – ein 3D-gedrucktes RC-Auto, jetzt als [Projektidee](https://ifsmb.de/projects/tarmo5/) ([Printables](https://www.printables.com/model/348623-3d-printed-rc-car-tarmo5), [Video](https://www.youtube.com/watch?v=kef8Hit1EH0), [Diskussion auf Reddit](https://www.reddit.com/r/EngineeringNS/comments/zvellk/tarmo5/))
 - **DKS-Pro** – ein komplett 3D-gedrucktes 1:10-Chassis ([Video](https://m.youtube.com/watch?v=KSIvDbwBDEk))
 - **CRAMER Truggy RC 4x4** – komplett 3D-gedruckt ([Modell auf Cults](https://cults3d.com/es/modelo-3d/juegos/cramer-truggy-rc-4x4-full-3d-printed), [Video](https://www.youtube.com/watch?v=pMaItQeN5LY)), dazu ein [Body-Kit](https://cults3d.com/es/modelo-3d/juegos/body-kit-cramer) ([Video, Spanisch](https://youtu.be/nkvjXQsBAxw))
 - **3DSets Bamboo 4x4** – ein komplett 3D-gedruckter 1:8-Truck ([Video](https://www.youtube.com/watch?v=yoFo4Qadtdk)) – wow!
@@ -55,8 +55,8 @@ Wollt ihr eins davon mit uns bauen? Schaut bei unseren [Projekten]({{ '/projects
 - **4x4 Mini-RC-Crawler mit eigener Fernsteuerung** – 3D-gedruckter Crawler mit kleinen N20-Getriebemotoren und selbstgebautem RC-Controller von Pro Know ([Video](https://www.youtube.com/watch?v=nN-Kt9q44bw))
 - **Kettenfahrzeuge** ([Video 1](https://www.youtube.com/watch?v=q3XNYwNZ97w), [Video 2](https://youtu.be/6lUlWxRsPhI))
 - **RC Avatar Scorpion V2** ([Cults](https://cults3d.com/en/3d-model/game/rc-avatar-scorpion-v2), [Video](https://youtu.be/UkFCE25-XTs))
-- 🕒 **RC Tractor von ProfessorBoots** – wird gerade gebaut: [RC Tractor von ProfessorBoots bauen]({{ '/projects/rc-tractor-professorboots/' | relative_url }}) ([Printables](https://www.printables.com/model/1714813-rc-tractor), [John Deere Hood Mod](https://www.printables.com/model/1813353-john-deere-hood-mod-for-the-rc-tractor/files))
-- **OpenRC Tractor** – empfohlen von [Opa Andi]({{ '/team/opa-andi/' | relative_url }}) ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
+- 🕒 **RC Tractor von ProfessorBoots** – wird gerade gebaut: [RC Tractor von ProfessorBoots bauen](https://ifsmb.de/projects/rc-tractor-professorboots/) ([Printables](https://www.printables.com/model/1714813-rc-tractor), [John Deere Hood Mod](https://www.printables.com/model/1813353-john-deere-hood-mod-for-the-rc-tractor/files))
+- **OpenRC Tractor** – empfohlen von [Opa Andi](https://ifsmb.de/team/opa-andi/) ([Printables](https://www.printables.com/model/318896-openrc-tractor-mk3-tea20))
 - **Pistenraupe** ([youmagine](https://youmagine.com/designs/34c46679-cdef-402c-94d7-eb25388172c3)) und [Bambu Labs „Santa's Snowcat“](https://www.youtube.com/watch?v=45_44t7ZurE) ([Video](https://youtu.be/nZYnPq2CSUg))
 
 ### Roboter

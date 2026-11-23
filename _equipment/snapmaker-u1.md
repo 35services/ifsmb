@@ -24,7 +24,7 @@ Der Drucker gehört [35services e.V.]({{ '/partners/' | relative_url }}#35-servi
 ### Mehr zum Drucker an der KTG
 
 - [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) – das Projekt
-- [Pressemitteilung: Schulstadtrat Benjamin Fritz zu Besuch bei der 3D-Druck AG]({{ '/press/schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/' | relative_url }}) – mit dem Unboxing am 16.02.2026
+- [Pressemitteilung: Schulstadtrat Benjamin Fritz zu Besuch bei der 3D-Druck AG](https://ifsmb.de/press/schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/) – mit dem Unboxing am 16.02.2026
 - [3D-Druck für unsere offene Werkstatt]({{ '/news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/' | relative_url }}) – wie wir die Drucker gemeinsam nutzen
 - [Spenden für die AG]({{ '/spenden/' | relative_url }}) – damit die AG weiter Material hat
 - Hersteller: [Snapmaker U1](https://us.snapmaker.com/products/snapmaker-u1-3d-printer)

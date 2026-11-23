@@ -15,6 +15,6 @@ uuid: 43eedda4-adc0-498b-b44a-23872ce51a55
 
 Die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) hat einen **Lasercutter** bekommen. Bevor die Kinder damit arbeiten, müssen wir ihn noch **testen und einrichten**: Abluft, Fokus, Materialeinstellungen und vor allem die Sicherheit.
 
-Gebraucht wird er zuerst für das Teilprojekt [Blockface-Stempel als Klassensatz]({{ '/projects/blockface-klassensatz/' | relative_url }}): Die Stempel des Blockface-Kits lassen sich lasern, die Griffe drucken wir mit dem 3D-Drucker.
+Gebraucht wird er zuerst für das Teilprojekt [Blockface-Stempel als Klassensatz](https://ifsmb.de/projects/blockface-klassensatz/): Die Stempel des Blockface-Kits lassen sich lasern, die Griffe drucken wir mit dem 3D-Drucker.
 
 <span class="todo">Modell, Arbeitsfläche und Leistung ergänzen, Fotos folgen.</span>

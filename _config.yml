@@ -1,8 +1,8 @@
-title: Institut für spontane Makespace Buildung
+title: 35 services e. V.
 short_title: IfsMB
 description: Wir bauen Makespaces – spontan, gemeinsam und dort, wo Kinder und Jugendliche lernen.
 baseurl: ""
-url: "https://ifsmb.de"
+url: "https://35services.ifsmb.de"
 lang: de
 timezone: Europe/Berlin
 future: true
@@ -11,7 +11,7 @@ future: true
 # default_theme: ifsmb
 
 # Bearbeiten-Button (_layouts/default.html)
-repository: falkorichter/ifsmb.de
+repository: 35services/ifsmb
 branch: main
 
 markdown: kramdown
