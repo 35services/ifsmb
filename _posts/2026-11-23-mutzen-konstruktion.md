@@ -1,0 +1,14 @@
+---
+title: "Mützen Konstruktion "
+date: 2026-11-23 16:07:00 +0100
+persoenlich: true
+author: [falko-richter, gregor-dill]
+tags: [ktg]
+verlinkt: [/news/2026/11/19/hamster-produktion/]
+social_media_preview_image: /assets/images/news/mutzen-konstruktion/01-social.jpg
+uuid: 252fae38-c776-4ec2-9c3c-5bab7053a003
+---
+
+![Mützen](/assets/images/news/mutzen-konstruktion/01.jpg)
+![Weitere Mützen](/assets/images/news/mutzen-konstruktion/02.jpg)
+{: .gallery}
