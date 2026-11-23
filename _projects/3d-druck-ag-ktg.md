@@ -33,4 +33,4 @@ Die AG wird komplett ehrenamtlich von Falko Richter geleitet, Gregor Dill ist Co
 
 **Spenden:** Unter [35services.de/ag](https://35services.de/ag/) gibt es mehr Informationen und ein Spendenformular. Die Spenden fließen ausschließlich in Material, die Arbeit der AG-Leitung ist ehrenamtlich.
 
-**Förderung:** Falko fragt gerade bei der Berliner MINT-Initiative junior1stein nach, welche Möglichkeiten es für die KTG gibt: [junior1stein für die KTG]({{ '/projects/junior1stein-ktg/' | relative_url }}). Weitere Wege sammeln wir unter [Geld für Makespaces]({{ '/geld-fuer-makespaces/' | relative_url }}).
+**Förderung:** Falko fragt gerade bei der Berliner MINT-Initiative junior1stein nach, welche Möglichkeiten es für die KTG gibt: [junior1stein für die KTG](https://ifsmb.de/projects/junior1stein-ktg/). Weitere Wege sammeln wir unter [Geld für Makespaces]({{ '/geld-fuer-makespaces/' | relative_url }}).

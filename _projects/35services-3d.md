@@ -17,7 +17,7 @@ team:
   - falko-richter
   - jan
 linked:
-  - /team/opa-andi/
+  - https://ifsmb.de/team/opa-andi/
   - /equipment/creality-cr-6-max/
 partners:
   - 35 services e. V.
@@ -63,8 +63,8 @@ Viele Projekte im Repo verbinden die Werkstatt direkt mit der [3D-Druck AG an de
 
 ## Drucker, 3D-Scanner & Workshops
 
-- **[Creality CR-6 Max]({{ '/equipment/creality-cr-6-max/' | relative_url }})** ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max), Mai–Juli 2024): [Jan]({{ '/team/jan/' | relative_url }}) hat das PrusaSlicer-Profil für den großen CR-6 Max (400 × 400 mm Bauraum) beigesteuert; dazu stehen dort die Unterlagen für das Upgrade auf den Bondtech LGX Lite Arrow Extruder. Der Drucker wurde später an [Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }}) weiterverkauft.
-- **3D-Scannen** ([`wandpanel/`](https://github.com/35services/3d/tree/main/wandpanel), Februar 2024 – Februar 2026): Erste 3D-Scan-Versuche eines Wandpaneels – daraus ist später das Projekt [3D-Scanner evaluieren]({{ '/projects/3d-scanner-evaluieren/' | relative_url }}) gewachsen.
+- **[Creality CR-6 Max]({{ '/equipment/creality-cr-6-max/' | relative_url }})** ([`crealitycr6max/`](https://github.com/35services/3d/tree/main/crealitycr6max), Mai–Juli 2024): [Jan]({{ '/team/jan/' | relative_url }}) hat das PrusaSlicer-Profil für den großen CR-6 Max (400 × 400 mm Bauraum) beigesteuert; dazu stehen dort die Unterlagen für das Upgrade auf den Bondtech LGX Lite Arrow Extruder. Der Drucker wurde später an [Falkos Vater („Opa Andi“)](https://ifsmb.de/team/opa-andi/) weiterverkauft.
+- **3D-Scannen** ([`wandpanel/`](https://github.com/35services/3d/tree/main/wandpanel), Februar 2024 – Februar 2026): Erste 3D-Scan-Versuche eines Wandpaneels – daraus ist später das Projekt [3D-Scanner evaluieren](https://ifsmb.de/projects/3d-scanner-evaluieren/) gewachsen.
 - **CAD-Workshop & OctoPrint** ([`cad-workshop/`](https://github.com/35services/3d/tree/main/cad-workshop), Januar 2026, sowie `octoprint/` in der Git-Historie vom September 2026): Ideen für gemeinsame Konstruktions-Workshops und ein Docker-Compose-Setup für OctoPrint samt `ipOnConnect`-Plugin.
 
 Das Schwester-Repository für den Stiftplotter und 2D-Projekte ist **[35services/2d]({{ '/projects/35services-2d/' | relative_url }})**.

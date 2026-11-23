@@ -10,13 +10,13 @@ image_alt: "Illustration eines aufgeklappten Laptops mit eingestecktem USB-Stick
 image_is_illustration: true
 tags: [laptops, 3ddruck-iso, ktg]
 linked:
-  - /team/opa-andi/
+  - https://ifsmb.de/team/opa-andi/
 uuid: c232dbdd-1c8f-4344-a3de-85d35023a271
 ---
 
 Für die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) hat Falko eine kleine Laptop-Flotte zusammengestellt:
 
-- Ein Teil der Laptops kommt von **[Falkos Vater („Opa Andi“)]({{ '/team/opa-andi/' | relative_url }})**.
+- Ein Teil der Laptops kommt von **[Falkos Vater („Opa Andi“)](https://ifsmb.de/team/opa-andi/)**.
 - Ein Teil hätte die [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) sonst **entsorgt**.
 - Darunter sind drei **Acer TravelMate P653-M** – ohne Festplatte, deshalb starten sie von USB-Stick.
 

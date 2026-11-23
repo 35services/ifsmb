@@ -17,4 +17,4 @@ Am 16. Februar 2026 wurde unser [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | r
 - Die ersten Mehrfarbschichten konnten wir noch am Montag sehen, bevor alle um 17:00 Uhr nach Hause mussten.
 - Über Nacht hat der Drucker dann einen **4-Farb-Testdruck-Drachen** autonom und ohne Probleme fertiggestellt – den haben wir später als Geschenk an Schulstadtrat Benjamin Fritz übergeben.
 
-📷 Fotos vom Unboxing gibt es am Ende des [Google-Fotos-Albums](https://photos.app.goo.gl/3gHcYyH5wt71wuyM6) zum Besuch des Schulstadtrats – siehe auch die [Pressemitteilung]({{ '/press/schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/' | relative_url }}).
+📷 Fotos vom Unboxing gibt es am Ende des [Google-Fotos-Albums](https://photos.app.goo.gl/3gHcYyH5wt71wuyM6) zum Besuch des Schulstadtrats – siehe auch die [Pressemitteilung](https://ifsmb.de/press/schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/).

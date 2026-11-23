@@ -13,6 +13,7 @@ links:
     url: http://madrid.falkorichter.de/
   - title: "Interview: „3-D-Drucker in der Schule“ (Moabit-Ost, Mai 2026)"
     url: https://www.moabit-ost.de/aktuelles/interviews-von-gerald-backhaus/3-d-drucker-in-der-schule-falko-richter-mai-2026
+linked: [/partners/35services/] # Mitglied bei 35 services e. V.
 uuid: 12917a5c-7d81-49d0-8960-c930308a7079
 ---
 

@@ -16,9 +16,9 @@ Hinter dem Zazza stehen **Paul und Zazza-Jan** (so nennen wir ihn, damit er nich
 ## Was wir gemeinsam machen
 
 - **Unterstützung von Anfang an:** Schon beim Start der ersten [3D-Druck- und Elektronik-AG an der KTG]({{ '/news/2024/01/08/diy-eine-3d-druck-und-elektronik-ag-an-der-ktg/' | relative_url }}) 2024 gab es Kaffee und Unterstützung aus dem Zazza – und im [ersten AG-Jahr]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}) war das Zazza einer der Sponsoren, die die Kinder selbst gefunden haben.
-- **Moabiter Lastenlaufrad Kiez-WM:** Beim Frühlingsfest im Zazza am 9. Mai 2026 fand die erste [Lastenlaufrad-Weltmeisterschaft im Kiez]({{ '/projects/lastenlaufrad-kiez-wm-2026/' | relative_url }}) statt – für Kinder und Erwachsene.
-- **Herbstfest beim Zazza:** Kastanienfiguren basteln mit [live 3D-Druck von Hüten und Stiefeln]({{ '/calendar/2026-10-10-herbstfest-beim-zazza/' | relative_url }}) direkt auf dem Platz der Nachbarschaft.
-- **Winterfest in der Kulturfabrik:** Am 5. Dezember 2026 feiern wir gemeinsam das [Winterfest in der Kulturfabrik Moabit]({{ '/calendar/2026-12-05-winterfest-kulturfabrik/' | relative_url }}).
+- **Moabiter Lastenlaufrad Kiez-WM:** Beim Frühlingsfest im Zazza am 9. Mai 2026 fand die erste [Lastenlaufrad-Weltmeisterschaft im Kiez](https://ifsmb.de/projects/lastenlaufrad-kiez-wm-2026/) statt – für Kinder und Erwachsene.
+- **Herbstfest beim Zazza:** Kastanienfiguren basteln mit [live 3D-Druck von Hüten und Stiefeln](https://ifsmb.de/calendar/2026-10-10-herbstfest-beim-zazza/) direkt auf dem Platz der Nachbarschaft.
+- **Winterfest in der Kulturfabrik:** Am 5. Dezember 2026 feiern wir gemeinsam das [Winterfest in der Kulturfabrik Moabit](https://ifsmb.de/calendar/2026-12-05-winterfest-kulturfabrik/).
 
 → [pajas-kaffee.de](https://www.pajas-kaffee.de/) · [Instagram @zazza_moabit](https://www.instagram.com/zazza_moabit/)
 

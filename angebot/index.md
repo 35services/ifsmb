@@ -14,13 +14,13 @@ uuid: d92cb238-0eda-4f47-bd93-7c38addf6647
     <div class="card-icon">🖨️</div>
     <h3>AGs an Schulen</h3>
     <p>3D-Druck, Konstruieren am Computer (CAD) und Elektronik – einmal pro Woche, über ein ganzes Schuljahr. Die Kinder bauen echte Projekte, von ferngesteuerten Fahrzeugen bis zum Stiftehalter.</p>
-    <p class="small">Zum Beispiel: <a href="{{ '/projects/3d-druck-ag-ktg/' | relative_url }}">3D-Druck AG an der KTG</a>, <a href="{{ '/projects/3d-druck-ag-platanus-schule/' | relative_url }}">AG an der Platanus Schule</a></p>
+    <p class="small">Zum Beispiel: <a href="{{ '/projects/3d-druck-ag-ktg/' | relative_url }}">3D-Druck AG an der KTG</a>, <a href="https://ifsmb.de/projects/3d-druck-ag-platanus-schule/">AG an der Platanus Schule</a></p>
   </div>
   <div class="card">
     <div class="card-icon">🧸</div>
     <h3>3D-Druck in der Kita</h3>
     <p>Eine kleine Einführung für die Kleinsten: Wie entsteht ein Gegenstand aus dem Drucker? Und am Ende hält jedes Kind etwas Eigenes in der Hand.</p>
-    <p class="small">Zum Beispiel: <a href="{{ '/news/2023/10/20/3d-druck-in-der-kita/' | relative_url }}">3D-Druck in der Kita</a>, <a href="{{ '/news/2024/01/12/3d-drucker-im-froebel-kindergarten-eingeweiht/' | relative_url }}">Fröbel-Kindergarten</a></p>
+    <p class="small">Zum Beispiel: <a href="https://ifsmb.de/news/2023/10/20/3d-druck-in-der-kita/">3D-Druck in der Kita</a>, <a href="https://ifsmb.de/news/2024/01/12/3d-drucker-im-froebel-kindergarten-eingeweiht/">Fröbel-Kindergarten</a></p>
   </div>
   <div class="card">
     <div class="card-icon">💻</div>
@@ -38,13 +38,13 @@ uuid: d92cb238-0eda-4f47-bd93-7c38addf6647
     <div class="card-icon">🏗️</div>
     <h3>Makespaces an Schulen aufbauen</h3>
     <p>Wir beraten Schulen ehrenamtlich, wenn sie einen eigenen Makespace einrichten wollen: Welche Geräte, welche Software, wie organisiert man das – und wie finanziert man es über Spenden?</p>
-    <p class="small">Zum Beispiel: <a href="{{ '/projects/3d-druck-ag-rosalind-franklin-gymnasium/' | relative_url }}">Makespace am Rosalind-Franklin-Gymnasium</a> · Finanzierung: <a href="{{ '/geld-fuer-makespaces/' | relative_url }}">Geld für Makespaces</a></p>
+    <p class="small">Zum Beispiel: <a href="https://ifsmb.de/projects/3d-druck-ag-rosalind-franklin-gymnasium/">Makespace am Rosalind-Franklin-Gymnasium</a> · Finanzierung: <a href="{{ '/geld-fuer-makespaces/' | relative_url }}">Geld für Makespaces</a></p>
   </div>
   <div class="card">
     <div class="card-icon">🚌</div>
     <h3>Ausflüge und Events</h3>
     <p>Besuche bei Designer*innen, Werkstätten und Messen – und wir kommen mit Druckern und Plottern zu Festen, Kongressen und Aktionstagen.</p>
-    <p class="small">Zum Beispiel: <a href="{{ '/calendar/2024-04-29-ausflug-zu-max-in-der-stephanstrasse/' | relative_url }}">Ausflug zu Max</a>, <a href="{{ '/news/2026/10/19/jugend-hackt-congress-2026/' | relative_url }}">Jugend Hackt Congress</a></p>
+    <p class="small">Zum Beispiel: <a href="https://ifsmb.de/calendar/2024-04-29-ausflug-zu-max-in-der-stephanstrasse/">Ausflug zu Max</a>, <a href="{{ '/news/2026/10/19/jugend-hackt-congress-2026/' | relative_url }}">Jugend Hackt Congress</a></p>
   </div>
   <div class="card">
     <div class="card-icon">🧰</div>

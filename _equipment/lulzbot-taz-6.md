@@ -28,4 +28,4 @@ Der Drucker ist **echt robust** und hat einen **SD-Karten-Slot**, kann also auch
 
 Mehr zum Drucker beim Hersteller: [LulzBot TAZ 6 (Legacy-Drucker)](https://lulzbot.com/legacy-printers/taz-6)
 
-Sein kleiner Bruder ist der [LulzBot Mini]({{ '/equipment/lulzbot-mini/' | relative_url }}).
+Sein kleiner Bruder ist der [LulzBot Mini](https://ifsmb.de/equipment/lulzbot-mini/).

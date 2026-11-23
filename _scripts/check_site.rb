@@ -19,7 +19,8 @@ require "net/http"
 require "yaml"
 
 SITE = File.expand_path("../_site", __dir__)
-HOST = "ifsmb.de"
+# Host of this instance, from _config.yml url (a federated copy has its own; links to other instances are external)
+HOST = URI.parse(YAML.load_file(File.expand_path("../_config.yml", __dir__))["url"].to_s).host.to_s.sub(/\Awww\./, "")
 CHECK_EXTERNAL = ARGV.include?("--extern")
 
 # Seiten, die absichtlich nicht verlinkt sein müssen

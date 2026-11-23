@@ -19,4 +19,4 @@ Dort können wir als offene Werkstatt auch unterstützen! Wenn das beschriebene 
 
 Schulen können unter [www.das-macht-schule.net/gratis-it/](https://www.das-macht-schule.net/gratis-it/) schauen, was verfügbar ist.
 
-<p class="note">Nachtrag: Es funktioniert! <a href="{{ '/team/frieder-euteneuer/' | relative_url }}">Frieder</a> bekommt über „Das macht Schule“ <a href="{{ '/news/2026/11/07/40-monitore-von-der-bundesdruckerei/' | relative_url }}">40 Monitore von der Bundesdruckerei</a>.</p>
+<p class="note">Nachtrag: Es funktioniert! <a href="https://ifsmb.de/team/frieder-euteneuer/">Frieder</a> bekommt über „Das macht Schule“ <a href="https://ifsmb.de/news/2026/11/07/40-monitore-von-der-bundesdruckerei/">40 Monitore von der Bundesdruckerei</a>.</p>

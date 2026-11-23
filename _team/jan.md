@@ -10,6 +10,7 @@ links:
     url: https://github.com/35services-jan
   - title: Instagram
     url: https://www.instagram.com/bergstrube/
+linked: [/partners/35services/] # Mitglied bei 35 services e. V.
 uuid: f376b614-9f90-48e3-8adb-66fb5fe6511c
 ---
 

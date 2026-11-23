@@ -11,7 +11,7 @@ linked:
   - /equipment/prusa-mk3s-heartlabs/
 uuid: a7763127-ea5d-48a0-9571-bfe3dbe2c08d
 ---
-[Anton]({{ '/team/anton/' | relative_url }}) macht Fortschritte beim Bau seines [Mogsters]({{ '/projects/3dsets-mogster-bauen/' | relative_url }}#antons-mogster) – und dafür sind bei 35services gleich drei Drucker beschäftigt:
+[Anton]({{ '/team/anton/' | relative_url }}) macht Fortschritte beim Bau seines [Mogsters](https://ifsmb.de/projects/3dsets-mogster-bauen/#antons-mogster) – und dafür sind bei 35services gleich drei Drucker beschäftigt:
 
 - Der [Prusa MK4]({{ '/equipment/prusa-mk4-mmu/' | relative_url }}) druckt **Teile für das Chassis**: Lenkhebel, Spurstangen, Achsträger und viele kleine Distanzstücke.
 - Der [Prusa MK3S (xHain)]({{ '/equipment/prusa-mk3s-xhain/' | relative_url }}) im geschlossenen Bauraum druckt **Zahnräder** – leider bisher mit mäßigem Erfolg. Aber das ist eine andere Geschichte.
