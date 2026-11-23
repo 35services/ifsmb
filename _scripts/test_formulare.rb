@@ -308,8 +308,8 @@ class EditFormTest < Minitest::Test
   def test_changed_body_keeps_spacing
     cases = [
       ["uebersicht", "---\ntitle: A\n---\n<main>\n  <p>x</p>\n</main>\n", "<main>\n  <p>y</p>\n</main>", "---\ntitle: A\n---\n<main>\n  <p>y</p>\n</main>\n"],
-      ["beitrag", "---\ntitle: B\n---\n\nText\n", "Neu", "---\ntitle: B\n---\n\nNeu\n"],
-      ["beitrag", "---\ntitle: C\n---\n", "Neu", "---\ntitle: C\n---\n\nNeu\n"],
+      ["beitrag", "---\ntitle: B\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n\nText\n", "Neu", "---\ntitle: B\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n\nNeu\n"],
+      ["beitrag", "---\ntitle: C\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n", "Neu", "---\ntitle: C\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n\nNeu\n"],
       ["uebersicht", "---\ntitle: D\n---\n  <div>\n</div>\n", "  <div>\n<b>x</b></div>", "---\ntitle: D\n---\n  <div>\n<b>x</b></div>\n"]
     ]
     cases.each do |typ, source, text, expected|
@@ -421,13 +421,13 @@ class ThemeTest < Minitest::Test
   end
 
   def test_setting_a_theme_adds_one_line
-    source = "---\ntitle: Test\nstatus: offen\nkind: frage\n---\n\nText\n"
+    source = "---\ntitle: Test\nstatus: offen\nkind: frage\nuuid: 0b7d8a52-3f1e-4c2a-9d6b-1e2f3a4b5c6d\n---\n\nText\n"
     js = "const N=require('./assets/js/neu.js');process.stdout.write(N.editedFile('herausforderung',#{source.to_json},{theme:'rfflabs'}).content)"
     out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
     assert status.success?, err
     fm, text = Daten.front_matter(out)
     assert_equal "rfflabs", fm["theme"]
-    assert_equal({ "title" => "Test", "status" => "offen", "kind" => "frage" }, fm.reject { |k, _| k == "theme" })
+    assert_equal({ "title" => "Test", "status" => "offen", "kind" => "frage", "uuid" => "0b7d8a52-3f1e-4c2a-9d6b-1e2f3a4b5c6d" }, fm.reject { |k, _| k == "theme" })
     assert_equal "Text", text.strip
   end
 end

@@ -470,8 +470,13 @@ var NeuFormular = (function () {
       if (original.length && original[original.length - 1].key === "uuid") i = blocks.length - 1;
       blocks.splice(i, 0, line);
     });
-    // pages without a uuid get one on saving (kept in w, so it stays the same while editing); _data/*.yml entries don't
-    if (schema.format !== "yaml" && !edit.file.blocks.some(function (b) { return b.key === "uuid"; })) {
+    // pages without a uuid get one on saving (kept in w, so it stays the same while editing); _data/*.yml entries,
+    // overview pages (`search: false`) and redirects don't – same rule as _scripts/uuids_ergaenzen.rb
+    var keinUuid = edit.file.blocks.some(function (b) {
+      var v = b.key && F.yamlValue(b.raw);
+      return b.key === "uuid" || (b.key === "search" && v === false) || (b.key === "layout" && v === "weiterleitung");
+    });
+    if (schema.format !== "yaml" && schema !== TYPEN.uebersicht && !keinUuid) {
       if (!w.uuid) w.uuid = neueUuid();
       blocks.push("uuid: " + w.uuid);
     }
