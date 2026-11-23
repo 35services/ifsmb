@@ -114,8 +114,12 @@ var GitHubApi = (function () {
     if (me) return Promise.resolve(me);
     var u;
     return Promise.all([call("GET", "/user"), call("GET", "/repos/" + repo())]).then(function (r) {
+      var rolePush = !!(r[1].permissions && r[1].permissions.push), owner = r[1].owner || {};
+      // permissions.push is the account's role. A fine-grained token (github_pat_…) never reaches a personal repository
+      // of somebody else – not even as a collaborator (403 on every write) → then it goes through the fork (#186)
+      var fineGrainedForeign = /^github_pat_/.test(token() || "") && owner.type !== "Organization" && owner.login && owner.login !== r[0].login;
       u = { login: r[0].login, name: r[0].name || r[0].login, avatar: r[0].avatar_url,
-        canPush: !!(r[1].permissions && r[1].permissions.push), fork: null };
+        canPush: rolePush && !fineGrainedForeign, collaboratorNeedsClassic: rolePush && fineGrainedForeign, fork: null };
       if (u.canPush) return null;
       return call("GET", "/repos/" + u.login + "/" + repo().split("/")[1]).then(function (f) {
         var parent = (f.parent && f.parent.full_name) || (f.source && f.source.full_name);

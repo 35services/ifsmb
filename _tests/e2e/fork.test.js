@@ -145,3 +145,19 @@ test("Fork lässt sich nicht abgleichen: Warnung mit „Sync fork“, Änderung 
   assert.equal(diffLines(original, env.control.readFile({ ref: sha, path: page.path }).text).added.length, 1);
 });
 
+test("Collaborator mit fine-grained Token: Hinweis auf klassischen Token, Senden geht über den Fork statt 403", async () => {
+  const page = editPage("beitrag");
+  env.seedSource([page.path]);
+  env.control.setUser({ token: "github_pat_susi", login: "susi", push: true, fineGrained: true });
+  const susi = await env.person("github_pat_susi");
+  await susi.openEdit(page.url);
+  await susi.page.evaluate(() => window.NeuFormular.connect());
+  await susi.page.waitFor(() => /Collaborator.*fine-grained Token.*klassischen Token/s.test((document.querySelector("#github-connect .github-who") || {}).textContent || ""));
+  await susi.page.evaluate(() => document.getElementById("github-connect").close());
+  await susi.fill({ title: "E2E Susi fine-grained" });
+  await susi.submit();
+  await susi.waitStatus(/Deine Änderung liegt in deinem Fork susi\/ifsmb\.de/);
+  assert.deepEqual(upstreamWebBranches(), [], "nichts direkt im Repository");
+  assert.equal(forkWebBranches("susi").length, 1);
+});
+

@@ -1400,7 +1400,7 @@ var NeuFormular = (function () {
             + "<p>" + t("github.intro_html", null, "Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.") + "</p>"
             + '<ol class="small"><li>' + esc(t("github.create_token_intro", null, "Token auf GitHub erstellen – je nach Konto:")) + '<ul class="github-token-ways">'
             + '<li><a data-token-link="classic" target="_blank" rel="noopener">' + esc(t("github.token_classic_link", null, "Klassischer Token ↗")) + "</a> – "
-            + t("github.token_classic_html", { repo: "<code>" + esc(GitHubApi.repo()) + "</code>" }, "für <strong>jedes GitHub-Konto</strong>: <em>public_repo</em> ist schon angehakt, Ablaufdatum wählen, „Generate token“. Mit Schreibrechten auf " + esc(GitHubApi.repo()) + " (Collaborator) geht es direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt.") + "</li>"
+            + t("github.token_classic_html", { repo: "<code>" + esc(GitHubApi.repo()) + "</code>" }, "für <strong>jedes GitHub-Konto</strong>: <em>public_repo</em> ist schon angehakt, kurzes Ablaufdatum wählen (der Token gilt für alle öffentlichen Repositories, in die du schreiben darfst), „Generate token“. Mit Schreibrechten auf " + esc(GitHubApi.repo()) + " (Collaborator) geht es direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt.") + "</li>"
             + '<li><a data-token-link="owner" target="_blank" rel="noopener">' + esc(t("github.token_owner_link", { owner: esc(GitHubApi.repo().split("/")[0]) }, "Fine-grained Token für @" + GitHubApi.repo().split("/")[0] + " ↗")) + "</a> – "
             + t("github.token_steps_html", { repo: "<code>" + esc(GitHubApi.repo()) + "</code>" }, "nur für das Konto, dem das Repository gehört: Berechtigungen sind ausgefüllt; unter „Repository access“ <strong>„Only select repositories“</strong> und " + esc(GitHubApi.repo()) + " wählen, dann „Generate token“.") + "</li>"
             + '<li><a data-token-link="fork" target="_blank" rel="noopener">' + esc(t("github.token_fork_link", null, "Fine-grained Token fürs eigene Konto ↗")) + "</a> – "
@@ -1420,11 +1420,18 @@ var NeuFormular = (function () {
           who.textContent = t("github.checking", null, "Prüfe …");
           GitHubApi.whoAmI().then(function (me) {
             // one text element next to the avatar: .github-who is a flex row, loose text nodes would each wrap on their own
-            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"><span>' + t("github.connected_as_html", { login: "<strong>@" + esc(me.login) + "</strong>" }, "Verbunden als <strong>@" + esc(me.login) + "</strong>")
-              + (me.canPush ? " – " + esc(t("github.can_push", null, "darf Pull Requests anlegen ✅"))
-                : me.fork ? " – " + t("github.cannot_push_fork_html", { repo: esc(GitHubApi.repo()), fork: esc(me.fork) }, "hat keine Schreibrechte auf " + esc(GitHubApi.repo()) + " – Änderungen gehen über deinen Fork <strong>" + esc(me.fork) + "</strong> ✅")
-                  + (me.forkBehind ? ' <span data-fork-behind>' + esc(t("github.fork_behind", null, "Dein Fork ist nicht auf dem neuesten Stand – er wird vor dem Senden abgeglichen, deine Änderung baut auf dem aktuellen Stand auf.")) + "</span>" : "") + "</span>"
-                : " – " + t("github.cannot_push_html", { repo: esc(GitHubApi.repo()) }, "hat keine Schreibrechte auf " + esc(GitHubApi.repo()) + " – beim ersten Senden wird <strong>dein eigener Fork</strong> angelegt ✅"));
+            var repoName = esc(GitHubApi.repo()), parts = [];
+            if (me.canPush) parts.push(esc(t("github.can_push", null, "darf Pull Requests anlegen ✅")));
+            else {
+              if (me.collaboratorNeedsClassic) parts.push(t("github.collaborator_classic_html", { repo: repoName }, "du bist Collaborator auf " + repoName + ", aber dieser <strong>fine-grained Token</strong> gilt nur für deine eigenen Repositories. Für Pull Requests direkt im Repository oben einen <strong>klassischen Token</strong> nehmen – mit diesem geht es über deinen Fork."));
+              parts.push(me.fork ? t("github.cannot_push_fork_html", { repo: repoName, fork: esc(me.fork) }, "hat keine Schreibrechte auf " + repoName + " – Änderungen gehen über deinen Fork <strong>" + esc(me.fork) + "</strong> ✅")
+                : t("github.cannot_push_html", { repo: repoName }, "hat keine Schreibrechte auf " + repoName + " – beim ersten Senden wird <strong>dein eigener Fork</strong> angelegt ✅"));
+              if (me.fork && me.forkBehind) parts.push('<span data-fork-behind>' + esc(t("github.fork_behind", null, "Dein Fork ist nicht auf dem neuesten Stand – er wird vor dem Senden abgeglichen, deine Änderung baut auf dem aktuellen Stand auf.")) + "</span>");
+            }
+            // one text element next to the avatar: .github-who is a flex row, loose text nodes would each wrap on their own
+            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"><span>'
+              + t("github.connected_as_html", { login: "<strong>@" + esc(me.login) + "</strong>" }, "Verbunden als <strong>@" + esc(me.login) + "</strong>")
+              + " – " + parts.join(" ") + "</span>";
           }, function (err) { who.textContent = "⚠️ " + err.message; });
         }
         g.querySelector("[data-connect]").onclick = function () {

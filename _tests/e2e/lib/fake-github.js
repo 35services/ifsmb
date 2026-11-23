@@ -147,7 +147,7 @@ function createFakeGitHub(options) {
     while (s && !stop.has(s)) { list.unshift(s); s = obj(s, "commit").parents[0]; }
     return list;
   }
-  function repoJson(fullName) { return { full_name: fullName || st.owner + "/" + st.repo, name: (fullName || st.repo).split("/").pop(), owner: { login: (fullName || st.owner).split("/")[0] } }; }
+  function repoJson(fullName) { return { full_name: fullName || st.owner + "/" + st.repo, name: (fullName || st.repo).split("/").pop(), owner: { login: (fullName || st.owner).split("/")[0], type: "User" } }; }
   function userJson(u) { return { login: u.login, id: u.id, type: "User", avatar_url: url + "/__fake/avatar/" + u.login + ".svg", html_url: "https://github.com/" + u.login }; }
   function pullJson(pr) {
     const full = st.owner + "/" + st.repo;
@@ -424,6 +424,8 @@ function createFakeGitHub(options) {
     const u = needUser(req);
     if (req.forkOwner) return u; // writing objects for the caller's own fork (forkRoute)
     if (!u.push) throw new ApiError(403, "Resource not accessible by personal access token");
+    // a fine-grained token only reaches its owner's repositories – a collaborator's role doesn't help (like GitHub)
+    if (u.fineGrained && u.login !== st.owner) throw new ApiError(403, "Resource not accessible by personal access token");
     return u;
   }
   function commitJson(sha) {
@@ -483,7 +485,7 @@ function createFakeGitHub(options) {
       if (owner !== st.owner) {
         // from a fork: anyone may open it on a public repository – but GitHub refuses fine-grained tokens of outside users
         const u = needUser(req);
-        if (!u.classic && !u.push) throw new ApiError(403, "Resource not accessible by personal access token");
+        if (!u.classic && (!u.push || u.fineGrained)) throw new ApiError(403, "Resource not accessible by personal access token");
         return [201, pullJson(openPullInternal({ head, headRepo: owner + "/" + st.repo, base: body.base, title: body.title, body: body.body, user: u, draft: body.draft }))];
       }
       const u = needPush(req);

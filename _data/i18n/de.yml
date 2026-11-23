@@ -576,6 +576,7 @@ form:
 
 # GitHub connection (assets/js/github-api.js, connect dialog in assets/js/neu.js)
 github:
+  collaborator_classic_html: "du bist Collaborator auf {repo}, aber dieser <strong>fine-grained Token</strong> gilt nur für deine eigenen Repositories. Für Pull Requests direkt im Repository oben einen <strong>klassischen Token</strong> nehmen – mit diesem geht es über deinen Fork."
   fork_behind: "Dein Fork ist nicht auf dem neuesten Stand – er wird vor dem Senden abgeglichen, deine Änderung baut auf dem aktuellen Stand auf."
   fork_stale_html: "⚠️ Dein Fork {fork} ließ sich nicht automatisch auf den neuesten Stand bringen. Deine Änderung baut trotzdem auf dem aktuellen Stand auf – für später auf <a href=\"{url}\" target=\"_blank\" rel=\"noopener\">GitHub</a> „Sync fork“ klicken."
   connect: 🔑 GitHub verbinden
@@ -612,7 +613,7 @@ github:
   step_open_pr: Pull Request öffnen …
   create_token_intro: "Token auf GitHub erstellen – je nach Konto:"
   token_classic_link: "Klassischer Token ↗"
-  token_classic_html: "für <strong>jedes GitHub-Konto</strong>: <em>public_repo</em> ist schon angehakt, Ablaufdatum wählen, „Generate token“. Mit Schreibrechten auf {repo} (Collaborator) geht es direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt."
+  token_classic_html: "für <strong>jedes GitHub-Konto</strong>: <em>public_repo</em> ist schon angehakt, kurzes Ablaufdatum wählen (der Token gilt für alle öffentlichen Repositories, in die du schreiben darfst), „Generate token“. Mit Schreibrechten auf {repo} (Collaborator) geht es direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt."
   token_owner_link: "Fine-grained Token für @{owner} ↗"
   token_steps_html: "nur für das Konto, dem das Repository gehört: Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em>, <em>Pull requests</em> und <em>Issues</em> („Read and write“) sind ausgefüllt. Unter „Repository access“ <strong>„Only select repositories“</strong> und {repo} wählen, dann „Generate token“."
   token_fork_link: "Fine-grained Token fürs eigene Konto ↗"
