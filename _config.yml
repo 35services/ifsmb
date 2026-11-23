@@ -8,7 +8,7 @@ timezone: Europe/Berlin
 future: true
 
 # Look of the site (_data/themes.yml): default for every page without `theme:` – not `theme:`, Jekyll uses that for gem themes
-# default_theme: ifsmb
+default_theme: slop
 
 # Bearbeiten-Button (_layouts/default.html)
 repository: 35services/ifsmb
