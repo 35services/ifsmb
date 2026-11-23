@@ -196,8 +196,10 @@ Termin, Beitrag mit Beitrag oder Ausstattung mit Partnerseite.
 ## Netzwerk-Ansicht
 
 `/network/` (Menü „Wir“ → „Netzwerk“) zeigt alle Ressourcen als Punkte und alle Verbindungen als
-Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) als JSON in die Seite
-(`network/index.html`), `assets/js/netzwerk.js` macht daraus die Linien – nach denselben Regeln wie
+Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) in eine eigene Datei
+[`/network/graph.json`](https://ifsmb.de/network/graph.json) (`network/graph.json`; Kopf mit `format`, `version`,
+`site`, `generated`, `todos`, dann `nodes` – auch für andere Instanzen gedacht, Föderation),
+`assets/js/netzwerk.js` lädt sie und macht daraus die Linien – nach denselben Regeln wie
 `_includes/verbindungen.html` – und zeichnet sie ohne externe Bibliothek auf ein Canvas.
 
 ```

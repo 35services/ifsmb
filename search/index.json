@@ -1,11 +1,12 @@
 ---
 layout: null
-permalink: /todos/suchindex.json
+permalink: /search/index.json
 ---
 {%- comment -%}
   Autocomplete data for the pop-up forms (assets/js/formular.js: todo editor and "➕ new" forms), loaded lazily
   on first use: people (with round photo), projects, tags, partners, equipment categories and every page that
-  `linked` may point to.
+  `linked` may point to. Also published as the site's search index for other sites (federation; linked on /search/):
+  URLs are site-relative – resolve them against "site". The full-text index is Pagefind's (/pagefind/).
 {%- endcomment -%}
 {%- assign tags_all = "" | split: "" -%}
 {%- for p in site.posts %}{% assign tags_all = tags_all | concat: p.tags %}{% endfor -%}
@@ -17,6 +18,10 @@ permalink: /todos/suchindex.json
 {%- assign tags_all = tags_all | compact | uniq | sort -%}
 {%- assign kategorien = site.equipment | map: "category" | compact | uniq | sort -%}
 {
+  "format": "ifsmb-search-index",
+  "version": 1,
+  "site": {{ site.url | append: site.baseurl | jsonify }},
+  "generated": {{ site.time | date_to_xmlschema | jsonify }},
   "personen": [
     {%- for m in site.team -%}
     {"id": {{ m.slug | jsonify }}, "name": {{ m.title | jsonify }}, "bild": {{ m.photo_icon | default: "" | relative_url | jsonify }}, "url": {{ m.url | relative_url | jsonify }}}{% unless forloop.last %},{% endunless %}

@@ -116,12 +116,15 @@ pages:
     title: Search
     lead: Full-text search across news, projects, events, equipment, the team and more.
     missing: "The search index is missing: it is only created after {0} with {1} (see README)."
+    data_file: "The search index is also available as a single file: {0} – every person, project, tag, partner and page, for other makespaces and tools (federation)."
   todos:
     title: Todos
     lead: What we’re tackling right now – per person in an Eisenhower matrix. Move, edit, save as a pull request.
   network:
     title: Network
     lead: How our projects, challenges, todos, events, posts, people, partners and devices are connected. Drag, zoom, click – and wander from point to point.
+    data_file: "The whole network as a single file: {0} – every node with its connection fields, for other makespaces and tools (federation)."
+    load_error: "The network could not be loaded. Please reload the page."
   map:
     title: Map
     lead: Where our projects, events, posts and devices are at home – the network on a map.

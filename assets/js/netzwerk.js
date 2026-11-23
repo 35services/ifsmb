@@ -1,7 +1,7 @@
 /*
  * Network view of all connections (/network/).
  * No libraries: a small force-directed layout drawn on a canvas.
- * Node data comes from the JSON rendered by Jekyll in netzwerk/index.html; edges are derived here
+ * Node data comes from /network/graph.json (network/graph.json, rendered by Jekyll); edges are derived here
  * with the same rules as _includes/verbindungen.html. Todos (todos/todo-<person>.md) are not rendered by
  * Jekyll: they are fetched first and parsed with TodoFormat from assets/js/todos.js (see the loader at the end).
  */
@@ -649,21 +649,33 @@
   scrollTimeline();
   }
 
-  // ---------- loader: Jekyll data + todo files ----------
-  var raw = JSON.parse(document.getElementById('netz-daten').textContent);
-  var cfgEl = document.getElementById('netz-todos');
-  var cfg = cfgEl ? JSON.parse(cfgEl.textContent) : null;
-  if (!cfg || !cfg.dateien.length || !window.TodoFormat || !window.fetch) { netzStart(raw); return; }
-  Promise.all(cfg.dateien.map(function (person) {
-    return fetch(cfg.basis + 'todo-' + encodeURIComponent(person) + '.md')
-      .then(function (r) { return r.ok ? r.text() : ''; })
-      .then(function (md) {
-        return window.TodoFormat.parse(md).todos.map(function (t) {
-          var f = t.felder;
-          return { id: 'todo:' + person + '/' + t.id, url: cfg.basis + '#' + person + '/' + t.id, type: 'todo', title: t.titel,
-            status: f.status, date: f.since, person: person, helpers: f.helpers, projects: f.projects, tags: f.tags, linked: f.linked };
-        });
-      })
-      .catch(function () { return []; });
-  })).then(function (listen) { netzStart(raw.concat([].concat.apply([], listen))); }, function () { netzStart(raw); });
+  // ---------- loader: /network/graph.json + todo files ----------
+  function loadTodos(graph) {
+    var cfg = graph.todos;
+    if (!cfg || !cfg.people || !cfg.people.length || !window.TodoFormat) return Promise.resolve([]);
+    return Promise.all(cfg.people.map(function (person) {
+      return fetch(cfg.base + 'todo-' + encodeURIComponent(person) + '.md')
+        .then(function (r) { return r.ok ? r.text() : ''; })
+        .then(function (md) {
+          return window.TodoFormat.parse(md).todos.map(function (t) {
+            var f = t.felder;
+            return { id: 'todo:' + person + '/' + t.id, url: cfg.base + '#' + person + '/' + t.id, type: 'todo', title: t.titel,
+              status: f.status, date: f.since, person: person, helpers: f.helpers, projects: f.projects, tags: f.tags, linked: f.linked };
+          });
+        })
+        .catch(function () { return []; });
+    })).then(function (lists) { return [].concat.apply([], lists); });
+  }
+  var graphUrl = document.getElementById('netz').getAttribute('data-graph');
+  fetch(graphUrl)
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (graph) {
+      return loadTodos(graph).then(function (todos) { netzStart(graph.nodes.concat(todos)); },
+        function () { netzStart(graph.nodes); });
+    })
+    .catch(function (err) {
+      var panel = document.getElementById('netz-panel');
+      if (panel) panel.innerHTML = '<p class="muted">' + (window.I18n ? window.I18n.t('pages.network.load_error') : 'Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden.') + '</p>';
+      if (window.console) console.error('network: ' + graphUrl, err);
+    });
 })();

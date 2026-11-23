@@ -15,6 +15,7 @@ search: false
 <link rel="stylesheet" href="{{ '/pagefind/pagefind-ui.css' | relative_url }}">
 <div id="search" class="search-ui"></div>
 <p id="search-missing" class="note" hidden data-i18n="pages.search.missing">{{ "pages.search.missing" | t_html: "<code>jekyll build</code>", "<code>npx pagefind --site _site</code>" }}</p>
+<p class="muted search-data-file" data-i18n="pages.search.data_file">{{ "pages.search.data_file" | t_html: '<a href="/search/index.json"><code>/search/index.json</code></a>' }}</p>
 <script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}"
   onerror="document.getElementById('search-missing').hidden = false"></script>
 <script>

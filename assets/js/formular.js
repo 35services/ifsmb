@@ -31,7 +31,7 @@ var Formular = (function () {
     return CFG;
   }
 
-  // Index (todos/suchindex.json): personen, projekte, stichworte, seiten, partner, kategorien. Loaded once, on demand.
+  // Index (/search/index.json, search/index.json): personen, projekte, stichworte, seiten, partner, kategorien. Loaded once, on demand.
   var INDEX = null, indexPromise = null;
   function I(key) { return (INDEX && INDEX[key]) || []; }
   function ladeIndex() {
