@@ -151,7 +151,7 @@ Sortiert nach Wichtigkeit. ⭐ = als Nächstes sinnvoll.
 2. ⭐ **`web/*`-Branches automatisch löschen** nach dem Merge (Repo-Einstellung „Automatically delete head branches“) – sonst sammeln sie sich (z. B. `web/falkorichter-zazza-…` von #112 liegt noch auf GitHub).
 3. Content-Security-Policy per `<meta>` (`connect-src 'self' https://api.github.com`, keine fremden Skripte) – vorher prüfen, dass Karte (OpenStreetMap nach Klick) und Pagefind weiter gehen.
 4. **Anmeldung B** (GitHub App + Token-Tausch-Dienst) entscheiden und bauen; `DEPENDENCIES.md`, Impressum.
-5. Pull Requests aus **Forks** für Leute ohne Schreibrechte (mit GitHub App: App muss auch auf dem Fork installiert sein – prüfen).
+5. ~~Pull Requests aus **Forks** für Leute ohne Schreibrechte~~ – umgesetzt (#186): ohne Schreibrechte legt das Formular einen eigenen Fork an (oder nimmt den vorhandenen und gleicht ihn per `merge-upstream` ab), baut den Commit auf dem aktuellen Stand des Repositories und öffnet den PR aus `login:branch`. Mit einem fine-grained Token verweigert GitHub diesen PR per API – dann bekommt man den Link auf GitHubs Vergleichsseite („Create pull request“). Collaborators ohne Owner-Rechte brauchen einen klassischen Token (`public_repo`), fine-grained Tokens gibt es für fremde persönliche Repositories nicht. Offen: „In #N mitschicken“ für Fork-PRs (Push in fremde Fork-Branches).
 
 ### Fotos
 

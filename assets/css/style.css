@@ -1177,6 +1177,7 @@ kbd { display: inline-block; font-family: var(--mono); font-size: .8em; line-hei
 .github-body ol { margin: 0; padding-left: 1.2rem; display: grid; gap: .3rem; }
 .github-who { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin: 0; }
 .github-who img { border-radius: 50%; border: 1px solid var(--ink); }
+.github-who > span { flex: 1 1 0; min-width: 0; }
 .photo-dialog { width: min(1300px, 98vw); }
 .photo-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: 1rem; padding: 1rem; overflow: auto; min-height: 0; }
 .photo-main { display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
