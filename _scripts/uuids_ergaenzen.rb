@@ -5,7 +5,7 @@
 # The UUID identifies the page for the "read" marker (localStorage in the visitor's browser,
 # see assets/js/gelesen.js) and stays the same when the file is renamed or moved.
 #
-# Skipped: overview pages (`suche: false`), redirects (`layout: weiterleitung`), files without a
+# Skipped: overview pages (`search: false`), redirects (`layout: weiterleitung`), files without a
 # layout-rendered HTML output (feeds, JSON, ICS) and everything Jekyll does not build.
 #
 #   ruby _scripts/uuids_ergaenzen.rb           # add missing UUIDs
@@ -39,7 +39,7 @@ rescue Psych::SyntaxError
 end
 
 def zaehlt?(daten)
-  return false if daten["suche"] == false
+  return false if daten["search"] == false
   return false if daten["layout"] == "weiterleitung"
 
   !daten["permalink"].to_s.match?(/\.(xml|json|ics|txt|js|css)\z/)
