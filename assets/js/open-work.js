@@ -48,7 +48,7 @@ var OpenWork = (function () {
       return { url: COLLECTIONS[m[1]] + name + "/", isNew: true };
     }
     if (/^_data\/(partner\/|partners\.yml$)/.test(file)) return { url: "/partners/", title: "Partner", isNew: false };
-    if (/^_data\/(pressebericht\/|presseberichte\.yml$)/.test(file)) return { url: "/press/", title: "Presse", isNew: false };
+    if (/^_data\/(press_report\/|press_reports\.yml$)/.test(file)) return { url: "/press/", title: "Presse", isNew: false };
     if (/^todos\/todo-[^/]+\.md$/.test(file)) return { url: "/todos/", title: "Todos", isNew: false };
     if (/^assets\//.test(file)) return { asset: true, image: /\.(jpe?g|png|gif|webp|svg)$/i.test(file) };
     return null;

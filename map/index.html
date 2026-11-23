@@ -8,14 +8,14 @@ lead: Wo unsere Projekte, Termine, Beiträge und Geräte zu Hause sind – das N
 permalink: /map/
 ---
 {%- comment -%}
-  Map data is rendered by Jekyll: the places from _data/orte.yml and every resource with the
+  Map data is rendered by Jekyll: the places from _data/places.yml and every resource with the
   raw fields that can tie it to a place. assets/js/karte.js resolves resources to places
   (explicit `orte`, then text in location/ort/standort, then partner names, posts via project tags).
 {%- endcomment -%}
 {%- capture daten -%}
 {"orte":[
-{%- for o in site.data.orte -%}
-{"id":{{ o.id | jsonify }},"name":{{ o.name | jsonify }},"adresse":{{ o.adresse | jsonify }},"lat":{{ o.lat | jsonify }},"lon":{{ o.lon | jsonify }},"partner":{{ o.partner | jsonify }},"finden":{{ o.finden | jsonify }},"fern":{{ o.fern | default: false | jsonify }},"ungefaehr":{{ o.ungefaehr | default: false | jsonify }}}{% unless forloop.last %},{% endunless %}
+{%- for o in site.data.places -%}
+{"id":{{ o.id | jsonify }},"name":{{ o.name | jsonify }},"address":{{ o.address | jsonify }},"lat":{{ o.lat | jsonify }},"lon":{{ o.lon | jsonify }},"partner":{{ o.partner | jsonify }},"finden":{{ o.match | jsonify }},"fern":{{ o.remote | default: false | jsonify }},"ungefaehr":{{ o.approximate | default: false | jsonify }}}{% unless forloop.last %},{% endunless %}
 {%- endfor -%}
 ],"partner":[
 {%- for pt in site.data.partners -%}

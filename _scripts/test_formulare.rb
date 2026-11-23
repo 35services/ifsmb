@@ -73,7 +73,7 @@ ZUORDNUNG = {
   # one file per partner in _data/partner/ – same fields as an entry of the CMS list file _data/partners.yml
   "partner" => { cms: "partners", vorlage: "partner.yml", ordner: "_data/partner" },
   # not in the CMS – checked against the template only
-  "pressebericht" => { cms: nil, vorlage: "pressebericht.yml", ordner: "_data/pressebericht" },
+  "pressebericht" => { cms: nil, vorlage: "pressebericht.yml", ordner: "_data/press_report" },
   # plain pages outside the collections, edit only (#154): Markdown pages with a template for new ones,
   # HTML overview pages without (their HTML is written by hand)
   "seite" => { cms: nil, vorlage: "seite.md", ordner: "" },

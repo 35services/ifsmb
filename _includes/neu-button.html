@@ -21,7 +21,7 @@
     {%- capture inhalt -%}{% include vorlagen/herausforderung.md team=include.team projekte=include.projekte tags=include.tags verlinkt=include.verlinkt persoenlich=include.persoenlich wichtig=include.wichtig dringend=include.dringend %}{%- endcapture -%}
   {%- when 'partner' -%}{%- assign dir = '_data/partner' -%}{%- assign datei = 'name-des-partners.yml' -%}
     {%- capture inhalt -%}{% include vorlagen/partner.yml %}{%- endcapture -%}
-  {%- when 'pressebericht' -%}{%- assign dir = '_data/pressebericht' -%}{%- assign datei = 'JJJJ-MM-TT-medium.yml' -%}
+  {%- when 'pressebericht' -%}{%- assign dir = '_data/press_report' -%}{%- assign datei = 'JJJJ-MM-TT-medium.yml' -%}
     {%- capture inhalt -%}{% include vorlagen/pressebericht.yml %}{%- endcapture -%}
   {%- when 'team' -%}{%- assign dir = '_team' -%}{%- assign datei = 'vorname-nachname.md' -%}
     {%- capture inhalt -%}{% include vorlagen/team.md %}{%- endcapture -%}

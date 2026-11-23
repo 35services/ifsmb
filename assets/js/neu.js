@@ -283,7 +283,7 @@ var NeuFormular = (function () {
         stichworte(),
         verlinkt(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
-        text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/presse.yml" }),
+        text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/press.yml" }),
         socialBild(),
         themeField()
       ]
@@ -332,14 +332,14 @@ var NeuFormular = (function () {
       pruefe: function (w) { return aktiv && aktiv.edit && w.text === aktiv.edit.w0.text ? null : checkHtml(w.text); }
     },
     pressebericht: {
-      titel: "Wir in der Presse", ordner: "_data/pressebericht", format: "yaml",
-      datei: function (w) { return (w.datum ? w.datum + "-" : "") + F.slugify(w.medium, "medium") + ".yml"; },
+      titel: "Wir in der Presse", ordner: "_data/press_report", format: "yaml",
+      datei: function (w) { return (w.date ? w.date + "-" : "") + F.slugify(w.medium, "medium") + ".yml"; },
       felder: [
-        text("titel", "Überschrift des Berichts", { pflicht: true, klasse: "form-feld-titel" }),
-        [text("medium", "Medium", { pflicht: true, platzhalter: "Zeitung, Website oder Kanal" }), datum("datum", "Erschienen am", { standard: F.heute })],
+        text("title", "Überschrift des Berichts", { pflicht: true, klasse: "form-feld-titel" }),
+        [text("medium", "Medium", { pflicht: true, platzhalter: "Zeitung, Website oder Kanal" }), datum("date", "Erschienen am", { standard: F.heute })],
         adresse("url", "Link zum Bericht", { pflicht: true, hilfe: "ohne Tracking-Parameter (?si=, utm_ …)" }),
-        chips("anlass", "🔗 Anlass (eigene Seite)", "seiten", { einzeln: true, ausgabe: einerOderListe, platzhalter: "Termin oder Beitrag suchen …" }),
-        text("hinweis", "Hinweis", { platzhalter: "erscheint in Klammern hinter dem Eintrag" })
+        chips("occasion", "🔗 Anlass (eigene Seite)", "seiten", { einzeln: true, ausgabe: einerOderListe, platzhalter: "Termin oder Beitrag suchen …" }),
+        text("note", "Hinweis", { platzhalter: "erscheint in Klammern hinter dem Eintrag" })
       ]
     }
   };

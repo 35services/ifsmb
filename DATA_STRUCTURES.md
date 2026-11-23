@@ -70,12 +70,12 @@ Die Zielseite zeigt die Verbindung ebenfalls an.
 
 ## Orte auf der Karte
 
-`/map/` zeigt die Orte aus `_data/orte.yml`. Wie eine Seite zu ihrem Ort kommt (die erste
+`/map/` zeigt die Orte aus `_data/places.yml`. Wie eine Seite zu ihrem Ort kommt (die erste
 passende Regel gewinnt):
 
 ```
  orte: [<id>]                       ──► ORT        jede Seite, fest zugeordnet
- ort / location / standort (Text)   ──► ORT        enthält eines der `finden`-Wörter
+ ort / location / standort (Text)   ──► ORT        enthält eines der `match`-Wörter
  standort_partner, partners,        ──► ORT        Partnername = `partner` des Orts
  owner_partner (Gerät ohne standort)
  BEITRAG: tags / projekte           ──► PROJEKT ──► ORT des Projekts

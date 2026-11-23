@@ -20,8 +20,8 @@
 <span data-pagefind-meta="datum:{% if p.date_label %}{{ p.date_label | escape }}{% else %}{{ p.start | date: '%d.%m.%Y' }}{% endif %}" hidden></span>
 {%- endif %}
 {%- for t in p.tags %}
-<span data-pagefind-filter="Stichwort:{{ site.data.stichworte[t] | default: t | escape }}" hidden></span>
+<span data-pagefind-filter="Stichwort:{{ site.data.tags[t] | default: t | escape }}" hidden></span>
 {%- endfor %}
 {%- if p.event_tag %}
-<span data-pagefind-filter="Stichwort:{{ site.data.stichworte[p.event_tag] | default: p.event_tag | escape }}" hidden></span>
+<span data-pagefind-filter="Stichwort:{{ site.data.tags[p.event_tag] | default: p.event_tag | escape }}" hidden></span>
 {%- endif %}

@@ -11,12 +11,12 @@ lead: Alles auf einen Blick – nach Themen, Orten, Partnern und Geräten.
 {%- assign ptag_csv = site.projects | map: "event_tag" | join: "," -%}
 {%- assign all_tags = tag_csv | append: "," | append: ptag_csv | split: "," | uniq | sort -%}
 <ul class="tag-list tag-index">
-  {%- for t in all_tags %}{% if t != "" %}<li><a href="#{{ t }}">#{{ site.data.stichworte[t] | default: t }}</a></li>{% endif %}{% endfor %}
+  {%- for t in all_tags %}{% if t != "" %}<li><a href="#{{ t }}">#{{ site.data.tags[t] | default: t }}</a></li>{% endif %}{% endfor %}
 </ul>
 
 {% for t in all_tags %}{% if t != "" %}
 <section class="tag-section" id="{{ t }}">
-  <h2>#{{ site.data.stichworte[t] | default: t }}</h2>
+  <h2>#{{ site.data.tags[t] | default: t }}</h2>
   {%- assign one = "" | split: "" | push: t -%}
   {%- assign tp = site.projects | where: "event_tag", t -%}
   <ul class="tag-items">

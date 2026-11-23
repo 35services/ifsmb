@@ -62,7 +62,7 @@ content:
         type: string
         list: true
       - name: orte
-        label: Orte auf der Karte (IDs aus _data/orte.yml, z. B. ktg)
+        label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
         type: string
         list: true
@@ -170,7 +170,7 @@ content:
         type: string
         list: true
       - name: orte
-        label: Orte auf der Karte (IDs aus _data/orte.yml, z. B. ktg)
+        label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
         type: string
         list: true
@@ -304,7 +304,7 @@ content:
         type: string
         list: true
       - name: orte
-        label: Orte auf der Karte (IDs aus _data/orte.yml, z. B. ktg)
+        label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
         type: string
         list: true
@@ -470,7 +470,7 @@ content:
         type: string
         list: true
       - name: orte
-        label: Orte auf der Karte (IDs aus _data/orte.yml, z. B. ktg)
+        label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
         type: string
         list: true
@@ -660,38 +660,38 @@ content:
         type: text
         required: true
 
-  - name: presse
+  - name: press_profile
     label: Presse – Kurzprofil & Kontakt
     type: file
-    path: _data/presse.yml
+    path: _data/press.yml
     fields:
-      - name: kurzprofil
+      - name: short_profile
         label: Kurzprofil
         type: text
-      - name: kontakt_name
+      - name: contact_name
         label: Pressekontakt – Name
         type: string
-      - name: kontakt_email_b64
+      - name: contact_email_b64
         label: Pressekontakt – E-Mail (base64-kodiert)
         description: "Damit Spam-Bots die Adresse nicht finden. Erzeugen im Terminal: printf 'presse@ifsmb.de' | base64"
         type: string
-      - name: kontakt_email_anzeige
+      - name: contact_email_display
         label: Pressekontakt – Anzeigetext der E-Mail (z. B. presse [at] ifsmb.de)
         type: string
-      - name: kontakt_telefon
+      - name: contact_phone
         label: Pressekontakt – Telefon (sichtbar im Quelltext; besser das Feld darunter)
         type: string
-      - name: kontakt_telefon_b64
+      - name: contact_phone_b64
         label: Pressekontakt – Telefon (base64-kodiert, wird per JavaScript angezeigt)
         type: string
-      - name: bildnachweis
+      - name: photo_credit
         label: Bildnachweis für Pressefotos
         type: string
 
-  - name: pressematerial
+  - name: press_kit
     label: Presse – Material zum Download
     type: file
-    path: _data/pressematerial.yml
+    path: _data/press_kit.yml
     list: true
     fields:
       - name: title

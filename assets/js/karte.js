@@ -53,7 +53,7 @@
     var t = lower(text);
     if (!t) return [];
     return places.filter(function (o) {
-      return list(o.finden).some(function (f) { return f && t.indexOf(lower(f)) !== -1; });
+      return list(o.match).some(function (f) { return f && t.indexOf(lower(f)) !== -1; });
     });
   }
   function byPartner(names) {
@@ -156,7 +156,7 @@
     back.addEventListener("click", function () { select(null, false); });
     panel.appendChild(back);
     panel.appendChild(el("h2", null, o.name));
-    var addr = el("p", "muted", o.adresse + (o.ungefaehr ? " (ungefähre Lage)" : ""));
+    var addr = el("p", "muted", o.address + (o.approximate ? " (ungefähre Lage)" : ""));
     panel.appendChild(addr);
     var osm = el("p", "karte-osm-link");
     var a = el("a", null, "Auf openstreetmap.org öffnen");
@@ -293,7 +293,7 @@
         b.textContent = n ? String(n) : "";
         b.classList.toggle("is-leer", !n);
         b.classList.toggle("is-aktiv", selected === o);
-        b.classList.toggle("is-ungefaehr", !!o.ungefaehr);
+        b.classList.toggle("is-ungefaehr", !!o.approximate);
         b.style.transform = "translate(" + Math.round(p.x - cx + s.w / 2) + "px," + Math.round(p.y - cy + s.h / 2) + "px)";
       });
     };
@@ -412,7 +412,7 @@
   var consentEl = document.getElementById("karte-zustimmung");
   var zoomEl = document.getElementById("karte-zoom");
   var attrEl = document.getElementById("karte-attribution");
-  var home = places.filter(function (o) { return !o.fern; });
+  var home = places.filter(function (o) { return !o.remote; });
 
   function startMap() {
     if (map) return;
