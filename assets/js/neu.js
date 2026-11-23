@@ -884,7 +884,7 @@ var NeuFormular = (function () {
         box.innerHTML = "<strong>⚠️ Diese Seite wird gerade schon geändert:</strong><ul>" + prs.map(function (pr, i) {
           return '<li><a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a>"
             + (pr.user ? " von @" + esc(pr.user) : "")
-            + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
+            + (pr.sameRepo && me.canPush ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : pr.sameRepo ? "" : " (aus einem Fork – dort weiterarbeiten)") + "</li>";
         }).join("") + "</ul><span>Mit „mitschicken“ landet deine Änderung im selben Pull Request – was du schon eingetragen hast, wird übernommen. Sonst entsteht ein eigener Pull Request.</span>";
         box.onclick = function (e) {
           var b = e.target.closest("[data-pr-continue]"); if (b) direct.pickUp(prs[+b.getAttribute("data-pr-continue")]);
@@ -1232,7 +1232,7 @@ var NeuFormular = (function () {
         if (aktiv !== state) return;
         // the branch with the commit exists, but the pull request didn't come back: next click finishes it (K41/K42)
         if (err.pendingBranch) {
-          state.pending = { branch: err.pendingBranch, title: title, body: body, text: newText };
+          state.pending = { branch: err.pendingBranch, fork: err.pendingFork || null, title: title, body: body, text: newText };
           direct.showError(err);
           status.appendChild(document.createTextNode(" Nochmal senden setzt fort – es entsteht kein zweiter Pull Request."));
           return;
@@ -1257,6 +1257,21 @@ var NeuFormular = (function () {
     sentOk: function (state, pr, text, path) {
       loescheEntwurf();
       state.gesendet = true; state.retries = 0;
+      // through the person's own fork (no push access, #186): the branch lives in the fork, so the next send starts a new
+      // branch instead of reading this one from the repository; without a number GitHub's compare page opens the PR
+      if (pr.fork) {
+        state.sent = { text: text, url: pr.url || pr.compareUrl, number: pr.number || null };
+        direct.clearPhotos();
+        if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
+        state.edit = readSource(state.schema, text, path) || state.edit;
+        state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+        baueFelder(); zeigeVorschau();
+        status.innerHTML = pr.number
+          ? "✅ " + t("github.sent_fork_html", { link: '<a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a>", fork: esc(pr.fork) }, '<a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist angelegt (aus deinem Fork " + esc(pr.fork) + ") – danke!")
+          : "✅ " + t("github.sent_fork_compare_html", { fork: esc(pr.fork), link: '<a href="' + esc(pr.compareUrl) + '" target="_blank" rel="noopener" data-compare-link>' + esc(t("github.compare_link", null, "Pull Request auf GitHub anlegen ↗")) + "</a>" }, "Deine Änderung liegt in deinem Fork " + esc(pr.fork) + '. Letzter Schritt: <a href="' + esc(pr.compareUrl) + '" target="_blank" rel="noopener" data-compare-link>Pull Request auf GitHub anlegen ↗</a> – dort „Create pull request“ klicken.');
+        if (pr.forkStale) status.innerHTML += ' <span data-fork-stale>' + t("github.fork_stale_html", { fork: esc(pr.fork), url: esc("https://github.com/" + pr.fork) }, "⚠️ Dein Fork " + esc(pr.fork) + ' ließ sich nicht automatisch auf den neuesten Stand bringen. Deine Änderung baut trotzdem auf dem aktuellen Stand auf – für später auf <a href="https://github.com/' + esc(pr.fork) + '" target="_blank" rel="noopener">GitHub</a> „Sync fork“ klicken.') + "</span>";
+        return;
+      }
       state.sent = { text: text, url: pr.url, number: pr.number };
       direct.clearPhotos();
       var branch = pr.branch || (state.prBase && state.prBase.branch);
@@ -1341,7 +1356,7 @@ var NeuFormular = (function () {
       var box = direct.noticeBox();
       box.innerHTML = "<strong>⚠️ Während du geschrieben hast, hat jemand einen Pull Request zu dieser Seite angelegt:</strong><ul>" + prs.map(function (pr, i) {
         return '<li><a href="' + esc(pr.url) + '" target="_blank" rel="noopener">#' + pr.number + " " + esc(pr.title) + "</a>" + (pr.user ? " von @" + esc(pr.user) : "")
-          + (pr.sameRepo ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : "") + "</li>";
+          + (pr.sameRepo && GitHubApi.canPushKnown() !== false ? ' <button type="button" class="btn btn-small" data-pr-continue="' + i + '">In #' + pr.number + " mitschicken</button>" : "") + "</li>";
       }).join("") + '</ul><button type="button" class="btn btn-small btn-ghost" data-pr-own>Trotzdem eigener Pull Request</button>';
       box.onclick = function (e) {
         var b = e.target.closest("[data-pr-continue]");
@@ -1384,9 +1399,10 @@ var NeuFormular = (function () {
           g.insertAdjacentHTML("beforeend", '<div class="github-body">'
             + "<p>" + t("github.intro_html", null, "Mit einem GitHub-Token legen die Formulare <strong>Pull Requests direkt an</strong> – mit Fotos, ohne Kopieren. Gemergt wird wie immer erst nach Durchsicht.") + "</p>"
             + '<ol class="small"><li><a data-token-link target="_blank" rel="noopener">' + esc(t("github.create_token", null, "Token auf GitHub erstellen ↗")) + "</a> – "
-            + t("github.token_steps_html", { repo: "<code>" + esc(GitHubApi.repo()) + "</code>" }, "Name, Laufzeit (30 Tage) und die Berechtigungen <em>Contents</em> und <em>Pull requests</em> („Read and write“) sind schon ausgefüllt (dazu <em>Issues</em>, um Aufgaben auf der Seite „Offen“ zu übernehmen). Unter „Repository access“ bitte <strong>„Only select repositories“</strong> und <code>" + esc(GitHubApi.repo()) + "</code> wählen, dann „Generate token“.") + "</li>"
+            + t("github.token_classic_html", { repo: "<code>" + esc(GitHubApi.repo()) + "</code>" }, "<em>public_repo</em> ist schon angehakt, kurzes Ablaufdatum wählen (der Token gilt für alle öffentlichen Repositories, in die du schreiben darfst), „Generate token“. Geht mit jedem GitHub-Konto: mit Schreibrechten auf " + esc(GitHubApi.repo()) + " direkt, sonst über deinen eigenen Fork – der wird beim ersten Senden angelegt.") + "</li>"
             + "<li>" + esc(t("github.paste_token", null, "Token hier einfügen. Er bleibt nur in diesem Browser und wird nur an api.github.com geschickt.")) + "</li></ol>"
-            + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>'
+            + '<p class="small muted">' + t("github.no_token_html", null, "Ganz ohne Token geht es mit jedem Konto auch: „📋 Auf GitHub speichern“ – GitHub legt dann selbst einen Fork an und bietet „Create pull request“ an. Hast du schon einen älteren Fork, dort vorher „Sync fork“ klicken.") + "</p>"
+            + '<label class="form-feld"><span>Token</span><input type="password" autocomplete="off" spellcheck="false" placeholder="ghp_…"></label>'
             + '<label class="form-check"><input type="checkbox" data-remember><span>' + esc(t("github.remember", null, "Auf diesem Gerät merken")) + '</span><small class="form-hilfe">' + esc(t("github.remember_hint", null, "Sonst ist er weg, sobald der Tab zu ist. Auf fremden Geräten nicht anhaken.")) + "</small></label>"
             + '<p class="github-who small" aria-live="polite"></p>'
             + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-logout>' + esc(t("github.logout", null, "Abmelden")) + '</button><span class="muted small"></span><button type="button" class="btn" data-connect>' + esc(t("github.connect_button", null, "Verbinden")) + "</button></div></div>");
@@ -1397,8 +1413,19 @@ var NeuFormular = (function () {
           if (!GitHubApi.connected()) { who.textContent = t("github.not_connected_short", null, "Nicht verbunden."); return; }
           who.textContent = t("github.checking", null, "Prüfe …");
           GitHubApi.whoAmI().then(function (me) {
-            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"> ' + t("github.connected_as_html", { login: "<strong>@" + esc(me.login) + "</strong>" }, "Verbunden als <strong>@" + esc(me.login) + "</strong>")
-              + (me.canPush ? " – " + esc(t("github.can_push", null, "darf Pull Requests anlegen ✅")) : " – " + t("github.cannot_push_html", { repo: esc(GitHubApi.repo()) }, "hat <strong>keine Schreibrechte</strong> auf " + esc(GitHubApi.repo()) + " (Pull Requests aus Forks kommen später)"));
+            // one text element next to the avatar: .github-who is a flex row, loose text nodes would each wrap on their own
+            var repoName = esc(GitHubApi.repo()), parts = [];
+            if (me.canPush) parts.push(esc(t("github.can_push", null, "darf Pull Requests anlegen ✅")));
+            else {
+              if (me.collaboratorNeedsClassic) parts.push(t("github.collaborator_classic_html", { repo: repoName }, "du bist Collaborator auf " + repoName + ", aber dieser <strong>fine-grained Token</strong> gilt nur für deine eigenen Repositories. Für Pull Requests direkt im Repository oben einen neuen Token erstellen – mit diesem geht es über deinen Fork."));
+              parts.push(me.fork ? t("github.cannot_push_fork_html", { repo: repoName, fork: esc(me.fork) }, "hat keine Schreibrechte auf " + repoName + " – Änderungen gehen über deinen Fork <strong>" + esc(me.fork) + "</strong> ✅")
+                : t("github.cannot_push_html", { repo: repoName }, "hat keine Schreibrechte auf " + repoName + " – beim ersten Senden wird <strong>dein eigener Fork</strong> angelegt ✅"));
+              if (me.fork && me.forkBehind) parts.push('<span data-fork-behind>' + esc(t("github.fork_behind", null, "Dein Fork ist nicht auf dem neuesten Stand – er wird vor dem Senden abgeglichen, deine Änderung baut auf dem aktuellen Stand auf.")) + "</span>");
+            }
+            // one text element next to the avatar: .github-who is a flex row, loose text nodes would each wrap on their own
+            who.innerHTML = '<img src="' + esc(me.avatar) + '" alt="" width="24" height="24"><span>'
+              + t("github.connected_as_html", { login: "<strong>@" + esc(me.login) + "</strong>" }, "Verbunden als <strong>@" + esc(me.login) + "</strong>")
+              + " – " + parts.join(" ") + "</span>";
           }, function (err) { who.textContent = "⚠️ " + err.message; });
         }
         g.querySelector("[data-connect]").onclick = function () {
@@ -1406,7 +1433,7 @@ var NeuFormular = (function () {
           GitHubApi.setToken(input.value, g.querySelector("[data-remember]").checked);
           input.value = "";
           show(); direct.update();
-          GitHubApi.whoAmI().then(function (me) { if (me.canPush && then) { g.close(); then(); } }, function () {});
+          GitHubApi.whoAmI().then(function (me) { if (then) { g.close(); then(); } }, function () {});
         };
         g.querySelector("[data-logout]").onclick = function () { GitHubApi.logout(); show(); direct.update(); if (d) setMode(!!(aktiv && aktiv.edit)); };
         show();
