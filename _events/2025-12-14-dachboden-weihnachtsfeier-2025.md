@@ -1,9 +1,8 @@
 ---
-title: Dachboden Weihnachtsfeier 2025
+title: Dachboden Weihnachtsmarkt 2025
 start: 2025-12-14 16:00
 end: 2025-12-14 18:00
 location: Dachboden
-location_url: https://dachboden.berlin/
 summary: Weihnachtsfeier auf dem Dachboden – mit Falko und Philipp.
 team: [falko-richter, philipp-schalldach]
 tags: [weihnachten]
@@ -13,7 +12,7 @@ social_media_preview_image: /assets/images/kalender/2025-12-14-dachboden-weihnac
 uuid: 83439a09-201f-4873-916b-bfb4c68a1b0d
 ---
 
-Weihnachtsfeier auf dem [Dachboden](https://dachboden.berlin/) – Falko und Philipp waren dabei. Ein paar Eindrücke: Bar mit Lasern, Kinoecke, Werkstatt unterm Dach, Druckgrafik, Stabheuschrecken im Terrarium und jede Menge Bananen.
+Weihnachtsmarkt auf dem [Dachboden](https://dachboden.berlin/) – Falko und Philipp waren dabei. Ein paar Eindrücke: Bar mit Lasern, Kinoecke, Werkstatt unterm Dach, Druckgrafik, Stabheuschrecken im Terrarium und jede Menge Bananen.
 
 ![Ein weißes Treppenhaus, an der Decke hängt eine Discokugel](/assets/images/kalender/2025-12-14-dachboden-weihnachtsfeier-2025/01.jpg)
 ![Die Bar unter dem Dach mit roten und blauen Lichtstrahlen, Wichteln und einer großen Uhr; eine Person im hellen Mantel fotografiert](/assets/images/kalender/2025-12-14-dachboden-weihnachtsfeier-2025/02.jpg)
