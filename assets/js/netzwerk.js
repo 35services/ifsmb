@@ -20,7 +20,7 @@
     ort:         { label: 'Orte', one: 'Ort',             color: '#ffffff', icon: '📍' },
     name:        { label: 'Weitere Besitzer*innen', one: 'Besitzer*in', color: '#e5e1d8', icon: '🏷️' }
   };
-  var INK = '#16161d', LINE = 'rgba(22,22,29,.18)', BG = '#faf8f3';
+  var INK = '#16161d', LINE = 'rgba(22,22,29,.18)', BG = '#faf8f3', FOREIGN = '#2b6cb0';   // FOREIGN: outline of nodes from a connected instance
   // special relations of equipment: owner and location
   var KIND = {
     besitz:   { color: '#ff5a36', dash: [],     label: 'gehört' },
@@ -38,6 +38,7 @@
   var byId = {}, projectByTag = {};
   nodes.forEach(function (n) {
     byId[norm(n.id)] = n;
+    (n.aliases || []).forEach(function (a) { byId[norm(a)] = n; });   // same uuid on a connected instance
     if (n.type === 'projekt' && n.event_tag) projectByTag[n.event_tag] = n;
   });
 
@@ -241,7 +242,7 @@
       else ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
       ctx.fillStyle = TYPES[n.type].color; ctx.fill();
       ctx.lineWidth = (n === selected || hit ? 3 : 1.5) * lw;
-      ctx.strokeStyle = n === selected || hit ? INK : 'rgba(22,22,29,.55)';
+      ctx.strokeStyle = n === selected || hit ? INK : (n.instance ? FOREIGN : 'rgba(22,22,29,.55)');
       if (n.personal) ctx.setLineDash([3 * lw, 2 * lw]);
       ctx.stroke(); ctx.setLineDash([]);
     });
@@ -275,7 +276,8 @@
         .forEach(function (m) {
           var role = roleOf && roleOf(m), roleTxt = role === 'besitz' || role === 'standort' ? ' <span class="link-meta">' + KIND[role].label + '</span>' : '';
           html += '<li><a href="' + esc(m.url || '#') + '" data-node="' + esc(m.id) + '"><span aria-hidden="true">' + TYPES[type].icon + '</span> ' + esc(m.title) +
-            (m.personal ? ' <span class="link-private">persönlich</span>' : '') + roleTxt + '</a></li>';
+            (m.personal ? ' <span class="link-private">persönlich</span>' : '') + roleTxt +
+            (m.instance ? ' <span class="link-meta">🌐 ' + esc(m.instance) + '</span>' : '') + '</a></li>';
         });
       html += '</ul>';
     });
@@ -287,13 +289,14 @@
     renderTimeline();
     if (!n) {
       panel.innerHTML = '<p class="muted">Klicke auf einen Punkt, um seine Verbindungen zu sehen. Mit dem Mausrad zoomen, den Hintergrund ziehen zum Verschieben.</p>';
-      if (location.hash) history.replaceState(null, '', location.pathname);
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
       draw(); return;
     }
     if (visible.indexOf(n) === -1) { visible.push(n); }
     var t = TYPES[n.type];
     var html = '<p class="meta"><span class="netz-dot" style="background:' + t.color + '"></span> ' + t.one +
-      (n.date ? ' · ' + n.date.split('-').reverse().join('.') : '') + (n.personal ? ' · <span class="link-private">persönlich</span>' : '') + '</p>' +
+      (n.date ? ' · ' + n.date.split('-').reverse().join('.') : '') + (n.personal ? ' · <span class="link-private">persönlich</span>' : '') +
+      (n.instances ? ' · 🌐 ' + esc(n.instances.join(' + ')) : '') + '</p>' +
       '<h2>' + esc(n.title) + '</h2>' +
       (n.url ? '<p><a class="btn" href="' + esc(n.url) + '"' + (n.extern ? ' target="_blank" rel="noopener"' : '') + '>Seite öffnen →</a></p>' : '');
     html += groupedList(n.links, function (m) { return n.kinds[m.id]; });
@@ -651,14 +654,101 @@
   scrollTimeline();
   }
 
-  // ---------- loader: /network/graph.json ----------
-  var graphUrl = document.getElementById('netz').getAttribute('data-graph');
-  fetch(graphUrl)
-    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(function (graph) { netzStart(graph.nodes); })
+  // ---------- loader: /network/graph.json + connected instances (federation) ----------
+  // Connected instances (_config.yml federation, data-federation) are only contacted with ?verbund=1 – the visitor
+  // opted in by clicking "🌐 Verbundene Instanzen einbeziehen" (privacy: no external requests without a click).
+  var netzEl = document.getElementById('netz');
+  var graphUrl = netzEl.getAttribute('data-graph');
+  var peers = [];
+  try { peers = JSON.parse(netzEl.getAttribute('data-federation') || '[]'); } catch (e) { peers = []; }
+  // instances added at runtime by the visitor: ?instanz=https://… (repeatable), only http(s)
+  var params = new URLSearchParams(location.search);
+  function instanceUrl(u) {
+    try { var x = new URL(String(u).trim()); } catch (e) { return null; }
+    if (x.protocol !== 'https:' && !(x.protocol === 'http:' && /^(localhost|127\.0\.0\.1)$/.test(x.hostname))) return null;
+    return (x.origin + x.pathname).replace(/\/$/, '');
+  }
+  params.getAll('instanz').map(instanceUrl).forEach(function (u) { if (u && peers.indexOf(u) === -1) peers.push(u); });
+  var federate = peers.length > 0 && params.get('verbund') === '1';
+  // only http(s) addresses from other instances become links (a foreign graph could contain javascript: URLs)
+  function safeHttp(u) { return typeof u === 'string' && /^https?:\/\//i.test(u) ? u : null; }
+  function tr(key, params, fallback) { return window.I18n ? window.I18n.t(key, params) : fallback; }
+  function getJSON(u) { return fetch(u).then(function (r) { if (!r.ok) throw new Error(r.status + ' ' + u); return r.json(); }); }
+  var unreachable = [];
+  function hostOf(u) { try { return new URL(u).host; } catch (e) { return String(u); } }
+  function asList(v) { return v == null ? [] : (Array.isArray(v) ? v : [v]); }
+  // all graphs of one instance, found through its /meta_graph.json
+  function instanceGraphs(base) {
+    return getJSON(base.replace(/\/$/, '') + '/meta_graph.json').then(function (meta) {
+      return Promise.all((meta.graphs || []).map(function (g) {
+        return getJSON(g.url).then(function (graph) { return { site: meta.site || base, nodes: graph.nodes || [] }; });
+      }));
+    }).catch(function (err) { unreachable.push(hostOf(base)); if (window.console) console.warn('network: ' + base + ' not loaded', err); return []; });
+  }
+  // Same uuid and type = the same thing in the real world: one node with several addresses (aliases); its links
+  // from all instances are combined. Same id = same node. Everything else is added with its instance.
+  var REFS = ['team', 'author', 'owner_team', 'projects', 'part_of', 'related', 'partners', 'owner_partner', 'location_partner', 'linked', 'tags'];
+  function mergeGraphs(own, others) {
+    var nodes = own.nodes.slice(), byId = {}, byUuid = {}, home = hostOf(own.site);
+    nodes.forEach(function (n) { byId[n.id] = n; if (n.uuid) byUuid[n.type + '|' + n.uuid] = n; });
+    others.forEach(function (g) {
+      var host = hostOf(g.site);
+      g.nodes.forEach(function (n) {
+        var same = byId[n.id] || (n.uuid && byUuid[n.type + '|' + n.uuid]);
+        if (same) {
+          if (same.id !== n.id && (same.aliases || []).indexOf(n.id) === -1) same.aliases = (same.aliases || []).concat(n.id);
+          var inst = same.instances || [same.instance || home];
+          if (inst.indexOf(host) === -1) inst = inst.concat(host);
+          same.instances = inst;
+          REFS.forEach(function (f) { if (n[f] != null) same[f] = asList(same[f]).concat(asList(n[f])); });
+          return;
+        }
+        n.instance = host;
+        n.url = safeHttp(n.url) || safeHttp(n.id);
+        nodes.push(n); byId[n.id] = n; if (n.uuid) byUuid[n.type + '|' + n.uuid] = n;
+      });
+    });
+    return nodes;
+  }
+  // the button switches between "include connected instances" and "only this site"
+  var btn = document.getElementById('netz-verbund'), info = document.getElementById('netz-verbund-info');
+  if (btn && peers.length) btn.hidden = false;
+  if (btn && federate) {
+    btn.href = location.pathname + location.hash;
+    btn.setAttribute('data-i18n', 'pages.network.federation_off');
+    btn.textContent = tr('pages.network.federation_off', null, '🌐 Nur diese Seite');
+  }
+  // "➕ Instanz hinzufügen": the address goes into the page address (?verbund=1&instanz=…) – explicit, shareable
+  var form = document.getElementById('netz-instanz-form');
+  if (form) form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var field = form.querySelector('input'), u = instanceUrl(field.value);
+    if (!u) { field.setCustomValidity(tr('pages.network.federation_invalid', null, 'Bitte eine Adresse mit https:// eingeben.')); field.reportValidity(); return; }
+    var next = new URLSearchParams(location.search);
+    next.set('verbund', '1');
+    if (next.getAll('instanz').indexOf(u) === -1 && (netzEl.getAttribute('data-federation') || '').indexOf(u) === -1) next.append('instanz', u);
+    location.href = location.pathname + '?' + next.toString() + location.hash;
+  });
+  if (form) form.querySelector('input').addEventListener('input', function (e) { e.target.setCustomValidity(''); });
+  getJSON(graphUrl)
+    .then(function (graph) {
+      if (!federate) return graph.nodes;
+      return Promise.all(peers.map(instanceGraphs)).then(function (lists) {
+        var others = [].concat.apply([], lists);
+        if (info) {
+          var sites = others.map(function (g) { return hostOf(g.site); }).filter(function (h, i, a) { return a.indexOf(h) === i; });
+          info.textContent = (sites.length ? tr('pages.network.federation_active', { sites: sites.join(', ') }, 'Mit Daten von ' + sites.join(', ') + '.')
+            : tr('pages.network.federation_failed', null, 'Die verbundenen Instanzen ließen sich nicht laden.')) +
+            (unreachable.length && sites.length ? ' ' + tr('pages.network.federation_unreachable', { sites: unreachable.join(', ') }, 'Nicht erreichbar: ' + unreachable.join(', ') + '.') : '');
+          info.hidden = false;
+        }
+        return mergeGraphs({ site: graph.site, nodes: graph.nodes }, others);
+      });
+    })
+    .then(function (nodes) { netzStart(nodes); })
     .catch(function (err) {
       var panel = document.getElementById('netz-panel');
-      if (panel) panel.innerHTML = '<p class="muted">' + (window.I18n ? window.I18n.t('pages.network.load_error') : 'Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden.') + '</p>';
+      if (panel) panel.innerHTML = '<p class="muted">' + tr('pages.network.load_error', null, 'Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden.') + '</p>';
       if (window.console) console.error('network: ' + graphUrl, err);
     });
 })();
