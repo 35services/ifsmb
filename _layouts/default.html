@@ -178,10 +178,11 @@
         <span class="language-switch-note muted" data-i18n="language.note">{{ "language.note" | t }}</span>
       </p>
       {%- assign page_theme_name = site.data.themes | where: "id", page_theme | map: "name" | first %}
+      {%- capture theme_params %}{"name":{{ page_theme_name | jsonify }}}{% endcapture %}
       <p class="theme-picker" data-theme-picker hidden>
         <label for="theme-select" data-i18n="theme.label">{{ "theme.label" | t }}</label>
         <select id="theme-select">
-          <option value="" data-i18n="theme.like_page" data-i18n-params="{{ "name" | i18n_params: page_theme_name }}">{{ "theme.like_page" | t: "name", page_theme_name }}</option>
+          <option value="" data-i18n="theme.like_page" data-i18n-params="{{ theme_params | escape }}">{{ "theme.like_page" | t: "name", page_theme_name }}</option>
           {%- for t in site.data.themes %}
           <option value="{{ t.id }}">{{ t.name }}</option>
           {%- endfor %}
