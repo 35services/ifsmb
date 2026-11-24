@@ -14,6 +14,17 @@ future: true
 repository: falkorichter/ifsmb.de
 branch: main
 
+# Connected instances (federation): other sites built from this code base. /network/ and /search/ include their
+# data only after a click ("?verbund=1"); listed in /meta_graph.json. Base URLs without a trailing slash.
+federation:
+  - https://35services.ifsmb.de
+
+# Local dev server only (jekyll serve): allow other local instances to read the JSON files, like GitHub Pages does
+# (access-control-allow-origin: *) – needed to test federation between two local servers (e.g. ports 4001 and 4003).
+webrick:
+  headers:
+    Access-Control-Allow-Origin: "*"
+
 markdown: kramdown
 permalink: /news/:year/:month/:day/:title/
 

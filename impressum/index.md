@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Impressum
+linked: [/map/, /search/]
 uuid: 6e37240e-4c67-4153-b0f9-b9ecc5b5cdef
 ---
 <div class="prose" markdown="1">
@@ -43,6 +44,9 @@ Wir selbst setzen keine Cookies, verwenden keine Tracking- oder Analysewerkzeuge
 {: #sprache}
 
 **Karte:** Die [Karte]({{ '/map/' | relative_url }}) zeigt Kartenbilder von [OpenStreetMap](https://www.openstreetmap.org/) (OpenStreetMap Foundation, Vereinigtes Königreich). Sie werden erst geladen, wenn du auf „Karte laden“ klickst; dabei wird deine IP-Adresse an die Server der OpenStreetMap Foundation übertragen. Details in der [Datenschutzerklärung der OSMF](https://osmfoundation.org/wiki/Privacy_Policy). Wenn du „Auf diesem Gerät merken“ wählst, speichert dein Browser das lokal (kein Cookie); mit „Karte ausblenden“ wird das wieder gelöscht.
+
+**Verbundene Instanzen (Föderation):** Auf der Seite [Netzwerk]({{ '/network/' | relative_url }}) und in der [Suche]({{ '/search/' | relative_url }}) kannst du mit „🌐 Verbundene Instanzen einbeziehen“ zusätzlich Daten anderer Websites laden, die auf demselben Code aufbauen{% if site.federation %} (zurzeit {{ site.federation | join: ", " }}){% endif %}, und mit „➕ Instanz hinzufügen“ selbst eine weitere Adresse eintragen. Erst nach diesem Klick ruft dein Browser dort Netzwerk- und Suchdaten ab; dabei sieht der Betreiber dieser Website bzw. ihr Hoster (bei den genannten GitHub Pages) wie bei jedem Seitenaufruf deine IP-Adresse. Die Auswahl steht nur in der Adresse der Seite (`?verbund=1`, `instanz=…`), gespeichert wird nichts. Ohne Klick wird nichts von dort geladen.
+{: #verbund}
 
 **Mit GitHub verbinden (nur für Mitwirkende):** In den Formularen zum Anlegen und Bearbeiten kann man sich mit einem eigenen GitHub-Token verbinden, um Pull Requests mit Fotos direkt von hier aus zu erstellen. Erst dann schickt dein Browser Anfragen an [api.github.com](https://api.github.com) (GitHub Inc., USA) – mit dem Token, den Inhalten und Fotos, die du einreichst, und deiner IP-Adresse; es gilt die [Datenschutzerklärung von GitHub](https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement). Solange du verbunden bist, fragt eine Seite mit ✏️-Knopf beim Öffnen bei GitHub nach, ob schon ein offener Pull Request diese Seite ändert. Die Übersicht [„Offen“]({{ '/mitmachen/offen/' | relative_url }}) holt nur mit Verbindung die offenen Pull Requests und Aufgaben (Issues) von GitHub und merkt sich das Ergebnis für zwei Minuten im Sitzungsspeicher des Tabs (`sessionStorage`, weg, sobald der Tab zu ist); „Übernehmen“ trägt dich auf GitHub als zuständig für eine Aufgabe ein. Das Token bleibt in deinem Browser (bis der Tab geschlossen wird, mit „Auf diesem Gerät merken“ dauerhaft im lokalen Speicher, kein Cookie) und geht an keinen anderen Server; „Abmelden“ löscht es. Fotos werden vorher in deinem Browser verkleinert und ohne Metadaten (auch ohne Standortdaten) neu gespeichert.
 

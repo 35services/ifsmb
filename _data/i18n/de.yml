@@ -120,6 +120,9 @@ pages:
     lead: Volltextsuche über Neuigkeiten, Projekte, Termine, Ausstattung, Team und mehr.
     missing: "Der Suchindex fehlt: Er wird erst nach {0} mit {1} erzeugt (siehe README)."
     data_file: "Den Suchindex gibt es auch als eine Datei: {0} – alle Personen, Projekte, Stichworte, Partner und Seiten, für andere Makespaces und Werkzeuge (Föderation)."
+    federation_on: "🌐 Auch verbundene Instanzen durchsuchen"
+    federation_off: "🌐 Nur diese Seite durchsuchen"
+    federation_active: "Sucht zusätzlich in {sites}."
   todos:
     title: Todos
     lead: Was wir gerade anpacken – pro Person in der Eisenhower-Matrix. Verschieben, bearbeiten, als Pull Request speichern.
@@ -129,6 +132,14 @@ pages:
     data_file: "Das ganze Netzwerk als eine Datei: {0} – alle Knoten mit ihren Verbindungsfeldern, für andere Makespaces und Werkzeuge (Föderation)."
     meta_file: "Einstieg für andere Makespaces: {0} verweist auf alle Netzwerk-Dateien und den Suchindex dieser Seite."
     load_error: "Das Netzwerk ließ sich nicht laden. Bitte die Seite neu laden."
+    federation_on: "🌐 Verbundene Instanzen einbeziehen"
+    federation_off: "🌐 Nur diese Seite"
+    federation_active: "Mit Daten von {sites} – Punkte mit blauem Rand kommen von dort."
+    federation_failed: "Die verbundenen Instanzen ließen sich nicht laden."
+    federation_add: "➕ Instanz hinzufügen"
+    federation_add_label: "Adresse einer weiteren Instanz"
+    federation_invalid: "Bitte eine Adresse mit https:// eingeben."
+    federation_unreachable: "Nicht erreichbar: {sites}."
   map:
     title: Karte
     lead: Wo unsere Projekte, Termine, Beiträge und Geräte zu Hause sind – das Netzwerk auf der Karte.

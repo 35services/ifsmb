@@ -7,12 +7,22 @@ lead: Volltextsuche über Neuigkeiten, Projekte, Termine, Ausstattung, Team und 
 search: false
 ---
 {%- comment -%}
-  Volltextsuche mit Pagefind (https://pagefind.app). Der Index (/pagefind/) wird erst nach
-  `jekyll build` erzeugt (siehe .github/workflows/pages.yml und README) – bei reinem
-  `jekyll serve` fehlt er, dann erscheint der Hinweis unten. ?q=… startet direkt eine Suche.
-  Alles kommt von ifsmb.de selbst, keine externen Ressourcen.
+  Full-text search with Pagefind (https://pagefind.app). The index (/pagefind/) is only created after `jekyll build`
+  (see .github/workflows/pages.yml and README) – with plain `jekyll serve` it is missing and the note below shows.
+  ?q=… starts a search right away.
+  Federation: connected instances (_config.yml federation, plus ?instanz=https://… added by the visitor) are only
+  contacted with ?verbund=1, i.e. after a click – their Pagefind index (fulltext_search in <instance>/meta_graph.json)
+  is merged in with mergeIndex. Without that click everything comes from this site, no external requests.
 {%- endcomment -%}
 <link rel="stylesheet" href="{{ '/pagefind/pagefind-ui.css' | relative_url }}">
+<div class="search-federation" id="search-federation" data-federation="{% if site.federation %}{{ site.federation | jsonify | escape }}{% else %}[]{% endif %}">
+  <a class="btn btn-ghost btn-small" id="search-verbund" href="?verbund=1"{% unless site.federation %} hidden{% endunless %} data-i18n="pages.search.federation_on">{{ "pages.search.federation_on" | t }}</a>
+  <form class="netz-instanz" id="search-instanz-form">
+    <label><span class="visually-hidden" data-i18n="pages.network.federation_add_label">{{ "pages.network.federation_add_label" | t }}</span><input type="url" placeholder="https://…" required autocomplete="off"></label>
+    <button type="submit" class="btn btn-ghost btn-small" data-i18n="pages.network.federation_add">{{ "pages.network.federation_add" | t }}</button>
+  </form>
+  <p class="muted small" id="search-verbund-info" hidden></p>
+</div>
 <div id="search" class="search-ui"></div>
 <p id="search-missing" class="note" hidden data-i18n="pages.search.missing">{{ "pages.search.missing" | t_html: "<code>jekyll build</code>", "<code>npx pagefind --site _site</code>" }}</p>
 <p class="muted search-data-file" data-i18n="pages.search.data_file">{{ "pages.search.data_file" | t_html: '<a href="/search/index.json"><code>/search/index.json</code></a>' }}</p>
@@ -20,22 +30,83 @@ search: false
   onerror="document.getElementById('search-missing').hidden = false"></script>
 <script>
   window.addEventListener("DOMContentLoaded", function () {
-    if (typeof PagefindUI === "undefined") return;
-    var ui = new PagefindUI({
-      element: "#search",
-      baseUrl: "{{ '/' | relative_url }}",
-      showImages: false,
-      showSubResults: true,
-      autofocus: true,
-      processResult: function (result) {
-        if (result.meta.date) {
-          result.meta.title += " (" + result.meta.date + ")";
-          delete result.meta.date; // sonst zeigt Pagefind das Datum noch einmal darunter
-        }
-        return result;
-      }
+    var box = document.getElementById("search-federation");
+    var params = new URLSearchParams(location.search);
+    function tr(key, p, fallback) { return window.I18n ? window.I18n.t(key, p) : fallback; }
+    // only https (and http on localhost for testing) – the same rule as on /network/
+    function instanceUrl(u) {
+      try { var x = new URL(String(u).trim()); } catch (e) { return null; }
+      if (x.protocol !== "https:" && !(x.protocol === "http:" && /^(localhost|127\.0\.0\.1)$/.test(x.hostname))) return null;
+      return (x.origin + x.pathname).replace(/\/$/, "");
+    }
+    var peers = [];
+    try { peers = JSON.parse(box.getAttribute("data-federation") || "[]"); } catch (e) { peers = []; }
+    params.getAll("instanz").map(instanceUrl).forEach(function (u) { if (u && peers.indexOf(u) === -1) peers.push(u); });
+    var federate = peers.length > 0 && params.get("verbund") === "1";
+    var btn = document.getElementById("search-verbund"), info = document.getElementById("search-verbund-info");
+    if (peers.length) btn.hidden = false;
+    if (federate) {
+      var plain = new URLSearchParams(location.search); plain.delete("verbund"); plain.delete("instanz");
+      btn.href = location.pathname + (plain.toString() ? "?" + plain.toString() : "");
+      btn.setAttribute("data-i18n", "pages.search.federation_off");
+      btn.textContent = tr("pages.search.federation_off", null, "🌐 Nur diese Seite durchsuchen");
+    }
+    var form = document.getElementById("search-instanz-form");
+    form.querySelector("input").addEventListener("input", function (e) { e.target.setCustomValidity(""); });
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var field = form.querySelector("input"), u = instanceUrl(field.value);
+      if (!u) { field.setCustomValidity(tr("pages.network.federation_invalid", null, "Bitte eine Adresse mit https:// eingeben.")); field.reportValidity(); return; }
+      var next = new URLSearchParams(location.search);
+      next.set("verbund", "1");
+      if (peers.indexOf(u) === -1) next.append("instanz", u);
+      location.href = location.pathname + "?" + next.toString();
     });
-    var q = new URLSearchParams(location.search).get("q");
-    if (q) ui.triggerSearch(q);
+
+    function hostOf(u) { try { return new URL(u).host; } catch (e) { return ""; } }
+    var unreachable = [];
+    // the Pagefind index of each connected instance, found through its /meta_graph.json
+    function indexes() {
+      if (!federate) return Promise.resolve([]);
+      return Promise.all(peers.map(function (base) {
+        return fetch(base + "/meta_graph.json").then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+          .then(function (meta) {
+            var ft = meta.fulltext_search && meta.fulltext_search.url, site = (meta.site || base).replace(/\/$/, "");
+            return ft && /^https?:\/\//.test(ft) ? { bundlePath: ft, baseUrl: site + "/" } : null;
+          })
+          .catch(function (err) { unreachable.push(hostOf(base)); if (window.console) console.warn("search: " + base + " not loaded", err); return null; });
+      })).then(function (list) { return list.filter(Boolean); });
+    }
+
+    if (typeof PagefindUI === "undefined") return;
+    indexes().then(function (merge) {
+      if (federate) {
+        var sites = merge.map(function (m) { return hostOf(m.baseUrl); });
+        info.textContent = (sites.length ? tr("pages.search.federation_active", { sites: sites.join(", ") }, "Sucht zusätzlich in " + sites.join(", ") + ".")
+          : tr("pages.network.federation_failed", null, "Die verbundenen Instanzen ließen sich nicht laden.")) +
+          (unreachable.length && sites.length ? " " + tr("pages.network.federation_unreachable", { sites: unreachable.join(", ") }, "Nicht erreichbar: " + unreachable.join(", ") + ".") : "");
+        info.hidden = false;
+      }
+      var ui = new PagefindUI({
+        element: "#search",
+        baseUrl: "{{ '/' | relative_url }}",
+        mergeIndex: merge,
+        showImages: false,
+        showSubResults: true,
+        autofocus: true,
+        processResult: function (result) {
+          if (result.meta.date) {
+            result.meta.title += " (" + result.meta.date + ")";
+            delete result.meta.date; // otherwise Pagefind shows the date again below
+          }
+          // results from a connected instance: absolute URL on another host → mark where they come from
+          var host = /^https?:\/\//.test(result.url) ? hostOf(result.url) : "";
+          if (host && host !== location.host) result.meta.title += " · 🌐 " + host;
+          return result;
+        }
+      });
+      var q = params.get("q");
+      if (q) ui.triggerSearch(q);
+    });
   });
 </script>
