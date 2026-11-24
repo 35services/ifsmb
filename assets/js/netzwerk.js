@@ -35,12 +35,10 @@
 
   // ---------- build graph ----------
   var nodes = raw.map(function (d) { d.url = d.url || d.id; return d; });
-  var byId = {}, projectBySlug = {}, personBySlug = {}, partnerByName = {}, projectByTag = {};
+  var byId = {}, projectByTag = {};
   nodes.forEach(function (n) {
     byId[norm(n.id)] = n;
-    if (n.type === 'projekt') { projectBySlug[n.slug] = n; if (n.event_tag) projectByTag[n.event_tag] = n; }
-    if (n.type === 'person') personBySlug[n.slug] = n;
-    if (n.type === 'partner') partnerByName[n.title] = n;
+    if (n.type === 'projekt' && n.event_tag) projectByTag[n.event_tag] = n;
   });
 
   function norm(u) {
@@ -76,23 +74,25 @@
     if (kind === 'teil') { e.source = b; e.target = a; } // parent -> child
     seen[k] = e; edges.push(e);
   }
+  // reference fields hold node ids (graph.json version 2: /team/falko-richter/, partner:<name> …)
+  function ref(u) { return byId[norm(u)]; }
   nodes.forEach(function (n) {
     list(n.linked).forEach(function (u) { link(n, byId[norm(u)]); });
-    list(n.team).forEach(function (s) { link(n, personBySlug[s]); });
-    list(n.author).forEach(function (s) { link(n, personBySlug[s]); });
-    list(n.partners).forEach(function (s) { link(n, partnerByName[s]); });
+    list(n.team).forEach(function (u) { link(n, ref(u)); });
+    list(n.author).forEach(function (u) { link(n, ref(u)); });
+    list(n.partners).forEach(function (u) { link(n, ref(u)); });
     if (n.type === 'ausstattung') {
-      list(n.owner_partner).forEach(function (s) { link(n, partnerByName[s], 'besitz'); });
-      list(n.owner_team).forEach(function (s) { link(n, personBySlug[s], 'besitz'); });
+      list(n.owner_partner).forEach(function (u) { link(n, ref(u), 'besitz'); });
+      list(n.owner_team).forEach(function (u) { link(n, ref(u), 'besitz'); });
       (n._owners || []).forEach(function (o) { link(n, o, 'besitz'); });
-      list(n.location_partner).forEach(function (s) { link(n, partnerByName[s], 'standort'); });
+      list(n.location_partner).forEach(function (u) { link(n, ref(u), 'standort'); });
       if (n._location) link(n, n._location, 'standort');
     }
     if (n.type === 'projekt') {
-      list(n.part_of).forEach(function (s) { link(n, projectBySlug[s], 'teil'); });
-      list(n.related).forEach(function (s) { link(n, projectBySlug[s]); });
+      list(n.part_of).forEach(function (u) { link(n, ref(u), 'teil'); });
+      list(n.related).forEach(function (u) { link(n, ref(u)); });
     } else {
-      list(n.projects).forEach(function (s) { link(n, projectBySlug[s]); });
+      list(n.projects).forEach(function (u) { link(n, ref(u)); });
       list(n.tags).forEach(function (t) { link(n, projectByTag[t]); });
     }
   });

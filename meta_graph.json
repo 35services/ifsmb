@@ -16,7 +16,7 @@ permalink: /meta_graph.json
 "title": {{ site.title | jsonify }},
 "generated": {{ site.time | date_to_xmlschema | jsonify }},
 "graphs": [
-{"id": "network", "title": "Netzwerk", "url": {{ '/network/graph.json' | absolute_url | jsonify }}, "page": {{ '/network/' | absolute_url | jsonify }}, "format": "ifsmb-network", "version": 1,
+{"id": "network", "title": "Netzwerk", "url": {{ '/network/graph.json' | absolute_url | jsonify }}, "page": {{ '/network/' | absolute_url | jsonify }}, "format": "ifsmb-network", "version": 2,
  "node_types": ["projekt", "termin", "beitrag", "person", "ausstattung", "herausforderung", "presse", "partner"]}
 ],
 "search_index": {"url": {{ '/search/index.json' | absolute_url | jsonify }}, "page": {{ '/search/' | absolute_url | jsonify }}, "format": "ifsmb-search-index", "version": 1},

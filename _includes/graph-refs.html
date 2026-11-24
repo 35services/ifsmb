@@ -1,0 +1,28 @@
+{%- comment -%}
+  Resolves a front matter reference field into a JSON array of node ids for network/graph.json, so other sites
+  don't need to know this site's slugs: people and projects by slug → their URL (/team/falko-richter/), partners by
+  name → their page or "partner:<name>" (the partner node id). Unknown values are dropped (they had no edge before
+  either). Markdown keeps the short slugs/names. Params: refs (a value or a list), kind (person | project | partner).
+  Prints null when the field is not set.
+{%- endcomment -%}
+{%- if include.refs == nil -%}null{%- else -%}
+{%- assign gr_in = include.refs | join: "§§" | split: "§§" -%}
+{%- assign gr_out = "" | split: "" -%}
+{%- for gr_v in gr_in -%}
+  {%- assign gr_v = gr_v | strip -%}
+  {%- if include.kind == "person" -%}
+    {%- assign gr_m = site.team | where: "slug", gr_v | first -%}
+    {%- if gr_m -%}{%- assign gr_u = gr_m.url | relative_url -%}{%- assign gr_out = gr_out | push: gr_u -%}{%- endif -%}
+  {%- elsif include.kind == "project" -%}
+    {%- assign gr_m = site.projects | where: "slug", gr_v | first -%}
+    {%- if gr_m -%}{%- assign gr_u = gr_m.url | relative_url -%}{%- assign gr_out = gr_out | push: gr_u -%}{%- endif -%}
+  {%- elsif include.kind == "partner" -%}
+    {%- assign gr_m = site.data.partners | where: "name", gr_v | first -%}
+    {%- if gr_m -%}
+      {%- if gr_m.page -%}{%- assign gr_u = gr_m.page | relative_url -%}{%- else -%}{%- assign gr_u = "partner:" | append: gr_m.name -%}{%- endif -%}
+      {%- assign gr_out = gr_out | push: gr_u -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{{- gr_out | jsonify -}}
+{%- endif -%}
