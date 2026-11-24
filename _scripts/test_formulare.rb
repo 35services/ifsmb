@@ -236,10 +236,11 @@ class EditFormTest < Minitest::Test
   def results = Daten.edit_results
 
   def test_there_are_pages_to_edit
-    assert_operator results.size, :>, 20 # sanity floor: the example script found pages at all (a small instance has ~40)
+    # sanity floors: the example script found pages of each kind at all (a small instance has only a few)
+    assert_operator results.size, :>, 5
     # plain pages (#154): Markdown pages and HTML overview pages
-    assert_operator results.count { |r| r["type"] == "seite" }, :>=, 5
-    assert_operator results.count { |r| r["type"] == "uebersicht" }, :>, 10
+    assert_operator results.count { |r| r["type"] == "seite" }, :>=, 1
+    assert_operator results.count { |r| r["type"] == "uebersicht" }, :>, 3
   end
 
   def test_unchanged_file_stays_identical
@@ -320,7 +321,7 @@ class HtmlCheckTest < Minitest::Test
 
   def test_no_false_alarm_on_existing_overview_pages
     pages = Daten.edit_results.select { |r| r["type"] == "uebersicht" }
-    assert_operator pages.size, :>, 10
+    assert_operator pages.size, :>, 3
     bodies = pages.map { |r| r["original"].sub(/\A---\n.*?\n---\n/m, "") }
     check(bodies).zip(pages).each { |msg, r| assert_nil msg, "#{r['path']}: #{msg}" }
   end

@@ -82,45 +82,15 @@ nav:
   - title: Kalender
     key: nav.calendar
     url: /calendar/
-  - title: Wir
-    key: nav.about_us
-    children:
-      - title: Netzwerk
-        key: nav.network
-        url: /network/
-      - title: Karte
-        key: nav.map
-        url: /map/
-      - title: Projekte
-        key: nav.projects
-        url: /projects/
-      - title: Projekt-Ideen
-        key: nav.project_ideas
-        url: /project/ideas/
-      - title: Todos
-        key: nav.todos
-        url: /todos/
-      - title: Angebot
-        key: nav.offer
-        url: /angebot/
-      - title: Geld für Makespaces
-        key: nav.funding
-        url: /geld-fuer-makespaces/
-      - title: Ausstattung
-        key: nav.equipment
-        url: /equipment/
-      - title: Team
-        key: nav.team
-        url: /team/
-  - title: Partner
-    key: nav.partners
-    url: /partners/
-  - title: Presse
-    key: nav.press
-    url: /press/
-  - title: Suche
-    key: nav.search
-    url: /search/
+  - title: Team
+    key: nav.team
+    url: /team/
+  - title: Ausstattung
+    key: nav.equipment
+    url: /equipment/
+  - title: Netzwerk
+    key: nav.network
+    url: /network/
 
 # Pagefind-Index (_site/pagefind/) beim Neubauen nicht löschen – lokal mit `npx pagefind --site _site` erzeugt
 keep_files:

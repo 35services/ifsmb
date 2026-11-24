@@ -11,7 +11,7 @@ layout: default
       <h1>{{ page.title }}</h1>
       {% if page.summary %}<p class="lead">{{ page.summary }}</p>{% endif %}
       {% if page.location or sp %}
-      <p class="equipment-location">📍 <span data-i18n="equipment.location">{{ "equipment.location" | t }}</span> {% if sp %}<a href="{{ '/partners/' | relative_url }}#{{ sp.name | slugify }}">{{ page.location | default: sp.name }}</a>{% else %}{{ page.location }}{% endif %}</p>
+      <p class="equipment-location">📍 <span data-i18n="equipment.location">{{ "equipment.location" | t }}</span> {% if sp %}<a href="{{ 'https://ifsmb.de/partners/' | relative_url }}#{{ sp.name | slugify }}">{{ page.location | default: sp.name }}</a>{% else %}{{ page.location }}{% endif %}</p>
       {% endif %}
       {% include stichworte.html tags=page.tags %}
     </header>

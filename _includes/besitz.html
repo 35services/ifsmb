@@ -9,7 +9,7 @@
 {%- assign owners = "" | split: "" -%}
 {%- for n in o_partners -%}
   {%- assign op = site.data.partners | where: "name", n | first -%}
-  {%- if op and include.plain == nil -%}{%- capture o %}<a href="{{ op.page | default: '/partners/' | relative_url }}{% unless op.page %}#{{ op.name | slugify }}{% endunless %}">{{ op.name }}</a>{% endcapture -%}{%- else -%}{%- assign o = n -%}{%- endif -%}
+  {%- if op and include.plain == nil -%}{%- capture o %}<a href="{{ op.page | default: 'https://ifsmb.de/partners/' | relative_url }}{% unless op.page %}#{{ op.name | slugify }}{% endunless %}">{{ op.name }}</a>{% endcapture -%}{%- else -%}{%- assign o = n -%}{%- endif -%}
   {%- assign owners = owners | push: o -%}
 {%- endfor -%}
 {%- assign team_in_list = false -%}
