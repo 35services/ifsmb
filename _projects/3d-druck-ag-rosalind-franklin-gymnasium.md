@@ -13,6 +13,11 @@ partners:
 uuid: 5379c13e-2955-43b3-869c-70818492a4a8
 ---
 
+## Zusatztermin am 26. November 15-17 Uhr!
+
+**Wir bereiten den Tag der offenen Tür vor**
+
+
 Am [Rosalind-Franklin-Gymnasium](https://rosalind-franklin-gymnasium.de/) in Moabit gibt es einen neuen Makespace mit 6 Druckern, 2 Schneidplottern und einer 3D-Druck-AG. Die Drucker sind seit Beginn des Schuljahres 2026/27 da und werden genutzt, die AG findet statt. Im Januar 2027 feiern wir das mit einer [kleinen feierlichen Eröffnung]({{ '/calendar/2027-01-01-eroeffnung-makespace-rosalind-franklin-gymnasium/' | relative_url }}).
 
 Falko Richter berät die Schule ehrenamtlich bei der Einrichtung – mit den Erfahrungen aus der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}).
