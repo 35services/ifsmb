@@ -6,6 +6,7 @@ i18n_lead: pages.partners.lead
 lead: Ohne unsere Partner wäre kein Makespace spontan entstanden. Danke!
 uuid: 27acbb70-b7ee-43c0-9d16-ff70e7ea93e6
 ---
+{% if site.data.partners and site.data.partners.size > 0 %}
 <div class="partner-list">
   {% for p in site.data.partners %}
   <div class="card partner-card" id="{{ p.name | slugify }}">
@@ -28,3 +29,9 @@ uuid: 27acbb70-b7ee-43c0-9d16-ff70e7ea93e6
   </div>
   {% endfor %}
 </div>
+{% else %}
+<div class="prose">
+  <p>35 services e. V. hat keine eigenen Partner.</p>
+  <p>Die Partner des ursprünglichen Instituts für spontane Makespace Buildung findest du auf <a href="https://ifsmb.de/partners/">ifsmb.de/partners/</a>.</p>
+</div>
+{% endif %}

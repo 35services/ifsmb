@@ -90,6 +90,7 @@ layout: default
 </section>
 {% endif %}
 
+{% if site.data.partners and site.data.partners.size > 0 %}
 <section class="container section">
   <div class="section-head">
     <h2 data-i18n="nav.partners">{{ "nav.partners" | t }}</h2>
@@ -103,5 +104,6 @@ layout: default
     {% endfor %}
   </div>
 </section>
+{% endif %}
 </main>
 <script src="{{ '/assets/js/slogan.js' | relative_url }}" defer></script>

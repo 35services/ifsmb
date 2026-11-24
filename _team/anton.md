@@ -4,7 +4,7 @@ role: Aus der Werkstatt bei 35services
 order: 2
 photo: /assets/images/team/anton-480w.jpg
 photo_icon: /assets/images/team/anton-48w.jpg
-linked: [/partners/35services/] # Mitglied bei 35 services e. V.
+linked: [https://ifsmb.de/partners/35services/] # Mitglied bei 35 services e. V.
 uuid: dde89da1-e3af-448b-bbf3-f2b05ba9cc4f
 ---
 

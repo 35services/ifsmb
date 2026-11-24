@@ -212,7 +212,7 @@ since: 2026-11-13
 helpers: [anton]
 projects: [35services-3d]
 tags: [35services-3d]
-linked: [/partners/35services/, /equipment/35services-bambu-lab-a1-mini/, /equipment/prusa-mk3s-xhain/, /projects/prusa-mk3s-heartlabs-flott-machen/]
+linked: [https://ifsmb.de/partners/35services/, /equipment/35services-bambu-lab-a1-mini/, https://ifsmb.de/equipment/prusa-mk3s-xhain/, https://ifsmb.de/projects/prusa-mk3s-heartlabs-flott-machen/]
 ```
 
 https://youtu.be/cRSoVq_reGQ?is=4-7OQB8jc_aDTww_

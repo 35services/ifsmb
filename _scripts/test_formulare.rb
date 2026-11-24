@@ -238,7 +238,7 @@ class EditFormTest < Minitest::Test
   def test_there_are_pages_to_edit
     assert_operator results.size, :>, 20 # sanity floor: the example script found pages at all (a small instance has ~40)
     # plain pages (#154): Markdown pages and HTML overview pages
-    assert_operator results.count { |r| r["type"] == "seite" }, :>, 5
+    assert_operator results.count { |r| r["type"] == "seite" }, :>=, 5
     assert_operator results.count { |r| r["type"] == "uebersicht" }, :>, 10
   end
 
