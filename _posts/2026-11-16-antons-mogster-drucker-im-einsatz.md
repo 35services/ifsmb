@@ -4,11 +4,7 @@ date: 2026-11-16 10:15:00 +0100
 author: falko-richter
 personal: true
 tags: [mogster, rc-modellbau, prusa-mk4, prusa-mk3s, 35services]
-linked:
-  - /team/anton/
-  - /equipment/prusa-mk4-mmu/
-  - /equipment/prusa-mk3s-xhain/
-  - /equipment/prusa-mk3s-heartlabs/
+linked: [/team/anton/, /equipment/prusa-mk3s-xhain/, /equipment/prusa-mk3s-heartlabs/, https://35services.ifsmb.de/equipment/prusa-mk4-mmu/]
 uuid: a7763127-ea5d-48a0-9571-bfe3dbe2c08d
 ---
 [Anton]({{ '/team/anton/' | relative_url }}) macht Fortschritte beim Bau seines [Mogsters]({{ '/projects/3dsets-mogster-bauen/' | relative_url }}#antons-mogster) – und dafür sind bei 35services gleich drei Drucker beschäftigt:

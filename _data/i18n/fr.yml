@@ -117,12 +117,16 @@ pages:
     title: Recherche
     lead: Recherche plein texte dans les actualités, projets, rendez-vous, l’équipement, l’équipe et plus encore.
     missing: "L’index de recherche manque : il n’est créé qu’après {0} avec {1} (voir le README)."
+    data_file: "L’index de recherche existe aussi sous forme d’un seul fichier : {0} – toutes les personnes, projets, mots-clés, partenaires et pages, pour d’autres makespaces et outils (fédération)."
   todos:
     title: Todos
     lead: Ce que nous prenons en main en ce moment – par personne, dans une matrice d’Eisenhower. Déplacer, modifier, enregistrer en pull request.
   network:
     title: Réseau
-    lead: Comment nos projets, défis, todos, rendez-vous, articles, personnes, partenaires et appareils sont reliés. Faites glisser, zoomez, cliquez – et passez d’un point à l’autre.
+    lead: Comment nos projets, défis, rendez-vous, articles, personnes, partenaires et appareils sont reliés. Faites glisser, zoomez, cliquez – et passez d’un point à l’autre.
+    data_file: "Tout le réseau dans un seul fichier : {0} – chaque nœud avec ses champs de liens, pour d’autres makespaces et outils (fédération)."
+    meta_file: "Point d’entrée pour d’autres makespaces : {0} renvoie à tous les fichiers de réseau et à l’index de recherche de ce site."
+    load_error: "Impossible de charger le réseau. Merci de recharger la page."
   map:
     title: Carte
     lead: Où nos projets, rendez-vous, articles et appareils sont chez eux – le réseau sur une carte.

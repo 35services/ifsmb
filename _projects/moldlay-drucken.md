@@ -7,9 +7,7 @@ start: 2026-09-24
 period: seit September 2026
 event_tag: moldlay
 tags: [moldlay, 3d-drucker, prusa-mk4]
-linked:
-  - /equipment/prusa-mk4-mmu/
-  - /news/2026/09/24/moldlay-drucken-die-ersten-versuche/
+linked: [/news/2026/09/24/moldlay-drucken-die-ersten-versuche/, https://35services.ifsmb.de/equipment/prusa-mk4-mmu/]
 team:
   - falko-richter
   - philipp-schalldach

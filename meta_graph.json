@@ -1,0 +1,24 @@
+---
+layout: null
+permalink: /meta_graph.json
+---
+{%- comment -%}
+  Entry point for federation: lists every graph this site exposes and its search index, so another site only
+  needs this one address. URLs here are absolute; ids inside the graphs are site-relative (resolve against "site").
+  A site may expose several graphs (e.g. one for team members, one for partners, one for equipment) – this site has
+  one graph with everything. "node_types" says which kinds of nodes a graph contains (keep in sync with
+  network/graph.json). Todos are not part of any graph: they stay local.
+{%- endcomment -%}
+{
+"format": "ifsmb-meta-graph",
+"version": 1,
+"site": {{ site.url | append: site.baseurl | jsonify }},
+"title": {{ site.title | jsonify }},
+"generated": {{ site.time | date_to_xmlschema | jsonify }},
+"graphs": [
+{"id": "network", "title": "Netzwerk", "url": {{ '/network/graph.json' | absolute_url | jsonify }}, "page": {{ '/network/' | absolute_url | jsonify }}, "format": "ifsmb-network", "version": 1,
+ "node_types": ["projekt", "termin", "beitrag", "person", "ausstattung", "herausforderung", "presse", "partner"]}
+],
+"search_index": {"url": {{ '/search/index.json' | absolute_url | jsonify }}, "page": {{ '/search/' | absolute_url | jsonify }}, "format": "ifsmb-search-index", "version": 1},
+"fulltext_search": {"url": {{ '/pagefind/' | absolute_url | jsonify }}, "format": "pagefind"}
+}

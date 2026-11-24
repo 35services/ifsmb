@@ -24,6 +24,7 @@ updates:
       {: .gallery}
 
       ![Video: Das Drachenei wird geöffnet, darin der zusammengerollte Drache](/assets/video/news/dracheneier-drucken/01.mp4)
+linked: [https://35services.ifsmb.de/equipment/35services-bambu-lab-a1-mini/]
 uuid: 25935665-0ecf-425f-b139-831203fb98a9
 ---
 
