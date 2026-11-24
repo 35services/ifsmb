@@ -5,8 +5,8 @@ permalink: /network/graph.json
 {%- comment -%}
   The network as one file: one node per resource with its raw link fields (part_of, related, team, partners,
   owner_*, event_tag/tags, linked …). assets/js/netzwerk.js loads it and derives the edges (same rules as
-  _includes/verbindungen.html); other sites can read it too (federation). Node ids are site-relative URLs –
-  resolve them against "site". Reference fields (team, author, owner_team, projects, part_of, related,
+  _includes/verbindungen.html); other sites can read it too (federation). Node ids are root-relative URLs (with the
+  baseurl) – resolve them against "site" like a link (new URL(id, site)), not by joining strings. Reference fields (team, author, owner_team, projects, part_of, related,
   partners, owner_partner, location_partner) hold node ids too (/team/falko-richter/, not falko-richter) –
   resolved by _includes/graph-refs.html; Markdown keeps the short slugs and names. "uuid" is the page's stable
   id from its front matter (survives renames and new URLs); partners from _data/ have none. Todos are not part of the network (they stay local and are too abstract).
@@ -21,25 +21,25 @@ permalink: /network/graph.json
 {%- assign sep = "" -%}
 "nodes": [
 {%- for x in site.projects -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"projekt","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"event_tag":{{ x.event_tag | jsonify }},"part_of":{% include graph-refs.html refs=x.part_of kind="project" %},"related":{% include graph-refs.html refs=x.related kind="project" %},"team":{% include graph-refs.html refs=x.team kind="person" %},"partners":{% include graph-refs.html refs=x.partners kind="partner" %},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"projekt","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"event_tag":{{ x.event_tag | jsonify }},"part_of":{% include graph-refs.html refs=x.part_of kind="project" %},"related":{% include graph-refs.html refs=x.related kind="project" %},"team":{% include graph-refs.html refs=x.team kind="person" %},"partners":{% include graph-refs.html refs=x.partners kind="partner" %},"tags":{{ x.tags | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for x in site.events -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"termin","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"projects":{% include graph-refs.html refs=x.projects kind="project" %},"team":{% include graph-refs.html refs=x.team kind="person" %},"partners":{% include graph-refs.html refs=x.partners kind="partner" %},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"termin","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"projects":{% include graph-refs.html refs=x.projects kind="project" %},"team":{% include graph-refs.html refs=x.team kind="person" %},"partners":{% include graph-refs.html refs=x.partners kind="partner" %},"tags":{{ x.tags | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for x in site.posts -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"beitrag","title":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"author":{% include graph-refs.html refs=x.author kind="person" %},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"beitrag","title":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"author":{% include graph-refs.html refs=x.author kind="person" %},"tags":{{ x.tags | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for x in site.team -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"person","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"person","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for x in site.equipment -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"ausstattung","title":{{ x.title | jsonify }},"owner_partner":{% include graph-refs.html refs=x.owner_partner kind="partner" %},"location_partner":{% include graph-refs.html refs=x.location_partner kind="partner" %},"owner_team":{% include graph-refs.html refs=x.owner_team kind="person" %},"owner_name":{{ x.owner_name | jsonify }},"location":{{ x.location | jsonify }},"status":{{ x.status | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"ausstattung","title":{{ x.title | jsonify }},"owner_partner":{% include graph-refs.html refs=x.owner_partner kind="partner" %},"location_partner":{% include graph-refs.html refs=x.location_partner kind="partner" %},"owner_team":{% include graph-refs.html refs=x.owner_team kind="person" %},"owner_name":{{ x.owner_name | jsonify }},"location":{{ x.location | jsonify }},"status":{{ x.status | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for x in site.challenges -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"herausforderung","title":{{ x.title | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.since | date: "%Y-%m-%d" | jsonify }},"projects":{% include graph-refs.html refs=x.projects kind="project" %},"team":{% include graph-refs.html refs=x.team kind="person" %},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"herausforderung","title":{{ x.title | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.since | date: "%Y-%m-%d" | jsonify }},"projects":{% include graph-refs.html refs=x.projects kind="project" %},"team":{% include graph-refs.html refs=x.team kind="person" %},"tags":{{ x.tags | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for x in site.press -%}
-{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"presse","title":{{ x.title | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}{%- assign sep = "," -%}
+{{ sep }}{"id":{{ x.url | relative_url | jsonify }},"uuid":{{ x.uuid | jsonify }},"type":"presse","title":{{ x.title | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{% include graph-refs.html refs=x.linked kind="url" %}}{%- assign sep = "," -%}
 {%- endfor -%}
 {%- for pt in site.data.partners -%}
 {{ sep }}{"id":{% if pt.page %}{{ pt.page | relative_url | jsonify }}{% else %}{{ "partner:" | append: pt.name | jsonify }}{% endif %},"type":"partner","title":{{ pt.name | jsonify }},"url":{% if pt.page %}{{ pt.page | relative_url | jsonify }}{% else %}{{ pt.url | jsonify }}{% endif %},"extern":{% if pt.page %}false{% else %}true{% endif %}}{%- assign sep = "," -%}

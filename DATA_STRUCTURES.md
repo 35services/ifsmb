@@ -199,7 +199,7 @@ Termin, Beitrag mit Beitrag oder Ausstattung mit Partnerseite.
 Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) in eine eigene Datei
 [`/network/graph.json`](https://ifsmb.de/network/graph.json) (`network/graph.json`; Kopf mit `format`, `version`,
 `site`, `generated`, dann `nodes` – auch für andere Instanzen gedacht, Föderation; Todos gehören nicht zum Netzwerk).
-Jeder Knoten hat seine Adresse als `id` und – außer Partnern aus `_data/` – seine `uuid` (bleibt auch bei neuen Adressen gleich).
+Jeder Knoten hat seine Adresse als `id` (ab der Wurzel, mit `baseurl` – auflösen wie einen Link gegen `site`, z. B. `new URL(id, site)`) und – außer Partnern aus `_data/` – seine `uuid` (bleibt auch bei neuen Adressen gleich).
 In den Verweisfeldern (`team`, `author`, `owner_team`, `projects`, `part_of`, `related`,
 `partners`, `owner_partner`, `location_partner`) stehen ebenfalls Knoten-IDs, also `/team/falko-richter/` statt `falko-richter`
 (`_includes/graph-refs.html` löst die Kürzel und Namen aus dem Markdown beim Bauen auf).
