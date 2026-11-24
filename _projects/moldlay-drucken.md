@@ -34,6 +34,6 @@ uuid: 85aa89c1-657c-4403-867d-b65df1752bdd
 
 Ein neues Projekt von [Falko]({{ '/team/falko-richter/' | relative_url }}) und [Philipp]({{ '/team/philipp-schalldach/' | relative_url }}): **Moldlay drucken**. Moldlay ist ein wachsähnliches Filament, mit dem man Modelle für den Metallguss im Wachsausschmelzverfahren drucken kann.
 
-Die ersten Versuche liefen im September 2026 auf einem [Prusa MK4]({{ '/equipment/prusa-mk4-mmu/' | relative_url }}) – Fotos gibt es im Beitrag [Moldlay drucken: die ersten Versuche]({{ '/news/2026/09/24/moldlay-drucken-die-ersten-versuche/' | relative_url }}).
+Die ersten Versuche liefen im September 2026 auf einem [Prusa MK4](https://35services.ifsmb.de/equipment/prusa-mk4-mmu/) – Fotos gibt es im Beitrag [Moldlay drucken: die ersten Versuche]({{ '/news/2026/09/24/moldlay-drucken-die-ersten-versuche/' | relative_url }}).
 
 **Stand:** Moldlay ist **extrem brüchig**. Mit einem Föhn haben wir versucht, das Filament geschmeidiger zu bekommen – geholfen hat es nur wenig. Nächste Schritte: einen anderen Drucker, **2,85-mm-Filament** oder Alternativen wie **[PolyCast](https://shop.polymaker.com/en-eu/products/polycast)** ausprobieren.
