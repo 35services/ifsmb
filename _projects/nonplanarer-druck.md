@@ -13,10 +13,7 @@ team:
   - jan
 partners:
   - 35 services e. V.
-linked:
-  - /todos/#falko-richter/non-planar-slicing
-  - /equipment/35services-bambu-lab-a1-mini/
-  - /press/#badge
+linked: ["/todos/#falko-richter/non-planar-slicing", "/press/#badge", https://35services.ifsmb.de/equipment/35services-bambu-lab-a1-mini/]
 updates:
   - date: 2026-11-17
     text: |-
