@@ -5,7 +5,7 @@ layout: default
 <main>
 <section class="hero">
   <div class="container">
-    <p class="kicker">Institut für spontane Makespace Buildung</p>
+    <p class="kicker">35services e.V.</p>
     {%- comment -%} Slogans: _data/slogans.yml; the first one is static HTML, assets/js/slogan.js rotates all of them {%- endcomment -%}
     {%- capture nl %}
 {% endcapture -%}
@@ -21,12 +21,6 @@ layout: default
         {%- endfor -%}
       {%- endfor -%}
     </h1>
-    <p class="hero-text">
-      Wir sind eine Gruppe von Eltern, Bastler*innen und Technik-Begeisterten aus Moabit.
-      Gemeinsam mit Schulen, Vereinen und offenen Werkstätten richten wir Orte ein,
-      an denen Kinder und Jugendliche löten, programmieren, 3D-drucken und Dinge selbst bauen können –
-      ohne lange Anträge, mit dem, was gerade da ist. 
-    </p>
     <div class="hero-actions">
       <a class="btn" href="{{ '/projects/' | relative_url }}" data-i18n="home.our_projects">{{ "home.our_projects" | t }}</a>
       <a class="btn btn-ghost" href="{{ '/team/' | relative_url }}" data-i18n="home.who_we_are">{{ "home.who_we_are" | t }}</a>
@@ -35,26 +29,6 @@ layout: default
   </div>
 </section>
 
-<section class="container section">
-  <h2>Was heißt „spontane Makespace Buildung“?</h2>
-  <div class="grid-3">
-    <div class="card">
-      <div class="card-icon">⚡</div>
-      <h3>Spontan</h3>
-      <p>Wir warten nicht auf den perfekten Raum oder das perfekte Budget. Ein Tisch, ein paar Werkzeuge und Neugier reichen für den Anfang.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🛠️</div>
-      <h3>Makespace</h3>
-      <p>Ein Ort zum Ausprobieren: Elektronik, Holz, Code, 3D-Druck, Reparieren. Hier darf etwas schiefgehen – genau so lernt man.</p>
-    </div>
-    <div class="card">
-      <div class="card-icon">🤝</div>
-      <h3>Buildung</h3>
-      <p>Bauen und Bildung gehören zusammen. Wir bringen Schulen, Vereine und Ehrenamtliche zusammen, damit Wissen weitergegeben wird.</p>
-    </div>
-  </div>
-</section>
 
 {%- assign now_s = site.time | date: "%s" | plus: 0 -%}
 {%- assign next_events = "" | split: "" -%}
