@@ -41,13 +41,21 @@
     if (n.type === 'projekt' && n.event_tag) projectByTag[n.event_tag] = n;
   });
 
+  // Node ids are absolute URLs (graph.json). norm() turns any address – absolute, /path/ or path – into that form
+  // (trailing slash for pages), so ids, references and the #/path/ in the address bar all match.
   function norm(u) {
     if (!u) return u;
     u = String(u).trim();
-    if (/^[a-z]+:/.test(u)) return u;   // partner:, ort:, name:, http(s):
-    if (u.charAt(0) !== '/') u = '/' + u;
-    if (u.slice(-1) !== '/' && u.indexOf('.') === -1) u += '/';
-    return u;
+    if (/^[a-z]+:/.test(u) && !/^https?:/.test(u)) return u;   // partner:, ort:, name:
+    var x;
+    try { x = new URL(/^https?:/.test(u) || u.charAt(0) === '/' ? u : '/' + u, location.origin); } catch (e) { return u; }
+    var path = x.pathname;
+    if (path.slice(-1) !== '/' && path.split('/').pop().indexOf('.') === -1) path += '/';
+    return x.origin + path;
+  }
+  // short form for the address bar: the path for pages of this site, the full id otherwise
+  function hashOf(id) {
+    return id.indexOf(location.origin + '/') === 0 ? id.slice(location.origin.length) : id;
   }
   function list(v) { return v == null ? [] : (Array.isArray(v) ? v : [v]); }
 
@@ -291,7 +299,7 @@
     html += groupedList(n.links, function (m) { return n.kinds[m.id]; });
     if (!n.links.length) html += '<p class="muted">Noch keine Verbindungen.</p>';
     panel.innerHTML = html;
-    history.replaceState(null, '', '#' + n.id);
+    history.replaceState(null, '', '#' + hashOf(n.id));
     if (center) flyTo(n);
     draw();
   }
