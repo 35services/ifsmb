@@ -7,8 +7,7 @@ period: Idee seit Mai 2026
 location: 35services e.V.
 event_tag: openscan
 tags: [3d-scanner]
-team:
-  - falko-richter
+team: [falko-richter, philipp-schalldach]
 partners:
   - 35 services e. V.
 linked: [/news/2026/05/25/open-hardware-summit-2026/]
