@@ -1,7 +1,7 @@
 {%- comment -%}
   Resolves a front matter reference field into a JSON array of node ids for network/graph.json. Node ids are
   absolute URLs, so other sites need neither this site's slugs nor its baseurl:
-  people and projects by slug → their URL (https://ifsmb.de/team/falko-richter/), partners by name → their page
+  people and projects by slug → their URL (<site>/team/falko-richter/), partners by name → their page
   or "partner:<name>" (the partner node id), linked (kind url) → site paths made absolute, full URLs kept.
   Unknown slugs/names are dropped (they had no edge before either). Markdown keeps the short slugs and names.
   Params: refs (a value or a list), kind (person | project | partner | url). Prints null when the field is not set.
