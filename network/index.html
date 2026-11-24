@@ -13,7 +13,8 @@ permalink: /network/
 {%- endcomment -%}
 
 
-<div class="netz" id="netz" data-graph="{{ '/network/graph.json' | relative_url }}">
+{%- comment -%}Connected instances (_config.yml federation): netzwerk.js loads their graphs only with ?verbund=1 (after a click).{%- endcomment -%}
+<div class="netz" id="netz" data-graph="{{ '/network/graph.json' | relative_url }}" data-federation="{% if site.federation %}{{ site.federation | jsonify | escape }}{% else %}[]{% endif %}">
   <div class="netz-controls">
     <label class="netz-search"><span class="visually-hidden">Suchen</span><input type="search" id="netz-suche" placeholder="Suchen …" autocomplete="off"></label>
     <fieldset class="netz-filter" id="netz-filter">
@@ -23,7 +24,13 @@ permalink: /network/
     <p class="netz-legend" aria-hidden="true"><span class="netz-line netz-line-besitz"></span> gehört <span class="netz-line netz-line-standort"></span> steht bei <span class="netz-line netz-line-teil"></span> Teilprojekt <span class="netz-line"></span> verbunden</p>
     <button type="button" class="btn btn-ghost netz-reset" id="netz-reset">Alles zeigen</button>
     {% assign has_map_page = '/map/' | page_exists %}{% if has_map_page %}<a class="btn btn-ghost netz-reset" href="{{ '/map/' | relative_url }}">🗺️ Auf der Karte</a>{% endif %}
+    <a class="btn btn-ghost netz-reset" id="netz-verbund" href="?verbund=1"{% unless site.federation %} hidden{% endunless %} data-i18n="pages.network.federation_on">{{ "pages.network.federation_on" | t }}</a>
+    <form class="netz-instanz" id="netz-instanz-form">
+      <label><span class="visually-hidden" data-i18n="pages.network.federation_add_label">{{ "pages.network.federation_add_label" | t }}</span><input type="url" placeholder="https://…" required autocomplete="off"></label>
+      <button type="submit" class="btn btn-ghost netz-reset" data-i18n="pages.network.federation_add">{{ "pages.network.federation_add" | t }}</button>
+    </form>
   </div>
+  <p class="muted small" id="netz-verbund-info" hidden></p>
   <div class="netz-stage">
     <canvas id="netz-canvas" aria-label="Netzwerk aller Verbindungen – die Liste rechts ist die zugängliche Variante" role="img"></canvas>
     <aside class="netz-panel" id="netz-panel" aria-live="polite">

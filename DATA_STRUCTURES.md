@@ -217,8 +217,27 @@ Suchindex (`search_index` → `/search/index.json`) und auf die Volltextsuche (`
 ```
  /meta_graph.json ──▶ graphs[]: /network/graph.json  (nodes: projekt, termin, beitrag, person, …)
                   ├─▶ search_index: /search/index.json
-                  └─▶ fulltext_search: /pagefind/
+                  ├─▶ fulltext_search: /pagefind/
+                  └─▶ federation[]: https://35services.ifsmb.de  ──▶ deren /meta_graph.json …
 ```
+
+**Föderation:** Mit „🌐 Verbundene Instanzen einbeziehen“ (`?verbund=1`) lädt `/network/` die Graphen aller Instanzen aus
+`federation` (und per „➕ Instanz hinzufügen“ eingetragene) und führt sie zusammen:
+
+```
+ ifsmb.de/network/graph.json            35services.ifsmb.de/network/graph.json
+ ┌───────────────────────────────┐      ┌────────────────────────────────────────┐
+ │ id  https://ifsmb.de/team/falko│      │ id  https://35services.ifsmb.de/team/fa…│
+ │ uuid 12917a5c…   type person   │      │ uuid 12917a5c…   type person            │
+ └───────────────┬───────────────┘      └────────────────────┬───────────────────┘
+                 └────── gleiche uuid + gleicher Typ ─────────┘
+                                   ▼
+             ein Knoten: id = eigene Adresse, aliases = [fremde Adresse],
+             instances = [ifsmb.de, 35services.ifsmb.de], Verbindungen beider Seiten
+```
+
+Gleiche `id` ist ebenfalls derselbe Knoten (z. B. `partner:<Name>`); alles andere kommt mit `instance` (blauer Rand) dazu.
+Die Suche hängt die Pagefind-Indizes der Instanzen an (`mergeIndex`).
 
 ```
  Jekyll-Build                          Browser
