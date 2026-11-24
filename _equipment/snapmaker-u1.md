@@ -1,5 +1,5 @@
 ---
-title: Snapmaker U1 mit Einhausung
+title: Snapmaker U1 mit Einhausung von 35services
 category: 3D-Drucker (FDM, Mehrfarbe, Werkzeugwechsler)
 summary: Unser 4-Kopf-4-Farb-4-Material-Drucker an der KTG – komplett über Spenden finanziert.
 owner_partner: 35 services e. V.
