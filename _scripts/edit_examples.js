@@ -25,7 +25,9 @@ function plainPages(dir) {
 
 const files = [];
 Object.keys(FOLDERS).forEach((folder) => {
-  fs.readdirSync(path.join(ROOT, folder)).filter((f) => /\.(md|markdown|html)$/.test(f)).sort()
+  const dir = path.join(ROOT, folder);
+  if (!fs.existsSync(dir)) return;
+  fs.readdirSync(dir).filter((f) => /\.(md|markdown|html)$/.test(f)).sort()
     .forEach((file) => files.push([folder + "/" + file, FOLDERS[folder]]));
 });
 plainPages("").sort().forEach((x) => files.push(x));

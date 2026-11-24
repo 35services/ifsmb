@@ -1,3 +1,43 @@
 # logo: Pfad zum Logo, z. B. /assets/images/partner/name.png — leer lassen, wenn noch kein Logo vorhanden ist
 # logo_dark: true, wenn das Logo helle Elemente hat und einen dunklen Hintergrund braucht
+- name: 35 services e. V.
+  url: https://35services.de/
+  logo: /assets/images/partner/35services.png
+  logo_dark: true
+  page: /partners/35services/
+  description: 35 services e. V.
 
+- name: Kurt-Tucholsky-Grundschule
+  url: https://kurt-tucholsky-grundschule.de/
+  logo: /assets/images/partner/kurt-tucholsky-grundschule.png
+  description: Musikalische Grundschule in Berlin-Moabit.
+
+- name: Jugend hackt
+  url: https://jugendhackt.org/
+  logo: /assets/images/partner/jugendhackt.svg
+  page: /partners/jugend-hackt/
+  description: Jugend hackt.
+
+- name: Taschenstation (ReUseMe)
+  url: https://taschenstation.de/
+  logo: /assets/images/partner/taschenstation.svg
+  page: /partners/taschenstation/
+  description: Open-Source-Taschen-Tausch-Stationen aus dem 3D-Drucker.
+
+- name: Verbund Offener Werkstätten
+  url: https://offene-werkstaetten.org/
+  logo: /assets/images/partner/verbund-offene-werkstaetten.png
+  page: /partners/offene-werkstaetten/
+  description: Netzwerk offener Werkstätten.
+
+- name: RFFLabs
+  url: https://www.rfflabs.fr/
+  logo: /assets/images/partner/rfflabs.svg
+  page: /partners/rfflabs/
+  description: Le réseau français des fablabs, espaces du faire et tiers-lieux de fabrication libre.
+
+- name: Zazza – Moabit & Pajas Kaffee
+  url: https://zazza.org/
+  logo: /assets/images/partner/zazza-moabit-pajas-kaffee.jpg
+  page: /partners/zazza/
+  description: Café Zazza in Moabit.
