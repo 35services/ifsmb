@@ -48,7 +48,7 @@ uuid: 81e1f490-46a0-4e07-9cc1-d7adaef79c9e
 ## 🚀 Einfach anfangen: der IfsMB-Weg
 {: #bootstrapping}
 
-Unser Name ist Programm: *spontane* Makespace Buildung heißt, mit dem anzufangen, was da ist – ohne monatelang auf einen Förderbescheid zu warten. Die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) ist komplett so entstanden, bis hin zum [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}), einem 4-Farb-Drucker. Was dabei funktioniert hat:
+Unser Name ist Programm: *spontane* Makespace Buildung heißt, mit dem anzufangen, was da ist – ohne monatelang auf einen Förderbescheid zu warten. Die [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) ist komplett so entstanden, bis hin zum [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/), einem 4-Farb-Drucker. Was dabei funktioniert hat:
 
 1. **Mit einem Gerät und einer AG starten.** Ein Drucker, ein paar alte Laptops, eine Stunde pro Woche. Ehrenamtliche AG-Leitung kostet die Schule nichts.
 2. **Spenden über einen Verein sammeln.** Schulen und Privatpersonen können schlecht Spendenquittungen ausstellen – ein gemeinnütziger Verein schon. Bei uns läuft das über [35services e.V.](https://35services.de/ag/) und eine [Spendenseite bei betterplace]({{ '/spenden/' | relative_url }}). Auch der Förderverein der Schule ist ein guter Partner.

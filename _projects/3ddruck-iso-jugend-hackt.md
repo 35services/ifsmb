@@ -38,7 +38,7 @@ Der Quelltext liegt offen auf GitHub: **[35services/3ddruck-jugend-hackt-iso](ht
 ## Was auf dem Stick ist
 
 - **CAD:** [OpenSCAD](https://openscad.org/) und [FreeCAD](https://www.freecad.org/)
-- **Slicer:** PrusaSlicer, UltiMaker Cura und Snapmaker Orca – passend zu unserem [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }})
+- **Slicer:** PrusaSlicer, UltiMaker Cura und Snapmaker Orca – passend zu unserem [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/)
 - **Plotten:** Inkscape mit der Erweiterung für den [AxiDraw]({{ '/equipment/axidraw-v3/' | relative_url }})
 - Ein **Willkommenstext** auf dem Schreibtisch, damit die Kinder sofort loslegen können
 - **Persistenz:** Was die Kinder speichern, bleibt auf dem Stick – auch nach dem Neustart

@@ -296,7 +296,7 @@
     var t = TYPES[n.type];
     var html = '<p class="meta"><span class="netz-dot" style="background:' + t.color + '"></span> ' + t.one +
       (n.date ? ' · ' + n.date.split('-').reverse().join('.') : '') + (n.personal ? ' · <span class="link-private">persönlich</span>' : '') +
-      (n.instances ? ' · 🌐 ' + esc(n.instances.join(' + ')) : '') + '</p>' +
+      (n.instances ? ' · 🌐 ' + esc(n.instances.join(' + ')) : (n.instance ? ' · 🌐 ' + esc(n.instance) : '')) + '</p>' +
       '<h2>' + esc(n.title) + '</h2>' +
       (n.url ? '<p><a class="btn" href="' + esc(n.url) + '"' + (n.extern ? ' target="_blank" rel="noopener"' : '') + '>Seite öffnen →</a></p>' : '');
     html += groupedList(n.links, function (m) { return n.kinds[m.id]; });
