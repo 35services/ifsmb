@@ -36,7 +36,7 @@ module TerminIcs
       end
 
       Array(site.data["partners"]).each do |pt|
-        next unless pt["page"]
+        next unless pt.is_a?(Hash) && pt["page"]
 
         add(site, pt["page"], "res_url" => pt["page"], "partner" => pt["name"], "content" =>
           "{%- assign res = site.pages | where: \"url\", page.res_url | first -%}\n" \

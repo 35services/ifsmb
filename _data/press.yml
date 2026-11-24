@@ -3,7 +3,7 @@ short_profile: >-
   35services e.V.
 contact_name: "Vorstand 35services e.V."
 # E-Mail base64-kodiert eintragen: printf 'vorstand@35services.de' | base64
-contact_email_b64: "dm9yc3RhbmRAMzVzZXJ2aWNlcy5kZQ==
+contact_email_b64: "dm9yc3RhbmRAMzVzZXJ2aWNlcy5kZQ=="
 contact_email_display: "vorstand [at] 35services [punkt] de"
 contact_phone: ""
 # Telefon ebenfalls base64-kodiert (wird per JavaScript angezeigt): printf '0151 2345678' | base64
