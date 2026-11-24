@@ -18,3 +18,9 @@ uuid: 57697294-112c-4215-93fb-01815b55d5c8
 - [ ] static jekyll variante von verbund Offene Werkstätten punkt de mit Claudia oder nullnullsieben
 - [ ] Übergabe von Axel - was macht Frankreich und Spanien und Vulca
 - [ ] groupware für @offene-werkstaetten.org Adressen.
+- [ ] IT-Treffen onboarding mit Anjusch
+
+
+- [ ] Kostenerstattung claude 20Euro/Monat
+- [ ] Kostenerstattung Technik JHV
+- [ ]
