@@ -74,7 +74,7 @@
     if (kind === 'teil') { e.source = b; e.target = a; } // parent -> child
     seen[k] = e; edges.push(e);
   }
-  // reference fields hold node ids (graph.json version 2: /team/falko-richter/, partner:<name> …)
+  // reference fields hold node ids (graph.json: /team/falko-richter/, partner:<name> …)
   function ref(u) { return byId[norm(u)]; }
   nodes.forEach(function (n) {
     list(n.linked).forEach(function (u) { link(n, byId[norm(u)]); });

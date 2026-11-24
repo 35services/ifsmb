@@ -6,14 +6,14 @@ permalink: /network/graph.json
   The network as one file: one node per resource with its raw link fields (part_of, related, team, partners,
   owner_*, event_tag/tags, linked …). assets/js/netzwerk.js loads it and derives the edges (same rules as
   _includes/verbindungen.html); other sites can read it too (federation). Node ids are site-relative URLs –
-  resolve them against "site". Version 2: reference fields (team, author, owner_team, projects, part_of, related,
+  resolve them against "site". Reference fields (team, author, owner_team, projects, part_of, related,
   partners, owner_partner, location_partner) hold node ids too (/team/falko-richter/, not falko-richter) –
   resolved by _includes/graph-refs.html; Markdown keeps the short slugs and names. "uuid" is the page's stable
   id from its front matter (survives renames and new URLs); partners from _data/ have none. Todos are not part of the network (they stay local and are too abstract).
 {%- endcomment -%}
 {
 "format": "ifsmb-network",
-"version": 2,
+"version": 1,
 "site": {{ site.url | append: site.baseurl | jsonify }},
 "title": {{ site.title | jsonify }},
 "generated": {{ site.time | date_to_xmlschema | jsonify }},
