@@ -21,6 +21,8 @@ uuid: 57697294-112c-4215-93fb-01815b55d5c8
 - [ ] IT-Treffen onboarding mit Anjusch
 
 
-- [ ] Kostenerstattung claude 20Euro/Monat
-- [ ] Kostenerstattung Technik JHV
-- [ ]
+- [ ] Kostenerstattung claude 20Euro/Monat?
+- [ ] Kostenerstattung Technik JHV?
+
+
+> Es wird vielleicht so etwas wie einen "Beirat" geben. Da waren 2 Experten vor Ort. Die werden dann mir und dem Vorstand beistehen und bei technischen Fragen beraten (können). Wir hatten jemanden der professionell Dev-Ops macht und jemand der seit über 10 Jahren eine große Werkstatt IT-technisch betreut.
