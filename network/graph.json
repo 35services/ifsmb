@@ -15,29 +15,38 @@ permalink: /network/graph.json
 "title": {{ site.title | jsonify }},
 "generated": {{ site.time | date_to_xmlschema | jsonify }},
 "nodes": [
+{%- assign has_node = false -%}
 {%- for x in site.projects -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"projekt","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"event_tag":{{ x.event_tag | jsonify }},"part_of":{{ x.part_of | jsonify }},"related":{{ x.related | jsonify }},"team":{{ x.team | jsonify }},"partners":{{ x.partners | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"projekt","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"event_tag":{{ x.event_tag | jsonify }},"part_of":{{ x.part_of | jsonify }},"related":{{ x.related | jsonify }},"team":{{ x.team | jsonify }},"partners":{{ x.partners | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for x in site.events -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"termin","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"projects":{{ x.projects | jsonify }},"team":{{ x.team | jsonify }},"partners":{{ x.partners | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"termin","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.start | date: "%Y-%m-%d" | jsonify }},"projects":{{ x.projects | jsonify }},"team":{{ x.team | jsonify }},"partners":{{ x.partners | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for x in site.posts -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"beitrag","title":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"author":{{ x.author | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"beitrag","title":{{ x.title | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"author":{{ x.author | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for x in site.team -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"person","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"person","title":{{ x.title | jsonify }},"slug":{{ x.slug | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for x in site.equipment -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"ausstattung","title":{{ x.title | jsonify }},"owner_partner":{{ x.owner_partner | jsonify }},"location_partner":{{ x.location_partner | jsonify }},"owner_team":{{ x.owner_team | jsonify }},"owner_name":{{ x.owner_name | jsonify }},"location":{{ x.location | jsonify }},"status":{{ x.status | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"ausstattung","title":{{ x.title | jsonify }},"owner_partner":{{ x.owner_partner | jsonify }},"location_partner":{{ x.location_partner | jsonify }},"owner_team":{{ x.owner_team | jsonify }},"owner_name":{{ x.owner_name | jsonify }},"location":{{ x.location | jsonify }},"status":{{ x.status | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for x in site.challenges -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"herausforderung","title":{{ x.title | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.since | date: "%Y-%m-%d" | jsonify }},"projects":{{ x.projects | jsonify }},"team":{{ x.team | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"herausforderung","title":{{ x.title | jsonify }},"status":{{ x.status | jsonify }},"personal":{{ x.personal | default: false | jsonify }},"date":{{ x.since | date: "%Y-%m-%d" | jsonify }},"projects":{{ x.projects | jsonify }},"team":{{ x.team | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for x in site.press -%}
-{"id":{{ x.url | relative_url | jsonify }},"type":"presse","title":{{ x.title | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}},
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{{ x.url | relative_url | jsonify }},"type":"presse","title":{{ x.title | jsonify }},"date":{{ x.date | date: "%Y-%m-%d" | jsonify }},"tags":{{ x.tags | jsonify }},"linked":{{ x.linked | jsonify }}}
 {%- endfor -%}
 {%- for pt in site.data.partners -%}
-{"id":{% if pt.page %}{{ pt.page | relative_url | jsonify }}{% else %}{{ "partner:" | append: pt.name | jsonify }}{% endif %},"type":"partner","title":{{ pt.name | jsonify }},"url":{% if pt.page %}{{ pt.page | relative_url | jsonify }}{% else %}{{ pt.url | jsonify }}{% endif %},"extern":{% if pt.page %}false{% else %}true{% endif %}}{% unless forloop.last %},{% endunless %}
+{%- if has_node %},{% endif %}{% assign has_node = true -%}
+{"id":{% if pt.page %}{{ pt.page | relative_url | jsonify }}{% else %}{{ "partner:" | append: pt.name | jsonify }}{% endif %},"type":"partner","title":{{ pt.name | jsonify }},"url":{% if pt.page %}{{ pt.page | relative_url | jsonify }}{% else %}{{ pt.url | jsonify }}{% endif %},"extern":{% if pt.page %}false{% else %}true{% endif %}}
 {%- endfor -%}
 ]
 }

@@ -49,8 +49,8 @@ permalink: /network/
   </details>
 </section>
 
-<p class="muted netz-data-file" data-i18n="pages.network.data_file">{{ "pages.network.data_file" | t_html: '<a href="/network/graph.json"><code>/network/graph.json</code></a>' }}</p>
-<p class="muted netz-data-file" data-i18n="pages.network.meta_file">{{ "pages.network.meta_file" | t_html: '<a href="/meta_graph.json"><code>/meta_graph.json</code></a>' }}</p>
+<p class="muted netz-data-file" data-i18n="pages.network.data_file">Das ganze Netzwerk als eine Datei: <a href="{{ '/network/graph.json' | relative_url }}"><code>/network/graph.json</code></a> – alle Knoten mit ihren Verbindungsfeldern, für andere Makespaces und Werkzeuge (Föderation).</p>
+<p class="muted netz-data-file" data-i18n="pages.network.meta_file">Einstieg für andere Makespaces: <a href="{{ '/meta_graph.json' | relative_url }}"><code>/meta_graph.json</code></a> verweist auf alle Netzwerk-Dateien und den Suchindex dieser Seite.</p>
 
 <noscript><p>Für das Netzwerk braucht es JavaScript. Alle Verbindungen stehen auch unten auf jeder Seite.</p></noscript>
 
