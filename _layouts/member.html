@@ -33,8 +33,11 @@ layout: default
     <h2 id="badge" data-i18n="team.badge">{{ "team.badge" | t }}</h2>
     <div class="member-badge">
       {% include badge-3d.html b=member_badge %}
-      {%- capture badge_link %}<a href="{{ 'https://ifsmb.de/press/#badge' | relative_url }}" data-i18n="team.badge_more">{{ "team.badge_more" | t }}</a>{% endcapture %}
+      {%- assign has_press_page = '/press/' | page_exists -%}
+      {%- if has_press_page %}
+      {%- capture badge_link %}<a href="{{ '/press/#badge' | relative_url }}" data-i18n="team.badge_more">{{ "team.badge_more" | t }}</a>{% endcapture %}
       <p class="muted small" data-i18n="team.badge_help">{{ "team.badge_help" | t_html: badge_link }}</p>
+      {%- endif %}
     </div>
     {% endif %}
     {% assign member_all = site.projects | where_exp: "p", "p.team contains page.slug" %}

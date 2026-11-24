@@ -1,8 +1,9 @@
 {%- assign st = include.tags -%}
 {%- if st and st.size > 0 -%}
+{%- assign has_tags_page = '/tags/' | page_exists -%}
 <ul class="tag-list">
   {%- for t in st %}
-  <li><a href="{{ 'https://ifsmb.de/tags/' | relative_url }}#{{ t }}">#{{ site.data.tags[t] | default: t }}</a></li>
+  <li>{% if has_tags_page %}<a href="{{ '/tags/' | relative_url }}#{{ t }}">#{{ site.data.tags[t] | default: t }}</a>{% else %}<span>#{{ site.data.tags[t] | default: t }}</span>{% endif %}</li>
   {%- endfor %}
 </ul>
 {%- endif -%}

@@ -144,6 +144,6 @@ layout: default
     {% endif %}
     {% include verbindungen.html %}
     {% if page.tags and page.tags.size > 0 %}{% include verknuepft.html tags=page.tags %}{% endif %}
-    {% if page.personal %}<a href="{{ 'https://ifsmb.de/projects/personal/' | relative_url }}" class="back-link" data-i18n="project.back_personal">{{ "project.back_personal" | t }}</a>{% else %}<a href="{{ 'https://ifsmb.de/projects/' | relative_url }}" class="back-link" data-i18n="project.back">{{ "project.back" | t }}</a>{% endif %}
+    {% assign has_personal_page = '/projects/personal/' | page_exists %}{% assign has_projects_page = '/projects/' | page_exists %}{% if page.personal and has_personal_page %}<a href="{{ '/projects/personal/' | relative_url }}" class="back-link" data-i18n="project.back_personal">{{ "project.back_personal" | t }}</a>{% elsif has_projects_page %}<a href="{{ '/projects/' | relative_url }}" class="back-link" data-i18n="project.back">{{ "project.back" | t }}</a>{% endif %}
   </article>
 </main>

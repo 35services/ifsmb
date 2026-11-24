@@ -148,13 +148,17 @@
   </div>
   {% endif %}
 
+  {%- comment -%}Optional pages: an instance (e.g. a federated copy) may not have them – link only where they exist.{%- endcomment -%}
+  {%- assign has_donate = '/spenden/' | page_exists -%}
+  {%- assign has_archive = '/projects/archive/' | page_exists -%}
+  {%- assign has_offer = '/angebot/' | page_exists %}
   <footer class="site-footer">
     <div class="container footer-inner">
       <p><strong>{{ site.title }}</strong><br><span data-i18n="site.description">{{ site.description }}</span></p>
       <p>
-        <a href="{{ 'https://ifsmb.de/spenden/' | relative_url }}" data-i18n="footer.donate">{{ "footer.donate" | t }}</a> ·
+        {% if has_donate %}<a href="{{ '/spenden/' | relative_url }}" data-i18n="footer.donate">{{ "footer.donate" | t }}</a> ·{% endif %}
         <a href="{{ '/impressum/' | relative_url }}" data-i18n="footer.imprint">{{ "footer.imprint" | t }}</a> ·
-        <a href="{{ 'https://ifsmb.de/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·
+        {% if has_archive %}<a href="{{ '/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·{% endif %}
         <a href="https://github.com/{{ site.repository }}" target="_blank" rel="noopener" data-i18n="footer.source">{{ "footer.source" | t }}</a>
       </p>
       {%- comment -%}Project documentation for contributors – rendered by GitHub (the files are excluded from the site).{%- endcomment -%}
@@ -165,7 +169,7 @@
         <a href="{{ doc_base }}DATA_STRUCTURES.md" target="_blank" rel="noopener" data-i18n="footer.data_structures">{{ "footer.data_structures" | t }}</a> ·
         <a href="{{ doc_base }}DEPENDENCIES.md" target="_blank" rel="noopener" data-i18n="footer.dependencies">{{ "footer.dependencies" | t }}</a>
       </p>
-      <p class="footer-note"><span data-i18n="footer.disclaimer">{{ "footer.disclaimer" | t }}</span> <a href="{{ 'https://ifsmb.de/angebot/' | relative_url }}#warum-ein-institut" data-i18n="footer.why_institute">{{ "footer.why_institute" | t }}</a></p>
+      <p class="footer-note"><span data-i18n="footer.disclaimer">{{ "footer.disclaimer" | t }}</span>{% if has_offer %} <a href="{{ '/angebot/' | relative_url }}#warum-ein-institut" data-i18n="footer.why_institute">{{ "footer.why_institute" | t }}</a>{% endif %}</p>
       <p class="footer-note" data-i18n="footer.no_cookies">{{ "footer.no_cookies" | t }}</p>
       {%- comment -%}UI language switch (assets/js/i18n.js shows it; without JS the page stays German){%- endcomment %}
       <p class="language-switch" data-language-switch hidden>
@@ -192,8 +196,8 @@
     </div>
   </footer>
 
-  {% unless page.url == '/spenden/' %}
-  <a href="{{ 'https://ifsmb.de/spenden/' | relative_url }}" class="badge-donate" aria-label="{{ 'footer.donate' | t }}" data-i18n-attr="aria-label:footer.donate">
+  {% if has_donate and page.url != '/spenden/' %}
+  <a href="{{ '/spenden/' | relative_url }}" class="badge-donate" aria-label="{{ 'footer.donate' | t }}" data-i18n-attr="aria-label:footer.donate">
     <span class="badge-donate-text">❤️<br><span data-i18n="footer.donate">{{ "footer.donate" | t }}</span></span>
     <span class="badge-donate-icon" style="--i: 0" aria-hidden="true">🖨️</span>
     <span class="badge-donate-icon" style="--i: 1" aria-hidden="true">📷</span>
@@ -202,7 +206,7 @@
     <span class="badge-donate-icon" style="--i: 4" aria-hidden="true">🖥️</span>
     <span class="badge-donate-icon" style="--i: 5" aria-hidden="true">🖱️</span>
   </a>
-  {% endunless %}
+  {% endif %}
 
   {% include formular-config.html %}
   <script src="{{ '/assets/js/gelesen.js' | relative_url }}" defer></script>

@@ -9,7 +9,9 @@
 {%- assign owners = "" | split: "" -%}
 {%- for n in o_partners -%}
   {%- assign op = site.data.partners | where: "name", n | first -%}
-  {%- if op and include.plain == nil -%}{%- capture o %}<a href="{{ op.page | default: 'https://ifsmb.de/partners/' | relative_url }}{% unless op.page %}#{{ op.name | slugify }}{% endunless %}">{{ op.name }}</a>{% endcapture -%}{%- else -%}{%- assign o = n -%}{%- endif -%}
+  {%- assign op_href = "" -%}
+  {%- if op -%}{%- if op.page -%}{%- assign op_href = op.page | relative_url -%}{%- else -%}{%- assign has_partners_page = '/partners/' | page_exists -%}{%- if has_partners_page -%}{%- assign op_slug = op.name | slugify -%}{%- assign op_href = '/partners/' | relative_url | append: '#' | append: op_slug -%}{%- endif -%}{%- endif -%}{%- endif -%}
+  {%- if op_href != "" and include.plain == nil -%}{%- capture o %}<a href="{{ op_href }}">{{ op.name }}</a>{% endcapture -%}{%- elsif op -%}{%- assign o = op.name -%}{%- else -%}{%- assign o = n -%}{%- endif -%}
   {%- assign owners = owners | push: o -%}
 {%- endfor -%}
 {%- assign team_in_list = false -%}

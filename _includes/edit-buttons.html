@@ -62,7 +62,7 @@
         + ' <a data-open-work-all>' + esc(t('open_work.all_open_prs')) + '</a></p>';
       // set via the DOM: written into the HTML, the link check (_scripts/check_site.rb) would read it as a link on every page
       box.querySelector('[data-edit-open]').href = '#bearbeiten';
-      box.querySelector('[data-open-work-all]').href = {{ 'https://ifsmb.de/mitmachen/offen/' | relative_url | jsonify }};
+      {% assign has_open_work_page = '/mitmachen/offen/' | page_exists %}{% if has_open_work_page %}box.querySelector('[data-open-work-all]').href = {{ '/mitmachen/offen/' | relative_url | jsonify }};{% else %}box.querySelector('[data-open-work-all]').remove();{% endif %}
       var main = document.querySelector('main');
       if (main) main.insertBefore(box, main.firstChild);
       box.addEventListener('click', function (e) {
@@ -80,7 +80,9 @@
   Overview of open pull requests and issues (/mitmachen/offen/, assets/js/open-work.js) – the button only shows up
   for people connected with GitHub; it is in the HTML of every page so the page is reachable for the link check.
 {%- endcomment %}
-<a class="btn btn-ghost btn-small" data-open-work-link href="{{ 'https://ifsmb.de/mitmachen/offen/' | relative_url }}" title="{{ 'open_work.button_title' | t }}" data-i18n-attr="title:open_work.button_title" style="display: none" data-i18n="open_work.button">{{ "open_work.button" | t }}</a>
+{%- assign has_open_work_page = '/mitmachen/offen/' | page_exists -%}
+{%- if has_open_work_page %}
+<a class="btn btn-ghost btn-small" data-open-work-link href="{{ '/mitmachen/offen/' | relative_url }}" title="{{ 'open_work.button_title' | t }}" data-i18n-attr="title:open_work.button_title" style="display: none" data-i18n="open_work.button">{{ "open_work.button" | t }}</a>
 <script>
   (function () {
     var connected = false;
@@ -89,3 +91,4 @@
     if (connected && a && a.hasAttribute('data-open-work-link')) a.style.display = "";
   })();
 </script>
+{%- endif %}

@@ -591,7 +591,9 @@ var NeuFormular = (function () {
     if (!url) return [];
     var path = url.replace(/^https?:\/\/[^/]+/, "").replace(/index\.html$/, ""), bare = path.replace(/\/$/, "");
     var forms = [path, bare, bare + "/", bare + "/index.html"];
-    var hosts = ["https://ifsmb.de"].concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
+    // this site's own address (site.url from _config.yml via _includes/formular-config.html) and the current origin
+    var site = typeof document !== "undefined" && F.cfg ? F.cfg().site : null;
+    var hosts = (site ? [site] : []).concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
     return forms.concat.apply(forms, hosts.map(function (h) { return forms.map(function (x) { return h + x; }); }));
   }
 
