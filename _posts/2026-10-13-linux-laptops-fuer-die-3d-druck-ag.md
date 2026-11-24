@@ -18,6 +18,6 @@ Neben **Tinkercad** arbeiten wir dieses Jahr auch mit **[Onshape](https://www.on
 
 ## Wie ihr helfen könnt
 
-- **Spenden** für USB-Sticks und neue Netzteile für die Laptops – und für den Deckel unseres [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}), den wir endlich bekommen haben: [zur Spendenseite]({{ '/spenden/' | relative_url }})
+- **Spenden** für USB-Sticks und neue Netzteile für die Laptops – und für den Deckel unseres [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/), den wir endlich bekommen haben: [zur Spendenseite]({{ '/spenden/' | relative_url }})
 - **Alte kabelgebundene PC-Mäuse** – Trackpads sind für CAD und beim Drucken nicht sehr praktisch.
 - **Weitere Laptops:** Wir haben uns in Absprache mit der Schulleitung bei [pc-spende.de]({{ '/news/2026/09/24/pc-spende-de-hardware-fuer-schulen/' | relative_url }}) um weitere ausrangierte Hardware beworben.

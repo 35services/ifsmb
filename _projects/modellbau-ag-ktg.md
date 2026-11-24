@@ -18,7 +18,7 @@ linked:
   - /projects/3d-druck-ag-ktg/
   - /projects/tarmo5/
   - /equipment/snapmaker-u1-falko/
-  - /equipment/snapmaker-u1/
+  - https://35services.ifsmb.de/equipment/snapmaker-u1/
   - /equipment/lulzbot-mini/
 team:
   - falko-richter
@@ -28,7 +28,7 @@ uuid: 8d61c539-4a12-4d3b-9b7a-63e1f2049c81
 
 Ergänzend zur ehrenamtlichen [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) startet [Falko]({{ '/team/falko-richter/' | relative_url }}) als privates Projekt eine **Modellbau-AG an der [Kurt-Tucholsky-Grundschule]({{ '/partners/' | relative_url }}#kurt-tucholsky-grundschule) (KTG)**: Für **40 Euro im Monat pro Kind** (für Filament, Elektronik, Motoren, Kleinteile und Druckzeit) bauen die Kinder Schritt für Schritt ihre eigenen **3D-gedruckten ferngesteuerten Fahrzeuge**. Es gibt 16 Euro Rabatt, wenn ihr selber einen Drucker oder Zugang zu einem Drucker habt. Ihr wollt dann ja auch selber drucken.
 
-Gedruckt wird unter anderem auf dem [Snapmaker U1 an der KTG]({{ '/equipment/snapmaker-u1/' | relative_url }}) und im Keller auf [Falkos privatem Snapmaker U1]({{ '/equipment/snapmaker-u1-falko/' | relative_url }}), sodass auch größere Bausätze, mehrfarbige Karosserieteile und flexible Reifen aus TPU oder NinjaFlex (zum Beispiel auf dem [LulzBot Mini]({{ '/equipment/lulzbot-mini/' | relative_url }})) zuverlässig entstehen.
+Gedruckt wird unter anderem auf dem [Snapmaker U1 an der KTG](https://35services.ifsmb.de/equipment/snapmaker-u1/) und im Keller auf [Falkos privatem Snapmaker U1]({{ '/equipment/snapmaker-u1-falko/' | relative_url }}), sodass auch größere Bausätze, mehrfarbige Karosserieteile und flexible Reifen aus TPU oder NinjaFlex (zum Beispiel auf dem [LulzBot Mini]({{ '/equipment/lulzbot-mini/' | relative_url }})) zuverlässig entstehen.
 
 ![Blick in den Bauraum des Snapmaker U1 mit vier Druckköpfen: Auf der goldenen PEI-Druckplatte entstehen rotbraune PLA-Bauteile für ein ferngesteuertes Fahrzeug (Rahmen, Dach, Felgen und Kühlergrill) mit Baum-Stützstrukturen](/assets/images/projekte/modellbau-ag-ktg/01.jpg)
 {: .gallery}

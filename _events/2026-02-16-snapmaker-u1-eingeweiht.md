@@ -10,7 +10,7 @@ team: [falko-richter, gregor-dill]
 uuid: 394024b3-e1e2-45eb-a214-57a928be7e7a
 ---
 
-Am 16. Februar 2026 wurde unser [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}) geliefert und eingeweiht – der 4-Kopf-4-Farb-4-Material-Drucker der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}), komplett über Spenden finanziert.
+Am 16. Februar 2026 wurde unser [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/) geliefert und eingeweiht – der 4-Kopf-4-Farb-4-Material-Drucker der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}), komplett über Spenden finanziert.
 
 - Der Drucker wurde **mit dem Lastenrad** zur Schule gebracht.
 - **Aufbau und Einrichtung** haben die Schüler*innen der AG übernommen.

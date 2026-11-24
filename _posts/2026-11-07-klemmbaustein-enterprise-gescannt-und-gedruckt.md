@@ -11,6 +11,6 @@ Für mein Projekt [3D-Scanner evaluieren]({{ '/projects/3d-scanner-evaluieren/' 
 
 <video class="post-video" controls preload="none" playsinline poster="/assets/video/projekte/3d-scanner-evaluieren/01-scan.jpg" src="/assets/video/projekte/3d-scanner-evaluieren/01-scan.mp4"></video>
 
-Das Ergebnis habe ich anschließend **einfarbig wieder ausgedruckt** – in orangefarbenem PLA auf dem [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}), Druckzeit 7 Stunden 40 Minuten:
+Das Ergebnis habe ich anschließend **einfarbig wieder ausgedruckt** – in orangefarbenem PLA auf dem [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/), Druckzeit 7 Stunden 40 Minuten:
 
 <video class="post-video" controls preload="none" playsinline poster="/assets/video/projekte/3d-scanner-evaluieren/02-druck.jpg" src="/assets/video/projekte/3d-scanner-evaluieren/02-druck.mp4"></video>

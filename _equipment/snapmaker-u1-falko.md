@@ -12,7 +12,7 @@ gallery:
     thumb: /assets/images/ausstattung/snapmaker-u1-falko/02-600w.jpg
     alt: "Erster mehrfarbiger Testdruck im Bauraum des Snapmaker U1: der rot-gelb-schwarze Drache entsteht Schicht für Schicht auf der strukturierten PEI-Druckplatte"
 tags: [u1, 3d-drucker, mehrfarbdruck]
-linked: [/equipment/snapmaker-u1/]
+linked: [https://35services.ifsmb.de/equipment/snapmaker-u1/]
 updates:
   - date: 2026-11-17
     text: |
@@ -26,7 +26,7 @@ updates:
 uuid: d52eb86e-cca5-42bb-b594-f1ea25a9f680
 ---
 
-Falko hat sich **privat einen Snapmaker U1 mit Deckel** zugelegt – den gleichen Drucker, der auch in der [3D-Druck AG an der KTG]({{ '/equipment/snapmaker-u1/' | relative_url }}) steht. Damit kann er im Keller endlich **zuverlässig drucken**. Vielleicht unterstützt er damit auch AGs, die er kommerziell anbietet – wie die [Modellbau-AG an der KTG]({{ '/projects/modellbau-ag-ktg/' | relative_url }}). Inzwischen ist er angekommen, steht im Keller und druckt schon fleißig – nach dem mehrfarbigen Test-Drachen läuft darauf bereits der [RC Tractor von ProfessorBoots]({{ '/projects/rc-tractor-professorboots/' | relative_url }}).
+Falko hat sich **privat einen Snapmaker U1 mit Deckel** zugelegt – den gleichen Drucker, der auch in der [3D-Druck AG an der KTG](https://35services.ifsmb.de/equipment/snapmaker-u1/) steht. Damit kann er im Keller endlich **zuverlässig drucken**. Vielleicht unterstützt er damit auch AGs, die er kommerziell anbietet – wie die [Modellbau-AG an der KTG]({{ '/projects/modellbau-ag-ktg/' | relative_url }}). Inzwischen ist er angekommen, steht im Keller und druckt schon fleißig – nach dem mehrfarbigen Test-Drachen läuft darauf bereits der [RC Tractor von ProfessorBoots]({{ '/projects/rc-tractor-professorboots/' | relative_url }}).
 
 ### Die U1-Community wächst
 

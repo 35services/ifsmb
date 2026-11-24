@@ -7,7 +7,7 @@ photo_icon: /assets/images/team/frieder-euteneuer-48w.jpg
 photo_credit: "© Sergej Glanze / FUNKE Foto Services"
 linked:
   - /projects/makespace-tiergarten/
-  - /equipment/snapmaker-u1/
+  - https://35services.ifsmb.de/equipment/snapmaker-u1/
   - /calendar/2026-03-09-schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/
   - /calendar/2027-01-01-eroeffnung-makespace-rosalind-franklin-gymnasium/
   - /calendar/2026-12-04-tag-der-offenen-tuer-gymnasium-tiergarten/
@@ -31,7 +31,7 @@ Bei [Hack the Summer](https://hack-the-summer.de/) ist er als Mentor eingetragen
 
 ## Mit dem Institut
 
-- **März 2026:** Beim [Besuch von Schulstadtrat Benjamin Fritz an der KTG]({{ '/calendar/2026-03-09-schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/' | relative_url }}) war Frieder dabei – zum Netzwerken und um den [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}) zu feiern.
+- **März 2026:** Beim [Besuch von Schulstadtrat Benjamin Fritz an der KTG]({{ '/calendar/2026-03-09-schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/' | relative_url }}) war Frieder dabei – zum Netzwerken und um den [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/) zu feiern.
 - **Januar 2027:** Zur [kleinen feierlichen Eröffnung des Makespace am Rosalind-Franklin-Gymnasium]({{ '/calendar/2027-01-01-eroeffnung-makespace-rosalind-franklin-gymnasium/' | relative_url }}) will Frieder weitere Leute zusammentrommeln.
 
 ## Persönliche Projekte

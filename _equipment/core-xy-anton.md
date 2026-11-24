@@ -17,4 +17,4 @@ Anton aus der Werkstatt braucht diesen **Core-XY-Drucker** nicht mehr – und vo
 
 Vielleicht bauen wir ihn bei 35services **komplett auf** – daraus ist die Projektidee [Core-XY-Drucker von Anton aufbauen]({{ '/projects/core-xy-drucker-aufbauen/' | relative_url }}) entstanden.
 
-**Was ist CoreXY?** Bei einem CoreXY-Drucker bewegen zwei Motoren den Druckkopf gemeinsam über zwei Riemen in X- und Y-Richtung, das Druckbett fährt nur nach unten. Weil der Kopf dadurch sehr leicht bleibt und das Bett nicht hin- und herwackelt, sind solche Drucker schnell und präzise. Viele moderne Drucker – zum Beispiel der [Snapmaker U1]({{ '/equipment/snapmaker-u1/' | relative_url }}) – arbeiten nach diesem Prinzip.
+**Was ist CoreXY?** Bei einem CoreXY-Drucker bewegen zwei Motoren den Druckkopf gemeinsam über zwei Riemen in X- und Y-Richtung, das Druckbett fährt nur nach unten. Weil der Kopf dadurch sehr leicht bleibt und das Bett nicht hin- und herwackelt, sind solche Drucker schnell und präzise. Viele moderne Drucker – zum Beispiel der [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/) – arbeiten nach diesem Prinzip.
