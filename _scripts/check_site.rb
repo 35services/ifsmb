@@ -17,6 +17,7 @@ require "uri"
 require "cgi"
 require "net/http"
 require "yaml"
+require "json"
 
 SITE = File.expand_path("../_site", __dir__)
 # Host of this instance, from _config.yml url (a federated copy has its own; links to other instances are external)
@@ -172,6 +173,21 @@ else
   ok = false
   puts "\n✗ Unbekannte Themes (erlaubt: #{theme_ids.join(', ')} – siehe _data/themes.yml):"
   bad_themes.each { |b| puts "  #{b}" }
+end
+
+# Every generated JSON file must parse (graph.json, search index, meta_graph.json … are read by scripts and other sites)
+bad_json = Dir.glob("**/*.json", base: SITE).reject { |f| f.start_with?("pagefind/") }.filter_map do |f|
+  JSON.parse(File.read(File.join(SITE, f)))
+  nil
+rescue JSON::ParserError => e
+  "/#{f}: #{e.message.lines.first.strip[0, 160]}"
+end
+if bad_json.empty?
+  puts "✓ Alle JSON-Dateien gültig"
+else
+  ok = false
+  puts "\n✗ Ungültige JSON-Dateien:"
+  bad_json.each { |b| puts "  #{b}" }
 end
 
 if CHECK_EXTERNAL
