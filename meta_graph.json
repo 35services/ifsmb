@@ -4,7 +4,8 @@ permalink: /meta_graph.json
 ---
 {%- comment -%}
   Entry point for federation: lists every graph this site exposes and its search index, so another site only
-  needs this one address. URLs here are absolute; ids inside the graphs are site-relative (resolve against "site").
+  needs this one address. URLs here and the node ids inside the graphs are absolute. "federation" lists the
+  instances this site is connected with (_config.yml) – their meta_graph.json is at <instance>/meta_graph.json.
   A site may expose several graphs (e.g. one for team members, one for partners, one for equipment) – this site has
   one graph with everything. "node_types" says which kinds of nodes a graph contains (keep in sync with
   network/graph.json). Todos are not part of any graph: they stay local.
@@ -20,5 +21,6 @@ permalink: /meta_graph.json
  "node_types": ["projekt", "termin", "beitrag", "person", "ausstattung", "herausforderung", "presse", "partner"]}
 ],
 "search_index": {"url": {{ '/search/index.json' | absolute_url | jsonify }}, "page": {{ '/search/' | absolute_url | jsonify }}, "format": "ifsmb-search-index", "version": 1},
-"fulltext_search": {"url": {{ '/pagefind/' | absolute_url | jsonify }}, "format": "pagefind"}
+"fulltext_search": {"url": {{ '/pagefind/' | absolute_url | jsonify }}, "format": "pagefind"},
+"federation": {% if site.federation %}{{ site.federation | jsonify }}{% else %}[]{% endif %}
 }
