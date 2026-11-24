@@ -4,7 +4,7 @@ date: 2026-09-14 08:00:00 +0200
 author: falko-richter
 personal: true
 tags: [mogster-pc-blend, mogster]
-linked: [/equipment/prusa-mk4-mmu/]
+linked: [https://35services.ifsmb.de/equipment/prusa-mk4-mmu/]
 uuid: c686e30d-04cd-4d23-a0e0-a36f29c3765b
 ---
 Erste Drucke für das Teilprojekt [PC-Blend drucken]({{ '/projects/mogster-pc-blend-drucken/' | relative_url }}) am Mogster. Nicht jeder Versuch hat geklappt – aber die Zahnräder sehen gut aus.
