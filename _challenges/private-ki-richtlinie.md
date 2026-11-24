@@ -12,6 +12,12 @@ theme: slop
 uuid: 7d0495f1-b3a4-4e68-8d09-f534b554720c
 ---
 
+> Ergänze und ersetze nicht
+
+Wir wollen KI nutzen um unsere Fähigkeiten zu ergänzen. Nicht um uns zu ersetzen.
+
+KI sollte nur selbsgehostet von Kindern benutzt werden. Cloud KI ist kritisch zu betrachten. Es kann zum lernen benutzt werden. 
+
 # DO
 - benutze Apps die mit KI geschrieben wurden und open source sind (https://getartcraft.com/apps und co)
 - generiere kleine Illustrationen, baue Plakate selber, schreib auf das Plakat, dass Illustrationen mit KI erstellt worden
