@@ -470,6 +470,16 @@ var NeuFormular = (function () {
       if (original.length && original[original.length - 1].key === "uuid") i = blocks.length - 1;
       blocks.splice(i, 0, line);
     });
+    // pages without a uuid get one on saving (kept in w, so it stays the same while editing); _data/*.yml entries,
+    // overview pages (`search: false`) and redirects don't – same rule as _scripts/uuids_ergaenzen.rb
+    var keinUuid = edit.file.blocks.some(function (b) {
+      var v = b.key && F.yamlValue(b.raw);
+      return b.key === "uuid" || (b.key === "search" && v === false) || (b.key === "layout" && v === "weiterleitung");
+    });
+    if (schema.format !== "yaml" && schema !== TYPEN.uebersicht && !keinUuid) {
+      if (!w.uuid) w.uuid = neueUuid();
+      blocks.push("uuid: " + w.uuid);
+    }
     // a changed body keeps the file's own spacing after "---" (Markdown: an empty line, index.html: none) and the
     // indentation of its first line – only line breaks around it are dropped, like readSource does
     var body = String(w.text).replace(/^\n+/, "").replace(/\s+$/, ""), gap = (edit.file.rest.match(/^\n*/)[0] || "") || "\n\n";
