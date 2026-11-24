@@ -19,4 +19,7 @@ Die 6 Drucker kommen aus der Förderung über [junior1stein](https://junior1stei
 [Frieder Euteneuer]({{ '/team/frieder-euteneuer/' | relative_url }}) will zur Eröffnung weitere Leute zusammentrommeln – Lehrkräfte und alle, die Makespaces an Schulen voranbringen wollen.
 
 * ~~Den Termin suchen wir gerade. Der 19. Januar, 16:00 bis 18:00 steht im Raum.~~
-* Der Termin steht fest. 19. Januar
+* Der Termin steht fest: 19. Januar
+* Frau Wolf aus der Bruno Lösche Bibliothek ist auch eingeladen 
+* Presse vom BA Mitte hat den Termjn bestätigt bekommen 
+* Herr Stadtrat Fritz ist persönlich eingeladen worde
