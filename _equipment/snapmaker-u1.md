@@ -12,9 +12,9 @@ tags: [u1, 3d-drucker, mehrfarbdruck, ktg, 35services]
 uuid: 2beec856-6fe0-4ef8-a3e9-819cdd0f99a7
 ---
 
-Der Snapmaker U1 ist der Drucker der [3D-Druck AG an der KTG](https://ifsmb.de/projects/3d-druck-ag-ktg/): ein **Werkzeugwechsler mit vier Druckköpfen**. Statt Filament umzuspulen, tauscht er einfach den kompletten Druckkopf – so kann er **vier Farben oder vier verschiedene Materialien** in einem Druck verarbeiten und ist **extrem gut im Mehrfarbdruck**. Dank **Einhausung** bleibt die Wärme im Bauraum und neugierige Finger bleiben draußen.
+Der Snapmaker U1 ist der Drucker der 3D-Druck AG an der KTG: ein **Werkzeugwechsler mit vier Druckköpfen**. Statt Filament umzuspulen, tauscht er einfach den kompletten Druckkopf – so kann er **vier Farben oder vier verschiedene Materialien** in einem Druck verarbeiten und ist **extrem gut im Mehrfarbdruck**. Dank **Einhausung** bleibt die Wärme im Bauraum und neugierige Finger bleiben draußen.
 
-Der Drucker gehört [35services e. V.](https://ifsmb.de/partners/35services/) und steht an der [Kurt-Tucholsky-Grundschule](https://ifsmb.de/partners/#kurt-tucholsky-grundschule). Er wurde **komplett über Spenden finanziert** – auch mit Fundraising-Aktionen der Kinder. Den Aufbau haben die Schüler*innen der AG selbst übernommen; über Nacht hat er dann seinen ersten 4-Farb-Testdruck-Drachen fertiggestellt.
+Der Drucker gehört 35services e. V. und steht an der Kurt-Tucholsky-Grundschule. Er wurde **komplett über Spenden finanziert** – auch mit Fundraising-Aktionen der Kinder. Den Aufbau haben die Schüler*innen der AG selbst übernommen; über Nacht hat er dann seinen ersten 4-Farb-Testdruck-Drachen fertiggestellt.
 
 - **Bauraum:** 27 × 27 × 27 cm
 - **Druckköpfe:** 4, automatischer Wechsel in etwa 5 Sekunden („SnapSwap“)
@@ -23,8 +23,8 @@ Der Drucker gehört [35services e. V.](https://ifsmb.de/partners/35services/) un
 
 ### Mehr zum Drucker an der KTG
 
-- [3D-Druck AG an der KTG](https://ifsmb.de/projects/3d-druck-ag-ktg/) – das Projekt
-- [Pressemitteilung: Schulstadtrat Benjamin Fritz zu Besuch bei der 3D-Druck AG](https://ifsmb.de/press/schulstadtrat-benjamin-fritz-zu-besuch-bei-der-3d-druck-ag/) – mit dem Unboxing am 16.02.2026
+- 3D-Druck AG an der KTG – das Projekt
+- Pressemitteilung: Schulstadtrat Benjamin Fritz zu Besuch bei der 3D-Druck AG – mit dem Unboxing am 16.02.2026
 - [3D-Druck für unsere offene Werkstatt]({{ '/news/2026/09/24/3d-druck-fuer-unsere-offene-werkstatt/' | relative_url }}) – wie wir die Drucker gemeinsam nutzen
-- [Spenden für die AG]({{ '/spenden/' | relative_url }}) – damit die AG weiter Material hat
+- Spenden für die AG – damit die AG weiter Material hat
 - Hersteller: [Snapmaker U1](https://us.snapmaker.com/products/snapmaker-u1-3d-printer)

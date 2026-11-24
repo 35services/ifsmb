@@ -7,7 +7,8 @@
 #     boolean, number, date and select values as the CMS expects them,
 #   - only use fields that the matching template in _includes/vorlagen/ documents.
 # Also: every ➕ button type has a form, every chip field uses a known autocomplete source,
-# and the todo files survive parse → serialize unchanged.
+# and the todo files survive parse → serialize unchanged. Every way of creating a page (forms, template links,
+# Pages CMS, ✏️ edit form) gives it a random uuid.
 #
 #   ruby _scripts/test_formulare.rb      (needs Node; runs in the workflows "Prüfen" and "Pages")
 
@@ -18,6 +19,7 @@ require "date"
 require "open3"
 
 ROOT = File.expand_path("..", __dir__)
+UUID_V4 = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/
 
 module Daten
   module_function
@@ -213,6 +215,42 @@ class FormulareTest < Minitest::Test
   end
 end
 
+# Every content page needs its own uuid (read marker, _scripts/uuids_ergaenzen.rb --pruefen fails pull requests
+# without one) – so every way of creating a page must generate a random one.
+class UuidTest < Minitest::Test
+  def test_markdown_vorlagen_haben_den_uuid_platzhalter
+    Dir.glob(File.join(ROOT, "_includes/vorlagen/*.md")).each do |v|
+      assert_match(/^uuid: UUID-NEU\b/, File.read(v), "#{File.basename(v)}: „uuid: UUID-NEU“ fehlt (wird beim Klick durch eine zufällige uuid ersetzt)")
+    end
+  end
+
+  def test_vorlagen_links_ersetzen_den_platzhalter_immer
+    html = File.read(File.join(ROOT, "_includes/neu-buttons.html"))
+    assert_includes html, ".replace(/UUID-NEU/g, neueUuid)"
+    refute_match(/:\s*'UUID-NEU'/, html, "kein Rückfall auf den Platzhalter „UUID-NEU“")
+  end
+
+  def test_jede_seite_aus_dem_formular_hat_eine_eigene_uuid
+    seiten = Daten.beispiele["proben"].reject { |p| p["format"] == "yaml" }
+    refute_empty seiten
+    uuids = seiten.map do |p|
+      felder, = Daten.front_matter(p["inhalt"])
+      assert_match(/\A#{UUID_V4.source}\z/, felder["uuid"].to_s, "#{p['typ']} (#{p['fall']}): keine zufällige uuid")
+      felder["uuid"]
+    end
+    assert_equal uuids.size, uuids.uniq.size, "Formulare erzeugen doppelte uuids"
+  end
+
+  def test_pages_cms_erzeugt_die_uuid_selbst
+    Daten.cms.select { |c| c["type"] == "collection" }.each do |c|
+      f = (c["fields"] || []).find { |x| x["name"] == "uuid" }
+      refute_nil f, "#{c['name']}: Feld uuid fehlt in .pages.yml"
+      assert_equal "uuid", f["type"], "#{c['name']}: uuid muss „type: uuid“ sein, damit Pages CMS sie beim Anlegen erzeugt"
+      refute_equal "", f["default"], "#{c['name']}: default: \"\" würde die automatische uuid abschalten"
+    end
+  end
+end
+
 class TodoFormatTest < Minitest::Test
   # TodoFormat.normal(md) = serialize(parse(md)) must not change a file the app wrote.
   def test_todo_dateien_bleiben_beim_lesen_und_schreiben_gleich
@@ -236,10 +274,11 @@ class EditFormTest < Minitest::Test
   def results = Daten.edit_results
 
   def test_there_are_pages_to_edit
-    assert_operator results.size, :>, 20 # sanity floor: the example script found pages at all (a small instance has ~40)
+    # sanity floors: the example script found pages of each kind at all (a small instance has only a few)
+    assert_operator results.size, :>, 5
     # plain pages (#154): Markdown pages and HTML overview pages
-    assert_operator results.count { |r| r["type"] == "seite" }, :>=, 5
-    assert_operator results.count { |r| r["type"] == "uebersicht" }, :>, 10
+    assert_operator results.count { |r| r["type"] == "seite" }, :>=, 1
+    assert_operator results.count { |r| r["type"] == "uebersicht" }, :>, 3
   end
 
   def test_unchanged_file_stays_identical
@@ -250,11 +289,19 @@ class EditFormTest < Minitest::Test
   end
 
   def test_comment_after_a_value_is_kept
-    source = "---\ntitle: Test\nstatus: offen   # offen, in-arbeit oder geloest\nart: frage\n---\n\nText\n"
+    source = "---\ntitle: Test\nstatus: offen   # offen, in-arbeit oder geloest\nkind: frage\nuuid: 0b7d8a52-3f1e-4c2a-9d6b-1e2f3a4b5c6d\n---\n\nText\n"
     js = "const N=require('./assets/js/neu.js');process.stdout.write(N.editedFile('herausforderung',#{source.to_json},{status:'in-arbeit'}).content)"
     out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
     assert status.success?, err
     assert_equal source.sub("status: offen ", "status: in-arbeit "), out
+  end
+
+  def test_page_without_uuid_gets_one_on_saving
+    source = "---\ntitle: Test\nkind: frage\n---\n\nText\n"
+    js = "const N=require('./assets/js/neu.js');process.stdout.write(N.editedFile('herausforderung',#{source.to_json},{}).content)"
+    out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
+    assert status.success?, err
+    assert_match(/\A---\ntitle: Test\nkind: frage\nuuid: #{UUID_V4.source}\n---\n\nText\n\z/, out)
   end
 
   # owner_name is written as a list with one entry (alsEintrag) – the form must read that back as text
@@ -262,8 +309,8 @@ class EditFormTest < Minitest::Test
   def test_changed_body_keeps_spacing
     cases = [
       ["uebersicht", "---\ntitle: A\n---\n<main>\n  <p>x</p>\n</main>\n", "<main>\n  <p>y</p>\n</main>", "---\ntitle: A\n---\n<main>\n  <p>y</p>\n</main>\n"],
-      ["beitrag", "---\ntitle: B\n---\n\nText\n", "Neu", "---\ntitle: B\n---\n\nNeu\n"],
-      ["beitrag", "---\ntitle: C\n---\n", "Neu", "---\ntitle: C\n---\n\nNeu\n"],
+      ["beitrag", "---\ntitle: B\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n\nText\n", "Neu", "---\ntitle: B\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n\nNeu\n"],
+      ["beitrag", "---\ntitle: C\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n", "Neu", "---\ntitle: C\nuuid: 1f2e3d4c-5b6a-4789-8abc-def012345678\n---\n\nNeu\n"],
       ["uebersicht", "---\ntitle: D\n---\n  <div>\n</div>\n", "  <div>\n<b>x</b></div>", "---\ntitle: D\n---\n  <div>\n<b>x</b></div>\n"]
     ]
     cases.each do |typ, source, text, expected|
@@ -320,7 +367,7 @@ class HtmlCheckTest < Minitest::Test
 
   def test_no_false_alarm_on_existing_overview_pages
     pages = Daten.edit_results.select { |r| r["type"] == "uebersicht" }
-    assert_operator pages.size, :>, 10
+    assert_operator pages.size, :>, 3
     bodies = pages.map { |r| r["original"].sub(/\A---\n.*?\n---\n/m, "") }
     check(bodies).zip(pages).each { |msg, r| assert_nil msg, "#{r['path']}: #{msg}" }
   end
@@ -375,13 +422,13 @@ class ThemeTest < Minitest::Test
   end
 
   def test_setting_a_theme_adds_one_line
-    source = "---\ntitle: Test\nstatus: offen\nkind: frage\n---\n\nText\n"
+    source = "---\ntitle: Test\nstatus: offen\nkind: frage\nuuid: 0b7d8a52-3f1e-4c2a-9d6b-1e2f3a4b5c6d\n---\n\nText\n"
     js = "const N=require('./assets/js/neu.js');process.stdout.write(N.editedFile('herausforderung',#{source.to_json},{theme:'rfflabs'}).content)"
     out, err, status = Open3.capture3("node", "-e", js, chdir: ROOT)
     assert status.success?, err
     fm, text = Daten.front_matter(out)
     assert_equal "rfflabs", fm["theme"]
-    assert_equal({ "title" => "Test", "status" => "offen", "kind" => "frage" }, fm.reject { |k, _| k == "theme" })
+    assert_equal({ "title" => "Test", "status" => "offen", "kind" => "frage", "uuid" => "0b7d8a52-3f1e-4c2a-9d6b-1e2f3a4b5c6d" }, fm.reject { |k, _| k == "theme" })
     assert_equal "Text", text.strip
   end
 end

@@ -18,6 +18,6 @@ layout: default
     <h2 data-i18n="press.about">{{ "press.about" | t }}</h2>
     <p>{{ site.data.press.short_profile }}</p>
     {% include pressekontakt.html %}
-    <a href="{{ '/press/' | relative_url }}" class="back-link" data-i18n="press.back">{{ "press.back" | t }}</a>
+    {% assign has_press_page = '/press/' | page_exists %}{% if has_press_page %}<a href="{{ '/press/' | relative_url }}" class="back-link" data-i18n="press.back">{{ "press.back" | t }}</a>{% endif %}
   </article>
 </main>

@@ -198,8 +198,15 @@ Termin, Beitrag mit Beitrag oder Ausstattung mit Partnerseite.
 `/network/` (Menü „Wir“ → „Netzwerk“) zeigt alle Ressourcen als Punkte und alle Verbindungen als
 Linien. Jekyll schreibt beim Bauen die Rohdaten (Felder oben) in eine eigene Datei
 [`/network/graph.json`](https://ifsmb.de/network/graph.json) (`network/graph.json`; Kopf mit `format`, `version`,
-`site`, `generated`, dann `nodes` – auch für andere Instanzen gedacht, Föderation; Todos gehören nicht zum Netzwerk),
-`assets/js/netzwerk.js` lädt sie und macht daraus die Linien – nach denselben Regeln wie
+`site`, `generated`, dann `nodes` – auch für andere Instanzen gedacht, Föderation; Todos gehören nicht zum Netzwerk).
+Jeder Knoten hat seine **absolute** Adresse als `id` (`https://ifsmb.de/team/falko-richter/` – weltweit eindeutig, auch beim Zusammenführen von Graphen mehrerer Instanzen und unter einem `baseurl`) und – außer Partnern aus `_data/` – seine `uuid` (bleibt auch bei neuen Adressen gleich).
+**Gleiche uuid = dasselbe in der echten Welt:** Ist eine Person (oder ein Beitrag, ein Gerät) auf mehreren Instanzen aktiv,
+trägt sie überall dieselbe uuid – beim Zusammenführen der Graphen wird daraus ein Knoten mit mehreren Adressen. Verschiedene
+Personen haben nie dieselbe uuid, auch nicht bei gleichem Namen oder Kürzel.
+In den Verweisfeldern (`team`, `author`, `owner_team`, `projects`, `part_of`, `related`,
+`partners`, `owner_partner`, `location_partner`) stehen ebenfalls Knoten-IDs, also `https://ifsmb.de/team/falko-richter/` statt `falko-richter`; `linked` wird genauso zu absoluten Adressen
+(`_includes/graph-refs.html` löst die Kürzel und Namen aus dem Markdown beim Bauen auf).
+`assets/js/netzwerk.js` lädt die Datei und macht daraus die Linien – nach denselben Regeln wie
 `_includes/verbindungen.html` – und zeichnet sie ohne externe Bibliothek auf ein Canvas.
 
 Für andere Instanzen gibt es einen Einstieg: [`/meta_graph.json`](https://ifsmb.de/meta_graph.json)

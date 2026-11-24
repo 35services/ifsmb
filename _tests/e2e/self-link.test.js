@@ -4,6 +4,10 @@
 const { test, before, after, beforeEach, afterEach } = require("node:test");
 const assert = require("node:assert/strict");
 const { startEnv, editPage } = require("./lib/helpers.js");
+const fs = require("node:fs");
+const path = require("node:path");
+// this site's own address (url in _config.yml)
+const SITE = (fs.readFileSync(path.join(__dirname, "../../_config.yml"), "utf8").match(/^url:\s*"?([^"\s]+)/m) || [])[1] || "";
 
 let env;
 before(async () => { env = await startEnv(); });
@@ -27,13 +31,13 @@ async function offered(person, query) {
     .map((o) => o.getAttribute("data-wert")), sel);
 }
 
-const variants = (url) => [url, url.replace(/\/$/, ""), "https://ifsmb.de" + url];
+const variants = (url) => [url, url.replace(/\/$/, ""), SITE + url];
 
 test("✏️ Bearbeiten: die eigene Seite steht nicht in den Vorschlägen für „Verknüpft“", async () => {
   const page = editPage("herausforderung");
   const alice = await env.person(null);
   await alice.openEdit(page.url);
-  for (const query of [page.url, page.url.replace(/\/$/, ""), "https://ifsmb.de" + page.url]) {
+  for (const query of [page.url, page.url.replace(/\/$/, ""), SITE + page.url]) {
     const values = await offered(alice, query);
     assert.ok(!values.some((v) => variants(page.url).includes(v)), `${query} → ${JSON.stringify(values)}`);
   }

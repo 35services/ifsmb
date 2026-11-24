@@ -35,21 +35,27 @@
 
   // ---------- build graph ----------
   var nodes = raw.map(function (d) { d.url = d.url || d.id; return d; });
-  var byId = {}, projectBySlug = {}, personBySlug = {}, partnerByName = {}, projectByTag = {};
+  var byId = {}, projectByTag = {};
   nodes.forEach(function (n) {
     byId[norm(n.id)] = n;
-    if (n.type === 'projekt') { projectBySlug[n.slug] = n; if (n.event_tag) projectByTag[n.event_tag] = n; }
-    if (n.type === 'person') personBySlug[n.slug] = n;
-    if (n.type === 'partner') partnerByName[n.title] = n;
+    if (n.type === 'projekt' && n.event_tag) projectByTag[n.event_tag] = n;
   });
 
+  // Node ids are absolute URLs (graph.json). norm() turns any address – absolute, /path/ or path – into that form
+  // (trailing slash for pages), so ids, references and the #/path/ in the address bar all match.
   function norm(u) {
     if (!u) return u;
     u = String(u).trim();
-    if (/^[a-z]+:/.test(u)) return u;   // partner:, ort:, name:, http(s):
-    if (u.charAt(0) !== '/') u = '/' + u;
-    if (u.slice(-1) !== '/' && u.indexOf('.') === -1) u += '/';
-    return u;
+    if (/^[a-z]+:/.test(u) && !/^https?:/.test(u)) return u;   // partner:, ort:, name:
+    var x;
+    try { x = new URL(/^https?:/.test(u) || u.charAt(0) === '/' ? u : '/' + u, location.origin); } catch (e) { return u; }
+    var path = x.pathname;
+    if (path.slice(-1) !== '/' && path.split('/').pop().indexOf('.') === -1) path += '/';
+    return x.origin + path;
+  }
+  // short form for the address bar: the path for pages of this site, the full id otherwise
+  function hashOf(id) {
+    return id.indexOf(location.origin + '/') === 0 ? id.slice(location.origin.length) : id;
   }
   function list(v) { return v == null ? [] : (Array.isArray(v) ? v : [v]); }
 
@@ -76,23 +82,25 @@
     if (kind === 'teil') { e.source = b; e.target = a; } // parent -> child
     seen[k] = e; edges.push(e);
   }
+  // reference fields hold node ids (graph.json: /team/falko-richter/, partner:<name> …)
+  function ref(u) { return byId[norm(u)]; }
   nodes.forEach(function (n) {
     list(n.linked).forEach(function (u) { link(n, byId[norm(u)]); });
-    list(n.team).forEach(function (s) { link(n, personBySlug[s]); });
-    list(n.author).forEach(function (s) { link(n, personBySlug[s]); });
-    list(n.partners).forEach(function (s) { link(n, partnerByName[s]); });
+    list(n.team).forEach(function (u) { link(n, ref(u)); });
+    list(n.author).forEach(function (u) { link(n, ref(u)); });
+    list(n.partners).forEach(function (u) { link(n, ref(u)); });
     if (n.type === 'ausstattung') {
-      list(n.owner_partner).forEach(function (s) { link(n, partnerByName[s], 'besitz'); });
-      list(n.owner_team).forEach(function (s) { link(n, personBySlug[s], 'besitz'); });
+      list(n.owner_partner).forEach(function (u) { link(n, ref(u), 'besitz'); });
+      list(n.owner_team).forEach(function (u) { link(n, ref(u), 'besitz'); });
       (n._owners || []).forEach(function (o) { link(n, o, 'besitz'); });
-      list(n.location_partner).forEach(function (s) { link(n, partnerByName[s], 'standort'); });
+      list(n.location_partner).forEach(function (u) { link(n, ref(u), 'standort'); });
       if (n._location) link(n, n._location, 'standort');
     }
     if (n.type === 'projekt') {
-      list(n.part_of).forEach(function (s) { link(n, projectBySlug[s], 'teil'); });
-      list(n.related).forEach(function (s) { link(n, projectBySlug[s]); });
+      list(n.part_of).forEach(function (u) { link(n, ref(u), 'teil'); });
+      list(n.related).forEach(function (u) { link(n, ref(u)); });
     } else {
-      list(n.projects).forEach(function (s) { link(n, projectBySlug[s]); });
+      list(n.projects).forEach(function (u) { link(n, ref(u)); });
       list(n.tags).forEach(function (t) { link(n, projectByTag[t]); });
     }
   });
@@ -291,7 +299,7 @@
     html += groupedList(n.links, function (m) { return n.kinds[m.id]; });
     if (!n.links.length) html += '<p class="muted">Noch keine Verbindungen.</p>';
     panel.innerHTML = html;
-    history.replaceState(null, '', '#' + n.id);
+    history.replaceState(null, '', '#' + hashOf(n.id));
     if (center) flyTo(n);
     draw();
   }

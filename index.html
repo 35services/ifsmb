@@ -21,10 +21,13 @@ layout: default
         {%- endfor -%}
       {%- endfor -%}
     </h1>
+    {%- assign has_projects_page = '/projects/' | page_exists -%}
+    {%- assign has_offer_page = '/angebot/' | page_exists -%}
+    {%- assign has_partners_page = '/partners/' | page_exists %}
     <div class="hero-actions">
-      <a class="btn" href="{{ '/projects/' | relative_url }}" data-i18n="home.our_projects">{{ "home.our_projects" | t }}</a>
+      {% if has_projects_page %}<a class="btn" href="{{ '/projects/' | relative_url }}" data-i18n="home.our_projects">{{ "home.our_projects" | t }}</a>{% endif %}
       <a class="btn btn-ghost" href="{{ '/team/' | relative_url }}" data-i18n="home.who_we_are">{{ "home.who_we_are" | t }}</a>
-      <a class="btn" href="{{ '/angebot/' | relative_url }}" data-i18n="home.an_institute">{{ "home.an_institute" | t }}</a>
+      {% if has_offer_page %}<a class="btn" href="{{ '/angebot/' | relative_url }}" data-i18n="home.an_institute">{{ "home.an_institute" | t }}</a>{% endif %}
     </div>
   </div>
 </section>
@@ -62,7 +65,7 @@ layout: default
 <section class="container section">
   <div class="section-head">
     <h2 data-i18n="home.current_projects">{{ "home.current_projects" | t }}</h2>
-    <a href="{{ '/projects/' | relative_url }}" data-i18n="home.all_projects">{{ "home.all_projects" | t }}</a>
+    {% if has_projects_page %}<a href="{{ '/projects/' | relative_url }}" data-i18n="home.all_projects">{{ "home.all_projects" | t }}</a>{% endif %}
   </div>
   <div class="grid-2">
     {% for p in active limit: 4 %}
@@ -94,7 +97,7 @@ layout: default
 <section class="container section">
   <div class="section-head">
     <h2 data-i18n="nav.partners">{{ "nav.partners" | t }}</h2>
-    <a href="{{ '/partners/' | relative_url }}" data-i18n="home.more_partners">{{ "home.more_partners" | t }}</a>
+    {% if has_partners_page %}<a href="{{ '/partners/' | relative_url }}" data-i18n="home.more_partners">{{ "home.more_partners" | t }}</a>{% endif %}
   </div>
   <div class="logo-strip">
     {% for p in site.data.partners %}
