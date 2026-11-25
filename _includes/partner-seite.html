@@ -20,4 +20,8 @@
 
 {% include verbindungen.html partner=pt.name %}
 
+{%- comment -%}an instance may have no partner overview (e.g. a federated copy){%- endcomment -%}
+{%- assign partner_overview = site.pages | where: "url", "/partners/" | first -%}
+{%- if partner_overview %}
 <a href="{{ '/partners/' | relative_url }}" class="back-link" data-i18n="partner.back">{{ "partner.back" | t }}</a>
+{%- endif %}
