@@ -104,6 +104,9 @@ Ein Link wie `[Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/
 sie: `[der Drucker der AG](…)`, `[Spenden für die AG](…)`, `[Pressemitteilung: …](…)`. Links auf einen Abschnitt
 (`…/partners/#ktg`) zeigen auf einen Teil einer Seite – dafür zählt nur, ob es die Seite noch gibt.
 
+**Termine:** Aus `startDate`/`endDate` der Microdata liest der Build den letzten Tag eines Termins einer anderen
+Instanz (`data-event-end`); vergangene Termine verblassen – entschieden im Browser, nicht beim Bauen.
+
 ## 5b. Externe Links mit Titel und Art
 
 Nicht jede Seite gehört zu einer Instanz: ein Artikel bei 35services.de, ein Instagram-Beitrag, ein Herstellerhandbuch.

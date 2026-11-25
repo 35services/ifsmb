@@ -18,4 +18,4 @@
 {%- endcase -%}
 {%- comment -%}external link (not a connected instance, status "external"): ↗ and a new tab; connected instance: 🌐{%- endcomment -%}
 {%- if include.f.status == "external" -%}{%- assign fi_mark = "↗" -%}{%- assign fi_target = ' target="_blank" rel="noopener"' -%}{%- else -%}{%- assign fi_mark = "🌐" -%}{%- assign fi_target = "" -%}{%- endif -%}
-<li><a class="fed-grouped" href="{{ include.f.url | escape }}"{{ fi_target }}><span aria-hidden="true">{{ fi_icon }}</span> {{ include.f.name | default: include.f.short | escape }} <span class="link-meta">{{ fi_mark }} {{ include.f.host | escape }}</span></a></li>
+<li{% if include.f.type == "event" and include.f.end %} data-event-end="{{ include.f.end | escape }}"{% endif %}><a class="fed-grouped" href="{{ include.f.url | escape }}"{{ fi_target }}><span aria-hidden="true">{{ fi_icon }}</span> {{ include.f.name | default: include.f.short | escape }} <span class="link-meta">{{ fi_mark }} {{ include.f.host | escape }}</span></a></li>

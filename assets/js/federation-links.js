@@ -27,18 +27,20 @@
     var root = items.filter(function (el) { return norm(el.getAttribute('itemid')) === norm(url); })[0] || items[0];
     if (!root) return null;
     var type = TYPES[String(root.getAttribute('itemtype') || '').split(/\s+/)[0].replace(/^https?:\/\/schema\.org\//, '')] || null;
-    var name = null;
+    var name = null, dates = {};
     Array.prototype.forEach.call(root.querySelectorAll('[itemprop]'), function (el) {
-      if (name || el.parentElement.closest('[itemscope]') !== root) return;   // only properties of this item
-      if ((el.getAttribute('itemprop') || '').split(/\s+/).indexOf('name') === -1) return;
-      name = el.getAttribute('content') || el.textContent;
+      if (el.parentElement.closest('[itemscope]') !== root) return;   // only properties of this item
+      var props = (el.getAttribute('itemprop') || '').split(/\s+/), value = el.getAttribute('content') || el.textContent;
+      if (!name && props.indexOf('name') !== -1) name = value;
+      ['startDate', 'endDate'].forEach(function (d) { if (!dates[d] && props.indexOf(d) !== -1) dates[d] = value; });
     });
+    var end = String(dates.endDate || dates.startDate || '').slice(0, 10);
     name = name && name.replace(/\s+/g, ' ').trim();
     if (!name) {
       var og = doc.querySelector('meta[property="og:title"]');
       name = og ? og.getAttribute('content') : (doc.title || null);
     }
-    return { type: type, name: name || null };
+    return { type: type, name: name || null, end: type === 'event' && /^\d{4}-\d{2}-\d{2}$/.test(end) ? end : null };
   }
 
   // the homepage's "scramble": letters flicker briefly as random glyphs, then the new text settles
@@ -112,6 +114,12 @@
             Object.keys(ICONS).forEach(function (k) { a.classList.remove('fed-' + k); });
             a.classList.add('fed-link', 'fed-' + info.type);
             a.setAttribute('data-fed-type', info.type);
+          }
+          if (info.end) {
+            a.setAttribute('data-event-end', info.end);
+            var li = a.closest('li');
+            if (li && a.classList.contains('fed-grouped')) li.setAttribute('data-event-end', info.end);
+            if (window.IfsmbPast) window.IfsmbPast();
           }
           if (info.name) {
             a.setAttribute('data-fed-name', info.name);
