@@ -213,6 +213,7 @@
     }
 
     var promptBox = container.querySelector(".encrypted-prompt");
+    var viewBox = container.querySelector(".encrypted-view");
     var contentBox = container.querySelector(".encrypted-content");
     var form = container.querySelector(".encrypted-form");
     var pwInput = container.querySelector(".encrypted-password");
@@ -224,6 +225,7 @@
 
     function showLocked(errMessage) {
       revokeUrls();
+      if (viewBox) viewBox.hidden = true;
       contentBox.innerHTML = "";
       contentBox.hidden = true;
       promptBox.hidden = false;
@@ -237,6 +239,7 @@
 
     function showUnlocked(html) {
       promptBox.hidden = true;
+      if (viewBox) viewBox.hidden = false;
       contentBox.innerHTML = html;
       contentBox.hidden = false;
       if (lockBtn) lockBtn.hidden = false;
