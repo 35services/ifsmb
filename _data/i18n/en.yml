@@ -275,6 +275,7 @@ feed:
   help: “Open in feed reader” hands the feed to the feed app on your device (e.g. NetNewsWire, Reeder, Thunderbird). Feedly and Inoreader are feed readers in the browser. Any other feed reader takes the address above – just copy it and add it there as a new feed.
 
 connections:
+  federated: "Connected instances"
   project_part_of: This project is part of
   part_of: Part of
   related_projects: Related projects
@@ -629,3 +630,7 @@ github:
   step_create_fork: "Creating your own fork of {repo} …"
   fork_permission: "The token may not create a fork. Either fork {repo} once on GitHub (“Fork” at the top right) or set “Administration” to “Read and write” on the token."
   fork_no_continue: "Without write access you can’t add to #{number} – please send it as your own pull request."
+
+# links to connected instances (_plugins/federation_links.rb, assets/js/federation-links.js)
+federation:
+  missing: "no longer available"

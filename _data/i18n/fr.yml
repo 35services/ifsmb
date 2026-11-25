@@ -276,6 +276,7 @@ feed:
   help: « Ouvrir dans le lecteur de flux » transmet le flux à l’application de flux de votre appareil (p. ex. NetNewsWire, Reeder, Thunderbird). Feedly et Inoreader sont des lecteurs de flux dans le navigateur. Tout autre lecteur accepte l’adresse ci-dessus – il suffit de la copier et de l’y ajouter comme nouveau flux.
 
 connections:
+  federated: "Instances reliées"
   project_part_of: Ce projet fait partie de
   part_of: Fait partie de
   related_projects: Projets liés
@@ -630,3 +631,7 @@ github:
   step_create_fork: "Création de ton propre fork de {repo} …"
   fork_permission: "Le jeton n’a pas le droit de créer un fork. Crée le fork de {repo} une fois sur GitHub (« Fork » en haut à droite) ou mets « Administration » sur « Read and write » pour le jeton."
   fork_no_continue: "Sans accès en écriture, tu ne peux pas ajouter à #{number} – envoie-la comme ta propre pull request."
+
+# links to connected instances (_plugins/federation_links.rb, assets/js/federation-links.js)
+federation:
+  missing: "n’existe plus"
