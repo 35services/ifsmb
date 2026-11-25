@@ -91,8 +91,9 @@
   var links = Array.prototype.slice.call(document.querySelectorAll('a[href]')).filter(function (a) {
     try { return hosts.indexOf(new URL(a.href).host) !== -1; } catch (e) { return false; }
   });
+  // a link to a section (#…) points to a part of a page: only whether the page still exists counts
   var byUrl = {};
-  links.forEach(function (a) { (byUrl[a.href] = byUrl[a.href] || []).push(a); });
+  links.forEach(function (a) { var u = a.href.split('#')[0]; (byUrl[u] = byUrl[u] || []).push(a); });
   Object.keys(byUrl).forEach(function (url) {
     fetch(url, { headers: { Accept: 'text/html' } })
       .then(function (r) {
@@ -106,6 +107,7 @@
         if (!info) return;
         byUrl[url].forEach(function (a) {
           a.classList.remove('fed-missing');
+          if (a.hash) return;
           if (info.type) {
             Object.keys(ICONS).forEach(function (k) { a.classList.remove('fed-' + k); });
             a.classList.add('fed-link', 'fed-' + info.type);

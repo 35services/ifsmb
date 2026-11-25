@@ -96,8 +96,10 @@ Ein Link wie `[Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/
 3. **„Verbindungen“** unten auf jeder Seite zeigt `linked`-Einträge auf andere Instanzen in einer eigenen Gruppe
    „Verbundene Instanzen“ – mit Symbol und Namen statt der Adresse.
 
-**„Titel-Link“-Regel:** Nur Links, deren Text (fast) der Name ist oder die nackte Adresse, bekommen den aktuellen
-Namen. `[der Drucker der AG](…)` behält seine Worte.
+**„Titel-Link“-Regel:** Nur Links, deren Text der Name ist, eine **gekürzte** Kopie davon („Snapmaker U1“ →
+„Snapmaker U1 mit Einhausung“) oder die nackte Adresse, bekommen den aktuellen Namen. Texte mit eigenen Worten behalten
+sie: `[der Drucker der AG](…)`, `[Spenden für die AG](…)`, `[Pressemitteilung: …](…)`. Links auf einen Abschnitt
+(`…/partners/#ktg`) zeigen auf einen Teil einer Seite – dafür zählt nur, ob es die Seite noch gibt.
 
 ## 6. Vertrauen und Sicherheit
 

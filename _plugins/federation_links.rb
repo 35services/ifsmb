@@ -111,14 +111,15 @@ module FederationLinks
       s.to_s.downcase.gsub(/[^[:alnum:]]+/, " ").strip
     end
 
-    # The link text is a copy of the name (or the bare URL) → show the current name. A link like
-    # "[der Drucker der AG](…)" keeps its words: only near-copies are replaced.
+    # The link text is a copy of the name (or the bare URL) → show the current name. Only texts that are the name
+    # or a shortened copy of it count ("Snapmaker U1" → "Snapmaker U1 mit Einhausung"); texts with own words
+    # ("Spenden für die AG", "Pressemitteilung: …", "der Drucker der AG") keep them.
     def title_link?(text, name, url)
       t = simplify(text)
       n = simplify(name)
       return false if t.empty? || n.empty?
       return true if t == n || t == simplify(url) || t == simplify(url.sub(%r{\Ahttps?://}, ""))
-      (n.include?(t) || t.include?(n)) && [t.length, n.length].min >= 6
+      n.include?(t) && t.length >= 6
     end
 
     def missing_note(site)
@@ -143,7 +144,10 @@ module FederationLinks
       html.gsub(anchor) do
         before, url, after, inner = Regexp.last_match(1), Regexp.last_match(2), Regexp.last_match(3), Regexp.last_match(4)
         attrs = "#{before}href=\"#{url}\"#{after}"
-        info = resolve(CGI.unescapeHTML(url))
+        # a link to a section (#…) points to a part of a page – only whether the page still exists counts
+        section = url.include?("#")
+        info = resolve(CGI.unescapeHTML(url).sub(/#.*/, ""))
+        info = { status: :unknown } if section && info[:status] == :ok
         host = URI.parse(url).host
         case info[:status]
         when :missing
