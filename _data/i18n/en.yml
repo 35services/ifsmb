@@ -275,6 +275,7 @@ feed:
   help: “Open in feed reader” hands the feed to the feed app on your device (e.g. NetNewsWire, Reeder, Thunderbird). Feedly and Inoreader are feed readers in the browser. Any other feed reader takes the address above – just copy it and add it there as a new feed.
 
 connections:
+  links: "Links"
   federated: "Connected instances"
   project_part_of: This project is part of
   part_of: Part of

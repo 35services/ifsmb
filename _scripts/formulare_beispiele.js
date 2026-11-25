@@ -19,6 +19,9 @@ function wert(f, fall) {
   const mehrere = fall === "mehrere";
   switch (f.typ) {
     case "chips": return BEISPIEL_CHIPS[f.quelle].slice(0, mehrere && !f.einzeln ? 2 : 1);
+    case "links": return mehrere
+      ? [{ title: KNIFFLIG, url: "https://example.org/artikel/?x=1", category: "post" }, { title: "Ohne Art", url: "https://example.org/x" }]
+      : [{ title: "Sicherheit an der Drehmaschine", url: "https://35services.de/2026/sicherheit-an-der-drehmachine/", category: "post" }];
     case "haken": return true;
     case "auswahl": return f.optionen[f.optionen.length - 1][0];
     case "datum": return "2026-11-13";

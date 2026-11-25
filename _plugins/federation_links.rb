@@ -23,7 +23,8 @@ module FederationLinks
   }.freeze
   ICONS = {
     "equipment" => "🛠️", "person" => "👤", "partner" => "🤝", "event" => "📅", "post" => "📰",
-    "project" => "🔧", "challenge" => "🧗", "press" => "🗞️"
+    "project" => "🔧", "challenge" => "🧗", "press" => "🗞️",
+    "link" => "🔗" # any page on the internet (e.g. an Instagram post) – only as category of `links:` entries
   }.freeze
   TTL = 600 # seconds – `jekyll serve` rebuilds often; a fetched page is reused for 10 minutes
   @cache = {}
@@ -198,6 +199,23 @@ module FederationLinks
       info = FederationLinks.resolve(url.sub(/#.*/, ""))
       info = { status: :unknown } if url.include?("#") && info[:status] == :ok # a section: only existence counts
       base.merge("status" => info[:status].to_s, "type" => info[:type], "name" => info[:name])
+    end
+
+    # An entry of `links: [{ title, url, category }]` (external links with the editor's title and kind).
+    # On a connected instance its Microdata wins and title/category are the fallback; elsewhere they are all there is
+    # (status "external", nothing is fetched). Unknown categories are dropped.
+    def external_link(entry)
+      e = entry.respond_to?(:[]) && !entry.is_a?(String) ? entry : {}
+      url = e["url"].to_s.strip
+      title = e["title"].to_s.strip
+      title = nil if title.empty?
+      category = FederationLinks::ICONS.key?(e["category"].to_s) ? e["category"].to_s : nil
+      r = federation_resolve(url)
+      if r["status"] == "other"
+        r.merge("status" => "external", "type" => category, "name" => title)
+      else
+        r.merge("type" => r["type"] || category, "name" => r["name"] || title)
+      end
     end
   end
 end
