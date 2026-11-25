@@ -33,7 +33,7 @@ Stand: 23.11.2026
 | Herkunft | npm, beim Deployment mit `npx -y pagefind@1.5.2 --site _site` (`.github/workflows/pages.yml`) – erzeugt `_site/pagefind/` |
 | Liegt in | nicht im Repo; entsteht bei jedem Deployment |
 | Lizenz | MIT |
-| Benutzt von | `search/`, `_includes/formular-config.html` (Volltextsuche in den Chip-Feldern der Formulare), `_includes/verknuepft.html`, `_includes/todos-knopf.html` |
+| Benutzt von | `search/`, `_includes/formular-config.html` (Volltextsuche in den Chip-Feldern der Formulare), `_includes/todos-knopf.html` |
 | Aktualisieren | Version in `pages.yml` ändern, nach dem Deployment `/search/` und die Seitensuche in den Formularen testen |
 
 ### VT323 – Schrift für Themes

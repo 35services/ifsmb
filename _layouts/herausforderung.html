@@ -35,7 +35,6 @@ layout: default
     <p class="note" data-i18n="challenge.unsolved_note">{{ "challenge.unsolved_note" | t }}</p>
     {% endif %}
     {% include verbindungen.html %}
-    {% if page.tags and page.tags.size > 0 %}{% include verknuepft.html tags=page.tags %}{% endif %}
     <a href="{{ '/challenges/' | relative_url }}" class="back-link" data-i18n="challenge.back">{{ "challenge.back" | t }}</a>
   </article>
 </main>

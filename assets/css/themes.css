@@ -65,7 +65,6 @@
 [data-theme="offene-werkstaetten"] .prose h2 { font-size: 1.85rem; }
 [data-theme="offene-werkstaetten"] h3,
 [data-theme="offene-werkstaetten"] .card h3 { font-size: 1.45rem; }
-[data-theme="offene-werkstaetten"] .related-group h3 { font-family: var(--heading-font); font-size: 1.1rem; }
 
 /* header: red band, slanted lower edge, white logo panel */
 /* The header's height is fractional (e.g. 53.42px), so its lower edge and the top edge of the
