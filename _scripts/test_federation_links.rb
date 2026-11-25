@@ -68,6 +68,9 @@ class FederationLinksTest < Minitest::Test
     assert FederationLinks.title_link?(URL, "Snapmaker U1 mit Einhausung", URL)
     refute FederationLinks.title_link?("3D-Druck AG an der KTG", "Snapmaker U1 mit Einhausung", URL)
     refute FederationLinks.title_link?("U1", "Snapmaker U1 mit Einhausung", URL) # too short to count as a copy
+    # own words around the name stay (found on 35services.ifsmb.de)
+    refute FederationLinks.title_link?("Spenden für die AG", "Spenden", URL)
+    refute FederationLinks.title_link?("Pressemitteilung: Schulstadtrat zu Besuch", "Schulstadtrat zu Besuch", URL)
   end
 
   # --- rewrite with a stubbed resolve ---
@@ -119,6 +122,15 @@ class FederationLinksTest < Minitest::Test
     end
     refute_includes out, "<img"
     assert_includes out, "&lt;img"
+  end
+
+  def test_rewrite_section_link_gets_no_name_or_type
+    out = with_resolve({ status: :ok, type: "partner", name: "Partner" }) do
+      FederationLinks.rewrite(%(<a href="https://35services.ifsmb.de/partners/#ktg">Kurt-Tucholsky-Grundschule</a>), site)
+    end
+    assert_equal %(<a href="https://35services.ifsmb.de/partners/#ktg" class="fed-link">Kurt-Tucholsky-Grundschule</a>), out
+    gone = with_resolve({ status: :missing }) { FederationLinks.rewrite(%(<a href="https://35services.ifsmb.de/partners/#ktg">KTG</a>), site) }
+    assert_includes gone, "fed-missing"
   end
 
   def test_rewrite_ignores_other_hosts_and_network_errors
