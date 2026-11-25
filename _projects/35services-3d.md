@@ -19,6 +19,7 @@ team:
 linked:
   - /team/opa-andi/
   - /equipment/creality-cr-6-max/
+  - https://35services.ifsmb.de/equipment/35services-bambu-lab-a1-mini/
 partners:
   - 35 services e. V.
 uuid: 50fc05ca-0cf9-465d-9d64-4acf456f3de1
@@ -56,7 +57,7 @@ Im Ordner [`grids/`](https://github.com/35services/3d/tree/main/grids) (November
 
 Viele Projekte im Repo verbinden die Werkstatt direkt mit der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) und Nachbarschaftsaktionen:
 
-- **Skiddi v3 & RC Excavator** ([`Skiddi/`](https://github.com/35services/3d/tree/main/Skiddi), Juni 2024): Für das [erste Jahr der KTG-AG]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}) haben Falko und [Jan]({{ '/team/jan/' | relative_url }}) hier die fertigen Druckplatten und G-Codes (PLA und flexibles TPU) für den [Prusa MK4](https://35services.ifsmb.de/equipment/prusa-mk4-mmu/) und den [Bambu Lab A1 mini]({{ '/equipment/35services-bambu-lab-a1-mini/' | relative_url }}) abgelegt.
+- **Skiddi v3 & RC Excavator** ([`Skiddi/`](https://github.com/35services/3d/tree/main/Skiddi), Juni 2024): Für das [erste Jahr der KTG-AG]({{ '/projects/ktg-ag-jahr-1/' | relative_url }}) haben Falko und [Jan]({{ '/team/jan/' | relative_url }}) hier die fertigen Druckplatten und G-Codes (PLA und flexibles TPU) für den [Prusa MK4](https://35services.ifsmb.de/equipment/prusa-mk4-mmu/) und den [Bambu Lab A1 mini](https://35services.ifsmb.de/equipment/35services-bambu-lab-a1-mini/) abgelegt.
 - **Druckplatten & Sammlungen der AG** ([`3d-druck-ag/`](https://github.com/35services/3d/tree/main/3d-druck-ag), ab November 2025): Vorbereitete `.3mf`-Dateien aus der AG (Print-in-Place-Bagger, Drachenreiter, Minecraft-Werkzeuge) und Links zu den Sammlungen auf [MakerWorld](https://makerworld.com/en/collections/35898265-ktg) und [Printables](https://www.printables.com/@falkorichter_1026034/collections/3703977).
 - **Medaillen für die Grundschule** ([`medals/`](https://github.com/35services/3d/tree/main/medals), Mai 2026): Entwürfe für Sportfest-Medaillen (Weitsprung, Lauf, Wurf) – die Piktogramme wurden per KI entworfen und anschließend als SVG für den 3D-Druck vektorisiert.
 - **Mehrfarbdruck & Schilder** ([`2d-3d-multicolor-prints/`](https://github.com/35services/3d/tree/main/2d-3d-multicolor-prints), Oktober 2025, und [`weihnachten/`](https://github.com/35services/3d/tree/main/weihnachten), November 2026): Experimente mit HueForge/FlatForge, [svg2solid](https://svg2solid.rknt.de/) und [MakeMySign](https://makerworld.com/en/makerlab/makeMySign) für Namensschilder und das Logo der Spreewölfe sowie eine volle Platte mehrfarbiger Schneemänner ([Printables Make](https://www.printables.com/make/2226416)) auf dem [Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/).
