@@ -216,15 +216,15 @@ test("🔒 verschlüsselter Beitrag mit Foto → Foto wird nur als verschlüssel
 });
 
 test("✏️ bestehende verschlüsselte Seite mit unverschlüsselten .jpg-Fotos (wie #244 Augenarzttastatur) → konvertiert beim Speichern alle Fotos zu .blob und löscht die .jpg-Dateien", async () => {
-  // Seed main with augenarzttastatur's unencrypted .jpg files so we can test the migration on edit
+  // Seed main with the unencrypted .jpg files of #244 so we can test the migration on edit. Stand-in bytes instead of
+  // the real files: those were migrated to .blob on main (#255), and the form only encrypts the bytes it reads
+  // through the API, it never decodes them.
   const dir = "assets/images/projekte/augenarzttastatur/";
-  env.seedSource([
-    "_projects/augenarzttastatur.md",
-    dir + "01.jpg", dir + "01-600w.jpg",
-    dir + "02.jpg", dir + "02-600w.jpg",
-    dir + "03.jpg", dir + "03-600w.jpg",
-    dir + "04.jpg", dir + "04-600w.jpg", dir + "04-social.jpg"
-  ]);
+  const fakeJpeg = (name) => ({ base64: Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.from(name), Buffer.from([0xff, 0xd9])]).toString("base64") });
+  const seedFiles = {};
+  ["01.jpg", "01-600w.jpg", "02.jpg", "02-600w.jpg", "03.jpg", "03-600w.jpg", "04.jpg", "04-600w.jpg", "04-social.jpg"]
+    .forEach((f) => { seedFiles[dir + f] = fakeJpeg(f); });
+  env.control.seed({ files: seedFiles });
 
   // Create an encrypted payload with known password "test-augenarzt" and attachments: [] (just like #244)
   const CryptoPage = require("../../assets/js/crypto-page.js");
