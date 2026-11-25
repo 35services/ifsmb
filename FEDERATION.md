@@ -93,8 +93,11 @@ Ein Link wie `[Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/
    und „(nicht mehr vorhanden)“ angehängt. Besucher*innen machen dafür **keine** Anfrage.
 2. **Live im Browser** (`assets/js/federation-links.js`, nur mit eingeschalteter Föderation): dieselbe Prüfung noch
    einmal; ein geänderter Name erscheint mit dem „Scramble“-Effekt der Startseite.
-3. **„Verbindungen“** unten auf jeder Seite zeigt `linked`-Einträge auf andere Instanzen in einer eigenen Gruppe
-   „Verbundene Instanzen“ – mit Symbol und Namen statt der Adresse.
+3. **„Verbindungen“** unten auf jeder Seite sortiert `linked`-Einträge auf andere Instanzen **in die Gruppe ihres Typs**:
+   Ein Gerät von 35services erscheint auf ifsmb.de unter „Ausstattung“, eine Person unter „Beteiligt“, ein Projekt unter
+   den Projekten – jeweils mit Symbol, aktuellem Namen und „🌐 35services.ifsmb.de“. Nur Seiten ohne bekannten Typ, nicht
+   erreichbare oder nicht mehr vorhandene bleiben in der Gruppe „Verbundene Instanzen“. (Liquid-Filter
+   `federation_resolve` in `_plugins/federation_links.rb`, Eintrag: `_includes/federation-item.html`.)
 
 **„Titel-Link“-Regel:** Nur Links, deren Text der Name ist, eine **gekürzte** Kopie davon („Snapmaker U1“ →
 „Snapmaker U1 mit Einhausung“) oder die nackte Adresse, bekommen den aktuellen Namen. Texte mit eigenen Worten behalten

@@ -149,8 +149,10 @@
   {%- if p_links contains x.url or x_links contains me_url %}{% assign g_pages = g_pages | push: x %}{% endif -%}
 {%- endfor -%}
 
-{%- comment -%}--- links to connected instances (federation): full URLs in `linked`; name and type come from
-  _plugins/federation_links.rb at build time (class fed-auto) ---{%- endcomment -%}
+{%- comment -%}--- links to connected instances (federation): full URLs in `linked`. Their page declares what it is
+  (Microdata, filter federation_resolve in _plugins/federation_links.rb) – each one goes into the group of its type
+  (Ausstattung, Personen, Projekte …) with „🌐 <host>“; only unknown, unreachable or missing ones stay in
+  „Verbundene Instanzen“ ---{%- endcomment -%}
 {%- assign g_federated = "" | split: "" -%}
 {%- for u in p_links -%}{%- assign u = u | strip -%}
   {%- for fb in site.federation -%}{%- assign fb_prefix = fb | append: "/" -%}
@@ -158,6 +160,20 @@
   {%- endfor -%}
 {%- endfor -%}
 {%- assign g_federated = g_federated | uniq -%}
+{%- assign fed_projects = "" | split: "" -%}{%- assign fed_events = "" | split: "" -%}{%- assign fed_posts = "" | split: "" -%}
+{%- assign fed_challenges = "" | split: "" -%}{%- assign fed_people = "" | split: "" -%}{%- assign fed_partners = "" | split: "" -%}
+{%- assign fed_equipment = "" | split: "" -%}{%- assign fed_other = "" | split: "" -%}
+{%- for u in g_federated -%}{%- assign fi = u | federation_resolve -%}
+  {%- if fi.status == "ok" and fi.type == "project" -%}{%- assign fed_projects = fed_projects | push: fi -%}
+  {%- elsif fi.status == "ok" and fi.type == "event" -%}{%- assign fed_events = fed_events | push: fi -%}
+  {%- elsif fi.status == "ok" and fi.type == "post" -%}{%- assign fed_posts = fed_posts | push: fi -%}
+  {%- elsif fi.status == "ok" and fi.type == "challenge" -%}{%- assign fed_challenges = fed_challenges | push: fi -%}
+  {%- elsif fi.status == "ok" and fi.type == "person" -%}{%- assign fed_people = fed_people | push: fi -%}
+  {%- elsif fi.status == "ok" and fi.type == "partner" -%}{%- assign fed_partners = fed_partners | push: fi -%}
+  {%- elsif fi.status == "ok" and fi.type == "equipment" -%}{%- assign fed_equipment = fed_equipment | push: fi -%}
+  {%- else -%}{%- assign fed_other = fed_other | push: fi -%}
+  {%- endif -%}
+{%- endfor -%}
 
 {%- comment -%}--- output ---{%- endcomment -%}
 {%- assign has_owner = false -%}{%- if o_partners.size > 0 or o_team.size > 0 or o_names.size > 0 %}{% assign has_owner = true %}{% endif -%}
@@ -171,13 +187,14 @@
     {% for x in g_parents %}<li><a href="{{ x.url | relative_url }}">↑ {{ x.title }}</a></li>{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_projects.size > 0 %}
+  {%- if g_projects.size > 0 or fed_projects.size > 0 %}
   {% if kind == "projects" %}<h2 data-i18n="connections.related_projects">{{ "connections.related_projects" | t }}</h2>{% elsif kind == "events" %}<h2 data-i18n="connections.event_belongs_to">{{ "connections.event_belongs_to" | t }}</h2>{% else %}<h2 data-i18n="connections.projects">{{ "connections.projects" | t }}</h2>{% endif %}
   <ul class="link-list link-list-connections">
     {% for x in g_projects %}<li><a href="{{ x.url | relative_url }}"{% if x.personal %} title="{{ 'connections.personal_project' | t }}" data-i18n-attr="title:connections.personal_project"{% endif %}><span aria-hidden="true">🔧</span> {{ x.title }}{% if x.personal %} <span class="link-private" data-i18n="connections.personal">{{ "connections.personal" | t }}</span>{% endif %}</a></li>{% endfor %}
+    {% for f in fed_projects %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_events.size > 0 %}
+  {%- if g_events.size > 0 or fed_events.size > 0 %}
   {%- if kind == "partner" %}
   {%- assign ics_url = me_url | split: "/" | join: "/" | append: ".ics" %}
   <div class="cal-heading-abo">
@@ -189,18 +206,21 @@
   {%- endif %}
   <ul class="link-list link-list-connections">
     {% for x in g_events %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">📅</span> {{ x.title }} <span class="link-meta">{% if x.date_label and x.date_label != "" %}{{ x.start | date: "%m/%Y" }}{% else %}{{ x.start | i18n_date }}{% endif %}</span>{% if x.personal %} <span class="link-private" data-i18n="connections.personal">{{ "connections.personal" | t }}</span>{% endif %}</a></li>{% endfor %}
+    {% for f in fed_events %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_posts.size > 0 %}
+  {%- if g_posts.size > 0 or fed_posts.size > 0 %}
   <h2 data-i18n="connections.posts">{{ "connections.posts" | t }}</h2>
   <ul class="link-list link-list-connections">
     {% for x in g_posts %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">📰</span> {{ x.title }} <span class="link-meta">{{ x.date | i18n_date }}</span>{% if x.personal %} <span class="link-private" data-i18n="connections.personal">{{ "connections.personal" | t }}</span>{% endif %}</a></li>{% endfor %}
+    {% for f in fed_posts %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_challenges.size > 0 %}
+  {%- if g_challenges.size > 0 or fed_challenges.size > 0 %}
   <h2 data-i18n="challenge.heading">{{ "challenge.heading" | t }}</h2>
   <ul class="link-list link-list-connections">
     {% for x in g_challenges %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">🧗</span> {{ x.title }} {% if x.status == "geloest" %}<span class="link-meta" data-i18n="connections.solved">{{ "connections.solved" | t }}</span>{% elsif x.status == "in-arbeit" %}<span class="link-meta" data-i18n="connections.in_progress">{{ "connections.in_progress" | t }}</span>{% else %}<span class="link-meta" data-i18n="connections.open">{{ "connections.open" | t }}</span>{% endif %}{% if x.personal %} <span class="link-private" data-i18n="connections.personal">{{ "connections.personal" | t }}</span>{% endif %}</a></li>{% endfor %}
+    {% for f in fed_challenges %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
   {%- if has_owner %}
@@ -218,17 +238,19 @@
     {% if l_partners.size == 0 %}<li><span class="link-list-plain"><span aria-hidden="true">📍</span> {{ P.location }}</span></li>{% endif %}
   </ul>
   {%- endif %}
-  {%- if g_people.size > 0 %}
+  {%- if g_people.size > 0 or fed_people.size > 0 %}
   <h2 data-i18n="connections.people">{{ "connections.people" | t }}</h2>
   <ul class="link-list link-list-connections">
     {% for x in g_people %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">👤</span> {{ x.title }}</a></li>{% endfor %}
+    {% for f in fed_people %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_partners.size > 0 or g_unknown_partners.size > 0 %}
+  {%- if g_partners.size > 0 or g_unknown_partners.size > 0 or fed_partners.size > 0 %}
   <h2 data-i18n="connections.partners">{{ "connections.partners" | t }}</h2>
   <ul class="link-list link-list-connections">
     {% for pt in g_partners %}<li><a href="{{ pt.page | default: pt.url | relative_url }}"{% unless pt.page %} target="_blank" rel="noopener"{% endunless %}><span aria-hidden="true">🤝</span> {{ pt.name }}</a></li>{% endfor %}
     {% for n in g_unknown_partners %}<li><span class="link-list-plain"><span aria-hidden="true">🤝</span> {{ n }}</span></li>{% endfor %}
+    {% for f in fed_partners %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
   {%- if g_pages.size > 0 %}
@@ -237,16 +259,17 @@
     {% for x in g_pages %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">📄</span> {{ x.title }}</a></li>{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_equipment.size > 0 %}
+  {%- if g_equipment.size > 0 or fed_equipment.size > 0 %}
   <h2 data-i18n="equipment.heading">{{ "equipment.heading" | t }}</h2>
   <ul class="link-list link-list-connections">
     {% for x in g_equipment %}{% assign x_op = x.owner_partner | join: "|" | split: "|" %}{% assign x_sp = x.location_partner | join: "|" | split: "|" %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">🛠️</span> {{ x.title }}{% if kind == "partner" %}{% if x_op contains include.partner %} <span class="link-meta" data-i18n="connections.ownership">{{ "connections.ownership" | t }}</span>{% endif %}{% if x_sp contains include.partner %} <span class="link-meta" data-i18n="connections.location">{{ "connections.location" | t }}</span>{% endif %}{% endif %}</a></li>{% endfor %}
+    {% for f in fed_equipment %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
-  {%- if g_federated.size > 0 %}
+  {%- if fed_other.size > 0 %}
   <h2 data-i18n="connections.federated">{{ "connections.federated" | t }}</h2>
   <ul class="link-list link-list-connections link-list-federated">
-    {% for u in g_federated %}<li><a class="fed-auto" href="{{ u }}"><span aria-hidden="true">🌐</span> {{ u | remove_first: "https://" | remove_first: "http://" }}</a></li>{% endfor %}
+    {% for f in fed_other %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
 </section>
