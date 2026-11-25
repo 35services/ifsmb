@@ -138,14 +138,40 @@
     });
   }
 
+  // Encrypt raw binary bytes into .blob format (12-byte random IV + AES-GCM ciphertext + 16-byte auth tag).
+  function encryptBytesToBlob(plainBytes, key) {
+    var iv = randomBytes(12);
+    var input = plainBytes instanceof Uint8Array ? plainBytes : new Uint8Array(plainBytes);
+    return encryptData(input, iv, key).then(function (cipherBuf) {
+      var out = new Uint8Array(12 + cipherBuf.byteLength);
+      out.set(iv, 0);
+      out.set(new Uint8Array(cipherBuf), 12);
+      return out;
+    });
+  }
+
   // Encrypt Markdown text into an encrypted payload and <script class="encrypted-data"> block.
   // When keepKdf is true and existingPayload has kdf.salt, reuses the salt/iterations so existing .blob attachments
   // remain decryptable with the same key while generating a fresh random 12-byte IV for the Markdown ciphertext.
-  function encryptMarkdownPayload(markdownText, password, existingPayload, keepKdf) {
+  // extraAttachments is an optional array of { name, blob, mime } to include in payload.attachments.
+  function encryptMarkdownPayload(markdownText, password, existingPayload, keepKdf, extraAttachments) {
     var enc = new TextEncoder();
     var reuse = !!(keepKdf && existingPayload && existingPayload.kdf && existingPayload.kdf.salt);
     var salt = reuse ? base64ToBytes(existingPayload.kdf.salt) : randomBytes(16);
     var iterations = (reuse && existingPayload.kdf.iterations) ? existingPayload.kdf.iterations : 600000;
+
+    var baseAtts = (existingPayload && Array.isArray(existingPayload.attachments)) ? existingPayload.attachments.slice() : [];
+    var seenNames = {};
+    var mergedAtts = [];
+    baseAtts.concat(extraAttachments || []).forEach(function (a) {
+      if (!a || !a.name || seenNames[a.name]) return;
+      seenNames[a.name] = true;
+      mergedAtts.push({
+        name: a.name,
+        blob: a.blob || (a.name + ".blob"),
+        mime: a.mime || "application/octet-stream"
+      });
+    });
 
     return deriveKey(password, salt, iterations).then(function (key) {
       var iv = randomBytes(12);
@@ -159,11 +185,12 @@
           },
           iv: bytesToBase64(iv),
           data: bytesToBase64(new Uint8Array(cipherBytes)),
-          attachments: (existingPayload && Array.isArray(existingPayload.attachments)) ? existingPayload.attachments : []
+          attachments: mergedAtts
         };
         return {
           payload: payload,
-          block: formatEncryptedBody(payload)
+          block: formatEncryptedBody(payload),
+          key: key
         };
       });
     });
@@ -422,6 +449,7 @@
     formatEncryptedBody: formatEncryptedBody,
     decryptMarkdown: decryptMarkdown,
     encryptMarkdownPayload: encryptMarkdownPayload,
+    encryptBytesToBlob: encryptBytesToBlob,
     getUnlockedPassword: getUnlockedPassword,
     setUnlockedPassword: setUnlockedPassword,
     clearUnlockedPassword: clearUnlockedPassword,

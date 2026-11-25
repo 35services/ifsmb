@@ -180,3 +180,37 @@ test("ohne Token: alter Weg (Kopieren → GitHub-Editor), keine einzige Anfrage 
   assert.equal(await anon.page.evaluate(() => typeof window.GitHubApi === "undefined" || !window.GitHubApi.connected()), true);
   assert.deepEqual(env.control.requests(), [], "keine Anfrage an die (Fake-)API");
 });
+
+test("🔒 verschlüsselter Beitrag mit Foto → Foto wird nur als verschlüsselte .blob-Datei hochgeladen (keine .jpg)", async () => {
+  const png = env.makePng("foto-secret.png", { width: 800, height: 600 });
+  const alice = await env.person("token-alice");
+  await alice.openNew("/news/", "beitrag");
+  await alice.fill({ title: "E2E Geheimer Beitrag", text: "Vertraulicher Text.\n", encrypted: true });
+  await alice.page.waitForSelector("#neu-dialog [data-crypto-pw]");
+  await alice.page.fill("#neu-dialog [data-crypto-pw]", "geheim-e2e-2026");
+
+  // Because encrypted is true, only the gallery slot exists, so addPhotos automatically inserts into gallery
+  await alice.addPhotos([png], ["Geheimes Foto der Tastatur"]);
+  await alice.page.waitForSelector('#neu-dialog [data-photo="0"]');
+  await alice.page.waitFor(() => /01\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
+
+  await alice.submit();
+  await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+  const pr = env.control.state().pulls[0];
+  const post = pr.files.find((f) => f.filename.startsWith("_posts/")).filename;
+  const slug = post.replace(/^_posts\/\d{4}-\d{2}-\d{2}-|\.md$/g, "");
+  const dir = "assets/images/news/" + slug + "/";
+
+  // Must ONLY contain the Markdown file and 01.jpg.blob – NO unencrypted .jpg, -600w.jpg, or -social.jpg!
+  assert.deepEqual(pr.files.map((f) => f.filename).sort(), [post, dir + "01.jpg.blob"].sort());
+
+  const mdContent = env.control.readFile({ ref: pr.head.ref, path: post }).text;
+  assert.match(mdContent, /^encrypted: true$/m);
+  assert.ok(!mdContent.includes("Vertraulicher Text"), "Klartext darf nicht im Markdown stehen");
+  assert.ok(mdContent.includes('"' + "/" + dir + '01.jpg.blob"'), "Payload muss .blob-Anhang auflisten");
+
+  const blobBytes = Buffer.from(env.control.readFile({ ref: pr.head.ref, path: dir + "01.jpg.blob" }).base64, "base64");
+  assert.ok(blobBytes.length > 28, ".blob enthält 12 Byte IV + Ciphertext + Tag");
+  // Must NOT start with JPEG magic bytes (FF D8 FF)
+  assert.notEqual(blobBytes[0] === 0xff && blobBytes[1] === 0xd8, true, ".blob ist verschlüsselt, kein rohes JPEG");
+});

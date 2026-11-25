@@ -192,3 +192,21 @@ uuid: 550e8400-e29b-41d4-a716-446655440000
   const decAfterEdit = await NeuFormular.decryptFileForEdit("projekt", reEncRes.content, password, "_projects/werkstatt-protokoll.md");
   assert.equal(decAfterEdit.plaintext, updatedPlaintext);
 });
+
+test("SafeMarkdown: Renders {: .gallery} blocks as <div class='gallery'> with lightbox links", () => {
+  const md = `Hier sind die Fotos:
+
+![Foto 1](/assets/images/projekte/test/01.jpg)
+![Foto 2](/assets/images/projekte/test/02.jpg)
+{: .gallery}
+`;
+  const attachments = {
+    "/assets/images/projekte/test/01.jpg": "blob:mock://img1",
+    "/assets/images/projekte/test/02.jpg": "blob:mock://img2"
+  };
+  const html = SafeMarkdown.render(md, attachments);
+  assert.ok(!html.includes("{: .gallery}"), "Gallery IAL must not render as text");
+  assert.ok(html.includes('<div class="gallery">'), "Gallery wrapper div rendered");
+  assert.ok(html.includes('<a class="lightbox" href="blob:mock://img1"><img src="blob:mock://img1" alt="Foto 1" loading="lazy"></a>'));
+  assert.ok(html.includes('<a class="lightbox" href="blob:mock://img2"><img src="blob:mock://img2" alt="Foto 2" loading="lazy"></a>'));
+});
