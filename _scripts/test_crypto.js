@@ -2,6 +2,8 @@
 // Unit tests for SafeMarkdown and CryptoPage (Node.js 22+)
 const assert = require("node:assert");
 const test = require("node:test");
+const fs = require("node:fs");
+const path = require("node:path");
 const SafeMarkdown = require("../assets/js/safe-markdown.js");
 const CryptoPage = require("../assets/js/crypto-page.js");
 
@@ -98,7 +100,13 @@ Dies ist ein interner Test.
 
   global.fetch = async (url) => {
     const filename = url.split("/").pop();
-    const data = blobStore[filename];
+    let data = blobStore[filename];
+    if (!data) {
+      const relPath = path.join(__dirname, "..", url.replace(/^\//, ""));
+      if (fs.existsSync(relPath)) {
+        data = fs.readFileSync(relPath);
+      }
+    }
     if (!data) return { ok: false, status: 404 };
     return {
       ok: true,
@@ -142,4 +150,61 @@ Dies ist ein interner Test.
     /operation failed|MAC check failed/i,
     "Wrong password must reject"
   );
+});
+
+test("NeuFormular: Encrypted editing and encrypting existing files", async () => {
+  const NeuFormular = require("../assets/js/neu.js");
+  const fs = require("fs");
+  const path = require("path");
+
+  // 1. readSource detects encrypted post and extracts cryptoPayload
+  const encryptedPath = path.join(__dirname, "../_posts/2026-11-25-vertraulicher-bericht.md");
+  const encryptedSource = fs.readFileSync(encryptedPath, "utf8");
+  const schema = NeuFormular.TYPEN.beitrag;
+  const loaded = NeuFormular.readSource(schema, encryptedSource, "_posts/2026-11-25-vertraulicher-bericht.md");
+
+  assert.equal(loaded.encrypted, true, "readSource detects encrypted: true");
+  assert.ok(loaded.cryptoPayload, "readSource extracts cryptoPayload");
+  assert.equal(loaded.cryptoPayload.v, 1);
+
+  // Decrypt the extracted payload with geheim123
+  const dec = await CryptoPage.decryptPage(loaded.cryptoPayload, "geheim123", "");
+  assert.ok(dec.markdown.includes("Streng vertraulicher Projektbericht"), "Decrypts plain text successfully");
+
+  // 2. Encrypt an existing unencrypted page
+  const plainSource = `---
+title: "Bisher unverschlüsselter Beitrag"
+date: 2026-03-16 10:00:00 +0100
+author: falko-richter
+uuid: 42a57b16-245a-4ded-8d8a-e6c0839ecb6f
+---
+
+Offener Text vor der Verschlüsselung.
+`;
+  const plainLoaded = NeuFormular.readSource(schema, plainSource, "test.md");
+  assert.equal(plainLoaded.encrypted, false, "readSource detects unencrypted page");
+
+  // Encrypt plain text with new password
+  const newPw = "neues-geheimnis-789";
+  const newText = "Neuer geheimer Inhalt!";
+  const encRes = await CryptoPage.encryptPage(newText, newPw);
+  const encryptedRest = "\n<script type=\"application/json\" class=\"encrypted-data\">\n" + JSON.stringify(encRes.payload, null, 2) + "\n</script>\n";
+
+  const output = NeuFormular.editedText(schema, plainLoaded, {
+    ...plainLoaded.w0,
+    text: newText,
+    encrypted: true,
+    encryptedRest: encryptedRest
+  });
+
+  assert.ok(output.includes("encrypted: true"), "Output has encrypted: true in front matter");
+  assert.ok(output.includes("search: false"), "Output has search: false in front matter");
+  assert.ok(output.includes('<script type="application/json" class="encrypted-data">'), "Output contains encrypted data block");
+  assert.ok(!output.includes("Neuer geheimer Inhalt!"), "Plain text is NOT in output file");
+
+  // Verify that the resulting output file can be decrypted with newPw
+  const verifyLoaded = NeuFormular.readSource(schema, output, "test.md");
+  assert.equal(verifyLoaded.encrypted, true);
+  const verifyDec = await CryptoPage.decryptPage(verifyLoaded.cryptoPayload, newPw, "");
+  assert.equal(verifyDec.markdown, newText, "Re-decrypted text matches modified text");
 });
