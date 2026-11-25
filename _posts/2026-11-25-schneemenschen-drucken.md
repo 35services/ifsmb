@@ -13,9 +13,11 @@ Wir brauchen ein AMS lite [3djake.de/bambu-lab/ams-lite](https://www.3djake.de/b
 Spendet gerne für den Förderverein: [platanus-schule.de/platanus/foerderverein/](https://www.platanus-schule.de/platanus/foerderverein/)
 
 - [github.com/35services/3d/tree/main/weihnachten](https://github.com/35services/3d/tree/main/weihnachten) für Max - da ist der Snowman den Max mit seinem Snapmaker U1 drucken könnte
--
+
 
 ![Schild](/assets/images/news/schneemenschen-drucken/03.jpg)
 ![Schild](/assets/images/news/schneemenschen-drucken/02.jpg)
 ![Schild](/assets/images/news/schneemenschen-drucken/01.jpg)
+![Zweiter Druck](/assets/images/news/schneemenschen-drucken/04.jpg)
+![Seitenansicht](/assets/images/news/schneemenschen-drucken/05.jpg)
 {: .gallery}
