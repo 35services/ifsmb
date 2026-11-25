@@ -21,6 +21,7 @@ links:   # externe Links: Liste aus title, url und category (equipment, person, 
 image:   # Titelbild für die Projektkarte, z. B. /assets/images/projekte/<name>/01.jpg – ohne Metadaten, Kindergesichter unkenntlich
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
 social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
+encrypted: false   # true = Inhalt der Seite im Browser mit Passwort verschlüsseln
 updates:   # kurze Notizen aus der Projektzeit, neueste zuerst – längere Berichte lieber als Beitrag mit dem event_tag
 #  - date: 2025-12-01
 #    text: Was passiert ist, in Markdown.
