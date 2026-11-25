@@ -1,0 +1,23 @@
+{%- comment -%}
+  Content of a generated partner page (_plugins/partner_pages.rb) for partners without a written page: logo,
+  description, website, devices and – the point of the page – the semantic connections („Verbindungen“).
+  The partner comes from page.partner_name (its entry in _data/partners.yml or _data/partner/<name>.yml).
+{%- endcomment -%}
+{%- assign pt = site.data.partners | where: "name", page.partner_name | first -%}
+<div class="prose">
+  {%- if pt.logo %}
+  <p class="partner-page-logo{% if pt.logo_dark %} partner-page-logo-dark{% endif %}">{% if pt.url %}<a href="{{ pt.url }}" target="_blank" rel="noopener">{% endif %}<img src="{{ pt.logo | relative_url }}" alt="{{ "partner.logo_of" | t: "name", pt.name }}" data-i18n-attr="alt:partner.logo_of" data-i18n-params="{{ "name" | i18n_params: pt.name }}">{% if pt.url %}</a>{% endif %}</p>
+  {%- endif %}
+  {%- if pt.description %}
+  <p>{{ pt.description }}</p>
+  {%- endif %}
+  {%- if pt.url or pt.instagram %}
+  <p>{% if pt.url %}→ <a href="{{ pt.url }}" target="_blank" rel="noopener">{{ pt.url | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</a>{% endif %}{% if pt.url and pt.instagram %} · {% endif %}{% if pt.instagram %}<a href="{{ pt.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}</p>
+  {%- endif %}
+</div>
+
+{% include partner-equipment-links.html partner=pt.name %}
+
+{% include verbindungen.html partner=pt.name %}
+
+<a href="{{ '/partners/' | relative_url }}" class="back-link" data-i18n="partner.back">{{ "partner.back" | t }}</a>
