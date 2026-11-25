@@ -1,5 +1,10 @@
 title: Institut für spontane Makespace Buildung
 short_title: IfsMB
+# Branding: everything site-specific lives here, not in layouts or scripts (another instance only changes this file).
+# Header next to short_title, HTML allowed; default: title
+brand_name: "Institut für spontane<br>Makespace Buildung"
+# Who gets what the forms can't take yet (videos: „bitte an … schicken“); default: das Team
+contact_name: Falko
 description: Wir bauen Makespaces – spontan, gemeinsam und dort, wo Kinder und Jugendliche lernen.
 baseurl: ""
 url: "https://ifsmb.de"

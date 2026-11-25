@@ -107,8 +107,25 @@ var NeuFormular = (function () {
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
   var persoenlich = function (hilfe) { return haken("personal", "Persönlich", { hilfe: hilfe }); };
   var verschluesselt = function () { return haken("encrypted", "🔒 Inhalt mit Passwort verschlüsseln (Ende-zu-Ende im Browser)"); };
-  // look of the page (_data/themes.yml, assets/css/themes.css); "" = the site's default
-  var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"], ["slop", "Slop ✨"]];
+  // Site-specific values (title, url, host, contact_name) from _includes/formular-config.html – none are hard-coded here.
+  // Without a page (Node tests) there is no config: empty object, callers fall back.
+  function siteCfg() { try { return F.cfg().site || {}; } catch (e) { return {}; } }
+  function siteHost() { return siteCfg().host || (typeof location !== "undefined" ? location.host : ""); }
+  // look of the page: the list of _data/themes.yml ([id, name], via formular-config.html); "" = the site's default.
+  // In Node (tests) read _data/themes.yml directly – it only has `- id:` / `name:` lines.
+  function themeList() {
+    try { var c = F.cfg(); if (c.themes) return c.themes; } catch (e) { /* no page */ }
+    if (typeof require === "undefined") return [];
+    try {
+      var out = [], cur = null;
+      require("fs").readFileSync(require("path").join(__dirname, "../../_data/themes.yml"), "utf8").split("\n").forEach(function (l) {
+        var id = l.match(/^- id:\s*(\S+)/), name = l.match(/^\s+name:\s*"?(.*?)"?\s*$/);
+        if (id) out.push(cur = [id[1], id[1]]); else if (name && cur) cur[1] = name[1];
+      });
+      return out;
+    } catch (e) { return []; }
+  }
+  var THEMES = [["", "Wie die ganze Website"]].concat(themeList());
   var themeField = function () { return auswahl("theme", "🎨 Theme (Aussehen)", THEMES, { mehr: true, hilfe: "Besucher*innen können unten auf der Seite trotzdem selbst wählen" }); };
   var socialBild = function () { return text("social_media_preview_image", "Social-Media-Vorschaubild (1200×630 px)", { mehr: true, platzhalter: "/assets/images/og-….jpg – leer = erstes Bild oder Standard" }); };
 
@@ -774,7 +791,7 @@ var NeuFormular = (function () {
       + '<pre class="neu-vorschau" aria-label="' + esc(t("form.file_preview", null, "Vorschau der Datei")) + '"></pre>'
       + '<details class="neu-social" open><summary>' + esc(t("form.social_preview", null, "Social-Media-Vorschau (WhatsApp, Signal, X …)")) + '</summary>'
       + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
-      + '<div class="neu-social-text"><span class="neu-social-domain">ifsmb.de</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
+      + '<div class="neu-social-text"><span class="neu-social-domain">' + esc(siteHost()) + '</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
       + '<div class="form-photos" aria-label="' + esc(t("form.new_photos", null, "Neue Fotos")) + '"></div>'
       + '<ol class="neu-schritte small"></ol></aside></div>'
       + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen></button>'
@@ -869,7 +886,7 @@ var NeuFormular = (function () {
     if (!url) return [];
     var path = url.replace(/^https?:\/\/[^/]+/, "").replace(/index\.html$/, ""), bare = path.replace(/\/$/, "");
     var forms = [path, bare, bare + "/", bare + "/index.html"];
-    var hosts = ["https://ifsmb.de"].concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
+    var hosts = (siteCfg().url ? [siteCfg().url.replace(/\/$/, "")] : []).concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
     return forms.concat.apply(forms, hosts.map(function (h) { return forms.map(function (x) { return h + x; }); }));
   }
 
@@ -1240,7 +1257,7 @@ var NeuFormular = (function () {
     if (socialImg.getAttribute("src") !== bild) socialImg.src = bild;
     socialTitel.textContent = w.title || aktiv.schema.titel;
     var codeText = aktiv.felder.some(function (f) { return f.name === "text" && f.code; }); // HTML is no description
-    socialBeschr.textContent = (w.summary || w.subtitle || w.role || w.lead || (codeText ? "" : ersteTextzeile(w.text)) || "Institut für spontane Makespace Buildung").slice(0, 160);
+    socialBeschr.textContent = (w.summary || w.subtitle || w.role || w.lead || (codeText ? "" : ersteTextzeile(w.text)) || siteCfg().title || "").slice(0, 160);
   }
 
   function fehlt() {
@@ -1779,7 +1796,7 @@ var NeuFormular = (function () {
           parent = prep.parent;
         });
       }).then(function () {
-        body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf ifsmb.de von @" + u.login
+        body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf " + siteHost() + " von @" + u.login
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"

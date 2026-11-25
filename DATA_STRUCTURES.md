@@ -285,7 +285,8 @@ Jede Seite kann ein eigenes Aussehen haben. Welches gilt, entscheidet (das erste
   `assets/css/themes.css`, Auswahl im Footer `assets/js/theme.js`.
 - `theme` ist keine Verbindung – es ändert nur das Aussehen, nicht die Inhalte oder die Links.
 - Neues Theme: Eintrag in `_data/themes.yml`, Block in `themes.css`, Auswahlwerte in `.pages.yml`,
-  Kommentar in den Vorlagen (`_includes/vorlagen/`) und `THEMES` in `assets/js/neu.js` –
+  Kommentar in den Vorlagen (`_includes/vorlagen/`); die ➕/✏️-Formulare lesen die Liste selbst (über
+  `_includes/formular-config.html`) –
   `ruby _scripts/test_formulare.rb` prüft, dass alles zusammenpasst, `check_site.rb` meldet unbekannte Werte.
 
 ## Einfache Seiten im ✏️-Formular

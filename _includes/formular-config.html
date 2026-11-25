@@ -1,6 +1,7 @@
 {%- comment -%}
   Configuration for assets/js/formular.js (shared by the todo editor and the "➕ new" forms) and a small loader
   that fetches scripts on first use. Included once per page by _layouts/default.html.
+  `site` and `themes` carry the site-specific values (_config.yml, _data/themes.yml), so no script hard-codes them.
 {%- endcomment -%}
 <script type="application/json" id="formular-daten">
 {
@@ -8,7 +9,14 @@
   "pagefind": {{ '/pagefind/pagefind.js' | relative_url | jsonify }},
   "github": {{ site.repository | prepend: "https://github.com/" | jsonify }},
   "branch": {{ site.branch | default: "main" | jsonify }},
-  "skripte": {{ '/assets/js/' | relative_url | jsonify }}
+  "skripte": {{ '/assets/js/' | relative_url | jsonify }},
+  "site": {
+    "title": {{ site.title | jsonify }},
+    "url": {{ site.url | jsonify }},
+    "host": {{ site.url | remove: "https://" | remove: "http://" | jsonify }},
+    "contact_name": {{ site.contact_name | jsonify }}
+  },
+  "themes": [{% for th in site.data.themes %}[{{ th.id | jsonify }}, {{ th.name | jsonify }}]{% unless forloop.last %}, {% endunless %}{% endfor %}]
 }
 </script>
 <script>

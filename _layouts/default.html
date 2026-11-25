@@ -124,8 +124,8 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="{{ '/' | relative_url }}">
-        <span class="brand-mark">IfsMB</span>
-        <span class="brand-name">Institut für spontane<br>Makespace Buildung</span>
+        <span class="brand-mark">{{ site.short_title | default: site.title }}</span>
+        <span class="brand-name">{{ site.brand_name | default: site.title }}</span>
       </a>
       <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="{{ 'nav.open_menu' | t }}" data-i18n-attr="aria-label:nav.open_menu">
       <label for="nav-toggle" class="nav-burger" aria-hidden="true"><span></span></label>
@@ -173,7 +173,7 @@
         <a href="{{ '/impressum/' | relative_url }}" data-i18n="footer.imprint">{{ "footer.imprint" | t }}</a> ·
         <a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="footer.machine_readable">{{ "footer.machine_readable" | t }}</a> ·
         <a href="{{ '/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·
-        <a href="https://github.com/falkorichter/ifsmb.de" target="_blank" rel="noopener" data-i18n="footer.source">{{ "footer.source" | t }}</a>
+        <a href="https://github.com/{{ site.repository }}" target="_blank" rel="noopener" data-i18n="footer.source">{{ "footer.source" | t }}</a>
       </p>
       {%- comment -%}Project documentation for contributors – rendered by GitHub (the files are excluded from the site).{%- endcomment -%}
       {%- assign doc_branch = site.branch | default: "main" -%}

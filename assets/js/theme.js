@@ -27,6 +27,6 @@
     try {
       if (id) localStorage.setItem(KEY, id); else localStorage.removeItem(KEY);
     } catch (e) { /* storage blocked: the choice still applies to this page */ }
-    root.setAttribute("data-theme", id || root.getAttribute("data-page-theme") || "ifsmb");
+    root.setAttribute("data-theme", id || root.getAttribute("data-page-theme"));
   });
 })();
