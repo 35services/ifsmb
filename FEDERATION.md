@@ -104,6 +104,27 @@ Ein Link wie `[Snapmaker U1](https://35services.ifsmb.de/equipment/snapmaker-u1/
 sie: `[der Drucker der AG](…)`, `[Spenden für die AG](…)`, `[Pressemitteilung: …](…)`. Links auf einen Abschnitt
 (`…/partners/#ktg`) zeigen auf einen Teil einer Seite – dafür zählt nur, ob es die Seite noch gibt.
 
+## 5b. Externe Links mit Titel und Art
+
+Nicht jede Seite gehört zu einer Instanz: ein Artikel bei 35services.de, ein Instagram-Beitrag, ein Herstellerhandbuch.
+Solche Links stehen mit Titel und Art im Front Matter:
+
+```yaml
+links:
+  - title: Sicherheit an der Drehmaschine
+    url: https://35services.de/2026/sicherheit-an-der-drehmachine/
+    category: post        # equipment, person, partner, event, post, project, challenge, press, link
+```
+
+- **Im Formular** („🌍 Externe Links“): Adresse einfügen und ➕ – das Formular liest die Seite einmal und schlägt
+  Titel und Art vor (Microdata unserer Instanzen, sonst JSON-LD wie bei WordPress, sonst `og:title`/`<title>`). Lässt
+  sich die Seite nicht lesen (CORS, z. B. Instagram) oder verrät sie nichts, trägt man beides selbst ein.
+- **Kategorie `link`:** jede beliebige Seite im Internet (z. B. unsere Instagram-Beiträge) – erscheint unter „Links“.
+- **„Verbindungen“** sortiert die Einträge in die Gruppe ihrer Art (wie bei Links auf Instanzen); ohne Art oder mit
+  `link` stehen sie unter „Links“. Auf Teamprofilen bleiben Links ohne Art (GitHub, Website) im Profil selbst.
+- Zeigt die Adresse auf eine verbundene Instanz, gewinnen deren Microdata; Titel und Art im Front Matter sind die
+  Rückfall-Kopie.
+
 ## 6. Vertrauen und Sicherheit
 
 - **Die Adresse sagt nichts über den Typ.** `…/equipment/…` könnte bei anderer Software eine Person sein – nur die

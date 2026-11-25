@@ -10,7 +10,7 @@ photo:   # /assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis, ohne Me
 photo_2x:   # optional: doppelt so großes Foto für scharfe Bildschirme
 photo_icon:   # optional: rundes Mini-Foto (48 px) für die Kalenderseite
 photo_credit:   # Bildnachweis – Pflicht bei Fremdfotos (Presse, Agentur)
-links:   # Links zur Person, Liste aus title und url
+links:   # Links zur Person (GitHub, Website …): Liste aus title, url und optional category (equipment, person, partner, event, post, project, challenge, press, link)
 #  - title: GitHub
 #    url: https://github.com/…
 linked: []   # weitere Seiten, z. B. [/projects/3d-druck-ag-ktg/]

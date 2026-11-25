@@ -10,6 +10,7 @@ author: {{ include.author | default: "falko-richter" }}   # Team-Kürzel (Datein
 personal: {{ include.personal | default: false }}   # true = persönliches Update: nicht unter Neuigkeiten, sondern im Teamprofil („Persönlicher Blog“)
 tags: [{{ include.tags }}]   # Stichworte, z. B. [ktg, 3d-drucker] – das event_tag eines Projekts zeigt den Beitrag auf der Projektseite
 linked: [{{ include.linked }}]   # weitere Seiten, z. B. [/projects/3d-druck-ag-ktg/, /calendar/…/] – erscheinen unten bei „Verbindungen“
+links:   # externe Links: Liste aus title, url und category (equipment, person, partner, event, post, project, challenge, press, link = beliebiger Link wie ein Instagram-Beitrag) – erscheinen unten bei „Verbindungen“ in der passenden Gruppe
 original_url:    # nur bei übernommenen Beiträgen: Adresse des Originals, sonst löschen
 original_site:   # z. B. 35services.de, sonst löschen
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen

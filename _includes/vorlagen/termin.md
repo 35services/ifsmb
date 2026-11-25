@@ -16,6 +16,7 @@ tags: [{{ include.tags }}]   # Stichworte; das event_tag eines Projekts zeigt de
 projects: [{{ include.projects }}]   # Projekt-Dateinamen, zusätzlich zu Projekten über die Stichworte
 partners: [{{ include.partners }}]   # Namen aus _data/partners.yml, in Anführungszeichen
 linked: [{{ include.linked }}]   # weitere Seiten, z. B. [/projects/…/]
+links:   # externe Links: Liste aus title, url und category (equipment, person, partner, event, post, project, challenge, press, link = beliebiger Link wie ein Instagram-Beitrag) – erscheinen unten bei „Verbindungen“ in der passenden Gruppe
 personal: {{ include.personal | default: false }}   # true = privater Termin aus dem Team (braucht team): nur im Teamprofil
 project_only: false   # true = interner Termin: vorher nur auf der Projektseite, danach normal unter „Vergangene Termine“
 gallery:   # Fotos nach dem Termin, Liste aus image, thumb, alt – unter assets/images/kalender/<termin>/

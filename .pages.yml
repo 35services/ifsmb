@@ -64,6 +64,23 @@ content:
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
+      - name: links
+        label: Externe Links (mit Titel und Art)
+        description: Links auf andere Websites, z. B. einen Artikel bei 35services.de – mit Titel und Art (equipment = Gerät, person, partner, event = Termin, post = Beitrag, project, challenge = Herausforderung, press, link = beliebiger Link wie ein Instagram-Beitrag). Erscheinen unten bei „Verbindungen“ in der passenden Gruppe.
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Titel
+            type: string
+          - name: url
+            label: Adresse
+            type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: places
         label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
@@ -175,6 +192,23 @@ content:
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
+      - name: links
+        label: Externe Links (mit Titel und Art)
+        description: Links auf andere Websites, z. B. einen Artikel bei 35services.de – mit Titel und Art (equipment = Gerät, person, partner, event = Termin, post = Beitrag, project, challenge = Herausforderung, press, link = beliebiger Link wie ein Instagram-Beitrag). Erscheinen unten bei „Verbindungen“ in der passenden Gruppe.
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Titel
+            type: string
+          - name: url
+            label: Adresse
+            type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: places
         label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
@@ -312,6 +346,23 @@ content:
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
+      - name: links
+        label: Externe Links (mit Titel und Art)
+        description: Links auf andere Websites, z. B. einen Artikel bei 35services.de – mit Titel und Art (equipment = Gerät, person, partner, event = Termin, post = Beitrag, project, challenge = Herausforderung, press, link = beliebiger Link wie ein Instagram-Beitrag). Erscheinen unten bei „Verbindungen“ in der passenden Gruppe.
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Titel
+            type: string
+          - name: url
+            label: Adresse
+            type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: places
         label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
@@ -386,6 +437,11 @@ content:
           - name: url
             label: URL
             type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: body
         label: Profiltext
         type: rich-text
@@ -484,6 +540,23 @@ content:
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
+      - name: links
+        label: Externe Links (mit Titel und Art)
+        description: Links auf andere Websites, z. B. einen Artikel bei 35services.de – mit Titel und Art (equipment = Gerät, person, partner, event = Termin, post = Beitrag, project, challenge = Herausforderung, press, link = beliebiger Link wie ein Instagram-Beitrag). Erscheinen unten bei „Verbindungen“ in der passenden Gruppe.
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Titel
+            type: string
+          - name: url
+            label: Adresse
+            type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: places
         label: Orte auf der Karte (IDs aus _data/places.yml, z. B. ktg)
         description: Nur nötig, wenn der Ort nicht automatisch erkannt wird (über Adresse, Ort, Standort oder Partner).
@@ -580,6 +653,23 @@ content:
         description: Beliebige Seiten verlinken – Termine, Beiträge, Geräte, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten.
         type: string
         list: true
+      - name: links
+        label: Externe Links (mit Titel und Art)
+        description: Links auf andere Websites, z. B. einen Artikel bei 35services.de – mit Titel und Art (equipment = Gerät, person, partner, event = Termin, post = Beitrag, project, challenge = Herausforderung, press, link = beliebiger Link wie ein Instagram-Beitrag). Erscheinen unten bei „Verbindungen“ in der passenden Gruppe.
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Titel
+            type: string
+          - name: url
+            label: Adresse
+            type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: tags
         label: Stichworte (das event_tag eines Projekts verbindet auch mit dem Projekt)
         type: string
@@ -639,6 +729,23 @@ content:
         description: Beliebige Seiten verlinken – Projekte, Termine, Beiträge, Personen, Ausstattung, Partnerseiten. Die Verbindung erscheint unten auf beiden Seiten; ein Eintrag auf einer Seite reicht.
         type: string
         list: true
+      - name: links
+        label: Externe Links (mit Titel und Art)
+        description: Links auf andere Websites, z. B. einen Artikel bei 35services.de – mit Titel und Art (equipment = Gerät, person, partner, event = Termin, post = Beitrag, project, challenge = Herausforderung, press, link = beliebiger Link wie ein Instagram-Beitrag). Erscheinen unten bei „Verbindungen“ in der passenden Gruppe.
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: Titel
+            type: string
+          - name: url
+            label: Adresse
+            type: string
+          - name: category
+            label: Art
+            type: select
+            options:
+              values: [equipment, person, partner, event, post, project, challenge, press, link]
       - name: tags
         label: Stichworte (z. B. ktg)
         type: string

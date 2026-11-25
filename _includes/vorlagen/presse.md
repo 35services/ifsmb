@@ -8,6 +8,7 @@ subtitle:   # optionale Unterzeile
 date: JJJJ-MM-TT
 tags: [{{ include.tags }}]   # Stichworte, z. B. [ktg]
 linked: [{{ include.linked }}]   # weitere Seiten, z. B. [/projects/…/]
+links:   # externe Links: Liste aus title, url und category (equipment, person, partner, event, post, project, challenge, press, link = beliebiger Link wie ein Instagram-Beitrag) – erscheinen unten bei „Verbindungen“ in der passenden Gruppe
 contact_name:   # leer = Pressekontakt aus _data/press.yml
 contact_email_b64:   # E-Mail base64-kodiert: printf 'name@example.org' | base64
 contact_email_display:   # E-Mail in lesbarer, verschleierter Form: name [at] example.org

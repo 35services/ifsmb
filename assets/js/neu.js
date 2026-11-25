@@ -97,6 +97,10 @@ var NeuFormular = (function () {
 
   // fields that many types share
   var stichworte = function (x) { return chips("tags", "🏷️ Stichworte", "stichworte", Object.assign({ platzhalter: "Stichwort suchen oder neu …" }, x)); };
+  // external links with title and kind (links: [{ title, url, category }]) – title and kind are read from the page
+  var externeLinks = function () {
+    return feld("links", "links", "🌍 Externe Links (mit Titel und Art)", { hilfe: "Adresse einfügen und ➕ – Titel und Art liest das Formular von der Seite, wenn sie es verrät; sonst selbst eintragen. Erscheint unten bei „Verbindungen“ in der passenden Gruppe." });
+  };
   var verlinkt = function () { return chips("linked", "🔗 Verknüpft (Termine, Beiträge, Geräte, Seiten …)", "seiten", { platzhalter: "Seite suchen oder /adresse/ …" }); };
   var leute = function (name, label, x) { return chips(name, label, "personen", Object.assign({ platzhalter: "Name aus dem Team …" }, x)); };
   var partner = function (name, label, x) { return chips(name, label, "partner", Object.assign({ platzhalter: "Partner suchen …" }, x)); };
@@ -148,6 +152,7 @@ var NeuFormular = (function () {
       projekte("part_of", "🧩 Teil von", { hilfe: "Nur für Teilprojekte – erscheinen dann nicht in den Übersichten" }),
       projekte("related", "↔️ Verwandte Projekte", { mehr: true }),
       verlinkt(),
+        externeLinks(),
       persoenlich("Privates Projekt aus dem Team: nur im Teamprofil, nicht in den Listen des Instituts"),
       inhalt("Ziel, Stand, was gebraucht wird …"),
       text("image", "Titelbild", { mehr: true, platzhalter: "/assets/images/projekte/<name>/01.jpg – ohne Metadaten" }),
@@ -166,6 +171,7 @@ var NeuFormular = (function () {
         leute("author", "✍️ Autor*in", { pflicht: true, standard: ["falko-richter"], ausgabe: einerOderListe }),
         stichworte({ hilfe: "Das event_tag eines Projekts zeigt den Beitrag auf der Projektseite" }),
         verlinkt(),
+        externeLinks(),
         inhalt("Text in Markdown. Fotos als Galerie: ![Was zu sehen ist](/assets/images/news/<dateiname>/01.jpg) und darunter {: .gallery}"),
         adresse("original_url", "Original-Adresse", { mehr: true, hilfe: "nur bei übernommenen Beiträgen" }),
         text("original_site", "Original-Website", { mehr: true, platzhalter: "z. B. 35services.de" }),
@@ -188,6 +194,7 @@ var NeuFormular = (function () {
         stichworte(),
         partner("partners", "🤝 Partner"),
         verlinkt(),
+        externeLinks(),
         [persoenlich("Privater Termin aus dem Team (braucht „Dabei“): nur im Teamprofil"),
           haken("project_only", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
         inhalt("Was passiert, wer kann kommen, was mitbringen …"),
@@ -225,6 +232,7 @@ var NeuFormular = (function () {
           partner("location_partner", "📍 Steht bei Partner", { einzeln: true, ausgabe: einerOderListe })],
         stichworte({ hilfe: "Gerät, Gerätetyp, Besitzer*in, z. B. bambu-lab-a1-mini, 3d-drucker" }),
         verlinkt(),
+        externeLinks(),
         inhalt("Was das Gerät kann, Erfahrungen, Tipps …"),
         text("image", "Foto", { mehr: true, platzhalter: "eigenes Foto ohne Metadaten – keine Hersteller- oder Shopfotos" }),
         text("image_alt", "Beschreibung des Fotos", { mehr: true }),
@@ -251,6 +259,7 @@ var NeuFormular = (function () {
         projekte("projects", "🔧 Projekte"),
         stichworte(),
         verlinkt(),
+        externeLinks(),
         persoenlich("Aus einem privaten Projekt im Team"),
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
         datum("solved_on", "Gelöst am", { mehr: true }),
@@ -266,6 +275,7 @@ var NeuFormular = (function () {
         text("title", "Name", { pflicht: true, platzhalter: "Vorname Nachname", klasse: "form-feld-titel", hilfe: "Der Dateiname wird das Team-Kürzel für team, author, owner_team" }),
         [text("role", "Rolle", { platzhalter: "z. B. hilft in der KTG-AG" }), zahl("order", "Reihenfolge", { standard: "50", hilfe: "kleiner = weiter vorne" })],
         verlinkt(),
+        externeLinks(),
         haken("not_in_team", "Nicht auf /team/ auflisten (nur eigene Seite zum Verlinken)"),
         inhalt("Was die Person macht und womit sie im Makespace hilft – keine Wohnadresse, keine privaten E-Mail-Adressen"),
         text("photo", "Foto", { mehr: true, platzhalter: "/assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis" }),
@@ -282,6 +292,7 @@ var NeuFormular = (function () {
         [text("subtitle", "Unterzeile"), datum("date", "Datum", { pflicht: true, standard: F.heute })],
         stichworte(),
         verlinkt(),
+        externeLinks(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
         text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/press.yml" }),
         socialBild(),
@@ -310,6 +321,7 @@ var NeuFormular = (function () {
         titel("Titel der Seite"),
         text("lead", "Unterzeile", { platzhalter: "Ein Satz unter dem Titel" }),
         verlinkt(),
+        externeLinks(),
         inhalt("Text der Seite in Markdown"),
         socialBild(),
         themeField()
@@ -359,12 +371,12 @@ var NeuFormular = (function () {
     var felder = alleFelder(schema), w = {};
     felder.forEach(function (f) {
       var s = typeof f.standard === "function" ? f.standard() : f.standard;
-      w[f.name] = f.typ === "chips" ? alsListe(s) : f.typ === "haken" ? !!s : s == null ? "" : String(s);
+      w[f.name] = f.typ === "chips" ? alsListe(s) : f.typ === "links" ? [] : f.typ === "haken" ? !!s : s == null ? "" : String(s);
     });
     Object.assign(w, schema.standard);
     Object.keys(vorgabe || {}).forEach(function (k) {
       var v = vorgabe[k], f = felder.filter(function (x) { return x.name === k; })[0];
-      if (!f || v == null || v === "") return;
+      if (!f || v == null || v === "" || f.typ === "links") return;
       w[k] = f.typ === "chips" ? alsListe(v) : f.typ === "haken" ? v === true || v === "true" : String(v);
     });
     return w;
@@ -431,12 +443,13 @@ var NeuFormular = (function () {
     var file = F.splitFile(source);
     if (!file) return null;
     var fields = alleFelder(schema), w = anfangswerte(schema), rawFields = {};
-    fields.forEach(function (f) { if (f.typ) w[f.name] = f.typ === "chips" ? [] : f.typ === "haken" ? false : ""; });
+    fields.forEach(function (f) { if (f.typ) w[f.name] = f.typ === "chips" || f.typ === "links" ? [] : f.typ === "haken" ? false : ""; });
     file.blocks.forEach(function (block) {
       if (block.key === "uuid") { w.uuid = F.yamlValue(block.raw); return; }
       var f = block.key && fields.filter(function (x) { return x.name === block.key && x.typ && !x.intern; })[0];
       if (!f) return;
-      var v = F.yamlValue(block.raw), value = v === undefined ? undefined : toFieldValue(f, v);
+      var v = f.typ === "links" ? F.yamlLinks(block.raw) : F.yamlValue(block.raw);
+      var value = v === undefined ? undefined : f.typ === "links" ? v : toFieldValue(f, v);
       if (value === undefined) rawFields[f.name] = true; else w[f.name] = value;
     });
     w.text = file.rest.replace(/^\n+/, "").replace(/\s+$/, "");
@@ -621,6 +634,7 @@ var NeuFormular = (function () {
         setze: function (a) { aktiv.w[f.name] = a; nachAenderung(); }
       });
     }
+    if (f.typ === "links") return baueLinksFeld(f);
     if (f.typ === "haken") {
       return F.el('<label class="form-check"><input type="checkbox" name="' + f.name + '"' + (w ? " checked" : "") + "><span>" + label + "</span>" + hilfe + "</label>");
     }
@@ -635,6 +649,76 @@ var NeuFormular = (function () {
       eingabe = '<input type="' + typ + '"' + attr + (f.liste ? ' list="neu-liste-' + f.liste + '"' : "") + ' value="' + esc(w) + '">';
     }
     return F.el('<label class="form-feld' + (f.klasse ? " " + f.klasse : "") + '"><span>' + label + "</span>" + eingabe + hilfe + "</label>");
+  }
+
+  // External links: list of rows (address, title, kind) + "➕ Link". Adding a link reads title and kind from the
+  // page (F.linkMetadata: Microdata, JSON-LD, og:title) as suggestions – a page that can't be read (CORS) or tells
+  // nothing leaves both for the editor. Inputs have no name: the form's input handler ignores them.
+  function baueLinksFeld(f) {
+    var box = F.el('<div class="form-feld form-links"><span>' + esc(f.label) + '</span><ul class="form-links-liste"></ul>'
+      + '<div class="form-links-neu"><input type="url" placeholder="https://… (Adresse einfügen)" aria-label="Adresse eines externen Links">'
+      + '<button type="button" class="btn btn-small">➕ Link</button></div>'
+      + (f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "") + "</div>");
+    var liste = box.querySelector(".form-links-liste"), input = box.querySelector(".form-links-neu input");
+    function werte() { if (!Array.isArray(aktiv.w[f.name])) aktiv.w[f.name] = []; return aktiv.w[f.name]; }
+    function speichern() { aktiv.w[f.name] = werte().slice(); nachAenderung(); }
+    function zeile(o) {
+      var li = F.el('<li class="form-links-eintrag"><div class="form-links-adresse"><a target="_blank" rel="noopener"></a>'
+        + '<button type="button" class="form-links-weg" aria-label="Link entfernen" title="Link entfernen">✕</button></div>'
+        + '<div class="form-reihe"><label class="form-feld"><span>Titel</span><input type="text" data-k="title" placeholder="Wie heißt die Seite?"></label>'
+        + '<label class="form-feld"><span>Art</span><select data-k="category">'
+        + F.LINK_KINDS.map(function (k) { return '<option value="' + esc(k[0]) + '">' + esc(k[1]) + "</option>"; }).join("")
+        + "</select></label></div><small class=\"form-hilfe\" data-status></small></li>");
+      var a = li.querySelector("a");
+      a.href = o.url; a.textContent = o.url;
+      li.querySelector('[data-k="title"]').value = o.title || "";
+      li.querySelector('[data-k="category"]').value = o.category || "";
+      function aendern(e) {
+        var k = e.target.getAttribute("data-k");
+        if (!k) return;
+        if (e.target.value) o[k] = e.target.value; else delete o[k];
+        speichern();
+      }
+      li.addEventListener("input", aendern);
+      li.addEventListener("change", aendern);
+      li.querySelector(".form-links-weg").addEventListener("click", function () {
+        var i = werte().indexOf(o);
+        if (i >= 0) werte().splice(i, 1);
+        speichern(); zeichne();
+      });
+      return li;
+    }
+    function zeichne() { liste.innerHTML = ""; werte().forEach(function (o) { liste.appendChild(zeile(o)); }); }
+    function hinzufuegen() {
+      var u = input.value.trim();
+      if (!/^https?:\/\/[^\s\/]+\.[^\s]+$/.test(u)) {
+        input.setCustomValidity("Bitte eine vollständige Adresse mit https:// eingeben."); input.reportValidity(); return;
+      }
+      input.value = "";
+      var o = { url: u };
+      werte().push(o); speichern(); zeichne();
+      var status = function () { var li = liste.children[werte().indexOf(o)]; return li && li.querySelector("[data-status]"); };
+      if (status()) status().textContent = "⏳ Lese Titel und Art von der Seite …";
+      F.linkMetadata(u).then(function (m) {
+        if (werte().indexOf(o) < 0) return; // removed meanwhile
+        if (!m || (!m.title && !m.category)) {
+          zeichne();
+          if (status()) status().textContent = "Die Seite verrät nichts (oder lässt sich nicht lesen) – bitte Titel und Art eintragen.";
+          var li = liste.children[werte().indexOf(o)];
+          if (li) li.querySelector('[data-k="title"]').focus();
+          return;
+        }
+        if (!o.title && m.title) o.title = m.title;
+        if (!o.category && m.category) o.category = m.category;
+        speichern(); zeichne();
+        if (status()) status().textContent = "✓ Von der Seite gelesen – bei Bedarf anpassen." + (o.category ? "" : " Art bitte wählen.");
+      });
+    }
+    box.querySelector(".form-links-neu button").addEventListener("click", hinzufuegen);
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); hinzufuegen(); } });
+    input.addEventListener("input", function () { input.setCustomValidity(""); });
+    zeichne();
+    return box;
   }
 
   function baueFelder() {

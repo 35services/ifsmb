@@ -156,6 +156,25 @@ class FederationLinksTest < Minitest::Test
     assert_equal "unknown", f["status"]
   end
 
+  # --- filter external_link (`links: [{ title, url, category }]`) ---
+  def test_external_link_uses_title_and_category_without_fetching
+    f = FederationLinks.stub(:resolve, ->(*) { flunk "external links are not fetched" }) do
+      FilterHost.new(site).external_link({ "title" => "Sicherheit an der Drehmaschine", "url" => "https://35services.de/2026/x/", "category" => "post" })
+    end
+    assert_equal ["external", "post", "Sicherheit an der Drehmaschine", "35services.de"], f.values_at("status", "type", "name", "host")
+    i = FilterHost.new(site).external_link({ "title" => "Unser Beitrag", "url" => "https://www.instagram.com/p/abc/", "category" => "link" })
+    assert_equal "link", i["type"]
+    assert_nil FilterHost.new(site).external_link({ "url" => "https://x.org/", "category" => "<script>" })["type"]
+  end
+
+  def test_external_link_on_a_connected_instance_prefers_its_microdata
+    entry = { "title" => "Alter Name", "url" => URL, "category" => "post" }
+    f = with_resolve({ status: :ok, type: "equipment", name: "Snapmaker U1 mit Einhausung" }) { FilterHost.new(site).external_link(entry) }
+    assert_equal ["ok", "equipment", "Snapmaker U1 mit Einhausung"], f.values_at("status", "type", "name")
+    g = with_resolve({ status: :unknown }) { FilterHost.new(site).external_link(entry) }
+    assert_equal ["unknown", "post", "Alter Name"], g.values_at("status", "type", "name") # fallback copy
+  end
+
   def test_rewrite_ignores_other_hosts_and_network_errors
     html = %(<a href="https://example.org/x/">x</a>)
     assert_equal html, FederationLinks.rewrite(html, site)

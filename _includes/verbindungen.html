@@ -163,14 +163,27 @@
 {%- assign fed_projects = "" | split: "" -%}{%- assign fed_events = "" | split: "" -%}{%- assign fed_posts = "" | split: "" -%}
 {%- assign fed_challenges = "" | split: "" -%}{%- assign fed_people = "" | split: "" -%}{%- assign fed_partners = "" | split: "" -%}
 {%- assign fed_equipment = "" | split: "" -%}{%- assign fed_other = "" | split: "" -%}
-{%- for u in g_federated -%}{%- assign fi = u | federation_resolve -%}
-  {%- if fi.status == "ok" and fi.type == "project" -%}{%- assign fed_projects = fed_projects | push: fi -%}
-  {%- elsif fi.status == "ok" and fi.type == "event" -%}{%- assign fed_events = fed_events | push: fi -%}
-  {%- elsif fi.status == "ok" and fi.type == "post" -%}{%- assign fed_posts = fed_posts | push: fi -%}
-  {%- elsif fi.status == "ok" and fi.type == "challenge" -%}{%- assign fed_challenges = fed_challenges | push: fi -%}
-  {%- elsif fi.status == "ok" and fi.type == "person" -%}{%- assign fed_people = fed_people | push: fi -%}
-  {%- elsif fi.status == "ok" and fi.type == "partner" -%}{%- assign fed_partners = fed_partners | push: fi -%}
-  {%- elsif fi.status == "ok" and fi.type == "equipment" -%}{%- assign fed_equipment = fed_equipment | push: fi -%}
+{%- comment -%}external links with title and kind: `links: [{ title, url, category }]` (filter external_link). On team
+  profiles, links without a kind (GitHub, website …) stay in the profile itself (_layouts/member.html).{%- endcomment -%}
+{%- assign g_resolved = "" | split: "" -%}
+{%- for u in g_federated -%}{%- assign fi = u | federation_resolve -%}{%- assign g_resolved = g_resolved | push: fi -%}{%- endfor -%}
+{%- assign g_ext_other = "" | split: "" -%}
+{%- for l in P.links -%}{%- if l.url -%}
+  {%- assign fi = l | external_link -%}
+  {%- if fi.status == "external" and fi.type == nil -%}
+    {%- unless kind == "team" -%}{%- assign g_ext_other = g_ext_other | push: fi -%}{%- endunless -%}
+  {%- elsif fi.type == "link" and fi.status != "missing" -%}{%- assign g_ext_other = g_ext_other | push: fi -%}
+  {%- else -%}{%- assign g_resolved = g_resolved | push: fi -%}{%- endif -%}
+{%- endif -%}{%- endfor -%}
+{%- for fi in g_resolved -%}
+  {%- if fi.status == "missing" or fi.type == nil -%}{%- assign fed_other = fed_other | push: fi -%}
+  {%- elsif fi.type == "project" -%}{%- assign fed_projects = fed_projects | push: fi -%}
+  {%- elsif fi.type == "event" -%}{%- assign fed_events = fed_events | push: fi -%}
+  {%- elsif fi.type == "post" -%}{%- assign fed_posts = fed_posts | push: fi -%}
+  {%- elsif fi.type == "challenge" -%}{%- assign fed_challenges = fed_challenges | push: fi -%}
+  {%- elsif fi.type == "person" -%}{%- assign fed_people = fed_people | push: fi -%}
+  {%- elsif fi.type == "partner" -%}{%- assign fed_partners = fed_partners | push: fi -%}
+  {%- elsif fi.type == "equipment" -%}{%- assign fed_equipment = fed_equipment | push: fi -%}
   {%- else -%}{%- assign fed_other = fed_other | push: fi -%}
   {%- endif -%}
 {%- endfor -%}
@@ -179,7 +192,7 @@
 {%- assign has_owner = false -%}{%- if o_partners.size > 0 or o_team.size > 0 or o_names.size > 0 %}{% assign has_owner = true %}{% endif -%}
 {%- comment -%}`location` is free text on events and projects too – the "Standort" group is only for equipment{%- endcomment -%}
 {%- assign has_location = false -%}{%- if P.collection == "equipment" -%}{%- if l_partners.size > 0 or P.location %}{% assign has_location = true %}{% endif -%}{%- endif -%}
-{%- if has_owner or has_location or g_parents.size > 0 or g_projects.size > 0 or g_events.size > 0 or g_posts.size > 0 or g_challenges.size > 0 or g_people.size > 0 or g_partners.size > 0 or g_unknown_partners.size > 0 or g_equipment.size > 0 or g_federated.size > 0 or g_pages.size > 0 %}
+{%- if has_owner or has_location or g_parents.size > 0 or g_projects.size > 0 or g_events.size > 0 or g_posts.size > 0 or g_challenges.size > 0 or g_people.size > 0 or g_partners.size > 0 or g_unknown_partners.size > 0 or g_equipment.size > 0 or g_federated.size > 0 or g_resolved.size > 0 or g_ext_other.size > 0 or g_pages.size > 0 %}
 <section class="connections" id="verbindungen" data-pagefind-ignore="all">
   {%- if g_parents.size > 0 %}
   {% if kind == "projects" %}<h2 data-i18n="connections.project_part_of">{{ "connections.project_part_of" | t }}</h2>{% else %}<h2 data-i18n="connections.part_of">{{ "connections.part_of" | t }}</h2>{% endif %}
@@ -270,6 +283,12 @@
   <h2 data-i18n="connections.federated">{{ "connections.federated" | t }}</h2>
   <ul class="link-list link-list-connections link-list-federated">
     {% for f in fed_other %}{% include federation-item.html f=f %}{% endfor %}
+  </ul>
+  {%- endif %}
+  {%- if g_ext_other.size > 0 %}
+  <h2 data-i18n="connections.links">{{ "connections.links" | t }}</h2>
+  <ul class="link-list link-list-connections link-list-external">
+    {% for f in g_ext_other %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}
 </section>

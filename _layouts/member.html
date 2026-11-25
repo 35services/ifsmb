@@ -13,9 +13,12 @@ layout: default
         <h1>{{ page.title }}</h1>
         {% if page.role %}<p class="lead">{{ page.role }}</p>{% endif %}
         {% if page.photo and page.photo_credit %}<p class="photo-credit"><span data-i18n="team.photo_credit">{{ "team.photo_credit" | t }}</span> {{ page.photo_credit }}</p>{% endif %}
-        {% if page.links %}
+        {%- comment -%}links without a kind (GitHub, website …) are shown here; links with a `category` appear below in
+          „Verbindungen“, in the group of their kind (_includes/verbindungen.html){%- endcomment -%}
+        {%- assign plain_links = page.links | where_exp: "l", "l.category == nil or l.category == ''" %}
+        {% if plain_links.size > 0 %}
         <ul class="link-list">
-          {% for link in page.links %}<li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.title }}</a></li>{% endfor %}
+          {% for link in plain_links %}<li><a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.title }}</a></li>{% endfor %}
         </ul>
         {% endif %}
         {%- include feed-auswahl.html res=page art="team" -%}
