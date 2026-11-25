@@ -611,12 +611,6 @@ a.fed-missing { text-decoration: line-through; opacity: .7; }
 .tag-items { list-style: none; display: grid; gap: .35rem; }
 .tag-items .badge { margin-right: .4rem; }
 
-.related { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 2px dashed var(--line); }
-.related h2 { font-size: 1.3rem; margin-bottom: 1rem; }
-.related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem 1.5rem; }
-.related-group h3 { font-family: var(--mono); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .4rem; }
-.related-group ul { list-style: none; display: grid; gap: .3rem; }
-.related-group a { font-weight: 600; }
 
 .equipment-card { display: flex; flex-direction: column; gap: .3rem; }
 .equipment-thumb { display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 10px; margin-bottom: .5rem; }

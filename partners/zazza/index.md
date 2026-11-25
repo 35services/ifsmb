@@ -26,7 +26,4 @@ Hinter dem Zazza stehen **Paul und Zazza-Jan** (so nennen wir ihn, damit er nich
 
 {% include verbindungen.html partner="Zazza Moabit / Pajas Kaffee" %}
 
-{% assign zazza_tags = "zazza" | split: "," %}
-{% include verknuepft.html tags=zazza_tags %}
-
 <a href="{{ '/partners/' | relative_url }}" class="back-link">← Alle Partner</a>
