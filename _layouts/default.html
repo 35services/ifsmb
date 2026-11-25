@@ -154,8 +154,11 @@
   {% if content contains "link-tot" %}{% include link-tot-hinweis.html html=content %}{% endif %}
   {% unless page.search == false %}</div>{% endunless %}
 
-  {% if site.repository and page.path %}
   {%- assign schmale_layouts = "post,project,member,event,equipment,press" | split: "," -%}
+  {%- assign md_narrow = false -%}{%- if schmale_layouts contains page.layout -%}{%- assign md_narrow = true -%}{%- endif %}
+  {% include microdata-info.html page=page narrow=md_narrow %}
+
+  {% if site.repository and page.path %}
   <div class="container edit-page{% if schmale_layouts contains page.layout %} narrow{% endif %}" data-pagefind-ignore>
     {% include edit-buttons.html %}
     {% include neu-buttons.html %}
@@ -168,6 +171,7 @@
       <p>
         <a href="{{ '/spenden/' | relative_url }}" data-i18n="footer.donate">{{ "footer.donate" | t }}</a> ·
         <a href="{{ '/impressum/' | relative_url }}" data-i18n="footer.imprint">{{ "footer.imprint" | t }}</a> ·
+        <a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="footer.machine_readable">{{ "footer.machine_readable" | t }}</a> ·
         <a href="{{ '/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·
         <a href="https://github.com/falkorichter/ifsmb.de" target="_blank" rel="noopener" data-i18n="footer.source">{{ "footer.source" | t }}</a>
       </p>
