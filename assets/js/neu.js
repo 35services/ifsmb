@@ -512,6 +512,9 @@ var NeuFormular = (function () {
       var val = state.w[field];
       if (!val) return;
       if (field === "image") ensureInGallery(val, state.w.image_alt || state.w.title);
+      if (field === "social_media_preview_image" && /-social\.[a-zA-Z0-9]+$/i.test(val)) {
+        ensureInGallery(val.replace(/-social(\.[a-zA-Z0-9]+)$/i, "$1"), state.w.title);
+      }
       if (/^\/assets\/images\//.test(val) && state.crypto.migratedPublicImages.indexOf(val) < 0) {
         state.crypto.migratedPublicImages.push(val);
       }
