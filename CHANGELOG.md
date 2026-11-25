@@ -60,8 +60,13 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
 - **Regel in `CLAUDE.md`:** Quellcode ist Englisch – auch Ordner- und Dateinamen und Bezeichner, nicht nur Kommentare; deutsch (oder in anderen Sprachen) heißen nur Inhalte. Neuer Code nach dieser Regel, ältere deutsche Namen werden separat aufgeräumt.
 
 
+### Entfernt
+
+- **„Verknüpft“ unten auf den Seiten** (alles mit gemeinsamen Stichworten, `_includes/verknuepft.html`) – doppelt zu den Stichworten oben und zu „Verbindungen“, die die echten Zusammenhänge zeigen. Mit ihr entfallen `_data/tags_broad.yml` und die Stile `.related…`.
+
 ### Behoben
 
+- **Partnerseiten zeigen Beiträge mit diesem Partner in `partners`** unter „Verbindungen“ – bisher nur Termine; Beiträge erschienen dort nur über `linked` (oder über die entfernte Liste „Verknüpft“). Die Beiträge und der Termin zum Jugend Hackt Congress 2026 tragen jetzt `partners: [Jugend hackt]`.
 - **Weiterleitungen auf andere Instanzen:** `layout: weiterleitung` nimmt jetzt auch ein absolutes `target` (z. B. `https://35services.ifsmb.de/…`) – der Canonical-Link wurde vorher als `https://ifsmb.dehttps://…` zusammengesetzt. Erster Fall: Der Snapmaker U1 gehört 35services und hat seine Seite jetzt dort; `/equipment/snapmaker-u1/` leitet hin.
 - **Netzwerk:** Knoten einer verbundenen Instanz zeigen im Panel oben „🌐 <host>“ (vorher nur in den Listen).
 - **`/network/graph.json` bleibt gültiges JSON, auch wenn eine Sammlung leer ist:** Bisher stand hinter jedem Knoten ein Komma, das erst die Partnerliste am Ende abschloss – ohne Partner (z. B. in einer kleinen föderierten Instanz oder beim Build ohne Plugins) blieb ein Komma vor `]` stehen und das Netzwerk lud nicht. Jetzt steht das Komma vor jedem Knoten außer dem ersten. `check_site.rb` prüft zusätzlich, dass alle erzeugten `.json`-Dateien gültig sind.
