@@ -7,7 +7,6 @@ event_tag: au
 team: [falko-richter]
 personal: true
 encrypted: true
-image: /assets/images/projekte/augenarzttastatur/02.jpg
 social_media_preview_image: /assets/images/projekte/augenarzttastatur/04-social.jpg
 uuid: 96f29aa4-3c72-4b70-95fe-5e123a482fe5
 ---
@@ -19,8 +18,29 @@ uuid: 96f29aa4-3c72-4b70-95fe-5e123a482fe5
     "salt": "QjFazuiIAPo3W74L+3NstQ==",
     "iterations": 600000
   },
-  "iv": "nu+9il+/l5fM4ze0",
-  "data": "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",
-  "attachments": []
+  "iv": "eBP93Tnh3eKP6DWL",
+  "data": "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",
+  "attachments": [
+    {
+      "name": "/assets/images/projekte/augenarzttastatur/04.jpg",
+      "blob": "/assets/images/projekte/augenarzttastatur/04.jpg.blob",
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "/assets/images/projekte/augenarzttastatur/03.jpg",
+      "blob": "/assets/images/projekte/augenarzttastatur/03.jpg.blob",
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "/assets/images/projekte/augenarzttastatur/02.jpg",
+      "blob": "/assets/images/projekte/augenarzttastatur/02.jpg.blob",
+      "mime": "image/jpeg"
+    },
+    {
+      "name": "/assets/images/projekte/augenarzttastatur/01.jpg",
+      "blob": "/assets/images/projekte/augenarzttastatur/01.jpg.blob",
+      "mime": "image/jpeg"
+    }
+  ]
 }
 </script>
