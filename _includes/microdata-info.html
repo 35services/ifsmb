@@ -1,0 +1,27 @@
+{%- comment -%}
+  Visible summary of the page's Microdata at the bottom of every resource page („🤖 Maschinenlesbar“, collapsed):
+  what this page tells programs and other sites (schema.org type, address = itemid, uuid, name) – the same values as
+  the hidden block of _includes/microdata.html. Explained on /maschinenlesbar/. Params: page, narrow (true/false).
+{%- endcomment -%}
+{%- include microdata-type.html page=include.page -%}
+{%- if md_type -%}
+<div class="container microdata-info{% if include.narrow %} narrow{% endif %}" data-pagefind-ignore>
+  <details>
+    <summary><span aria-hidden="true">🤖</span> <span data-i18n="microdata.summary">{{ "microdata.summary" | t }}</span></summary>
+    <p class="small" data-i18n="microdata.intro">{{ "microdata.intro" | t }}</p>
+    <dl>
+      <dt data-i18n="microdata.type">{{ "microdata.type" | t }}</dt>
+      <dd><a href="https://schema.org/{{ md_type }}" target="_blank" rel="noopener"><code>schema.org/{{ md_type }}</code></a></dd>
+      <dt data-i18n="microdata.id">{{ "microdata.id" | t }}</dt>
+      <dd><code>{{ md_p.url | absolute_url }}</code></dd>
+      {%- if md_p.uuid %}
+      <dt data-i18n="microdata.uuid">{{ "microdata.uuid" | t }}</dt>
+      <dd><code>{{ md_p.uuid }}</code></dd>
+      {%- endif %}
+      <dt data-i18n="microdata.name">{{ "microdata.name" | t }}</dt>
+      <dd lang="de">{{ md_p.title }}</dd>
+    </dl>
+    <p class="small"><a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="microdata.more">{{ "microdata.more" | t }}</a></p>
+  </details>
+</div>
+{%- endif -%}

@@ -1,0 +1,21 @@
+{%- comment -%}
+  schema.org type of a resource page – shared by _includes/microdata.html (the machine-readable block) and
+  _includes/microdata-info.html (the visible „🤖 Maschinenlesbar“ box). Param: page. Sets md_type (nil: no resource).
+  Mapping: equipment → Product, team → Person, posts → BlogPosting, events → Event, projects → Project,
+  challenges → CreativeWork, press → NewsArticle, partner pages (/partners/<name>/) → Organization.
+{%- endcomment -%}
+{%- assign md_p = include.page -%}
+{%- assign md_type = nil -%}
+{%- case md_p.collection -%}
+  {%- when "equipment" -%}{%- assign md_type = "Product" -%}
+  {%- when "team" -%}{%- assign md_type = "Person" -%}
+  {%- when "posts" -%}{%- assign md_type = "BlogPosting" -%}
+  {%- when "events" -%}{%- assign md_type = "Event" -%}
+  {%- when "projects" -%}{%- assign md_type = "Project" -%}
+  {%- when "challenges" -%}{%- assign md_type = "CreativeWork" -%}
+  {%- when "press" -%}{%- assign md_type = "NewsArticle" -%}
+{%- endcase -%}
+{%- if md_type == nil and md_p.layout != "weiterleitung" -%}
+  {%- assign md_parts = md_p.url | split: "/" -%}
+  {%- if md_parts.size == 3 and md_parts[1] == "partners" -%}{%- assign md_type = "Organization" -%}{%- endif -%}
+{%- endif -%}
