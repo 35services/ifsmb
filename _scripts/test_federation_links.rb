@@ -5,12 +5,17 @@ require "minitest/mock"
 begin
   require "jekyll"
 rescue LoadError
-  # outside Bundler: the plugin only needs Jekyll::Hooks.register and Jekyll.logger
+  # outside Bundler: the plugin only needs Jekyll::Hooks.register, Jekyll.logger and Liquid::Template.register_filter
   module Jekyll
     module Hooks
       def self.register(*) = nil
     end
     def self.logger = Struct.new(:warn).new(nil)
+  end
+  module Liquid
+    class Template
+      def self.register_filter(*) = nil
+    end
   end
 end
 require_relative "../_plugins/federation_links"
