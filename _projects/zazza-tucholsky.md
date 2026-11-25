@@ -10,6 +10,7 @@ links:
   - title: Zazza HQ in Moabit
     url: https://zazza-kaffee.de/
     category: partner
+personal: true
 uuid: 7101281c-f0a9-4fba-97bd-b9e71ce9c74f
 ---
 
