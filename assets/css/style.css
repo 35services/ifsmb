@@ -294,15 +294,15 @@ a.link-tot::after { content: "🪦"; content: "🪦" / "(Link tot)"; text-decora
 .link-tot-hinweis p { margin: 0 0 .4rem; }
 /* links to connected instances, resolved by _plugins/federation_links.rb / assets/js/federation-links.js:
    an icon of the resource type (from the linked page's Microdata) before the link, struck through if it is gone */
-a.fed-link[data-fed-type]:not(.fed-auto)::before { display: inline-block; margin-right: .2em; text-decoration: none; }
-a.fed-equipment:not(.fed-auto)::before { content: "🛠️"; content: "🛠️" / ""; }
-a.fed-person:not(.fed-auto)::before { content: "👤"; content: "👤" / ""; }
-a.fed-partner:not(.fed-auto)::before { content: "🤝"; content: "🤝" / ""; }
-a.fed-event:not(.fed-auto)::before { content: "📅"; content: "📅" / ""; }
-a.fed-post:not(.fed-auto)::before { content: "📰"; content: "📰" / ""; }
-a.fed-project:not(.fed-auto)::before { content: "🔧"; content: "🔧" / ""; }
-a.fed-challenge:not(.fed-auto)::before { content: "🧗"; content: "🧗" / ""; }
-a.fed-press:not(.fed-auto)::before { content: "🗞️"; content: "🗞️" / ""; }
+a.fed-link[data-fed-type]:not(.fed-auto):not(.fed-grouped)::before { display: inline-block; margin-right: .2em; text-decoration: none; }
+a.fed-equipment:not(.fed-auto):not(.fed-grouped)::before { content: "🛠️"; content: "🛠️" / ""; }
+a.fed-person:not(.fed-auto):not(.fed-grouped)::before { content: "👤"; content: "👤" / ""; }
+a.fed-partner:not(.fed-auto):not(.fed-grouped)::before { content: "🤝"; content: "🤝" / ""; }
+a.fed-event:not(.fed-auto):not(.fed-grouped)::before { content: "📅"; content: "📅" / ""; }
+a.fed-post:not(.fed-auto):not(.fed-grouped)::before { content: "📰"; content: "📰" / ""; }
+a.fed-project:not(.fed-auto):not(.fed-grouped)::before { content: "🔧"; content: "🔧" / ""; }
+a.fed-challenge:not(.fed-auto):not(.fed-grouped)::before { content: "🧗"; content: "🧗" / ""; }
+a.fed-press:not(.fed-auto):not(.fed-grouped)::before { content: "🗞️"; content: "🗞️" / ""; }
 a.fed-missing { text-decoration: line-through; opacity: .7; }
 .fed-hinweis { color: var(--muted); font-size: .85em; }
 .link-tot-hinweis ul { margin: 0; padding-left: 1.2rem; }

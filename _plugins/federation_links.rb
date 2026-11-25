@@ -179,6 +179,30 @@ module FederationLinks
   end
 end
 
+# Liquid filter for templates that sort links by type (_includes/verbindungen.html):
+#   {% assign fi = url | federation_resolve %} → { "status" => "ok"|"missing"|"unknown"|"other", "type", "name",
+#   "url", "short" (without scheme), "host" } – "other": not a connected instance. Uses the same per-build cache.
+module FederationLinks
+  module Filter
+    def federation_resolve(input)
+      url = input.to_s.strip
+      host = begin
+        URI.parse(url).host
+      rescue URI::InvalidURIError
+        nil
+      end
+      base = { "url" => url, "short" => url.sub(%r{\Ahttps?://}, ""), "host" => host }
+      return base.merge("status" => "other") unless host && FederationLinks.hosts(@context.registers[:site]).include?(host)
+      return base.merge("status" => "unknown") if ENV["IFSMB_OFFLINE"] == "1"
+
+      info = FederationLinks.resolve(url.sub(/#.*/, ""))
+      info = { status: :unknown } if url.include?("#") && info[:status] == :ok # a section: only existence counts
+      base.merge("status" => info[:status].to_s, "type" => info[:type], "name" => info[:name])
+    end
+  end
+end
+Liquid::Template.register_filter(FederationLinks::Filter)
+
 Jekyll::Hooks.register [:pages, :documents], :post_render do |doc|
   next unless doc.output_ext == ".html" && doc.output
   doc.output = FederationLinks.rewrite(doc.output, doc.site)
