@@ -189,9 +189,9 @@ test("🔒 verschlüsselter Beitrag mit Foto → Foto wird nur als verschlüssel
   await alice.page.waitForSelector("#neu-dialog [data-crypto-pw]");
   await alice.page.fill("#neu-dialog [data-crypto-pw]", "geheim-e2e-2026");
 
-  // Because encrypted is true, only the gallery slot exists, so addPhotos automatically inserts into gallery
   await alice.addPhotos([png], ["Geheimes Foto der Tastatur"]);
   await alice.page.waitForSelector('#neu-dialog [data-photo="0"]');
+  await alice.page.click('#neu-dialog [data-photo="0"] [data-toggle="gallery"]');
   await alice.page.waitFor(() => /01\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
 
   await alice.submit();
@@ -264,6 +264,11 @@ ${enc.block}
     await alice.page.waitFor(() => /01\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
     await alice.page.waitFor(() => /02\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
 
+    // Warning about unencrypted social_media_preview_image must be shown
+    const warnText = await alice.page.text("#neu-dialog [data-crypto-social-warn]");
+    assert.match(warnText, /unverschlüsselt/i);
+    assert.match(warnText, /04-social\.jpg/);
+
     // Submit without even typing anything else!
     await alice.submit();
     await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
@@ -278,16 +283,17 @@ ${enc.block}
       dir + "03.jpg.blob",
       dir + "04.jpg.blob"
     ]);
+    // 04-social.jpg intentionally remains unencrypted for link previews; all 8 full/600w .jpg files are removed
     assert.deepEqual(removed, [
       dir + "01-600w.jpg", dir + "01.jpg",
       dir + "02-600w.jpg", dir + "02.jpg",
       dir + "03-600w.jpg", dir + "03.jpg",
-      dir + "04-600w.jpg", dir + "04-social.jpg", dir + "04.jpg"
+      dir + "04-600w.jpg", dir + "04.jpg"
     ]);
 
     const updatedMd = env.control.readFile({ ref: pr.head.ref, path: "_projects/augenarzttastatur.md" }).text;
     assert.ok(!/^image:/m.test(updatedMd), "image: aus öffentlichem Front Matter entfernt");
-    assert.ok(!/^social_media_preview_image:/m.test(updatedMd), "social_media_preview_image: aus öffentlichem Front Matter entfernt");
+    assert.match(updatedMd, /^social_media_preview_image: .*04-social\.jpg$/m, "social_media_preview_image bleibt im Front Matter");
     assert.ok(updatedMd.includes('"/' + dir + '01.jpg.blob"'));
     assert.ok(updatedMd.includes('"/' + dir + '02.jpg.blob"'));
     assert.ok(updatedMd.includes('"/' + dir + '03.jpg.blob"'));
