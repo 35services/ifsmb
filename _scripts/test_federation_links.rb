@@ -53,7 +53,23 @@ class FederationLinksTest < Minitest::Test
 
   def test_parse_include_format
     r = FederationLinks.parse(INCLUDE, URL)
-    assert_equal({ status: :ok, type: "equipment", name: "Snapmaker U1 mit Einhausung" }, r)
+    assert_equal({ status: :ok, type: "equipment", name: "Snapmaker U1 mit Einhausung", end: nil }, r)
+  end
+
+  def test_parse_event_dates_last_day
+    html = %(<div itemscope itemtype="https://schema.org/Event" itemid="#{URL}"><meta itemprop="name" content="Herbstfest">) +
+           %(<meta itemprop="startDate" content="2026-10-10"><meta itemprop="endDate" content="2026-10-11"></div>)
+    assert_equal "2026-10-11", FederationLinks.parse(html, URL)[:end]
+    one_day = html.sub(/<meta itemprop="endDate"[^>]*>/, "")
+    assert_equal "2026-10-10", FederationLinks.parse(one_day, URL)[:end]
+    assert_nil FederationLinks.parse(INCLUDE, URL)[:end] # not an event
+  end
+
+  def test_rewrite_event_link_carries_its_last_day
+    out = with_resolve({ status: :ok, type: "event", name: "Herbstfest", end: "2026-10-10" }) do
+      FederationLinks.rewrite(%(<a href="https://35services.ifsmb.de/calendar/herbstfest/">Herbstfest</a>), site)
+    end
+    assert_includes out, %(data-event-end="2026-10-10")
   end
 
   def test_parse_without_microdata_falls_back_to_title_without_type
@@ -147,7 +163,7 @@ class FederationLinksTest < Minitest::Test
   def test_filter_gives_type_name_and_host
     f = with_resolve({ status: :ok, type: "equipment", name: "Snapmaker U1 mit Einhausung" }) { FilterHost.new(site).federation_resolve(URL) }
     assert_equal({ "url" => URL, "short" => "35services.ifsmb.de/equipment/snapmaker-u1/", "host" => "35services.ifsmb.de",
-                   "status" => "ok", "type" => "equipment", "name" => "Snapmaker U1 mit Einhausung" }, f)
+                   "status" => "ok", "type" => "equipment", "name" => "Snapmaker U1 mit Einhausung", "end" => nil }, f)
   end
 
   def test_filter_other_hosts_and_sections

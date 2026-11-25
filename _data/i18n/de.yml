@@ -37,6 +37,7 @@ nav:
   search: Suche
 
 footer:
+  machine_readable: "Maschinenlesbar"
   donate: Spenden
   imprint: Impressum & Datenschutz
   past_projects: Vergangene Projekte
@@ -645,3 +646,13 @@ github:
 # links to connected instances (_plugins/federation_links.rb, assets/js/federation-links.js)
 federation:
   missing: "nicht mehr vorhanden"
+
+# visible summary of a page's Microdata (_includes/microdata-info.html)
+microdata:
+  summary: "Maschinenlesbar"
+  intro: "Diese Seite beschreibt sich auch für Programme und andere Websites – unsichtbar im HTML, als Microdata nach schema.org:"
+  type: "Art"
+  id: "Adresse (itemid)"
+  uuid: "Kennung (uuid)"
+  name: "Name"
+  more: "Was ist das? →"

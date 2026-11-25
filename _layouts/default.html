@@ -154,8 +154,11 @@
   {% if content contains "link-tot" %}{% include link-tot-hinweis.html html=content %}{% endif %}
   {% unless page.search == false %}</div>{% endunless %}
 
-  {% if site.repository and page.path %}
   {%- assign schmale_layouts = "post,project,member,event,equipment,press" | split: "," -%}
+  {%- assign md_narrow = false -%}{%- if schmale_layouts contains page.layout -%}{%- assign md_narrow = true -%}{%- endif %}
+  {% include microdata-info.html page=page narrow=md_narrow %}
+
+  {% if site.repository and page.path %}
   <div class="container edit-page{% if schmale_layouts contains page.layout %} narrow{% endif %}" data-pagefind-ignore>
     {% include edit-buttons.html %}
     {% include neu-buttons.html %}
@@ -172,6 +175,7 @@
       <p>
         {% if has_donate %}<a href="{{ '/spenden/' | relative_url }}" data-i18n="footer.donate">{{ "footer.donate" | t }}</a> ·{% endif %}
         <a href="{{ '/impressum/' | relative_url }}" data-i18n="footer.imprint">{{ "footer.imprint" | t }}</a> ·
+        <a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="footer.machine_readable">{{ "footer.machine_readable" | t }}</a> ·
         {% if has_archive %}<a href="{{ '/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·{% endif %}
         <a href="https://github.com/{{ site.repository }}" target="_blank" rel="noopener" data-i18n="footer.source">{{ "footer.source" | t }}</a>
       </p>
@@ -223,6 +227,18 @@
   {% endif %}
 
   {% include microdata.html page=page %}
+  <script>
+    /* Past events fade (class is-past): every element with data-event-end="YYYY-MM-DD" (last day of an event) before
+       today – decided in the browser, not at build time, so it stays right on a static site. Called again by
+       assets/js/federation-links.js when it reads dates of events on connected instances. */
+    window.IfsmbPast = function () {
+      var d = new Date(), today = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+      Array.prototype.forEach.call(document.querySelectorAll("[data-event-end]"), function (el) {
+        el.classList.toggle("is-past", el.getAttribute("data-event-end") < today);
+      });
+    };
+    window.IfsmbPast();
+  </script>
   {% include formular-config.html %}
   {%- if site.federation %}
   <script>

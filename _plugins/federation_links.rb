@@ -87,21 +87,25 @@ module FederationLinks
       root = scopes.find { |t| (attr(t, "itemid") || "").sub(%r{/?\z}, "/") == norm } || scopes.first
       name = nil
       type = nil
+      dates = {}
       if root
         type = TYPES[(attr(root, "itemtype") || "").split.first.to_s.sub(%r{\Ahttps?://schema\.org/}, "")]
         rest = html[(html.index(root) + root.length)..] || ""
         stop = rest =~ /<[a-z][a-z0-9]*\b[^>]*\bitemscope\b/i
         segment = stop ? rest[0...stop] : rest
         segment.scan(/<(?:meta|link)\b[^>]*>/i) do |t|
-          next unless attr(t, "itemprop").to_s.split.include?("name")
-          name ||= attr(t, "content")
+          props = attr(t, "itemprop").to_s.split
+          name ||= attr(t, "content") if props.include?("name")
+          %w[startDate endDate].each { |d| dates[d] ||= attr(t, "content") if props.include?(d) }
         end
         name ||= (m = segment.match(/<([a-z][a-z0-9]*)\b[^>]*\bitemprop\s*=\s*["']name["'][^>]*>(.*?)<\/\1>/im)) && strip(m[2])
       end
       # no Microdata (yet): the page title still tells the current name – but no type
       name ||= (m = html.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']*)["']/i)) && CGI.unescapeHTML(m[1])
       name ||= (m = html.match(/<title>(.*?)<\/title>/im)) && strip(m[1])
-      { status: :ok, type: type, name: name.to_s.strip.empty? ? nil : name.strip }
+      # last day of an event (endDate, else startDate) as YYYY-MM-DD – pages fade past events
+      ende = (dates["endDate"] || dates["startDate"]).to_s[/\A\d{4}-\d{2}-\d{2}/]
+      { status: :ok, type: type, name: name.to_s.strip.empty? ? nil : name.strip, end: type == "event" ? ende : nil }
     end
 
     def strip(s)
@@ -159,6 +163,7 @@ module FederationLinks
           classes = ["fed-link", (type && "fed-#{type}")].compact.join(" ")
           extra = +""
           extra << %( data-fed-type="#{type}") if type
+          extra << %( data-event-end="#{info[:end]}") if info[:end]
           if name
             extra << %( data-fed-name="#{CGI.escapeHTML(name)}")
             extra << %( title="#{CGI.escapeHTML("#{name} – #{host}")}") unless attrs =~ /\btitle\s*=/i
@@ -198,7 +203,7 @@ module FederationLinks
 
       info = FederationLinks.resolve(url.sub(/#.*/, ""))
       info = { status: :unknown } if url.include?("#") && info[:status] == :ok # a section: only existence counts
-      base.merge("status" => info[:status].to_s, "type" => info[:type], "name" => info[:name])
+      base.merge("status" => info[:status].to_s, "type" => info[:type], "name" => info[:name], "end" => info[:end])
     end
 
     # An entry of `links: [{ title, url, category }]` (external links with the editor's title and kind).
