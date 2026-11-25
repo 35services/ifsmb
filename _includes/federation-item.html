@@ -1,0 +1,17 @@
+{%- comment -%}
+  One entry of _includes/verbindungen.html for a page on a connected instance, sorted into the group of its type
+  (from the Microdata of that page, filter federation_resolve in _plugins/federation_links.rb). The name comes from
+  the other instance and is always escaped. Params: f (result of federation_resolve).
+{%- endcomment -%}
+{%- assign fi_icon = "🌐" -%}
+{%- case include.f.type -%}
+  {%- when "equipment" -%}{%- assign fi_icon = "🛠️" -%}
+  {%- when "person" -%}{%- assign fi_icon = "👤" -%}
+  {%- when "partner" -%}{%- assign fi_icon = "🤝" -%}
+  {%- when "event" -%}{%- assign fi_icon = "📅" -%}
+  {%- when "post" -%}{%- assign fi_icon = "📰" -%}
+  {%- when "project" -%}{%- assign fi_icon = "🔧" -%}
+  {%- when "challenge" -%}{%- assign fi_icon = "🧗" -%}
+  {%- when "press" -%}{%- assign fi_icon = "🗞️" -%}
+{%- endcase -%}
+<li><a class="fed-grouped" href="{{ include.f.url | escape }}"><span aria-hidden="true">{{ fi_icon }}</span> {{ include.f.name | default: include.f.short | escape }} <span class="link-meta">🌐 {{ include.f.host | escape }}</span></a></li>
