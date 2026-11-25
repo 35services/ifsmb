@@ -349,6 +349,7 @@ todos:
   button_hint: Eisenhower matrix – move, edit, save as a pull request
 
 partner:
+  back: "← All partners"
   logo_of: "{name} logo"
   equipment: "Equipment:"
   projects: "Projects:"

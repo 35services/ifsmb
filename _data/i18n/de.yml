@@ -352,6 +352,7 @@ todos:
   button_hint: Eisenhower-Matrix – verschieben, bearbeiten, als Pull Request speichern
 
 partner:
+  back: "← Alle Partner"
   logo_of: Logo {name}
   equipment: "Ausstattung:"
   projects: "Projekte:"

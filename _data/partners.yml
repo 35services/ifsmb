@@ -1,3 +1,14 @@
 # logo: Pfad zum Logo, z. B. /assets/images/partner/name.png — leer lassen, wenn noch kein Logo vorhanden ist
 # logo_dark: true, wenn das Logo helle Elemente hat und einen dunklen Hintergrund braucht
-[]
+# only partners this instance links to (devices: owner_partner / location_partner) – each gets a page with its
+# connections (_plugins/partner_pages.rb)
+- name: 35 services e. V.
+  url: https://35services.de/
+  logo: /assets/images/partner/35services.png
+  logo_dark: true
+  description: Nachbarschaftswerkstatt in Moabit, Mitglied im Verbund Offener Werkstätten.
+
+- name: Kurt-Tucholsky-Grundschule
+  url: https://kurt-tucholsky-grundschule.de/
+  logo: /assets/images/partner/kurt-tucholsky-grundschule.png
+  description: Musikalische Grundschule in Berlin-Moabit.

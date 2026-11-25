@@ -350,6 +350,7 @@ todos:
   button_hint: Matrice d’Eisenhower – déplacer, modifier, enregistrer en pull request
 
 partner:
+  back: "← Tous les partenaires"
   logo_of: Logo {name}
   equipment: "Équipement :"
   projects: "Projets :"
