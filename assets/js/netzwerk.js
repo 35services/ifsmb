@@ -669,7 +669,7 @@
     if (/^zeit:\d{4}-\d{2}$/.test(h)) { selectPeriod(h.slice(5)); return; }
     // node of an instance that is not loaded yet: reload – with ?verbund=1 the loader includes that instance
     var id = norm(h);
-    if (/^https?:\/\//.test(id) && id.indexOf(location.origin + '/') !== 0 && /[?&]verbund=1(&|$)/.test(location.search)) location.reload();
+    if (/^https?:\/\//.test(id) && id.indexOf(location.origin + '/') !== 0 && window.IfsmbVerbund === true) location.reload();
   });
   }
 
@@ -691,11 +691,13 @@
   // permalink to a node of another instance (#35services.ifsmb.de/… or #https://…): with ?verbund=1 that instance
   // is loaded too, even if it is not configured – the visitor opted in with ?verbund=1
   var hashHost = decodeURIComponent(location.hash.slice(1)).match(/^(?:https?:\/\/)?((?:localhost|127\.0\.0\.1|[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::\d+)?)\//i);
-  if (hashHost && params.get('verbund') === '1' && hashHost[1] !== location.host) {
+  // federation switch: ?verbund=1, or switched on earlier in this tab (window.IfsmbVerbund, _layouts/default.html)
+  var verbundOn = params.get('verbund') === '1' || (window.IfsmbVerbund === true && params.get('verbund') !== '0');
+  if (hashHost && verbundOn && hashHost[1] !== location.host) {
     var fromHash = instanceUrl((/^(localhost|127\.0\.0\.1)/.test(hashHost[1]) ? 'http://' : 'https://') + hashHost[1]);
     if (fromHash && peers.indexOf(fromHash) === -1) peers.push(fromHash);
   }
-  var federate = peers.length > 0 && params.get('verbund') === '1';
+  var federate = peers.length > 0 && verbundOn;
   // only http(s) addresses from other instances become links (a foreign graph could contain javascript: URLs)
   function safeHttp(u) { return typeof u === 'string' && /^https?:\/\//i.test(u) ? u : null; }
   function tr(key, params, fallback) { return window.I18n ? window.I18n.t(key, params) : fallback; }
@@ -740,7 +742,7 @@
   var btn = document.getElementById('netz-verbund'), info = document.getElementById('netz-verbund-info');
   if (btn && peers.length) btn.hidden = false;
   if (btn && federate) {
-    btn.href = location.pathname + location.hash;
+    btn.href = location.pathname + '?verbund=0' + location.hash;   // ?verbund=0 also ends the switch for this tab
     btn.setAttribute('data-i18n', 'pages.network.federation_off');
     btn.textContent = tr('pages.network.federation_off', null, '🌐 Nur diese Seite');
   }

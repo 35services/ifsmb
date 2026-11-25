@@ -42,12 +42,13 @@ search: false
     var peers = [];
     try { peers = JSON.parse(box.getAttribute("data-federation") || "[]"); } catch (e) { peers = []; }
     params.getAll("instanz").map(instanceUrl).forEach(function (u) { if (u && peers.indexOf(u) === -1) peers.push(u); });
-    var federate = peers.length > 0 && params.get("verbund") === "1";
+    // federation switch: ?verbund=1, or switched on earlier in this tab (window.IfsmbVerbund, _layouts/default.html)
+    var federate = peers.length > 0 && (params.get("verbund") === "1" || (window.IfsmbVerbund === true && params.get("verbund") !== "0"));
     var btn = document.getElementById("search-verbund"), info = document.getElementById("search-verbund-info");
     if (peers.length) btn.hidden = false;
     if (federate) {
-      var plain = new URLSearchParams(location.search); plain.delete("verbund"); plain.delete("instanz");
-      btn.href = location.pathname + (plain.toString() ? "?" + plain.toString() : "");
+      var plain = new URLSearchParams(location.search); plain.delete("instanz"); plain.set("verbund", "0");   // also ends the switch for this tab
+      btn.href = location.pathname + "?" + plain.toString();
       btn.setAttribute("data-i18n", "pages.search.federation_off");
       btn.textContent = tr("pages.search.federation_off", null, "🌐 Nur diese Seite durchsuchen");
     }
