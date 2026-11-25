@@ -25,6 +25,11 @@ uuid: 7101281c-f0a9-4fba-97bd-b9e71ce9c74f
 * Empowerment
 * https://auphonic.com/engine/
 
+#### Inspo
+* https://goldies-smashburger.de/
+* https://www.instagram.com/goldies______/
+* https://www.youtube.com/@goldies_smashburger
+
 ### Idee Schaufenster nutzen
 
 * Scheinwerfer
