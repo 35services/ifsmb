@@ -1,6 +1,6 @@
 ---
-title: "Alexander Riedel zu Besuch in der AG"
-start: 2026-10-05 00:00
+title: Alexander Riedel zu Besuch in der Rosalind-AG
+start: 2026-10-06 00:00
 all_day: true
 location: "Rosalind Franklin Gymnasium, Turmstr. 75"
 location_url: https://rosalind-franklin-gymnasium.de/
