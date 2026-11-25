@@ -266,14 +266,24 @@ var Formular = (function () {
   }
   function leer(v) { return v == null || v === "" || v === false || (Array.isArray(v) && !v.length); }
   // [[key, value], …] → YAML lines; empty values are left out, multi-line text becomes a block scalar.
+  // external links (field type "links"): [{ title, url, category }] → block list, empty keys left out
+  var LINK_KEYS = ["title", "url", "category"];
+  function yamlLinkList(k, a) {
+    var entries = a.filter(function (o) { return o && o.url; }).map(function (o) {
+      return LINK_KEYS.filter(function (x) { return o[x] != null && o[x] !== ""; })
+        .map(function (x, i) { return (i ? "    " : "  - ") + x + ": " + yamlText(o[x]); }).join("\n");
+    });
+    return entries.length ? k + ":\n" + entries.join("\n") : "";
+  }
   function yaml(paare) {
     return paare.filter(function (p) { return !leer(p[1]); }).map(function (p) {
       var k = p[0], v = p[1];
+      if (Array.isArray(v) && v.length && v[0] !== null && typeof v[0] === "object") return yamlLinkList(k, v);
       if (Array.isArray(v)) return k + ": " + yamlListe(v);
       if (typeof v === "boolean" || typeof v === "number") return k + ": " + v;
       if (/\n/.test(v)) return k + ": |\n" + String(v).replace(/\s+$/, "").split("\n").map(function (z) { return z ? "  " + z : ""; }).join("\n");
       return k + ": " + yamlText(v);
-    }).join("\n");
+    }).filter(function (line) { return line !== ""; }).join("\n");
   }
   // ---------- reading front matter (edit forms) ----------
   // Splits a file into front matter blocks and body, keeping every byte: joining the raw blocks with "\n" gives the
@@ -361,6 +371,68 @@ var Formular = (function () {
     return scalarValue(head);
   }
 
+  // links block (field type "links") → [{ title, url, category }], [] for "links: []"; undefined for anything the
+  // form can't edit without losing it (other keys, nested values, comments inside entries are fine)
+  function yamlLinks(raw) {
+    var lines = raw.split("\n"), head = stripComment(lines[0].replace(/^[^:]*:\s?/, "")).trim(), out = [], cur = null;
+    if (/^\[\s*\]$/.test(head)) return [];
+    if (head !== "") return undefined;
+    for (var i = 1; i < lines.length; i++) {
+      var l = lines[i];
+      if (l.trim() === "" || /^\s*#/.test(l)) continue;
+      var m = l.match(/^\s*-\s+([A-Za-z_]+):\s?(.*)$/) || null, n = m || l.match(/^\s+([A-Za-z_]+):\s?(.*)$/);
+      if (m) { cur = {}; out.push(cur); }
+      if (!n || !cur || LINK_KEYS.indexOf(n[1]) < 0) return undefined;
+      var v = scalarValue(n[2]);
+      if (v === undefined || typeof v === "boolean") return undefined;
+      if (v !== "") cur[n[1]] = String(v);
+    }
+    return out;
+  }
+
+  // kinds of resources (same names as _plugins/federation_links.rb), for the category of an external link
+  var LINK_KINDS = [["", "– Art wählen –"], ["equipment", "🛠️ Gerät / Ausstattung"], ["person", "👤 Person"], ["partner", "🤝 Partner / Organisation"],
+    ["event", "📅 Termin"], ["post", "📰 Beitrag / Artikel"], ["project", "🔧 Projekt"], ["challenge", "🧗 Herausforderung"], ["press", "🗞️ Presse"], ["link", "🔗 Link (z. B. Instagram-Beitrag)"]];
+  var SCHEMA_KINDS = { Product: "equipment", Person: "person", Organization: "partner", Event: "event", BlogPosting: "post",
+    Article: "post", NewsArticle: "press", Project: "project", CreativeWork: "challenge" };
+  // Title and kind of a page someone links to (editor only, after they added the link): Microdata (our instances),
+  // else JSON-LD (e.g. WordPress), else og:title/<title>. → Promise of { title, category } or null if the page can't
+  // be read (CORS, network) – then the editor fills both in by hand. The URL is never trusted for the kind.
+  function linkMetadata(url) {
+    if (typeof fetch === "undefined" || typeof DOMParser === "undefined") return Promise.resolve(null);
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = ctrl && setTimeout(function () { ctrl.abort(); }, 8000);
+    return fetch(url, ctrl ? { signal: ctrl.signal } : {}).then(function (r) { return r.ok ? r.text() : null; }).then(function (html) {
+      if (timer) clearTimeout(timer);
+      if (!html) return null;
+      var doc = new DOMParser().parseFromString(html, "text/html"), title = null, kind = null;
+      var norm = function (u) { return String(u || "").replace(/#.*$/, "").replace(/\/?$/, "/"); };
+      var items = Array.prototype.slice.call(doc.querySelectorAll("[itemscope]"));
+      var root = items.filter(function (el) { return norm(el.getAttribute("itemid")) === norm(url); })[0] || items[0];
+      if (root) {
+        kind = SCHEMA_KINDS[String(root.getAttribute("itemtype") || "").split(/\s+/)[0].replace(/^https?:\/\/schema\.org\//, "")] || null;
+        Array.prototype.forEach.call(root.querySelectorAll("[itemprop]"), function (el) {
+          if (title || el.parentElement.closest("[itemscope]") !== root) return;
+          if ((el.getAttribute("itemprop") || "").split(/\s+/).indexOf("name") >= 0) title = el.getAttribute("content") || el.textContent;
+        });
+      }
+      if (!kind || !title) Array.prototype.forEach.call(doc.querySelectorAll('script[type="application/ld+json"]'), function (s) {
+        try {
+          var data = JSON.parse(s.textContent), nodes = [].concat(data["@graph"] || data);
+          nodes.forEach(function (n) {
+            var t = [].concat(n["@type"] || [])[0];
+            if (!SCHEMA_KINDS[t]) return;
+            if (!kind) kind = SCHEMA_KINDS[t];
+            if (!title) title = n.headline || n.name || null;
+          });
+        } catch (e) { /* broken JSON-LD */ }
+      });
+      if (!title) { var og = doc.querySelector('meta[property="og:title"]'); title = og ? og.getAttribute("content") : (doc.title || null); }
+      if (!kind) { var ot = doc.querySelector('meta[property="og:type"]'); if (ot && ot.getAttribute("content") === "article") kind = "post"; }
+      return { title: title ? String(title).replace(/\s+/g, " ").trim() : "", category: kind || "" };
+    }).catch(function () { if (timer) clearTimeout(timer); return null; });
+  }
+
   function frontMatter(paare, text) { return "---\n" + yaml(paare) + "\n---\n" + (String(text || "").trim() ? "\n" + String(text).trim() + "\n" : ""); }
 
   // ---------- GitHub ----------
@@ -388,7 +460,7 @@ var Formular = (function () {
     personen: personen, person: person, avatar: avatar,
     QUELLEN: QUELLEN, chipFeld: chipFeld, dialog: dialog,
     yaml: yaml, yamlText: yamlText, yamlListe: yamlListe, frontMatter: frontMatter, leer: leer,
-    splitFile: splitFile, joinFile: joinFile, yamlValue: yamlValue,
+    splitFile: splitFile, joinFile: joinFile, yamlValue: yamlValue, yamlLinks: yamlLinks, LINK_KINDS: LINK_KINDS, linkMetadata: linkMetadata,
     githubNeu: githubNeu, githubEdit: githubEdit, githubFile: githubFile, kopierenUndOeffnen: kopierenUndOeffnen
   };
 })();

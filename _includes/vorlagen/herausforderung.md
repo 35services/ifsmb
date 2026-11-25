@@ -15,6 +15,7 @@ team: [{{ include.team }}]   # Team-Kürzel der Zuständigen – eine oder mehre
 projects: [{{ include.projects }}]   # Dateinamen der Projekte, zu denen sie gehört (ein Projekt hat viele Herausforderungen)
 tags: [{{ include.tags }}]   # Stichworte; das event_tag eines Projekts verbindet ebenfalls mit dem Projekt
 linked: [{{ include.linked }}]   # weitere Seiten: Termine, Geräte, Beiträge, z. B. [/calendar/…/]
+links:   # externe Links: Liste aus title, url und category (equipment, person, partner, event, post, project, challenge, press, link = beliebiger Link wie ein Instagram-Beitrag) – erscheinen unten bei „Verbindungen“ in der passenden Gruppe
 personal: {{ include.personal | default: false }}   # true = aus einem privaten Projekt im Team
 solution:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen

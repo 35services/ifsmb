@@ -305,6 +305,15 @@ a.fed-challenge:not(.fed-auto):not(.fed-grouped)::before { content: "🧗"; cont
 a.fed-press:not(.fed-auto):not(.fed-grouped)::before { content: "🗞️"; content: "🗞️" / ""; }
 a.fed-missing { text-decoration: line-through; opacity: .7; }
 .fed-hinweis { color: var(--muted); font-size: .85em; }
+/* form field "🌍 Externe Links" (assets/js/neu.js): one box per link – address, title, kind */
+.form-links-liste { list-style: none; margin: .3rem 0 .5rem; padding: 0; display: grid; gap: .5rem; }
+.form-links-eintrag { border: 1.5px solid var(--line); border-radius: var(--radius); padding: .5rem .6rem; }
+.form-links-adresse { display: flex; align-items: center; gap: .5rem; margin-bottom: .3rem; font-size: .85rem; }
+.form-links-adresse a { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.form-links-weg { border: 0; background: none; cursor: pointer; font-size: .9rem; padding: .1rem .3rem; border-radius: 6px; }
+.form-links-weg:hover, .form-links-weg:focus-visible { background: rgba(0,0,0,.08); }
+.form-links-neu { display: flex; gap: .5rem; align-items: center; }
+.form-links-neu input { flex: 1; min-width: 0; }
 .link-tot-hinweis ul { margin: 0; padding-left: 1.2rem; }
 .link-tot-hinweis code { font-size: .9em; overflow-wrap: anywhere; }
 

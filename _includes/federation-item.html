@@ -1,7 +1,8 @@
 {%- comment -%}
   One entry of _includes/verbindungen.html for a page on a connected instance, sorted into the group of its type
   (from the Microdata of that page, filter federation_resolve in _plugins/federation_links.rb). The name comes from
-  the other instance and is always escaped. Params: f (result of federation_resolve).
+  the other instance (or from `links:` in the front matter) and is always escaped.
+  Params: f (result of the filters federation_resolve / external_link).
 {%- endcomment -%}
 {%- assign fi_icon = "🌐" -%}
 {%- case include.f.type -%}
@@ -13,5 +14,8 @@
   {%- when "project" -%}{%- assign fi_icon = "🔧" -%}
   {%- when "challenge" -%}{%- assign fi_icon = "🧗" -%}
   {%- when "press" -%}{%- assign fi_icon = "🗞️" -%}
+  {%- when "link" -%}{%- assign fi_icon = "🔗" -%}
 {%- endcase -%}
-<li><a class="fed-grouped" href="{{ include.f.url | escape }}"><span aria-hidden="true">{{ fi_icon }}</span> {{ include.f.name | default: include.f.short | escape }} <span class="link-meta">🌐 {{ include.f.host | escape }}</span></a></li>
+{%- comment -%}external link (not a connected instance, status "external"): ↗ and a new tab; connected instance: 🌐{%- endcomment -%}
+{%- if include.f.status == "external" -%}{%- assign fi_mark = "↗" -%}{%- assign fi_target = ' target="_blank" rel="noopener"' -%}{%- else -%}{%- assign fi_mark = "🌐" -%}{%- assign fi_target = "" -%}{%- endif -%}
+<li><a class="fed-grouped" href="{{ include.f.url | escape }}"{{ fi_target }}><span aria-hidden="true">{{ fi_icon }}</span> {{ include.f.name | default: include.f.short | escape }} <span class="link-meta">{{ fi_mark }} {{ include.f.host | escape }}</span></a></li>

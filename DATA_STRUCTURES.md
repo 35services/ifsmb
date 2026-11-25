@@ -163,6 +163,8 @@ standort_partner: Kurt-Tucholsky-Grundschule   # verlinkt den Standort mit dem P
 | `owner_partner` / `owner_team` / `owner_name` | Ausstattung | **Besitz** – Partner / Person / Name, je eine Liste | `owner_partner: [35 services e. V., Kurt-Tucholsky-Grundschule]` |
 | `location_partner` / `location` | Ausstattung | **Standort** – Partner / Ort (Text) | `location_partner: Kurt-Tucholsky-Grundschule` |
 
+`links: [{ title, url, category }]` sind **externe Links** mit Titel und Art (`category`: equipment, person, partner, event, post, project, challenge, press, `link`) – „Verbindungen“ zeigt sie in der Gruppe ihrer Art, `link` und solche ohne Art unter „Links“ (siehe `FEDERATION.md`).
+
 `linked` ist die allgemeine Verbindung (auch zu normalen Seiten wie `/geld-fuer-makespaces/` – die erscheinen unten unter „Seiten“; solche Seiten zeigen ihre Verbindungen, wenn sie `{% include verbindungen.html %}` einbinden): Es nimmt die **Adresse** der anderen Seite, so wie sie im
 Browser steht (ohne `https://ifsmb.de`). So lässt sich alles mit allem verbinden – auch Person mit
 Termin, Beitrag mit Beitrag oder Ausstattung mit Partnerseite.
