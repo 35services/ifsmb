@@ -4,6 +4,7 @@ const assert = require("node:assert");
 const test = require("node:test");
 const SafeMarkdown = require("../assets/js/safe-markdown.js");
 const CryptoPage = require("../assets/js/crypto-page.js");
+const NeuFormular = require("../assets/js/neu.js");
 
 test("SafeMarkdown: HTML escaping and basic formatting", () => {
   const md = `# Titel <script>alert(1)</script>
@@ -142,4 +143,52 @@ Dies ist ein interner Test.
     /operation failed|MAC check failed/i,
     "Wrong password must reject"
   );
+});
+
+test("NeuFormular: Encrypt an existing unencrypted page and edit its plain text when encrypted", async () => {
+  const existingUnencrypted = `---
+title: "Internes Werkstatt-Protokoll"
+summary: "Notizen zum Aufbau"
+status: aktuell
+start: 2026-11-25
+uuid: 550e8400-e29b-41d4-a716-446655440000
+---
+
+## Offene Punkte
+
+- Schlüsselübergabe am Freitag
+- Zugangsdaten nur vor Ort
+`;
+  const password = "werkstatt-passwort-2026";
+
+  // 1. Encrypt existing unencrypted page via NeuFormular.encryptEditedFile
+  const encRes = await NeuFormular.encryptEditedFile("projekt", existingUnencrypted, {}, password, "_projects/werkstatt-protokoll.md");
+  assert.ok(encRes.content.includes("encrypted: true"), "Front matter must include encrypted: true");
+  assert.ok(encRes.content.includes('class="encrypted-data"'), "Body must contain encrypted-data script block");
+  assert.ok(!encRes.content.includes("Schlüsselübergabe"), "Plaintext must not appear in encrypted file");
+  assert.ok(encRes.content.includes("uuid: 550e8400-e29b-41d4-a716-446655440000"), "Existing front matter fields stay intact");
+
+  // 2. Decrypt the encrypted file for editing in the ✏️ form
+  const decForEdit = await NeuFormular.decryptFileForEdit("projekt", encRes.content, password, "_projects/werkstatt-protokoll.md");
+  assert.equal(decForEdit.values.title, "Internes Werkstatt-Protokoll");
+  assert.equal(decForEdit.values.encrypted, true);
+  assert.ok(decForEdit.plaintext.includes("## Offene Punkte\n\n- Schlüsselübergabe am Freitag"));
+
+  // 3. Edit the decrypted plain text and re-encrypt (keeping KDF salt so any .blob attachments remain valid)
+  const updatedPlaintext = decForEdit.plaintext + "\n- Alarmcode geändert";
+  const reEncRes = await NeuFormular.encryptEditedFile(
+    "projekt",
+    encRes.content,
+    { text: updatedPlaintext, summary: "Aktualisierte Notizen" },
+    password,
+    "_projects/werkstatt-protokoll.md"
+  );
+  assert.equal(reEncRes.payload.kdf.salt, encRes.payload.kdf.salt, "KDF salt preserved when password is unchanged");
+  assert.notEqual(reEncRes.payload.iv, encRes.payload.iv, "Fresh IV generated on re-encryption");
+  assert.ok(reEncRes.content.includes("summary: Aktualisierte Notizen"));
+  assert.ok(!reEncRes.content.includes("Alarmcode"), "Updated plaintext must not leak in file");
+
+  // 4. Verify decrypted updated content matches
+  const decAfterEdit = await NeuFormular.decryptFileForEdit("projekt", reEncRes.content, password, "_projects/werkstatt-protokoll.md");
+  assert.equal(decAfterEdit.plaintext, updatedPlaintext);
 });

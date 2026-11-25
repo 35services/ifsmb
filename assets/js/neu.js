@@ -106,6 +106,7 @@ var NeuFormular = (function () {
   var partner = function (name, label, x) { return chips(name, label, "partner", Object.assign({ platzhalter: "Partner suchen …" }, x)); };
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
   var persoenlich = function (hilfe) { return haken("personal", "Persönlich", { hilfe: hilfe }); };
+  var verschluesselt = function () { return haken("encrypted", "🔒 Inhalt mit Passwort verschlüsseln (Ende-zu-Ende im Browser)"); };
   // look of the page (_data/themes.yml, assets/css/themes.css); "" = the site's default
   var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"], ["slop", "Slop ✨"]];
   var themeField = function () { return auswahl("theme", "🎨 Theme (Aussehen)", THEMES, { mehr: true, hilfe: "Besucher*innen können unten auf der Seite trotzdem selbst wählen" }); };
@@ -154,6 +155,7 @@ var NeuFormular = (function () {
       verlinkt(),
         externeLinks(),
       persoenlich("Privates Projekt aus dem Team: nur im Teamprofil, nicht in den Listen des Instituts"),
+      verschluesselt(),
       inhalt("Ziel, Stand, was gebraucht wird …"),
       text("image", "Titelbild", { mehr: true, platzhalter: "/assets/images/projekte/<name>/01.jpg – ohne Metadaten" }),
       socialBild(),
@@ -172,6 +174,7 @@ var NeuFormular = (function () {
         stichworte({ hilfe: "Das event_tag eines Projekts zeigt den Beitrag auf der Projektseite" }),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("Text in Markdown. Fotos als Galerie: ![Was zu sehen ist](/assets/images/news/<dateiname>/01.jpg) und darunter {: .gallery}"),
         adresse("original_url", "Original-Adresse", { mehr: true, hilfe: "nur bei übernommenen Beiträgen" }),
         text("original_site", "Original-Website", { mehr: true, platzhalter: "z. B. 35services.de" }),
@@ -197,6 +200,7 @@ var NeuFormular = (function () {
         externeLinks(),
         [persoenlich("Privater Termin aus dem Team (braucht „Dabei“): nur im Teamprofil"),
           haken("project_only", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
+        verschluesselt(),
         inhalt("Was passiert, wer kann kommen, was mitbringen …"),
         text("date_label", "Text statt Datum", { mehr: true, platzhalter: "z. B. „Januar 2027 – genauer Termin folgt“" }),
         socialBild(),
@@ -233,6 +237,7 @@ var NeuFormular = (function () {
         stichworte({ hilfe: "Gerät, Gerätetyp, Besitzer*in, z. B. bambu-lab-a1-mini, 3d-drucker" }),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("Was das Gerät kann, Erfahrungen, Tipps …"),
         text("image", "Foto", { mehr: true, platzhalter: "eigenes Foto ohne Metadaten – keine Hersteller- oder Shopfotos" }),
         text("image_alt", "Beschreibung des Fotos", { mehr: true }),
@@ -261,6 +266,7 @@ var NeuFormular = (function () {
         verlinkt(),
         externeLinks(),
         persoenlich("Aus einem privaten Projekt im Team"),
+        verschluesselt(),
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
         datum("solved_on", "Gelöst am", { mehr: true }),
         feld("langtext", "solution", "Lösung (Markdown)", { mehr: true, markdown: true, zeilen: 4 }),
@@ -277,6 +283,7 @@ var NeuFormular = (function () {
         verlinkt(),
         externeLinks(),
         haken("not_in_team", "Nicht auf /team/ auflisten (nur eigene Seite zum Verlinken)"),
+        verschluesselt(),
         inhalt("Was die Person macht und womit sie im Makespace hilft – keine Wohnadresse, keine privaten E-Mail-Adressen"),
         text("photo", "Foto", { mehr: true, platzhalter: "/assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis" }),
         text("photo_credit", "Bildnachweis", { mehr: true, hilfe: "Pflicht bei Fremdfotos (Presse, Agentur)" }),
@@ -293,6 +300,7 @@ var NeuFormular = (function () {
         stichworte(),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
         text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/press.yml" }),
         socialBild(),
@@ -322,6 +330,7 @@ var NeuFormular = (function () {
         text("lead", "Unterzeile", { platzhalter: "Ein Satz unter dem Titel" }),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("Text der Seite in Markdown"),
         socialBild(),
         themeField()
@@ -392,12 +401,147 @@ var NeuFormular = (function () {
     }).map(function (f) { return f.name; });
   }
   function speichereEntwurf() {
-    try { localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: aktiv.w, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source, pr: aktiv.prBase || null, savedAt: Date.now() })); } catch (e) { /* storage blocked */ }
+    try {
+      var wDraft = aktiv.w;
+      if (aktiv.crypto && (aktiv.w.encrypted || aktiv.crypto.wasEncrypted)) {
+        wDraft = Object.assign({}, aktiv.w, { text: aktiv.crypto.encryptedBlock || aktiv.crypto.initialEncryptedBlock || "" });
+      }
+      localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: wDraft, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source, pr: aktiv.prBase || null, savedAt: Date.now() }));
+    } catch (e) { /* storage blocked */ }
   }
   function ladeEntwurf() {
     try { return JSON.parse(localStorage.getItem(aktiv.schluessel) || "null"); } catch (e) { return null; }
   }
   function loescheEntwurf() { try { localStorage.removeItem(aktiv.schluessel); } catch (e) { /* storage blocked */ } }
+
+  // ---------- client-side encryption in the form (assets/js/crypto-page.js) ----------
+  function withCrypto() {
+    if (typeof window !== "undefined" && window.CryptoPage) return Promise.resolve(window.CryptoPage);
+    if (typeof window !== "undefined" && window.ladeSkripte) {
+      return window.ladeSkripte(["crypto-page.js"]).then(function () { return window.CryptoPage; });
+    }
+    if (typeof require === "function") return Promise.resolve(require("./crypto-page.js"));
+    return Promise.reject(new Error("CryptoPage nicht verfügbar."));
+  }
+  function parseEncryptedBlock(text) {
+    var m = String(text || "").trim().match(/^<script\s+type=["']application\/json["']\s+class=["']encrypted-data["']\s*>\s*([\s\S]*?)\s*<\/script>$/i);
+    if (!m) return null;
+    try {
+      var p = JSON.parse(m[1]);
+      return p && p.kdf && p.kdf.salt && p.iv && p.data ? p : null;
+    } catch (e) { return null; }
+  }
+  function initCryptoState(state, isEdit) {
+    var rawBody = isEdit && state.edit ? state.edit.w0.text : "";
+    var payload = isEdit ? parseEncryptedBlock(rawBody) : null;
+    state.crypto = {
+      wasEncrypted: !!payload,
+      unlocked: !payload,
+      initialPayload: payload,
+      initialEncryptedBlock: payload ? rawBody : null,
+      initialPlaintext: null,
+      initialPassword: "",
+      password: "",
+      encryptedBlock: payload ? rawBody : null,
+      encryptedForText: null,
+      encryptedForPw: null,
+      promise: null,
+      error: ""
+    };
+    if (payload) {
+      // keep plaintext field empty while locked so the raw JSON ciphertext is never edited as Markdown
+      state.w.text = "";
+    }
+  }
+  function effectiveTextForSave(state) {
+    if (!state || !state.crypto) return state ? state.w.text : "";
+    var c = state.crypto;
+    if (state.w.encrypted) {
+      if (c.wasEncrypted && !c.unlocked) return c.initialEncryptedBlock;
+      if (c.wasEncrypted && c.unlocked && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
+        return c.initialEncryptedBlock;
+      }
+      if (c.encryptedBlock) return c.encryptedBlock;
+      if (c.initialEncryptedBlock) return c.initialEncryptedBlock;
+      return '<script type="application/json" class="encrypted-data">\n  /* 🔒 Bitte Passwort eingeben, um den Inhalt zu verschlüsseln */\n</script>';
+    }
+    if (c.wasEncrypted && !c.unlocked) return c.initialEncryptedBlock;
+    return state.w.text;
+  }
+  function scheduleCryptoEncrypt(state) {
+    if (!state || !state.crypto || !state.w.encrypted) return Promise.resolve();
+    var c = state.crypto;
+    if (c.wasEncrypted && !c.unlocked) return Promise.resolve(c.initialEncryptedBlock);
+    if (!c.password) {
+      c.encryptedBlock = null;
+      c.encryptedForText = null;
+      c.encryptedForPw = null;
+      return Promise.resolve(null);
+    }
+    if (c.wasEncrypted && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
+      c.encryptedBlock = c.initialEncryptedBlock;
+      c.encryptedForText = state.w.text;
+      c.encryptedForPw = c.password;
+      if (aktiv === state && vorschau) zeigeVorschau();
+      return Promise.resolve(c.encryptedBlock);
+    }
+    if (c.encryptedBlock && c.encryptedForText === state.w.text && c.encryptedForPw === c.password) {
+      return Promise.resolve(c.encryptedBlock);
+    }
+    var textToEnc = state.w.text, pwToEnc = c.password;
+    var keepKdf = !!(c.wasEncrypted && pwToEnc === c.initialPassword);
+    var p = withCrypto().then(function (CP) {
+      return CP.encryptMarkdownPayload(textToEnc, pwToEnc, c.initialPayload, keepKdf);
+    }).then(function (res) {
+      if (state.w.text === textToEnc && c.password === pwToEnc) {
+        c.encryptedBlock = res.block;
+        c.encryptedForText = textToEnc;
+        c.encryptedForPw = pwToEnc;
+        if (aktiv === state && vorschau) zeigeVorschau();
+      }
+      return res.block;
+    });
+    c.promise = p;
+    return p;
+  }
+  function unlockCryptoForEdit(state, password, silent) {
+    if (!state || !state.crypto || !state.crypto.initialPayload || !password) {
+      return Promise.reject(new Error("Bitte Passwort eingeben."));
+    }
+    var c = state.crypto;
+    return withCrypto().then(function (CP) {
+      return CP.decryptMarkdown(c.initialPayload, password).then(function (plain) {
+        if (aktiv !== state) return plain;
+        var norm = String(plain || "").replace(/^\n+/, "").replace(/\s+$/, "");
+        c.unlocked = true;
+        c.error = "";
+        c.password = password;
+        c.initialPassword = password;
+        c.initialPlaintext = norm;
+        c.encryptedBlock = c.initialEncryptedBlock;
+        c.encryptedForText = norm;
+        c.encryptedForPw = password;
+        state.w.text = norm;
+        CP.setUnlockedPassword(state.w.uuid || state.url, password, false);
+        if (typeof document !== "undefined") {
+          var pageContainer = document.querySelector(".encrypted-container");
+          if (pageContainer && typeof pageContainer._cryptoTryUnlock === "function") {
+            pageContainer._cryptoTryUnlock(password, false).catch(function () {});
+          }
+        }
+        baueFelder();
+        zeigeVorschau();
+        return norm;
+      });
+    }).catch(function (err) {
+      if (aktiv === state && !silent) {
+        c.error = "Falsches Passwort – der Inhalt konnte nicht entschlüsselt werden.";
+        var errEl = d && d.querySelector("[data-crypto-err]");
+        if (errEl) { errEl.textContent = c.error; errEl.hidden = false; }
+      }
+      throw err;
+    });
+  }
 
   // ---------- file ----------
   // random v4 UUID for the "read" marker (assets/js/gelesen.js); crypto.randomUUID needs a secure context
@@ -420,7 +564,10 @@ var NeuFormular = (function () {
     }
     return schema.format === "yaml" ? F.yaml(paare) + "\n" : F.frontMatter(paare, w.text);
   }
-  function dateiInhalt() { return aktiv.edit ? editedText(aktiv.schema, aktiv.edit, aktiv.w) : dateiText(aktiv.schema, aktiv.w); }
+  function dateiInhalt() {
+    var wOut = aktiv.crypto ? Object.assign({}, aktiv.w, { text: effectiveTextForSave(aktiv) }) : aktiv.w;
+    return aktiv.edit ? editedText(aktiv.schema, aktiv.edit, wOut) : dateiText(aktiv.schema, wOut);
+  }
 
   // ---------- editing an existing file ----------
   function sameValue(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -595,8 +742,25 @@ var NeuFormular = (function () {
     discardBtn.addEventListener("click", function () {
       loescheEntwurf();
       direct.clearPhotos();
-      if (aktiv.edit) { aktiv.w = JSON.parse(JSON.stringify(aktiv.edit.w0)); aktiv.beruehrt = allTouched(); }
-      else { aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe); aktiv.beruehrt = {}; }
+      if (aktiv.edit) {
+        aktiv.w = JSON.parse(JSON.stringify(aktiv.edit.w0));
+        aktiv.beruehrt = allTouched();
+        if (aktiv.crypto) {
+          if (aktiv.crypto.wasEncrypted && aktiv.crypto.unlocked) {
+            aktiv.w.text = aktiv.crypto.initialPlaintext;
+            aktiv.crypto.password = aktiv.crypto.initialPassword;
+            aktiv.crypto.encryptedBlock = aktiv.crypto.initialEncryptedBlock;
+            aktiv.crypto.encryptedForText = aktiv.crypto.initialPlaintext;
+            aktiv.crypto.encryptedForPw = aktiv.crypto.initialPassword;
+          } else {
+            initCryptoState(aktiv, true);
+          }
+        }
+      } else {
+        aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe);
+        aktiv.beruehrt = {};
+        if (aktiv.crypto) initCryptoState(aktiv, false);
+      }
       folge(); baueFelder(); zeigeVorschau();
       status.textContent = aktiv.edit ? t("form.discarded", null, "Änderungen verworfen.") : t("form.restarted", null, "Neu angefangen.");
     });
@@ -620,9 +784,71 @@ var NeuFormular = (function () {
 
   // in edit mode a required field only stays required if the file had a value (old posts without date: …)
   function isRequired(f) { return f.pflicht && !(aktiv.edit && F.leer(aktiv.edit.w0[f.name])); }
+  function baueCryptoFeld(f) {
+    var c = aktiv.crypto || {}, w = !!aktiv.w.encrypted;
+    var lockedExisting = !!(c.wasEncrypted && !c.unlocked);
+    var wrap = F.el('<div class="form-feld form-crypto-wrap">'
+      + '<label class="form-check"><input type="checkbox" name="encrypted"' + (w ? " checked" : "") + (lockedExisting ? ' disabled title="Bitte zuerst das Passwort eingeben und entsperren"' : "") + "><span>" + esc(f.label) + "</span></label>"
+      + '<div class="form-crypto-box"></div></div>');
+    var box = wrap.querySelector(".form-crypto-box");
+    if (lockedExisting) {
+      box.innerHTML = '<div class="card small" style="margin-top: 0.5rem; padding: 0.85rem 1rem; border-left: 4px solid var(--accent, #e6a800);">'
+        + '<p style="margin: 0 0 0.5rem;"><strong>🔒 Verschlüsselte Seite entsperren</strong> – gib das Passwort ein, um den Klartext im Editor zu öffnen und zu bearbeiten:</p>'
+        + '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">'
+        + '<input type="password" data-crypto-unlock-pw placeholder="Passwort eingeben …" autocomplete="current-password" style="flex: 1; min-width: 180px;">'
+        + '<button type="button" class="btn btn-small" data-crypto-unlock-btn>🔓 Entschlüsseln &amp; Text bearbeiten</button>'
+        + "</div>"
+        + '<p class="small" data-crypto-err style="color: #b00; margin: 0.4rem 0 0;"' + (c.error ? "" : " hidden") + ">" + esc(c.error || "") + "</p>"
+        + '<small class="form-hilfe" style="display: block; margin-top: 0.4rem;">Titel, Stichworte und Verbindungen lassen sich auch ohne Passwort ändern – der verschlüsselte Inhalt bleibt dann unverändert.</small>'
+        + "</div>";
+      var unlockInput = box.querySelector("[data-crypto-unlock-pw]"), unlockBtn = box.querySelector("[data-crypto-unlock-btn]");
+      var doUnlock = function () {
+        var pw = unlockInput.value;
+        if (!pw) { unlockInput.focus(); return; }
+        unlockBtn.disabled = true;
+        unlockCryptoForEdit(aktiv, pw, false).catch(function () { unlockBtn.disabled = false; unlockInput.focus(); });
+      };
+      unlockBtn.addEventListener("click", doUnlock);
+      unlockInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doUnlock(); } });
+    } else if (w) {
+      var noteHtml = (aktiv.edit && !c.wasEncrypted)
+        ? '<p class="note small" data-crypto-history-note style="margin: 0 0 0.6rem;">⚠️ <strong>Hinweis zur Git-Historie:</strong> Diese Seite war bisher unverschlüsselt veröffentlicht. Der frühere Klartext bleibt in älteren Git-Commits (und ggf. in Archiven oder Suchmaschinen) weiterhin öffentlich einsehbar. Nur der aktuelle Stand der Seite wird ab jetzt verschlüsselt ausgeliefert. Titel und Front-Matter-Felder bleiben sichtbar.</p>'
+        : (c.wasEncrypted
+          ? '<p class="small muted" style="margin: 0 0 0.5rem;">🔓 <strong>Klartext entsperrt:</strong> Du bearbeitest unten den entschlüsselten Markdown-Text. Beim Speichern wird er automatisch wieder verschlüsselt.</p>'
+          : '<p class="small muted" style="margin: 0 0 0.5rem;">🔒 Der Markdown-Text unten wird vor dem Speichern im Browser mit AES-GCM (256 Bit) verschlüsselt. Titel und Front-Matter-Felder bleiben öffentlich lesbar.</p>');
+      box.innerHTML = '<div class="card small" style="margin-top: 0.5rem; padding: 0.85rem 1rem;">'
+        + noteHtml
+        + '<label class="form-feld" style="margin: 0;"><span>🔑 Passwort für die Verschlüsselung <span class="form-pflicht" aria-hidden="true">*</span></span>'
+        + '<span style="display: flex; gap: 0.4rem; align-items: center;">'
+        + '<input type="password" data-crypto-pw placeholder="Passwort für diese Seite …" autocomplete="new-password" style="flex: 1;" value="' + esc(c.password || "") + '">'
+        + '<button type="button" class="btn btn-small btn-ghost" data-crypto-toggle-pw title="Passwort anzeigen / verbergen" aria-label="Passwort anzeigen / verbergen">👁️</button>'
+        + "</span></label></div>";
+      var pwInput = box.querySelector("[data-crypto-pw]"), toggleBtn = box.querySelector("[data-crypto-toggle-pw]");
+      pwInput.addEventListener("input", function () {
+        if (!aktiv || !aktiv.crypto) return;
+        aktiv.crypto.password = pwInput.value;
+        scheduleCryptoEncrypt(aktiv);
+        aktiv.gesendet = false;
+        status.textContent = "";
+        zeigeVorschau();
+      });
+      toggleBtn.addEventListener("click", function () {
+        pwInput.type = pwInput.type === "password" ? "text" : "password";
+      });
+    } else if (c.wasEncrypted && c.unlocked) {
+      box.innerHTML = '<p class="note small" style="margin-top: 0.5rem;">🔓 <strong>Verschlüsselung wird aufgehoben:</strong> Beim Speichern wird der entschlüsselte Text wieder als normaler, öffentlicher Klartext gespeichert.</p>';
+    }
+    return wrap;
+  }
+
   function baueFeld(f) {
     if (aktiv.edit && aktiv.edit.rawFields[f.name]) {
       return F.el('<label class="form-feld"><span>' + esc(f.label) + '</span><input type="text" disabled value="(in der Datei als Liste/Objekt – bitte auf GitHub bearbeiten)"></label>');
+    }
+    if (f.name === "encrypted") return baueCryptoFeld(f);
+    if (f.name === "text" && aktiv.crypto && aktiv.crypto.wasEncrypted && !aktiv.crypto.unlocked) {
+      return F.el('<div class="form-feld" data-crypto-locked-text><span>' + esc(f.label) + '</span>'
+        + '<div class="note small" style="margin: 0;">🔒 Der Text dieser Seite ist verschlüsselt. Gib oben das Passwort ein und klicke auf „🔓 Entschlüsseln &amp; Text bearbeiten“, um den Klartext im Editor zu öffnen.</div></div>');
     }
     var w = aktiv.w[f.name], hilfe = f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "";
     var label = esc(f.label) + (isRequired(f) ? ' <span class="form-pflicht" aria-hidden="true">*</span>' : "");
@@ -871,11 +1097,22 @@ var NeuFormular = (function () {
     if (v === aktiv.w[n]) return;
     aktiv.w[n] = v;
     aktiv.beruehrt[n] = v !== ""; // emptied → follows again
+    if (n === "encrypted") {
+      baueFelder();
+      if (v) {
+        scheduleCryptoEncrypt(aktiv);
+        var pwField = form.querySelector("[data-crypto-pw]");
+        if (pwField && !pwField.value) pwField.focus();
+      }
+    }
     folge(t);
     nachAenderung();
   }
   function nachAenderung() {
     folge();
+    if (aktiv.w.encrypted && aktiv.crypto && (!aktiv.crypto.wasEncrypted || aktiv.crypto.unlocked)) {
+      scheduleCryptoEncrypt(aktiv);
+    }
     zeigeVorschau();
     speichereEntwurf();
     aktiv.gesendet = false;
@@ -912,27 +1149,52 @@ var NeuFormular = (function () {
   function fehlt() {
     var leer = aktiv.felder.filter(function (f) { return isRequired(f) && f.typ === "chips" && !aktiv.w[f.name].length; })[0];
     if (leer) return t("form.fill_in", { field: leer.label.replace(/^\W+\s*/, "") }, "Bitte „" + leer.label.replace(/^\W+\s*/, "") + "“ ausfüllen.");
+    if (aktiv.w.encrypted && aktiv.crypto && (!aktiv.crypto.wasEncrypted || aktiv.crypto.unlocked) && !aktiv.crypto.password) {
+      var pwField = form && form.querySelector("[data-crypto-pw]");
+      if (pwField) pwField.focus();
+      return "Bitte ein Passwort für die Verschlüsselung eingeben.";
+    }
+    if (!aktiv.w.encrypted && aktiv.crypto && aktiv.crypto.wasEncrypted && !aktiv.crypto.unlocked) {
+      return "Bitte zuerst den verschlüsselten Inhalt mit dem Passwort entsperren.";
+    }
     return aktiv.schema.pruefe && aktiv.schema.pruefe(aktiv.w);
   }
   function anlegen() {
     var fehler = fehlt();
     if (fehler) { status.textContent = "⚠️ " + fehler; return; }
-    if (direct.active()) { direct.submit(); return; }
-    if (aktiv.edit) {
-      var newText = dateiInhalt();
-      if (newText === aktiv.edit.source) { status.textContent = t("form.unchanged", null, "Noch nichts geändert."); return; }
-      F.kopierenUndOeffnen(newText, F.githubEdit(aktiv.path), status, function () { getSelection().selectAllChildren(vorschau); });
-      var copiedMsg = t("form.copied_github", null, "Kopiert – GitHub ist in einem neuen Tab offen.");
-      setTimeout(function () { if (status.textContent === copiedMsg) status.textContent = t("form.copied_paste", null, "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."); }, 50);
+    var state = aktiv;
+    function doSubmit() {
+      if (aktiv !== state) return;
+      if (direct.active()) { direct.submit(); return; }
+      if (aktiv.edit) {
+        var newText = dateiInhalt();
+        if (newText === aktiv.edit.source) { status.textContent = t("form.unchanged", null, "Noch nichts geändert."); return; }
+        F.kopierenUndOeffnen(newText, F.githubEdit(aktiv.path), status, function () { getSelection().selectAllChildren(vorschau); });
+        var copiedMsg = t("form.copied_github", null, "Kopiert – GitHub ist in einem neuen Tab offen.");
+        setTimeout(function () { if (status.textContent === copiedMsg) status.textContent = t("form.copied_paste", null, "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."); }, 50);
+        aktiv.gesendet = true;
+        return;
+      }
+      var s = aktiv.schema, inhaltText = dateiInhalt(), datei = aktiv.w.datei.trim();
+      var url = F.githubNeu(s.ordner, datei, inhaltText), zuLang = url.length > 8000;
+      if (zuLang) url = F.githubNeu(s.ordner, datei);
+      F.kopierenUndOeffnen(inhaltText, url, status, function () { getSelection().selectAllChildren(vorschau); });
+      if (zuLang) status.textContent = t("form.too_long", null, "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.");
       aktiv.gesendet = true;
+    }
+    var needsAsyncCrypto = state.w.encrypted && state.crypto && (!state.crypto.wasEncrypted || state.crypto.unlocked) && (!state.crypto.encryptedBlock || state.crypto.encryptedForText !== state.w.text || state.crypto.encryptedForPw !== state.crypto.password);
+    if (!needsAsyncCrypto) {
+      doSubmit();
       return;
     }
-    var s = aktiv.schema, inhaltText = dateiInhalt(), datei = aktiv.w.datei.trim();
-    var url = F.githubNeu(s.ordner, datei, inhaltText), zuLang = url.length > 8000;
-    if (zuLang) url = F.githubNeu(s.ordner, datei);
-    F.kopierenUndOeffnen(inhaltText, url, status, function () { getSelection().selectAllChildren(vorschau); });
-    if (zuLang) status.textContent = t("form.too_long", null, "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.");
-    aktiv.gesendet = true;
+    submitBtn.disabled = true;
+    scheduleCryptoEncrypt(state).then(function () {
+      submitBtn.disabled = false;
+      doSubmit();
+    }, function (err) {
+      submitBtn.disabled = false;
+      status.textContent = "⚠️ " + ((err && err.message) || "Fehler beim Verschlüsseln.");
+    });
   }
 
 
@@ -1351,14 +1613,29 @@ var NeuFormular = (function () {
     sentOk: function (state, pr, text, path) {
       loescheEntwurf();
       state.gesendet = true; state.retries = 0;
+      var savedPlain = state.crypto && state.crypto.unlocked ? state.w.text : null;
+      var savedPw = state.crypto ? state.crypto.password : "";
+      function syncEditAfterSave() {
+        state.edit = readSource(state.schema, text, path) || state.edit;
+        state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+        initCryptoState(state, true);
+        if (state.crypto.wasEncrypted && savedPlain != null && savedPw) {
+          state.crypto.unlocked = true;
+          state.crypto.password = savedPw;
+          state.crypto.initialPassword = savedPw;
+          state.crypto.initialPlaintext = savedPlain;
+          state.crypto.encryptedForText = savedPlain;
+          state.crypto.encryptedForPw = savedPw;
+          state.w.text = savedPlain;
+        }
+      }
       // through the person's own fork (no push access, #186): the branch lives in the fork, so the next send starts a new
       // branch instead of reading this one from the repository; without a number GitHub's compare page opens the PR
       if (pr.fork) {
         state.sent = { text: text, url: pr.url || pr.compareUrl, number: pr.number || null };
         direct.clearPhotos();
         if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
-        state.edit = readSource(state.schema, text, path) || state.edit;
-        state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+        syncEditAfterSave();
         baueFelder(); zeigeVorschau();
         status.innerHTML = pr.number
           ? "✅ " + t("github.sent_fork_html", { link: '<a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a>", fork: esc(pr.fork) }, '<a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist angelegt (aus deinem Fork " + esc(pr.fork) + ") – danke!")
@@ -1371,8 +1648,7 @@ var NeuFormular = (function () {
       var branch = pr.branch || (state.prBase && state.prBase.branch);
       state.prBase = { number: pr.number, url: pr.url, branch: branch };
       if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
-      state.edit = readSource(state.schema, text, path) || state.edit;
-      state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+      syncEditAfterSave();
       baueFelder(); zeigeVorschau();
       direct.showPrMode("Gespeichert in #" + pr.number + ".");
       status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke! Weitere Änderungen landen im selben Pull Request.";
@@ -1583,6 +1859,7 @@ var NeuFormular = (function () {
     var entwurf = ladeEntwurf();
     aktiv.w = Object.assign(anfangswerte(schema, daten.werte), entwurf && entwurf.w);
     if (entwurf) aktiv.beruehrt = entwurf.beruehrt || {};
+    initCryptoState(aktiv, false);
     folge();
 
     setMode(false);
@@ -1616,6 +1893,7 @@ var NeuFormular = (function () {
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
       var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
       aktiv.w = draftFits ? Object.assign(JSON.parse(JSON.stringify(loaded.w0)), draft.w) : JSON.parse(JSON.stringify(loaded.w0));
+      initCryptoState(aktiv, true);
       // a draft that no longer fits (the page changed since, or it belongs to an open PR) is never thrown away: it is
       // carried over onto the current state below (direct.restoreDraft), with a conflict box if both changed the same thing
       setMode(true);
@@ -1626,6 +1904,14 @@ var NeuFormular = (function () {
       ordnerEl.textContent = folder + "/";
       baueFelder();
       zeigeVorschau();
+      if (aktiv.crypto && aktiv.crypto.wasEncrypted) {
+        var stateForUnlock = aktiv;
+        withCrypto().then(function (CP) {
+          if (aktiv !== stateForUnlock) return;
+          var savedPw = CP.getUnlockedPassword(stateForUnlock.w.uuid) || CP.getUnlockedPassword(stateForUnlock.url);
+          if (savedPw) return unlockCryptoForEdit(stateForUnlock, savedPw, true);
+        }).catch(function () {});
+      }
       status.textContent = draftFits ? t("form.draft_restored", null, "Entwurf wiederhergestellt.") : "";
       if (!d.open) d.showModal();
       if (draft && !draftFits && draft.source) direct.restoreDraft(draft);
@@ -1638,7 +1924,38 @@ var NeuFormular = (function () {
     });
   }
 
-  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder, checkHtml: checkHtml,
+  // Headless helpers for automated tests (_scripts/test_crypto.js):
+  // 1) Decrypt an encrypted source file for editing in the form → Promise<{ values, plaintext, payload }>
+  function decryptFileForEdit(type, source, password, path) {
+    var schema = TYPEN[type], editObj = readSource(schema, source, path);
+    if (!editObj) return Promise.reject(new Error("Kein Front Matter"));
+    var payload = parseEncryptedBlock(editObj.w0.text);
+    if (!payload) return Promise.reject(new Error("Kein verschlüsselter Block in der Datei"));
+    return withCrypto().then(function (CP) {
+      return CP.decryptMarkdown(payload, password).then(function (plain) {
+        var norm = String(plain || "").replace(/^\n+/, "").replace(/\s+$/, "");
+        var values = Object.assign({}, editObj.w0, { text: norm });
+        return { values: values, plaintext: norm, payload: payload };
+      });
+    });
+  }
+  // 2) Encrypt an existing (unencrypted or already encrypted) file with changes and a password → Promise<{ content, payload }>
+  function encryptEditedFile(type, source, changes, password, path) {
+    var schema = TYPEN[type], editObj = readSource(schema, source, path);
+    if (!editObj) return Promise.reject(new Error("Kein Front Matter"));
+    var existingPayload = parseEncryptedBlock(editObj.w0.text);
+    var w = Object.assign(JSON.parse(JSON.stringify(editObj.w0)), changes || {}, { encrypted: true });
+    var keepKdf = !!existingPayload;
+    return withCrypto().then(function (CP) {
+      return CP.encryptMarkdownPayload(w.text, password, existingPayload, keepKdf).then(function (res) {
+        var wOut = Object.assign({}, w, { text: res.block });
+        return { content: editedText(schema, editObj, wOut), payload: res.payload };
+      });
+    });
+  }
+
+  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, decryptFileForEdit: decryptFileForEdit,
+    encryptEditedFile: encryptEditedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder, checkHtml: checkHtml,
     connect: function () { return direct.connectDialog(); } };
 })();
 if (typeof module !== "undefined") module.exports = NeuFormular;

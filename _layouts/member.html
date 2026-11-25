@@ -28,9 +28,13 @@ layout: default
         {%- endif %}
       </div>
     </header>
+    {% if page.encrypted %}
+      {% include encrypted.html %}
+    {% else %}
     <div class="prose">
       {{ content }}
     </div>
+    {% endif %}
     {%- assign member_badge = site.data.badges | where: "team", page.slug | first -%}
     {% if member_badge %}
     <h2 id="badge" data-i18n="team.badge">{{ "team.badge" | t }}</h2>

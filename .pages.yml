@@ -122,6 +122,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das erste Seitenbild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -231,6 +236,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das erste Beitragsbild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -324,6 +334,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Projektbild, das erste Galeriebild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -422,6 +437,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen des Profils (og:image). Ohne Angabe wird das Profilfoto oder das Standardbild genutzt.
@@ -531,6 +551,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen auf WhatsApp, Signal, Mastodon, LinkedIn, Facebook oder X (og:image). Ohne Angabe wird das Gerätefoto oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!
@@ -683,6 +708,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen (og:image). Ohne Angabe wird das Standardbild genutzt.
@@ -766,6 +796,11 @@ content:
         type: select
         options:
           values: ["", ifsmb, offene-werkstaetten, rfflabs, slop]
+      - name: encrypted
+        label: Inhalt verschlüsseln (Passwort im Browser)
+        description: Der Text der Seite ist im Browser mit einem Passwort verschlüsselt (AES-GCM); das Front Matter bleibt öffentlich.
+        type: boolean
+        default: false
       - name: social_media_preview_image
         label: Social-Media-Vorschaubild (1200×630 px, optional)
         description: Vorschaubild beim Teilen der Pressemitteilung (og:image). Ohne Angabe wird das erste Bild oder das Standardbild genutzt. Ohne GPS-Metadaten hochladen!

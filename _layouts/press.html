@@ -9,9 +9,13 @@ layout: default
       {% if page.subtitle %}<p class="lead">{{ page.subtitle }}</p>{% endif %}
       {% include stichworte.html tags=page.tags %}
     </header>
+    {% if page.encrypted %}
+      {% include encrypted.html %}
+    {% else %}
     <div class="prose">
       {{ content }}
     </div>
+    {% endif %}
     {% include verbindungen.html %}
     <hr class="divider">
     <h2 data-i18n="press.about">{{ "press.about" | t }}</h2>
