@@ -4,7 +4,7 @@ layout: page
 title: Neuigkeiten
 i18n_title: pages.news.title
 i18n_lead: pages.news.lead
-lead: Was gerade im Institut passiert.
+lead: Was passiert bei 35services
 ---
 {% assign inst_posts = site.posts | where_exp: "p", "p.personal != true" | where_exp: "p", "p.project_only != true" %}
 {% assign pers_posts = site.posts | where: "personal", true %}
