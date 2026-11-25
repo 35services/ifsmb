@@ -5,12 +5,17 @@ require "minitest/mock"
 begin
   require "jekyll"
 rescue LoadError
-  # outside Bundler: the plugin only needs Jekyll::Hooks.register and Jekyll.logger
+  # outside Bundler: the plugin only needs Jekyll::Hooks.register, Jekyll.logger and Liquid::Template.register_filter
   module Jekyll
     module Hooks
       def self.register(*) = nil
     end
     def self.logger = Struct.new(:warn).new(nil)
+  end
+  module Liquid
+    class Template
+      def self.register_filter(*) = nil
+    end
   end
 end
 require_relative "../_plugins/federation_links"
@@ -131,6 +136,24 @@ class FederationLinksTest < Minitest::Test
     assert_equal %(<a href="https://35services.ifsmb.de/partners/#ktg" class="fed-link">Kurt-Tucholsky-Grundschule</a>), out
     gone = with_resolve({ status: :missing }) { FederationLinks.rewrite(%(<a href="https://35services.ifsmb.de/partners/#ktg">KTG</a>), site) }
     assert_includes gone, "fed-missing"
+  end
+
+  # --- filter federation_resolve (sorts links into the group of their type in _includes/verbindungen.html) ---
+  class FilterHost
+    include FederationLinks::Filter
+    def initialize(site) = @context = Struct.new(:registers).new({ site: site })
+  end
+
+  def test_filter_gives_type_name_and_host
+    f = with_resolve({ status: :ok, type: "equipment", name: "Snapmaker U1 mit Einhausung" }) { FilterHost.new(site).federation_resolve(URL) }
+    assert_equal({ "url" => URL, "short" => "35services.ifsmb.de/equipment/snapmaker-u1/", "host" => "35services.ifsmb.de",
+                   "status" => "ok", "type" => "equipment", "name" => "Snapmaker U1 mit Einhausung" }, f)
+  end
+
+  def test_filter_other_hosts_and_sections
+    assert_equal "other", FilterHost.new(site).federation_resolve("https://example.org/x/")["status"]
+    f = with_resolve({ status: :ok, type: "partner", name: "Partner" }) { FilterHost.new(site).federation_resolve("https://35services.ifsmb.de/partners/#ktg") }
+    assert_equal "unknown", f["status"]
   end
 
   def test_rewrite_ignores_other_hosts_and_network_errors
