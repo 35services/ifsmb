@@ -1,6 +1,6 @@
 ---
 title: "Recherche: KI-Tools für CAD mit OpenSCAD"
-summary: Falko testet, wie gut KI-Agenten wie Claude Code 3D-Modelle konstruieren – erst mit OpenSCAD, dann im direkten Vergleich mit SolidCraft und Onshape FeatureScript über MCP.
+summary: Falko testet, wie gut KI-Agenten wie Claude Code 3D-Modelle konstruieren – erst mit OpenSCAD, dann im direkten Vergleich mit SolidCraft, Onshape FeatureScript und FreeCAD über MCP.
 status: aktuell
 start: 2026-11-01
 period: seit November 2026
@@ -12,6 +12,20 @@ partners:
   - 35 services e. V.
 personal: true
 updates:
+  - date: 2026-11-25
+    text: |-
+      **Der vierte Weg: FreeCAD über MCP.** Derselbe GN-1/1-Halter ist jetzt auch in **[FreeCAD](https://www.freecad.org/)** 1.1 entstanden. FreeCAD hat selbst keinen MCP-Server; Falko hat dafür das Community-Projekt **[neka-nat/freecad-mcp](https://github.com/neka-nat/freecad-mcp)** eingerichtet: ein Add-on, das im FreeCAD-Fenster einen kleinen Server startet, plus ein MCP-Server, den Claude Code über `uvx` startet ([Einrichtung](https://github.com/falkorichter/3d-cad-llm-comparison/blob/main/docs/freecad-mcp/LOG.md)).
+
+      - Der Agent hat ein Python-Skript in FreeCAD ausgeführt, das ein **parametrisches FreeCAD-Dokument** baut: Alle Maße stehen in einer Tabelle (`Params`), und jedes der 131 Features hängt per Formel daran. Wer die Datei öffnet und z. B. `gn_l` auf 354 (GN 2/3) setzt, bekommt alle 18 Teile neu.
+      - Nach jedem Schritt kommt ein Screenshot zurück, so sieht der Agent, was er gebaut hat – anders als beim Onshape-MCP.
+      - Ergebnis: 18 Teile mit denselben M4-Verbindungslaschen wie bei SolidCraft und Onshape, STEP + STL. Rahmen (`557.707,7 mm³`) und Mittelschiene (`79.311,5 mm³`) stimmen exakt mit der Handrechnung überein, kein Teil überschneidet sich mit einem anderen.
+      - Aufwand: 8 Aufrufe an FreeCAD und rund 4 Minuten Rechenzeit; dazu kommt die Zeit, in der der Agent das Skript geschrieben hat. Ein fairer Zeitvergleich ist das nicht – FreeCAD kam als Letztes dran, die Stolpersteine der anderen drei waren schon bekannt.
+      - Stolperstein: `clear` ist in FreeCAD-Formeln ein reserviertes Wort, der Parameter heißt deshalb `clearance`.
+      - Dasselbe Skript läuft auch ohne Fenster mit `freecadcmd` (in rund einer Sekunde) – damit ginge es auch in CI.
+
+      Details: [Notizen zum FreeCAD-Build](https://github.com/falkorichter/3d-cad-llm-comparison/blob/main/challenges/01-gn-holder/freecad/NOTES.md) und die [Tabelle mit allen vier Wegen](https://github.com/falkorichter/3d-cad-llm-comparison/blob/main/challenges/01-gn-holder/LOG.md#2026-11-25).
+
+      ![Der GN-1/1-Halter in FreeCAD: Ecken, Mittelschienen, Beine und zwei Trennstege, farbig nach Teiletyp, vom Agenten über MCP gebaut](/assets/images/projekte/recherche-ki-tools-cad-openscad/04.jpg)
   - date: 2026-11-11
     text: |-
       **Ein Bauteil, drei CAD-Wege (`3d-cad-llm-comparison`):** Im neuen Repository **[3d-cad-llm-comparison](https://github.com/falkorichter/3d-cad-llm-comparison)** hat Falko denselben parametrischen, 3D-druckbaren **Halter für Gastronorm-Behälter (GN 1/1)** – geteilt für ein `256×256-mm`-Druckbett – parallel von KI-Agenten in drei verschiedenen Werkzeugen konstruieren lassen ([Protokoll](https://github.com/falkorichter/3d-cad-llm-comparison/blob/main/challenges/01-gn-holder/LOG.md) & [Gegenüberstellung](https://github.com/falkorichter/3d-cad-llm-comparison/blob/main/docs/featurescript-openscad-solidcraft.md)):
@@ -29,9 +43,9 @@ updates:
 uuid: f5664da6-2f25-45a9-b3e0-317d9a96cd93
 ---
 
-Falko experimentiert mit [Claude Code](https://claude.com/claude-code) und schaut, wie gut ein KI-Agent 3D-Modelle konstruieren kann – angefangen mit [OpenSCAD](https://openscad.org/) und inzwischen auch mit parametrischen B-Rep-Werkzeugen über MCP ([SolidCraft](https://github.com/tangency-labs/solidcraft) und [Onshape FeatureScript](https://www.onshape.com/)). Unter diesen Links könnt ihr sehen, was schon alles funktioniert:
+Falko experimentiert mit [Claude Code](https://claude.com/claude-code) und schaut, wie gut ein KI-Agent 3D-Modelle konstruieren kann – angefangen mit [OpenSCAD](https://openscad.org/) und inzwischen auch mit parametrischen B-Rep-Werkzeugen über MCP ([SolidCraft](https://github.com/tangency-labs/solidcraft), [Onshape FeatureScript](https://www.onshape.com/) und [FreeCAD](https://www.freecad.org/)). Unter diesen Links könnt ihr sehen, was schon alles funktioniert:
 
-- [3d-cad-llm-comparison](https://github.com/falkorichter/3d-cad-llm-comparison) – Vergleich zwischen OpenSCAD, SolidCraft (MCP) und Onshape FeatureScript (MCP) am selben Bauteil
+- [3d-cad-llm-comparison](https://github.com/falkorichter/3d-cad-llm-comparison) – Vergleich zwischen OpenSCAD, SolidCraft (MCP), Onshape FeatureScript (MCP) und FreeCAD (MCP) am selben Bauteil
 - [linear-actuator-crane](https://github.com/falkorichter/linear-actuator-crane)
 - [open-mog](https://github.com/falkorichter/open-mog) (noch privat)
 
