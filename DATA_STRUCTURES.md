@@ -239,6 +239,11 @@ Suchindex (`search_index` → `/search/index.json`) und auf die Volltextsuche (`
 Gleiche `id` ist ebenfalls derselbe Knoten (z. B. `partner:<Name>`); alles andere kommt mit `instance` (blauer Rand) dazu.
 Die Suche hängt die Pagefind-Indizes der Instanzen an (`mergeIndex`).
 
+**Microdata pro Seite** (`_includes/microdata.html`): Ausstattung → `schema.org/Product`, Team → `Person`, Beiträge →
+`BlogPosting`, Termine → `Event`, Projekte → `Project`, Herausforderungen → `CreativeWork`, Presse → `NewsArticle`,
+Partnerseiten → `Organization`; jeweils `itemid` = absolute Adresse, `name`, `description`, `image`, `identifier` = uuid.
+Damit lösen andere Instanzen Links auf (`_plugins/federation_links.rb`, `assets/js/federation-links.js`). Konzept: `FEDERATION.md`.
+
 ```
  Jekyll-Build                          Browser
  ─────────────                         ────────────────────────────────────────
