@@ -277,6 +277,7 @@ feed:
   help: « Ouvrir dans le lecteur de flux » transmet le flux à l’application de flux de votre appareil (p. ex. NetNewsWire, Reeder, Thunderbird). Feedly et Inoreader sont des lecteurs de flux dans le navigateur. Tout autre lecteur accepte l’adresse ci-dessus – il suffit de la copier et de l’y ajouter comme nouveau flux.
 
 connections:
+  links: "Liens"
   federated: "Instances reliées"
   project_part_of: Ce projet fait partie de
   part_of: Fait partie de

@@ -279,6 +279,7 @@ feed:
   help: „Im Feed-Reader öffnen“ übergibt den Feed an das Feed-Programm auf dem Gerät (z. B. NetNewsWire, Reeder, Thunderbird). Feedly und Inoreader sind Feed-Reader im Browser. Jeder andere Feed-Reader nimmt die Adresse oben – einfach kopieren und dort als neuen Feed eintragen.
 
 connections:
+  links: "Links"
   federated: "Verbundene Instanzen"
   project_part_of: Dieses Projekt ist ein Teil von
   part_of: Teil von

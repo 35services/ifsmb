@@ -2,7 +2,10 @@
 title: Paulimot PM3800 Drehmachine
 category: Drehmachine
 owner_name: [35Services e.V.]
-linked: [https://35services.de/2026/sicherheit-an-der-drehmachine/]
+links:
+  - title: Sicherheit (an der Drehmaschine)
+    url: https://35services.de/2026/sicherheit-an-der-drehmachine/
+    category: post
 image: /assets/images/ausstattung/paulimot-pm3800-drehmachine/01.jpg
 image_alt: Photo unserer Drehmachine
 social_media_preview_image: /assets/images/ausstattung/paulimot-pm3800-drehmachine/01-social.jpg

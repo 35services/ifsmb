@@ -124,6 +124,7 @@ class FormulareTest < Minitest::Test
         ort = "#{p['typ']} (#{p['fall']}) #{f['name']}"
         case f["typ"]
         when "chips" then assert_equal eingabe, Array(wert), ort
+        when "links" then assert_equal eingabe, wert, ort
         when "haken" then assert_equal true, wert, ort
         when "zahl" then assert_equal eingabe.to_i, wert, ort
         when "datum" then assert_equal eingabe, wert.to_s, ort
