@@ -15,6 +15,8 @@ uuid: a7f143a5-5085-4259-9ba0-4bbe1594d5f1
 
 Über eine Freundin wurde Falko Richter gefragt, ob er nicht an der Platanus Schule eine AG anbieten möchte. Im September 2026 ging es los: Seitdem trifft sich die 3D-Druck-AG einmal pro Woche.
 
+Spendet gerne für den Förderverein damit wir ein AMS-Lite bekommen: [platanus-schule.de/platanus/foerderverein/](https://www.platanus-schule.de/platanus/foerderverein/)
+
 Gedruckt wird auf einem Bambu Lab A1 mini, der der Schule gehört. Die Erfahrungen aus der [3D-Druck AG an der KTG]({{ '/projects/3d-druck-ag-ktg/' | relative_url }}) fließen direkt mit ein.
 
 **Stand November 2026:** Die Kinder haben Spaß, und die ersten Lehrkräfte merken, was mit dem Drucker alles geht – aus dem Töpferunterricht kam die Frage nach einem 3D-gedruckten Stempel. Wohin das führt, schauen wir uns an.
