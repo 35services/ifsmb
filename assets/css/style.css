@@ -305,6 +305,9 @@ a.fed-challenge:not(.fed-auto):not(.fed-grouped)::before { content: "🧗"; cont
 a.fed-press:not(.fed-auto):not(.fed-grouped)::before { content: "🗞️"; content: "🗞️" / ""; }
 a.fed-missing { text-decoration: line-through; opacity: .7; }
 .fed-hinweis { color: var(--muted); font-size: .85em; }
+/* past events (window.IfsmbPast in _layouts/default.html): a bit faded, full again on hover/focus */
+.is-past { opacity: .55; transition: opacity .15s; }
+.is-past:hover, .is-past:focus-within { opacity: 1; }
 /* „🤖 Maschinenlesbar“ at the bottom of resource pages (_includes/microdata-info.html) */
 .microdata-info { margin-top: 2rem; }
 .microdata-info details { border: 1.5px dashed var(--line); border-radius: var(--radius); padding: .5rem .9rem; font-size: .9rem; }

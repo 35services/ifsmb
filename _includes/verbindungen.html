@@ -223,7 +223,7 @@
   <h2 data-i18n="calendar.events">{{ "calendar.events" | t }}</h2>
   {%- endif %}
   <ul class="link-list link-list-connections">
-    {% for x in g_events %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">📅</span> {{ x.title }} <span class="link-meta">{% if x.date_label and x.date_label != "" %}{{ x.start | date: "%m/%Y" }}{% else %}{{ x.start | i18n_date }}{% endif %}</span>{% if x.personal %} <span class="link-private" data-i18n="connections.personal">{{ "connections.personal" | t }}</span>{% endif %}</a></li>{% endfor %}
+    {% for x in g_events %}<li data-event-end="{{ x.end | default: x.start | date: '%Y-%m-%d' }}"><a href="{{ x.url | relative_url }}"><span aria-hidden="true">📅</span> {{ x.title }} <span class="link-meta">{% if x.date_label and x.date_label != "" %}{{ x.start | date: "%m/%Y" }}{% else %}{{ x.start | i18n_date }}{% endif %}</span>{% if x.personal %} <span class="link-private" data-i18n="connections.personal">{{ "connections.personal" | t }}</span>{% endif %}</a></li>{% endfor %}
     {% for f in fed_events %}{% include federation-item.html f=f %}{% endfor %}
   </ul>
   {%- endif %}

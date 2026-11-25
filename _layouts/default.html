@@ -222,6 +222,18 @@
   {% endunless %}
 
   {% include microdata.html page=page %}
+  <script>
+    /* Past events fade (class is-past): every element with data-event-end="YYYY-MM-DD" (last day of an event) before
+       today – decided in the browser, not at build time, so it stays right on a static site. Called again by
+       assets/js/federation-links.js when it reads dates of events on connected instances. */
+    window.IfsmbPast = function () {
+      var d = new Date(), today = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+      Array.prototype.forEach.call(document.querySelectorAll("[data-event-end]"), function (el) {
+        el.classList.toggle("is-past", el.getAttribute("data-event-end") < today);
+      });
+    };
+    window.IfsmbPast();
+  </script>
   {% include formular-config.html %}
   {%- if site.federation %}
   <script>
