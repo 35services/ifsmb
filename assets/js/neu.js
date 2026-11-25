@@ -1163,10 +1163,7 @@ var NeuFormular = (function () {
     var fehler = fehlt();
     if (fehler) { status.textContent = "⚠️ " + fehler; return; }
     var state = aktiv;
-    var ready = (state.w.encrypted && state.crypto && (!state.crypto.wasEncrypted || state.crypto.unlocked) && (!state.crypto.encryptedBlock || state.crypto.encryptedForText !== state.w.text || state.crypto.encryptedForPw !== state.crypto.password))
-      ? scheduleCryptoEncrypt(state)
-      : Promise.resolve();
-    ready.then(function () {
+    function doSubmit() {
       if (aktiv !== state) return;
       if (direct.active()) { direct.submit(); return; }
       if (aktiv.edit) {
@@ -1184,6 +1181,19 @@ var NeuFormular = (function () {
       F.kopierenUndOeffnen(inhaltText, url, status, function () { getSelection().selectAllChildren(vorschau); });
       if (zuLang) status.textContent = t("form.too_long", null, "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.");
       aktiv.gesendet = true;
+    }
+    var needsAsyncCrypto = state.w.encrypted && state.crypto && (!state.crypto.wasEncrypted || state.crypto.unlocked) && (!state.crypto.encryptedBlock || state.crypto.encryptedForText !== state.w.text || state.crypto.encryptedForPw !== state.crypto.password);
+    if (!needsAsyncCrypto) {
+      doSubmit();
+      return;
+    }
+    submitBtn.disabled = true;
+    scheduleCryptoEncrypt(state).then(function () {
+      submitBtn.disabled = false;
+      doSubmit();
+    }, function (err) {
+      submitBtn.disabled = false;
+      status.textContent = "⚠️ " + ((err && err.message) || "Fehler beim Verschlüsseln.");
     });
   }
 
