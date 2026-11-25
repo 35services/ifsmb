@@ -21,9 +21,6 @@ uuid: 33908aa5-0210-4eaf-973d-3ad00d2f1da4
 
 {% include verbindungen.html partner="Jugend hackt" %}
 
-{% assign jh_tags = "jugend-hackt" | split: "," %}
-{% include verknuepft.html tags=jh_tags %}
-
 <a href="{{ '/partners/' | relative_url }}" class="back-link">← Alle Partner</a>
 
 https://jugendhackt.org/spenden/

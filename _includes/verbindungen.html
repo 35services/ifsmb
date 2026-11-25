@@ -85,7 +85,12 @@
   {%- assign x_links = x.linked | join: "," | split: "," -%}
   {%- assign x_tags = x.tags | join: "," | split: "," -%}
   {%- if kind == "projects" and P.event_tag and x_tags contains P.event_tag %}{% continue %}{% endif -%}
-  {%- if p_links contains x.url or x_links contains me_url %}{% assign g_posts = g_posts | push: x %}{% endif -%}
+  {%- assign x_partners = x.partners | join: "," | split: "," -%}
+  {%- assign hit = false -%}
+  {%- if p_links contains x.url or x_links contains me_url %}{% assign hit = true %}{% endif -%}
+  {%- comment -%}partner pages: posts with this partner in `partners` (like events){%- endcomment -%}
+  {%- if kind == "partner" and x.personal != true and x_partners contains include.partner %}{% assign hit = true %}{% endif -%}
+  {%- if hit %}{% assign g_posts = g_posts | push: x %}{% endif -%}
 {%- endfor -%}
 
 {%- comment -%}--- challenges (Herausforderungen) ---{%- endcomment -%}

@@ -61,11 +61,7 @@ layout: default
     {% else %}
     <p class="note"><span data-i18n="equipment.no_own_devices">{{ "equipment.no_own_devices" | t }}</span> {% include besitz.html item=page %} <span data-i18n="equipment.use_by_arrangement">{{ "equipment.use_by_arrangement" | t }}</span></p>
     {% endif %}
-    {%- assign rel_tags = "" | split: "" -%}
-    {%- for t in page.tags -%}{%- unless site.data.tags_broad contains t -%}{%- assign rel_tags = rel_tags | push: t -%}{%- endunless -%}{%- endfor -%}
-    {%- if rel_tags.size == 0 -%}{%- assign rel_tags = page.tags -%}{%- endif %}
     {% include verbindungen.html %}
-    {% include verknuepft.html tags=rel_tags %}
     <a href="{{ '/equipment/' | relative_url }}" class="back-link" data-i18n="equipment.back">{{ "equipment.back" | t }}</a>
   </article>
 </main>
