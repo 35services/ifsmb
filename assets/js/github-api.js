@@ -183,6 +183,26 @@ var GitHubApi = (function () {
       }, function (e) { if (e.status === 404) return null; throw e; });
   }
 
+  // Current binary bytes of a file on the base branch or on ref (Uint8Array, or null if 404).
+  function readBinaryFile(path, ref) {
+    return call("GET", "/repos/" + repo() + "/contents/" + path.split("/").map(encodeURIComponent).join("/") + "?ref=" + encodeURIComponent(ref || baseBranch()))
+      .then(function (f) {
+        if (f && f.content) {
+          var bin = atob(String(f.content).replace(/\n/g, "")), bytes = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          return bytes;
+        }
+        if (f && f.sha) {
+          return call("GET", "/repos/" + repo() + "/git/blobs/" + encodeURIComponent(f.sha)).then(function (b) {
+            var bin2 = atob(String(b.content).replace(/\n/g, "")), bytes2 = new Uint8Array(bin2.length);
+            for (var j = 0; j < bin2.length; j++) bytes2[j] = bin2.charCodeAt(j);
+            return bytes2;
+          });
+        }
+        return null;
+      }, function (e) { if (e.status === 404) return null; throw e; });
+  }
+
   // File names in a folder on the base branch ([] if the folder doesn't exist yet)
   function listFolder(folder, ref) {
     var path = folder.replace(/\/$/, "").split("/").map(encodeURIComponent).join("/");
@@ -326,6 +346,9 @@ var GitHubApi = (function () {
       return o.files.reduce(function (p, f) {
         return p.then(function (list) {
           n++;
+          if (f.delete) {
+            return list.concat([{ path: f.path, mode: "100644", type: "blob", sha: null }]);
+          }
           step(tr("github.step_upload", { n: n, total: o.files.length }, "Datei " + n + " von " + o.files.length + " hochladen …"));
           var content = f.blob ? blobToBase64(f.blob).then(function (b) { return { content: b, encoding: "base64" }; })
             : Promise.resolve({ content: f.text, encoding: "utf-8" });
@@ -387,7 +410,7 @@ var GitHubApi = (function () {
   return {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
     canPushKnown: canPushKnown, ensureFork: ensureFork, compareUrl: compareUrl,
-    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
+    whoAmI: whoAmI, readFile: readFile, readBinaryFile: readBinaryFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
     namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
     finishPullRequest: finishPullRequest, pullMergeState: pullMergeState, commitChecks: commitChecks, openIssues: openIssues,
     assignIssue: assignIssue

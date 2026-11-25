@@ -180,3 +180,125 @@ test("ohne Token: alter Weg (Kopieren → GitHub-Editor), keine einzige Anfrage 
   assert.equal(await anon.page.evaluate(() => typeof window.GitHubApi === "undefined" || !window.GitHubApi.connected()), true);
   assert.deepEqual(env.control.requests(), [], "keine Anfrage an die (Fake-)API");
 });
+
+test("🔒 verschlüsselter Beitrag mit Foto → Foto wird nur als verschlüsselte .blob-Datei hochgeladen (keine .jpg)", async () => {
+  const png = env.makePng("foto-secret.png", { width: 800, height: 600 });
+  const alice = await env.person("token-alice");
+  await alice.openNew("/news/", "beitrag");
+  await alice.fill({ title: "E2E Geheimer Beitrag", text: "Vertraulicher Text.\n", encrypted: true });
+  await alice.page.waitForSelector("#neu-dialog [data-crypto-pw]");
+  await alice.page.fill("#neu-dialog [data-crypto-pw]", "geheim-e2e-2026");
+
+  await alice.addPhotos([png], ["Geheimes Foto der Tastatur"]);
+  await alice.page.waitForSelector('#neu-dialog [data-photo="0"]');
+  await alice.page.click('#neu-dialog [data-photo="0"] [data-toggle="gallery"]');
+  await alice.page.waitFor(() => /01\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
+
+  await alice.submit();
+  await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+  const pr = env.control.state().pulls[0];
+  const post = pr.files.find((f) => f.filename.startsWith("_posts/")).filename;
+  const slug = post.replace(/^_posts\/\d{4}-\d{2}-\d{2}-|\.md$/g, "");
+  const dir = "assets/images/news/" + slug + "/";
+
+  // Must ONLY contain the Markdown file and 01.jpg.blob – NO unencrypted .jpg, -600w.jpg, or -social.jpg!
+  assert.deepEqual(pr.files.map((f) => f.filename).sort(), [post, dir + "01.jpg.blob"].sort());
+
+  const mdContent = env.control.readFile({ ref: pr.head.ref, path: post }).text;
+  assert.match(mdContent, /^encrypted: true$/m);
+  assert.ok(!mdContent.includes("Vertraulicher Text"), "Klartext darf nicht im Markdown stehen");
+  assert.ok(mdContent.includes('"' + "/" + dir + '01.jpg.blob"'), "Payload muss .blob-Anhang auflisten");
+
+  const blobBytes = Buffer.from(env.control.readFile({ ref: pr.head.ref, path: dir + "01.jpg.blob" }).base64, "base64");
+  assert.ok(blobBytes.length > 28, ".blob enthält 12 Byte IV + Ciphertext + Tag");
+  // Must NOT start with JPEG magic bytes (FF D8 FF)
+  assert.notEqual(blobBytes[0] === 0xff && blobBytes[1] === 0xd8, true, ".blob ist verschlüsselt, kein rohes JPEG");
+});
+
+test("✏️ bestehende verschlüsselte Seite mit unverschlüsselten .jpg-Fotos (wie #244 Augenarzttastatur) → konvertiert beim Speichern alle Fotos zu .blob und löscht die .jpg-Dateien", async () => {
+  // Seed main with augenarzttastatur's unencrypted .jpg files so we can test the migration on edit
+  const dir = "assets/images/projekte/augenarzttastatur/";
+  env.seedSource([
+    "_projects/augenarzttastatur.md",
+    dir + "01.jpg", dir + "01-600w.jpg",
+    dir + "02.jpg", dir + "02-600w.jpg",
+    dir + "03.jpg", dir + "03-600w.jpg",
+    dir + "04.jpg", dir + "04-600w.jpg", dir + "04-social.jpg"
+  ]);
+
+  // Create an encrypted payload with known password "test-augenarzt" and attachments: [] (just like #244)
+  const CryptoPage = require("../../assets/js/crypto-page.js");
+  const mdBody = "Geheimer Projekttext.\n\n![Bild 1](/" + dir + "01.jpg)\n![Bild 3](/" + dir + "03.jpg)\n![Bild 4](/" + dir + "04.jpg)\n{: .gallery}\n";
+  const enc = await CryptoPage.encryptMarkdownPayload(mdBody, "test-augenarzt", null, false, []);
+  const seededMd = `---
+title: Augenarzttastatur
+status: aktuell
+start: 2026-01-01
+period: seit 2026
+event_tag: au
+team: [falko-richter]
+personal: true
+encrypted: true
+image: /${dir}02.jpg
+social_media_preview_image: /${dir}04-social.jpg
+uuid: 96f29aa4-3c72-4b70-95fe-5e123a482fe5
+---
+
+${enc.block}
+`;
+  // Write seededMd to both fake GitHub main and _site/source/_projects/augenarzttastatur.md for the test
+  env.control.commit({ branch: "main", files: { "_projects/augenarzttastatur.md": seededMd }, login: "alice", message: "seed #244 state" });
+  const siteSourcePath = path.join(ROOT, "_site/source/_projects/augenarzttastatur.md");
+  const origSiteSource = fs.readFileSync(siteSourcePath, "utf8");
+  fs.writeFileSync(siteSourcePath, seededMd);
+
+  try {
+    const alice = await env.person("token-alice");
+    await alice.openEdit("/projects/augenarzttastatur/");
+    // Unlock inside the ✏️ form
+    await alice.page.waitForSelector("#neu-dialog [data-crypto-unlock-pw]");
+    await alice.page.fill("#neu-dialog [data-crypto-unlock-pw]", "test-augenarzt");
+    await alice.page.click("#neu-dialog [data-crypto-unlock-btn]");
+
+    // Wait until unlocked and the 4 .blob attachments appear in the preview
+    await alice.page.waitFor(() => /01\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
+    await alice.page.waitFor(() => /02\.jpg\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent));
+
+    // Warning about unencrypted social_media_preview_image must be shown
+    const warnText = await alice.page.text("#neu-dialog [data-crypto-social-warn]");
+    assert.match(warnText, /unverschlüsselt/i);
+    assert.match(warnText, /04-social\.jpg/);
+
+    // Submit without even typing anything else!
+    await alice.submit();
+    await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+
+    const pr = env.control.state().pulls[0];
+    const added = pr.files.filter((f) => f.status === "added").map((f) => f.filename).sort();
+    const removed = pr.files.filter((f) => f.status === "removed").map((f) => f.filename).sort();
+
+    assert.deepEqual(added, [
+      dir + "01.jpg.blob",
+      dir + "02.jpg.blob",
+      dir + "03.jpg.blob",
+      dir + "04.jpg.blob"
+    ]);
+    // 04-social.jpg intentionally remains unencrypted for link previews; all 8 full/600w .jpg files are removed
+    assert.deepEqual(removed, [
+      dir + "01-600w.jpg", dir + "01.jpg",
+      dir + "02-600w.jpg", dir + "02.jpg",
+      dir + "03-600w.jpg", dir + "03.jpg",
+      dir + "04-600w.jpg", dir + "04.jpg"
+    ]);
+
+    const updatedMd = env.control.readFile({ ref: pr.head.ref, path: "_projects/augenarzttastatur.md" }).text;
+    assert.ok(!/^image:/m.test(updatedMd), "image: aus öffentlichem Front Matter entfernt");
+    assert.match(updatedMd, /^social_media_preview_image: .*04-social\.jpg$/m, "social_media_preview_image bleibt im Front Matter");
+    assert.ok(updatedMd.includes('"/' + dir + '01.jpg.blob"'));
+    assert.ok(updatedMd.includes('"/' + dir + '02.jpg.blob"'));
+    assert.ok(updatedMd.includes('"/' + dir + '03.jpg.blob"'));
+    assert.ok(updatedMd.includes('"/' + dir + '04.jpg.blob"'));
+  } finally {
+    fs.writeFileSync(siteSourcePath, origSiteSource);
+  }
+});

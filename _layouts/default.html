@@ -259,10 +259,11 @@
 
   <script>
     (function () {
-      var links = Array.prototype.slice.call(document.querySelectorAll('a.lightbox'));
-      if (!links.length) return;
-      var box = document.getElementById('lightbox'), img = box.querySelector('img'), cap = box.querySelector('figcaption'), i = 0, x0 = null;
+      var box = document.getElementById('lightbox'), img = box.querySelector('img'), cap = box.querySelector('figcaption'), links = [], i = 0, x0 = null;
+      function getLinks() { return Array.prototype.slice.call(document.querySelectorAll('a.lightbox')); }
       function show(n) {
+        links = getLinks();
+        if (!links.length) return;
         i = (n + links.length) % links.length;
         var thumb = links[i].querySelector('img');
         img.src = links[i].href;
@@ -272,7 +273,14 @@
         document.body.style.overflow = 'hidden';
       }
       function close() { box.hidden = true; img.src = ''; document.body.style.overflow = ''; }
-      links.forEach(function (a, n) { a.addEventListener('click', function (e) { e.preventDefault(); show(n); }); });
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a.lightbox');
+        if (!a) return;
+        e.preventDefault();
+        links = getLinks();
+        var idx = links.indexOf(a);
+        if (idx >= 0) show(idx);
+      });
       box.querySelector('.lb-close').onclick = close;
       box.querySelector('.lb-prev').onclick = function (e) { e.stopPropagation(); show(i - 1); };
       box.querySelector('.lb-next').onclick = function (e) { e.stopPropagation(); show(i + 1); };

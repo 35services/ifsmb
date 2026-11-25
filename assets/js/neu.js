@@ -445,6 +445,10 @@ var NeuFormular = (function () {
       encryptedBlock: payload ? rawBody : null,
       encryptedForText: null,
       encryptedForPw: null,
+      encryptedForAtts: null,
+      lastKey: null,
+      lastPayload: payload || null,
+      migratedPublicImages: [],
       promise: null,
       error: ""
     };
@@ -453,12 +457,89 @@ var NeuFormular = (function () {
       state.w.text = "";
     }
   }
+  function mimeForPath(p) {
+    if (/\.png$/i.test(p)) return "image/png";
+    if (/\.webp$/i.test(p)) return "image/webp";
+    if (/\.gif$/i.test(p)) return "image/gif";
+    if (/\.svg$/i.test(p)) return "image/svg+xml";
+    if (/\.pdf$/i.test(p)) return "application/pdf";
+    return "image/jpeg";
+  }
+  // Collects local images (/assets/images/...) referenced in state.w.text (plus used photos in state.photos)
+  // that need to be listed as .blob attachments in the encrypted payload.
+  function collectEncryptedAttachments(state) {
+    if (!state || !state.w || !state.w.encrypted) return [];
+    var initialAtts = (state.crypto && state.crypto.initialPayload && Array.isArray(state.crypto.initialPayload.attachments))
+      ? state.crypto.initialPayload.attachments : [];
+    var alreadyInInitial = {};
+    initialAtts.forEach(function (a) { if (a && a.name) alreadyInInitial[a.name] = true; });
+    var found = [], seen = {};
+    function addPath(url) {
+      if (!url || seen[url] || alreadyInInitial[url]) return;
+      seen[url] = true;
+      found.push({ name: url, blob: url + ".blob", mime: mimeForPath(url) });
+    }
+    var md = String(state.w.text || ""), re = /!\[[^\]]*\]\((\/assets\/images\/[^\s)"'\]]+\.(?:jpe?g|png|webp|gif))\)/gi, m;
+    while ((m = re.exec(md))) addPath(m[1]);
+    (state.photos || []).forEach(function (p) {
+      var u = "/" + p.folder + p.name;
+      if (md.indexOf("](" + u + ")") >= 0) addPath(u);
+    });
+    return found;
+  }
+  // When encryption is enabled, public front-matter image fields (image, photo, logo)
+  // would leak unencrypted photos in the public front matter. Move any local image into the
+  // encrypted Markdown gallery and clear those public front-matter image fields.
+  // social_media_preview_image (-social.jpg) is intentionally kept unencrypted (with a warning in the UI)
+  // so social media / messenger link previews still work.
+  function migratePublicImagesToEncrypted(state) {
+    if (!state || !state.w || !state.w.encrypted || !state.crypto) return;
+    if (state.crypto.wasEncrypted && !state.crypto.unlocked) return;
+    var t = String(state.w.text || "").replace(/\s+$/, "");
+    function ensureInGallery(imgUrl, altText) {
+      if (!imgUrl || !/^\/assets\/images\//.test(imgUrl) || /\/og-preview\.jpg$/.test(imgUrl) || /-social\.jpg$/i.test(imgUrl)) return;
+      if (t.indexOf("](" + imgUrl + ")") >= 0) return;
+      var line = "![" + String(altText || state.w.title || "Bild").replace(/[\[\]]/g, "") + "](" + imgUrl + ")";
+      t = /\n\{: \.gallery[^}]*\}$/.test(t) && /\)\n\{: \.gallery[^}]*\}$/.test(t)
+        ? t.replace(/\n(\{: \.gallery[^}]*\})$/, "\n" + line + "\n$1")
+        : t + (t ? "\n\n" : "") + line + "\n{: .gallery}";
+    }
+    (state.photos || []).forEach(function (p) {
+      var u = "/" + p.folder + p.name;
+      if (state.w.image === u || state.w.photo === u || state.w.logo === u) {
+        ensureInGallery(u, p.alt);
+      }
+    });
+    ["image", "photo", "logo"].forEach(function (field) {
+      var val = state.w[field];
+      if (!val) return;
+      if (field === "image") ensureInGallery(val, state.w.image_alt || state.w.title);
+      if (/^\/assets\/images\//.test(val) && state.crypto.migratedPublicImages.indexOf(val) < 0) {
+        state.crypto.migratedPublicImages.push(val);
+      }
+      state.w[field] = "";
+      var inp = form && form.elements[field];
+      if (inp) inp.value = "";
+    });
+    if ("image_alt" in state.w && state.w.image_alt) {
+      state.w.image_alt = "";
+      var altInp = form && form.elements.image_alt;
+      if (altInp) altInp.value = "";
+    }
+    var newMd = t ? t + "\n" : "";
+    if (newMd.replace(/\s+$/, "") !== String(state.w.text || "").replace(/\s+$/, "")) {
+      state.w.text = newMd.replace(/\s+$/, "");
+      var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
+      if (ed) ed.setValue(state.w.text); else if (form && form.elements.text) form.elements.text.value = state.w.text;
+    }
+  }
   function effectiveTextForSave(state) {
     if (!state || !state.crypto) return state ? state.w.text : "";
     var c = state.crypto;
     if (state.w.encrypted) {
       if (c.wasEncrypted && !c.unlocked) return c.initialEncryptedBlock;
-      if (c.wasEncrypted && c.unlocked && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
+      var extraAtts = collectEncryptedAttachments(state);
+      if (c.wasEncrypted && c.unlocked && !extraAtts.length && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
         return c.initialEncryptedBlock;
       }
       if (c.encryptedBlock) return c.encryptedBlock;
@@ -476,27 +557,35 @@ var NeuFormular = (function () {
       c.encryptedBlock = null;
       c.encryptedForText = null;
       c.encryptedForPw = null;
+      c.encryptedForAtts = null;
       return Promise.resolve(null);
     }
-    if (c.wasEncrypted && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
+    var extraAtts = collectEncryptedAttachments(state);
+    var attsKey = JSON.stringify(extraAtts);
+    if (c.wasEncrypted && !extraAtts.length && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
       c.encryptedBlock = c.initialEncryptedBlock;
       c.encryptedForText = state.w.text;
       c.encryptedForPw = c.password;
+      c.encryptedForAtts = attsKey;
+      c.lastPayload = c.initialPayload;
       if (aktiv === state && vorschau) zeigeVorschau();
       return Promise.resolve(c.encryptedBlock);
     }
-    if (c.encryptedBlock && c.encryptedForText === state.w.text && c.encryptedForPw === c.password) {
+    if (c.encryptedBlock && c.encryptedForText === state.w.text && c.encryptedForPw === c.password && c.encryptedForAtts === attsKey && c.lastKey) {
       return Promise.resolve(c.encryptedBlock);
     }
     var textToEnc = state.w.text, pwToEnc = c.password;
     var keepKdf = !!(c.wasEncrypted && pwToEnc === c.initialPassword);
     var p = withCrypto().then(function (CP) {
-      return CP.encryptMarkdownPayload(textToEnc, pwToEnc, c.initialPayload, keepKdf);
+      return CP.encryptMarkdownPayload(textToEnc, pwToEnc, c.initialPayload, keepKdf, extraAtts);
     }).then(function (res) {
       if (state.w.text === textToEnc && c.password === pwToEnc) {
         c.encryptedBlock = res.block;
         c.encryptedForText = textToEnc;
         c.encryptedForPw = pwToEnc;
+        c.encryptedForAtts = attsKey;
+        c.lastKey = res.key;
+        c.lastPayload = res.payload;
         if (aktiv === state && vorschau) zeigeVorschau();
       }
       return res.block;
@@ -522,6 +611,8 @@ var NeuFormular = (function () {
         c.encryptedForText = norm;
         c.encryptedForPw = password;
         state.w.text = norm;
+        migratePublicImagesToEncrypted(state);
+        scheduleCryptoEncrypt(state);
         CP.setUnlockedPassword(state.w.uuid || state.url, password, false);
         if (typeof document !== "undefined") {
           var pageContainer = document.querySelector(".encrypted-container");
@@ -816,8 +907,12 @@ var NeuFormular = (function () {
         : (c.wasEncrypted
           ? '<p class="small muted" style="margin: 0 0 0.5rem;">🔓 <strong>Klartext entsperrt:</strong> Du bearbeitest unten den entschlüsselten Markdown-Text. Beim Speichern wird er automatisch wieder verschlüsselt.</p>'
           : '<p class="small muted" style="margin: 0 0 0.5rem;">🔒 Der Markdown-Text unten wird vor dem Speichern im Browser mit AES-GCM (256 Bit) verschlüsselt. Titel und Front-Matter-Felder bleiben öffentlich lesbar.</p>');
+      var socialWarnHtml = aktiv.w.social_media_preview_image
+        ? '<p class="note small" data-crypto-social-warn style="margin: 0 0 0.6rem;">⚠️ <strong>Social-Media-Vorschaubild unverschlüsselt:</strong> Das Vorschaubild (<code>' + esc(aktiv.w.social_media_preview_image) + '</code>) bleibt <strong>unverschlüsselt</strong> öffentlich sichtbar, damit Messenger (Signal, WhatsApp, Mastodon …) eine Link-Vorschau laden können.</p>'
+        : "";
       box.innerHTML = '<div class="card small" style="margin-top: 0.5rem; padding: 0.85rem 1rem;">'
         + noteHtml
+        + socialWarnHtml
         + '<label class="form-feld" style="margin: 0;"><span>🔑 Passwort für die Verschlüsselung <span class="form-pflicht" aria-hidden="true">*</span></span>'
         + '<span style="display: flex; gap: 0.4rem; align-items: center;">'
         + '<input type="password" data-crypto-pw placeholder="Passwort für diese Seite …" autocomplete="new-password" style="flex: 1;" value="' + esc(c.password || "") + '">'
@@ -1098,7 +1193,9 @@ var NeuFormular = (function () {
     aktiv.w[n] = v;
     aktiv.beruehrt[n] = v !== ""; // emptied → follows again
     if (n === "encrypted") {
+      if (v) migratePublicImagesToEncrypted(aktiv);
       baueFelder();
+      direct.showPhotos();
       if (v) {
         scheduleCryptoEncrypt(aktiv);
         var pwField = form.querySelector("[data-crypto-pw]");
@@ -1138,7 +1235,7 @@ var NeuFormular = (function () {
     var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
     socialBox.hidden = !istSeite;
     if (!istSeite) return;
-    var bild = w.social_media_preview_image || (!w.image_is_illustration && !/\.svg$/i.test(w.image || "") && w.image) || w.photo || erstesMarkdownBild(w.text) || "/assets/images/og-preview.jpg";
+    var bild = w.social_media_preview_image || (!w.encrypted && ((!w.image_is_illustration && !/\.svg$/i.test(w.image || "") && w.image) || w.photo || erstesMarkdownBild(w.text))) || "/assets/images/og-preview.jpg";
     bild = direct.previewFor(bild); // photos not uploaded yet: show the local preview
     if (socialImg.getAttribute("src") !== bild) socialImg.src = bild;
     socialTitel.textContent = w.title || aktiv.schema.titel;
@@ -1355,11 +1452,29 @@ var NeuFormular = (function () {
       if (!aktiv) return [];
       var has = function (n) { return aktiv.felder.some(function (f) { return f.name === n; }) && !(aktiv.edit && aktiv.edit.rawFields[n]); };
       var s = [];
-      if (!aktiv.schema.format && has("text") && aktiv.felder.some(function (f) { return f.name === "text" && f.markdown; })) s.push({ id: "gallery", label: "🖼️ Galerie im Text", hilfe: "mehrere Fotos, erscheinen als Galerie" });
-      if (has("image")) s.push({ id: "image", label: aktiv.typ === "geraet" ? "📸 Foto des Geräts" : "📸 Titelbild", feld: "image", alt: has("image_alt") && "image_alt" });
-      if (has("photo")) s.push({ id: "photo", label: "🙂 Profilfoto", feld: "photo" });
-      if (has("logo")) s.push({ id: "logo", label: "🏷️ Logo / Bild auf der Partnerkarte", feld: "logo" });
-      if (has("social_media_preview_image")) s.push({ id: "social", label: "📣 Social-Media-Vorschau", feld: "social_media_preview_image", social: true, hilfe: "wird auf 1200×630 zugeschnitten" });
+      if (!aktiv.schema.format && has("text") && aktiv.felder.some(function (f) { return f.name === "text" && f.markdown; })) {
+        s.push({
+          id: "gallery",
+          label: (aktiv.w && aktiv.w.encrypted) ? "🖼️ Galerie im Text (verschlüsselt als .blob)" : "🖼️ Galerie im Text",
+          hilfe: (aktiv.w && aktiv.w.encrypted) ? "Fotos werden im Browser als .blob-Dateien verschlüsselt" : "mehrere Fotos, erscheinen als Galerie"
+        });
+      }
+      // On encrypted pages, content photos go into the encrypted gallery (.blob), while social_media_preview_image
+      // remains available unencrypted with an explicit warning so link previews in messengers continue to work.
+      if (!(aktiv.w && aktiv.w.encrypted)) {
+        if (has("image")) s.push({ id: "image", label: aktiv.typ === "geraet" ? "📸 Foto des Geräts" : "📸 Titelbild", feld: "image", alt: has("image_alt") && "image_alt" });
+        if (has("photo")) s.push({ id: "photo", label: "🙂 Profilfoto", feld: "photo" });
+        if (has("logo")) s.push({ id: "logo", label: "🏷️ Logo / Bild auf der Partnerkarte", feld: "logo" });
+      }
+      if (has("social_media_preview_image")) s.push({
+        id: "social",
+        label: (aktiv.w && aktiv.w.encrypted) ? "📣 Social-Media-Vorschau (⚠️ unverschlüsselt)" : "📣 Social-Media-Vorschau",
+        feld: "social_media_preview_image",
+        social: true,
+        hilfe: (aktiv.w && aktiv.w.encrypted)
+          ? "⚠️ wird auf 1200×630 zugeschnitten und UNVERSCHLÜSSELT gespeichert (für Link-Vorschauen)"
+          : "wird auf 1200×630 zugeschnitten"
+      });
       return s;
     },
     previewFor: function (v) {
@@ -1380,6 +1495,11 @@ var NeuFormular = (function () {
       aktiv.w[name] = v; aktiv.beruehrt[name] = v !== "";
       var input = form.elements[name];
       if (input) { input.value = v; if (mehrBox.contains(input) && v) mehrBox.open = true; }
+      if (name === "social_media_preview_image" && aktiv.w.encrypted) {
+        var oldWrap = form.querySelector(".form-crypto-wrap");
+        var fEnc = aktiv.felder.filter(function (f) { return f.name === "encrypted"; })[0];
+        if (oldWrap && fEnc) oldWrap.replaceWith(baueCryptoFeld(fEnc));
+      }
       nachAenderung();
     },
     assign: function (p, slot) {
@@ -1457,7 +1577,11 @@ var NeuFormular = (function () {
           + slots.map(function (sl) { return '<button type="button" class="media-chip" data-toggle="' + sl.id + '" aria-pressed="' + direct.uses(p, sl) + '">' + esc(sl.label) + "</button>"; }).join("")
           + '</div></div><button type="button" class="btn btn-small btn-ghost" data-photo-remove="' + i + '" aria-label="Foto entfernen">✕</button></li>';
       }).join("");
+      var socialWarn = (aktiv.w && aktiv.w.encrypted && aktiv.w.social_media_preview_image)
+        ? '<p class="note small" data-crypto-social-warn style="margin: 0.35rem 0;">⚠️ <strong>Hinweis:</strong> Das Social-Media-Vorschaubild (<code>' + esc(aktiv.w.social_media_preview_image) + '</code>) wird <strong>unverschlüsselt</strong> veröffentlicht, damit Messenger (Signal, WhatsApp, Mastodon …) eine Link-Vorschau anzeigen können.</p>'
+        : "";
       fotosEl.innerHTML = '<p class="media-title"><strong>📷 Fotos</strong> <span class="muted small">– antippen oder auf eine Verwendung ziehen</span></p>'
+        + socialWarn
         + '<ul class="media-slots">' + slotHtml + '</ul><ul class="media-photos">' + cards + "</ul>";
     },
     clearPhotos: function () {
@@ -1471,11 +1595,11 @@ var NeuFormular = (function () {
       URL.revokeObjectURL(p.preview);
       direct.showPhotos();
     },
-    // next free number NN in the folder: existing files on GitHub + photos added in this form
+    // next free number NN in the folder: existing files on GitHub (incl. .blob) + photos added in this form
     nextNumber: function (folder) {
       var taken = (aktiv.photos || []).map(function (p) { return parseInt(p.name, 10); });
       return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
-        res[0].concat(res[1]).forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
+        res[0].concat(res[1]).forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)(\.blob)?$/i); if (m) taken.push(+m[1]); });
         return taken.reduce(function (a, b) { return Math.max(a, b); }, 0) + 1;
       });
     },
@@ -1531,12 +1655,86 @@ var NeuFormular = (function () {
       var slots = direct.slots(), photos = aktiv.photos.filter(direct.used), unused = aktiv.photos.length - photos.length;
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
       var folder = direct.folder(), files = [], parent = null, body = "";
-      function buildFiles() { // after relocating: the file itself + every used variant of every used photo
+      function buildFilesAsync() {
         files = [{ path: path, text: newText }];
-        usage.forEach(function (u) {
-          var base = direct.url(u.p).slice(1);
-          if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
-          if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
+        if (!state.w.encrypted) {
+          usage.forEach(function (u) {
+            var base = direct.url(u.p).slice(1);
+            if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
+            if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
+          });
+          return Promise.resolve();
+        }
+        // Encrypted page: encrypt all gallery photos as .blob files (never upload unencrypted .jpg/-600w.jpg),
+        // upload social_media_preview_image (-social.jpg) unencrypted if chosen, and migrate any existing
+        // unencrypted local gallery/title images referenced in the page to .blob files + delete their .jpg files.
+        if (state.crypto && state.crypto.wasEncrypted && !state.crypto.unlocked) return Promise.resolve();
+        return scheduleCryptoEncrypt(state).then(function () {
+          newText = dateiInhalt();
+          files[0].text = newText;
+          var key = state.crypto && state.crypto.lastKey;
+          if (!key) return;
+          return withCrypto().then(function (CP) {
+            var newPhotoUrls = {}, keptSocialRel = state.w.social_media_preview_image ? state.w.social_media_preview_image.replace(/^\//, "") : "";
+            var newPhotoPromises = usage.map(function (u) {
+              var fullUrl = direct.url(u.p), base = fullUrl.slice(1);
+              if (u.social && u.p.social) {
+                var socialPath = base.replace(/\.jpg$/, "-social.jpg");
+                files.push({ path: socialPath, blob: u.p.social.full });
+                keptSocialRel = socialPath;
+              }
+              if (!u.plain) return Promise.resolve();
+              newPhotoUrls[fullUrl] = true;
+              var blobPath = base + ".blob";
+              return u.p.full.arrayBuffer().then(function (buf) {
+                return CP.encryptBytesToBlob(buf, key);
+              }).then(function (encBytes) {
+                files.push({ path: blobPath, blob: new Blob([encBytes], { type: "application/octet-stream" }) });
+              });
+            });
+            return Promise.all(newPhotoPromises).then(function () {
+              var extraAtts = collectEncryptedAttachments(state).filter(function (a) { return !newPhotoUrls[a.name]; });
+              var ref = state.prBase && state.prBase.branch;
+              var toDeleteByDir = {};
+              function markForDelete(imgUrl) {
+                if (!imgUrl || !/^\/assets\/images\//.test(imgUrl) || /\/og-preview\.jpg$/.test(imgUrl)) return;
+                var rel = imgUrl.slice(1), slash = rel.lastIndexOf("/");
+                if (slash < 0) return;
+                var dir = rel.slice(0, slash), fname = rel.slice(slash + 1);
+                var baseName = fname.replace(/(-600w|-social)?(\.[a-zA-Z0-9]+)$/, "$2");
+                var list = toDeleteByDir[dir] = toDeleteByDir[dir] || [];
+                [fname, baseName, baseName.replace(/(\.[a-zA-Z0-9]+)$/, "-600w$1"), baseName.replace(/(\.[a-zA-Z0-9]+)$/, "-social$1")].forEach(function (cand) {
+                  if (dir + "/" + cand === keptSocialRel) return;
+                  if (list.indexOf(cand) < 0) list.push(cand);
+                });
+              }
+              ((state.crypto && state.crypto.migratedPublicImages) || []).forEach(markForDelete);
+              if (state.w.social_media_preview_image) markForDelete(state.w.social_media_preview_image);
+              var migratePromises = extraAtts.map(function (att) {
+                var relPath = att.name.slice(1);
+                markForDelete(att.name);
+                return GitHubApi.readBinaryFile(relPath, ref).then(function (bytes) {
+                  if (!bytes) return;
+                  return CP.encryptBytesToBlob(bytes, key).then(function (encBytes) {
+                    files.push({ path: att.blob.slice(1), blob: new Blob([encBytes], { type: "application/octet-stream" }) });
+                  });
+                });
+              });
+              return Promise.all(migratePromises).then(function () {
+                var dirs = Object.keys(toDeleteByDir);
+                if (!dirs.length) return;
+                return Promise.all(dirs.map(function (dir) {
+                  return GitHubApi.listFolder(dir, ref).then(function (existingNames) {
+                    toDeleteByDir[dir].forEach(function (cand) {
+                      if (existingNames.indexOf(cand) >= 0) {
+                        files.push({ path: dir + "/" + cand, delete: true });
+                      }
+                    });
+                  });
+                }));
+              });
+            });
+          });
         });
       }
       if (unused) status.textContent = unused + " Foto(s) werden nirgends verwendet und nicht hochgeladen.";
@@ -1557,11 +1755,18 @@ var NeuFormular = (function () {
         u = me;
         // photos follow the file name: if it changed after adding them, move them – with free numbers in the new folder (K26)
         return direct.relocate(photos, folder).then(function (moved) {
-          moved.forEach(function (m) { ["", "-600w", "-social"].forEach(function (v) { newText = newText.split(direct.url(m.from, v)).join(direct.url(m.to, v)); }); });
-          return direct.checkMissingImages(state, newText, photos);
+          moved.forEach(function (m) {
+            ["", "-600w", "-social"].forEach(function (v) {
+              newText = newText.split(direct.url(m.from, v)).join(direct.url(m.to, v));
+              if (state.w.encrypted) state.w.text = String(state.w.text || "").split(direct.url(m.from, v)).join(direct.url(m.to, v));
+            });
+          });
+          var checkTarget = state.w.encrypted ? state.w.text : newText;
+          return direct.checkMissingImages(state, checkTarget, photos);
         });
       }).then(function () {
-        buildFiles();
+        return buildFilesAsync();
+      }).then(function () {
         if (!state.edit) return GitHubApi.readFile(path).then(function (cur) {
           if (cur != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
           return GitHubApi.openPullsForFile(path);
@@ -1680,7 +1885,10 @@ var NeuFormular = (function () {
       var dirs = {}; paths.forEach(function (x) { var d0 = x.slice(0, x.lastIndexOf("/")); (dirs[d0] = dirs[d0] || []).push(x); });
       return Promise.all(Object.keys(dirs).map(function (d0) {
         return GitHubApi.listFolder(d0, state.prBase && state.prBase.branch).then(function (names) {
-          return dirs[d0].filter(function (x) { return names.indexOf(x.slice(d0.length + 1)) < 0; });
+          return dirs[d0].filter(function (x) {
+            var fn = x.slice(d0.length + 1);
+            return names.indexOf(fn) < 0 && names.indexOf(fn + ".blob") < 0;
+          });
         });
       })).then(function (lists) {
         var missing = [].concat.apply([], lists);
