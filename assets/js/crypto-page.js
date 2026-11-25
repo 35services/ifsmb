@@ -2,9 +2,9 @@
 // Client-side decryption for encrypted Markdown posts and .blob attachments.
 // Passwords cached per page in localStorage ("ifsmb-crypto:<uuid>").
 (function (root, factory) {
-  if (typeof module !== "undefined" && module.exports) module.exports = factory();
-  else root.CryptoPage = factory();
-})(typeof self !== "undefined" ? self : this, function () {
+  if (typeof module !== "undefined" && module.exports) module.exports = factory(root);
+  else root.CryptoPage = factory(root);
+})(typeof self !== "undefined" ? self : this, function (root) {
   "use strict";
 
   var activeObjectUrls = [];
@@ -250,12 +250,17 @@
           if (remember) {
             try { localStorage.setItem(storageKey, password); } catch (e) {}
           }
-          var html = root.SafeMarkdown ? root.SafeMarkdown.render(res.markdown, res.attachments) : res.markdown;
+          var mdRenderer = (root && root.SafeMarkdown) || (typeof window !== "undefined" && window.SafeMarkdown);
+          var html = mdRenderer ? mdRenderer.render(res.markdown, res.attachments) : res.markdown;
           showUnlocked(html);
         })
         .catch(function (err) {
+          console.error("CryptoPage unlock error:", err);
           try { localStorage.removeItem(storageKey); } catch (e) {}
-          showLocked("Falsches Passwort oder fehlerhafte Daten.");
+          var msg = (err && (err.name === "OperationError" || /mac check/i.test(err.message)))
+            ? "Falsches Passwort."
+            : (err && err.message) || "Fehler beim Entschlüsseln.";
+          showLocked(msg);
           throw err;
         });
     }
