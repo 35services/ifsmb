@@ -17,7 +17,7 @@ beide Richtungen (ein Eintrag auf einer der beiden Seiten reicht).
  AUSSTATTUNG    _equipment/<name>.md           /equipment/<name>/
  HERAUSFORDERUNG _challenges/<name>.md  /challenges/<name>/
  PRESSE         _press/<name>.md               /press/<name>/
- PARTNER        _data/partners.yml (+ Seite    /partners/<name>/  (wenn `page:` gesetzt)
+ PARTNER        _data/partners.yml (+ Seite    /partners/<name>/  (immer; ohne `page:` erzeugt)
                 partners/<name>/index.md)
 ```
 
