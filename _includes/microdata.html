@@ -1,0 +1,76 @@
+{%- comment -%}
+  Machine-readable description of a resource page (HTML Microdata with schema.org types), for other instances:
+  their build (_plugins/federation_links.rb) and browsers (assets/js/federation-links.js) read it from a linked page
+  to know what it is (type), what it is called today (name) and that it still exists. Included once per page by
+  _layouts/default.html. Only meta/link elements – nothing visible.
+  Mapping: equipment → Product, team → Person, posts → BlogPosting, events → Event, projects → Project,
+  challenges → CreativeWork, press → NewsArticle, partner pages (/partners/<name>/) → Organization.
+  identifier = the page's uuid (same uuid = the same thing on every instance), itemid = its absolute URL.
+{%- endcomment -%}
+{%- assign md_p = include.page -%}
+{%- assign md_type = nil -%}
+{%- case md_p.collection -%}
+  {%- when "equipment" -%}{%- assign md_type = "Product" -%}
+  {%- when "team" -%}{%- assign md_type = "Person" -%}
+  {%- when "posts" -%}{%- assign md_type = "BlogPosting" -%}
+  {%- when "events" -%}{%- assign md_type = "Event" -%}
+  {%- when "projects" -%}{%- assign md_type = "Project" -%}
+  {%- when "challenges" -%}{%- assign md_type = "CreativeWork" -%}
+  {%- when "press" -%}{%- assign md_type = "NewsArticle" -%}
+{%- endcase -%}
+{%- if md_type == nil and md_p.layout != "weiterleitung" -%}
+  {%- assign md_parts = md_p.url | split: "/" -%}
+  {%- if md_parts.size == 3 and md_parts[1] == "partners" -%}{%- assign md_type = "Organization" -%}{%- endif -%}
+{%- endif -%}
+{%- if md_type -%}
+{%- assign md_url = md_p.url | absolute_url -%}
+{%- assign md_desc = md_p.summary | default: md_p.lead | default: md_p.role -%}
+{%- unless md_desc -%}{%- assign md_desc = md_p.excerpt | strip_html | strip_newlines | truncate: 240 -%}{%- endunless -%}
+{%- assign md_img = md_p.image | default: md_p.photo_2x | default: md_p.photo -%}
+{%- if md_img contains ".svg" -%}{%- assign md_img = nil -%}{%- endif -%}
+<div class="microdata" itemscope itemtype="https://schema.org/{{ md_type }}" itemid="{{ md_url }}">
+  <link itemprop="url" href="{{ md_url }}">
+  <meta itemprop="name" content="{{ md_p.title | escape }}">
+  {%- if md_desc and md_desc != "" %}
+  <meta itemprop="description" content="{{ md_desc | strip_html | strip | escape }}">
+  {%- endif %}
+  {%- if md_img %}
+  <link itemprop="image" href="{{ md_img | absolute_url }}">
+  {%- endif %}
+  {%- if md_p.uuid %}
+  <meta itemprop="identifier" content="{{ md_p.uuid }}">
+  {%- endif %}
+  {%- case md_type -%}
+  {%- when "Product" -%}
+  {%- if md_p.category %}
+  <meta itemprop="category" content="{{ md_p.category | escape }}">
+  {%- endif %}
+  {%- when "Person" -%}
+  {%- if md_p.role %}
+  <meta itemprop="jobTitle" content="{{ md_p.role | escape }}">
+  {%- endif %}
+  {%- when "BlogPosting" -%}
+  <meta itemprop="headline" content="{{ md_p.title | escape }}">
+  <meta itemprop="datePublished" content="{{ md_p.date | date: '%Y-%m-%d' }}">
+  {%- when "NewsArticle" -%}
+  <meta itemprop="headline" content="{{ md_p.title | escape }}">
+  {%- if md_p.date %}
+  <meta itemprop="datePublished" content="{{ md_p.date | date: '%Y-%m-%d' }}">
+  {%- endif %}
+  {%- when "Event" -%}
+  {%- if md_p.start %}
+  <meta itemprop="startDate" content="{{ md_p.start | date: '%Y-%m-%d' }}">
+  {%- endif %}
+  {%- if md_p.end %}
+  <meta itemprop="endDate" content="{{ md_p.end | date: '%Y-%m-%d' }}">
+  {%- endif %}
+  {%- if md_p.location %}
+  <meta itemprop="location" content="{{ md_p.location | escape }}">
+  {%- endif %}
+  {%- when "Project" -%}
+  {%- if md_p.start %}
+  <meta itemprop="foundingDate" content="{{ md_p.start | date: '%Y-%m-%d' }}">
+  {%- endif %}
+  {%- endcase %}
+</div>
+{%- endif -%}

@@ -149,11 +149,21 @@
   {%- if p_links contains x.url or x_links contains me_url %}{% assign g_pages = g_pages | push: x %}{% endif -%}
 {%- endfor -%}
 
+{%- comment -%}--- links to connected instances (federation): full URLs in `linked`; name and type come from
+  _plugins/federation_links.rb at build time (class fed-auto) ---{%- endcomment -%}
+{%- assign g_federated = "" | split: "" -%}
+{%- for u in p_links -%}{%- assign u = u | strip -%}
+  {%- for fb in site.federation -%}{%- assign fb_prefix = fb | append: "/" -%}
+    {%- if u contains fb_prefix -%}{%- assign u_start = u | slice: 0, fb_prefix.size -%}{%- if u_start == fb_prefix -%}{%- assign g_federated = g_federated | push: u -%}{%- endif -%}{%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign g_federated = g_federated | uniq -%}
+
 {%- comment -%}--- output ---{%- endcomment -%}
 {%- assign has_owner = false -%}{%- if o_partners.size > 0 or o_team.size > 0 or o_names.size > 0 %}{% assign has_owner = true %}{% endif -%}
 {%- comment -%}`location` is free text on events and projects too – the "Standort" group is only for equipment{%- endcomment -%}
 {%- assign has_location = false -%}{%- if P.collection == "equipment" -%}{%- if l_partners.size > 0 or P.location %}{% assign has_location = true %}{% endif -%}{%- endif -%}
-{%- if has_owner or has_location or g_parents.size > 0 or g_projects.size > 0 or g_events.size > 0 or g_posts.size > 0 or g_challenges.size > 0 or g_people.size > 0 or g_partners.size > 0 or g_unknown_partners.size > 0 or g_equipment.size > 0 or g_pages.size > 0 %}
+{%- if has_owner or has_location or g_parents.size > 0 or g_projects.size > 0 or g_events.size > 0 or g_posts.size > 0 or g_challenges.size > 0 or g_people.size > 0 or g_partners.size > 0 or g_unknown_partners.size > 0 or g_equipment.size > 0 or g_federated.size > 0 or g_pages.size > 0 %}
 <section class="connections" id="verbindungen" data-pagefind-ignore="all">
   {%- if g_parents.size > 0 %}
   {% if kind == "projects" %}<h2 data-i18n="connections.project_part_of">{{ "connections.project_part_of" | t }}</h2>{% else %}<h2 data-i18n="connections.part_of">{{ "connections.part_of" | t }}</h2>{% endif %}
@@ -231,6 +241,12 @@
   <h2 data-i18n="equipment.heading">{{ "equipment.heading" | t }}</h2>
   <ul class="link-list link-list-connections">
     {% for x in g_equipment %}{% assign x_op = x.owner_partner | join: "|" | split: "|" %}{% assign x_sp = x.location_partner | join: "|" | split: "|" %}<li><a href="{{ x.url | relative_url }}"><span aria-hidden="true">🛠️</span> {{ x.title }}{% if kind == "partner" %}{% if x_op contains include.partner %} <span class="link-meta" data-i18n="connections.ownership">{{ "connections.ownership" | t }}</span>{% endif %}{% if x_sp contains include.partner %} <span class="link-meta" data-i18n="connections.location">{{ "connections.location" | t }}</span>{% endif %}{% endif %}</a></li>{% endfor %}
+  </ul>
+  {%- endif %}
+  {%- if g_federated.size > 0 %}
+  <h2 data-i18n="connections.federated">{{ "connections.federated" | t }}</h2>
+  <ul class="link-list link-list-connections link-list-federated">
+    {% for u in g_federated %}<li><a class="fed-auto" href="{{ u }}"><span aria-hidden="true">🌐</span> {{ u | remove_first: "https://" | remove_first: "http://" }}</a></li>{% endfor %}
   </ul>
   {%- endif %}
 </section>

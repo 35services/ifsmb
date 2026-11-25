@@ -119,6 +119,7 @@ exclude:
   - DEPENDENCIES.md
   - PLAN_DIRECT_EDITING.md
   - EDITING_CONFLICTS.md
+  - FEDERATION.md
   - LICENSE
   - .pages.yml
   - todo.md

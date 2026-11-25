@@ -44,9 +44,15 @@
 
   // Node ids are absolute URLs (graph.json). norm() turns any address – absolute, /path/ or path – into that form
   // (trailing slash for pages), so ids, references and the #/path/ in the address bar all match.
+  // "35services.ifsmb.de/path/" (host without scheme, as in the address bar) → https://…; localhost → http://
+  function withScheme(u) {
+    if (/^(localhost|127\.0\.0\.1)(:\d+)?\//.test(u)) return 'http://' + u;
+    if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?\//i.test(u)) return 'https://' + u;
+    return u;
+  }
   function norm(u) {
     if (!u) return u;
-    u = String(u).trim();
+    u = withScheme(String(u).trim());
     if (/^[a-z]+:/.test(u) && !/^https?:/.test(u)) return u;   // partner:, ort:, name:
     var x;
     try { x = new URL(/^https?:/.test(u) || u.charAt(0) === '/' ? u : '/' + u, location.origin); } catch (e) { return u; }
@@ -54,9 +60,11 @@
     if (path.slice(-1) !== '/' && path.split('/').pop().indexOf('.') === -1) path += '/';
     return x.origin + path;
   }
-  // short form for the address bar: the path for pages of this site, the full id otherwise
+  // short form for the address bar (a permalink): /path/ for pages of this site, host/path/ for pages of a connected
+  // instance (e.g. #35services.ifsmb.de/equipment/snapmaker-u1/), other ids as they are
   function hashOf(id) {
-    return id.indexOf(location.origin + '/') === 0 ? id.slice(location.origin.length) : id;
+    if (id.indexOf(location.origin + '/') === 0) return id.slice(location.origin.length);
+    return /^https?:\/\//.test(id) ? id.replace(/^https?:\/\//, '') : id;
   }
   function list(v) { return v == null ? [] : (Array.isArray(v) ? v : [v]); }
 
@@ -296,7 +304,7 @@
     var t = TYPES[n.type];
     var html = '<p class="meta"><span class="netz-dot" style="background:' + t.color + '"></span> ' + t.one +
       (n.date ? ' · ' + n.date.split('-').reverse().join('.') : '') + (n.personal ? ' · <span class="link-private">persönlich</span>' : '') +
-      (n.instances ? ' · 🌐 ' + esc(n.instances.join(' + ')) : '') + '</p>' +
+      (n.instances ? ' · 🌐 ' + esc(n.instances.join(' + ')) : (n.instance ? ' · 🌐 ' + esc(n.instance) : '')) + '</p>' +
       '<h2>' + esc(n.title) + '</h2>' +
       (n.url ? '<p><a class="btn" href="' + esc(n.url) + '"' + (n.extern ? ' target="_blank" rel="noopener"' : '') + '>Seite öffnen →</a></p>' : '');
     html += groupedList(n.links, function (m) { return n.kinds[m.id]; });
@@ -652,6 +660,17 @@
   if (start) { select(start); view.x = start.x; view.y = start.y; view.k = 1.3; draw(); }
   else if (/^zeit:\d{4}-\d{2}$/.test(hash)) selectPeriod(hash.slice(5));
   scrollTimeline();
+  // a changed #… (pasted permalink, back button) selects that node; history.replaceState above fires no hashchange
+  window.addEventListener('hashchange', function () {
+    var h = decodeURIComponent(location.hash.slice(1));
+    if (!h) return;
+    var n = byId[norm(h)];
+    if (n) { select(n, true); return; }
+    if (/^zeit:\d{4}-\d{2}$/.test(h)) { selectPeriod(h.slice(5)); return; }
+    // node of an instance that is not loaded yet: reload – with ?verbund=1 the loader includes that instance
+    var id = norm(h);
+    if (/^https?:\/\//.test(id) && id.indexOf(location.origin + '/') !== 0 && window.IfsmbVerbund === true) location.reload();
+  });
   }
 
   // ---------- loader: /network/graph.json + connected instances (federation) ----------
@@ -669,7 +688,16 @@
     return (x.origin + x.pathname).replace(/\/$/, '');
   }
   params.getAll('instanz').map(instanceUrl).forEach(function (u) { if (u && peers.indexOf(u) === -1) peers.push(u); });
-  var federate = peers.length > 0 && params.get('verbund') === '1';
+  // permalink to a node of another instance (#35services.ifsmb.de/… or #https://…): with ?verbund=1 that instance
+  // is loaded too, even if it is not configured – the visitor opted in with ?verbund=1
+  var hashHost = decodeURIComponent(location.hash.slice(1)).match(/^(?:https?:\/\/)?((?:localhost|127\.0\.0\.1|[a-z0-9-]+(?:\.[a-z0-9-]+)+)(?::\d+)?)\//i);
+  // federation switch: ?verbund=1, or switched on earlier in this tab (window.IfsmbVerbund, _layouts/default.html)
+  var verbundOn = params.get('verbund') === '1' || (window.IfsmbVerbund === true && params.get('verbund') !== '0');
+  if (hashHost && verbundOn && hashHost[1] !== location.host) {
+    var fromHash = instanceUrl((/^(localhost|127\.0\.0\.1)/.test(hashHost[1]) ? 'http://' : 'https://') + hashHost[1]);
+    if (fromHash && peers.indexOf(fromHash) === -1) peers.push(fromHash);
+  }
+  var federate = peers.length > 0 && verbundOn;
   // only http(s) addresses from other instances become links (a foreign graph could contain javascript: URLs)
   function safeHttp(u) { return typeof u === 'string' && /^https?:\/\//i.test(u) ? u : null; }
   function tr(key, params, fallback) { return window.I18n ? window.I18n.t(key, params) : fallback; }
@@ -714,7 +742,7 @@
   var btn = document.getElementById('netz-verbund'), info = document.getElementById('netz-verbund-info');
   if (btn && peers.length) btn.hidden = false;
   if (btn && federate) {
-    btn.href = location.pathname + location.hash;
+    btn.href = location.pathname + '?verbund=0' + location.hash;   // ?verbund=0 also ends the switch for this tab
     btn.setAttribute('data-i18n', 'pages.network.federation_off');
     btn.textContent = tr('pages.network.federation_off', null, '🌐 Nur diese Seite');
   }
