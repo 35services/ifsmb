@@ -18,4 +18,6 @@ Spendet gerne für den Förderverein: [platanus-schule.de/platanus/foerderverein
 ![Schild](/assets/images/news/schneemenschen-drucken/03.jpg)
 ![Schild](/assets/images/news/schneemenschen-drucken/02.jpg)
 ![Schild](/assets/images/news/schneemenschen-drucken/01.jpg)
+![Zweiter Druck](/assets/images/news/schneemenschen-drucken/04.jpg)
+![Seitenansicht](/assets/images/news/schneemenschen-drucken/05.jpg)
 {: .gallery}
