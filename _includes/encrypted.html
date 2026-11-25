@@ -13,7 +13,7 @@
     <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Geschützter Inhalt</h3>
     <p class="muted" style="margin-bottom: 1.25rem;">Der Inhalt dieser Seite sowie die zugehörigen Anhänge sind verschlüsselt. Gib das Passwort ein, um den Inhalt im Browser zu entschlüsseln.</p>
 
-    <form class="encrypted-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+    <form class="encrypted-form" onsubmit="event.preventDefault();" style="display: flex; flex-direction: column; gap: 0.85rem;">
       <div>
         <label for="encrypted-pw-input" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: bold;">Passwort</label>
         <input type="password" id="encrypted-pw-input" class="encrypted-password" placeholder="Passwort eingeben" autocomplete="current-password" required style="width: 100%; padding: 0.6rem 0.8rem; font-size: 1rem; border: 1px solid var(--border, #ccc); border-radius: 4px; box-sizing: border-box;">
@@ -39,9 +39,31 @@
 </div>
 
 <script>
-  if (window.ladeSkripte) {
-    window.ladeSkripte(["safe-markdown.js", "crypto-page.js"]).then(function () {
-      window.CryptoPage.init();
-    });
-  }
+  (function () {
+    function boot() {
+      if (window.ladeSkripte) {
+        window.ladeSkripte(["safe-markdown.js", "crypto-page.js"]).then(function () {
+          window.CryptoPage.init();
+        });
+      } else {
+        var base = "{{ '/assets/js/' | relative_url }}";
+        var s1 = document.createElement("script");
+        s1.src = base + "safe-markdown.js";
+        s1.onload = function () {
+          var s2 = document.createElement("script");
+          s2.src = base + "crypto-page.js";
+          s2.onload = function () {
+            window.CryptoPage.init();
+          };
+          document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+  })();
 </script>
