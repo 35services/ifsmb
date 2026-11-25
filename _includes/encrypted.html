@@ -1,0 +1,47 @@
+{%- comment -%}
+  Container for client-side encrypted pages. Decryption happens purely in the browser.
+  Password is saved per page in localStorage ("ifsmb-crypto:<uuid>").
+  Attachments are stored as separate .blob files and decrypted into in-memory Blob URLs.
+{%- endcomment -%}
+<div class="encrypted-container" data-uuid="{{ page.uuid }}" data-base-path="{{ page.url | relative_url }}">
+  <div class="encrypted-raw" hidden>
+    {{ content }}
+  </div>
+
+  <div class="encrypted-prompt card" style="max-width: 520px; margin: 2rem auto; padding: 1.5rem; text-align: left;">
+    <div style="font-size: 2.2rem; margin-bottom: 0.5rem;" aria-hidden="true">🔒</div>
+    <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Geschützter Inhalt</h3>
+    <p class="muted" style="margin-bottom: 1.25rem;">Der Inhalt dieser Seite sowie die zugehörigen Anhänge sind verschlüsselt. Gib das Passwort ein, um den Inhalt im Browser zu entschlüsseln.</p>
+
+    <form class="encrypted-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+      <div>
+        <label for="encrypted-pw-input" class="small" style="display: block; margin-bottom: 0.25rem; font-weight: bold;">Passwort</label>
+        <input type="password" id="encrypted-pw-input" class="encrypted-password" placeholder="Passwort eingeben" autocomplete="current-password" required style="width: 100%; padding: 0.6rem 0.8rem; font-size: 1rem; border: 1px solid var(--border, #ccc); border-radius: 4px; box-sizing: border-box;">
+      </div>
+      <label style="font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+        <input type="checkbox" class="encrypted-remember" checked>
+        Passwort auf diesem Gerät merken
+      </label>
+      <p class="encrypted-error note" hidden style="color: #b00; margin: 0; font-size: 0.9rem;"></p>
+      <div>
+        <button type="submit" class="btn">Entsperren</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="encrypted-view" hidden>
+    <div class="encrypted-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border, #eee); font-size: 0.9rem;">
+      <span class="muted"><span aria-hidden="true">🔒</span> Verschlüsselter Inhalt · <strong>Entsperrt</strong></span>
+      <button type="button" class="btn btn-ghost encrypted-lock-btn" style="font-size: 0.85rem; padding: 0.3rem 0.7rem;">Wieder sperren</button>
+    </div>
+    <div class="encrypted-content prose"></div>
+  </div>
+</div>
+
+<script>
+  if (window.ladeSkripte) {
+    window.ladeSkripte(["safe-markdown.js", "crypto-page.js"]).then(function () {
+      window.CryptoPage.init();
+    });
+  }
+</script>
