@@ -17,3 +17,8 @@ Flojo: [ifsmb.de/team/flojo/](/team/flojo/)
 
 ![iMovie](/assets/images/herausforderungen/dokumentation-wintercamp/01.jpg)
 {: .gallery}
+
+<a class="video-link" href="https://www.youtube.com/watch?v=SVa_dmHG-D4" target="_blank" rel="noopener">
+  <img src="/assets/images/herausforderungen/dokumentation-wintercamp/youtube-SVa_dmHG-D4.jpg" alt="Vorschaubild: VOW JHV 2026" loading="lazy">
+  <span class="video-play">▶ Video auf YouTube ansehen</span>
+</a>
