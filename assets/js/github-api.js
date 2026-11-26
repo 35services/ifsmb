@@ -50,7 +50,11 @@ var GitHubApi = (function () {
   // (fine-grained tokens never reach another person's repository) and everyone else, who send through their own fork
   // (only a classic token may open a pull request from a fork via the API). Fine-grained tokens still work if pasted.
   function tokenUrl() {
-    return "https://github.com/settings/tokens/new?scopes=public_repo&description=" + encodeURIComponent("ifsmb.de bearbeiten");
+    return "https://github.com/settings/tokens/new?scopes=public_repo&description=" + encodeURIComponent(siteHost() + " bearbeiten");
+  }
+  // host of this site from _config.yml url (via _includes/formular-config.html), else the address bar's host
+  function siteHost() {
+    try { return (cfg().site || {}).host || location.host; } catch (e) { return location.host; }
   }
 
   // UI string (assets/js/i18n.js); German fallback without it. Commit messages and PR titles stay German.
@@ -361,7 +365,7 @@ var GitHubApi = (function () {
       });
     }).then(function (tree) {
       return call("POST", r + "/git/commits", {
-        message: o.title + "\n\nAngelegt über das Formular auf ifsmb.de (" + location.pathname + ").",
+        message: o.title + "\n\nAngelegt über das Formular auf " + siteHost() + " (" + location.pathname + ").",
         tree: tree.sha, parents: [baseSha]
       });
     }).then(function (commit) {

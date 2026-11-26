@@ -232,8 +232,14 @@ var PhotoEditor = (function () {
     });
   }
 
+  // who gets videos: contact_name in _config.yml (via _includes/formular-config.html), else "das Team"
+  function contactName() {
+    try { return JSON.parse(document.getElementById("formular-daten").textContent).site.contact_name || "das Team"; }
+    catch (e) { return "das Team"; }
+  }
+
   function open(file, opts) {
-    if (/^video\//.test(file.type)) return Promise.reject(new Error("Videos gehen hier (noch) nicht – bitte an Falko schicken."));
+    if (/^video\//.test(file.type)) return Promise.reject(new Error("Videos gehen hier (noch) nicht – bitte an " + contactName() + " schicken."));
     if (!d) build();
     return loadImage(file).then(function (img) {
       state = { img: img, rot: 0, crop: null, blurs: [], mode: "blur", drag: null, opts: opts || {} };
