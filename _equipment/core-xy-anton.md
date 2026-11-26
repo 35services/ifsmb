@@ -9,11 +9,11 @@ image: /assets/images/ausstattung/core-xy-anton/01.jpg
 thumb: /assets/images/ausstattung/core-xy-anton/01-600w.jpg
 image_alt: "Falko sitzt lachend am Steuer seines Autos, auf der Rückbank der Rahmen des Core-XY-Druckers – er holt den Drucker bei Anton ab"
 image_caption: "Falko holt den Drucker bei Anton ab – damit in Antons Wohnzimmer endlich wieder Platz ist (17. Oktober 2026)."
-tags: [core-xy-anton, corexy, 3d-drucker, 35services]
+tags: [core-xy-anton, corexy, 3d-drucker, 35services, corsa]
 uuid: cdb7e1ec-a083-423f-be0b-82650163e9d1
 ---
 
-Anton aus der Werkstatt braucht diesen **Core-XY-Drucker** nicht mehr – und vor allem brauchte er den Platz in seinem Wohnzimmer zurück. Also hat [Falko]({{ '/team/falko-richter/' | relative_url }}) den Drucker im Oktober 2026 bei ihm abgeholt; das Foto zeigt ihn, wie er mit dem Rahmen auf der Rückbank losfährt.
+Anton aus der Werkstatt braucht diesen **Core-XY-Drucker** nicht mehr – und vor allem brauchte er den Platz in seinem Wohnzimmer zurück. Also hat [Falko]({{ '/team/falko-richter/' | relative_url }}) den Drucker im Oktober 2026 bei ihm abgeholt; das Foto zeigt ihn, wie er mit dem Drucker im Corsa los fährt.
 
 Vielleicht bauen wir ihn bei 35services **komplett auf** – daraus ist die Projektidee [Core-XY-Drucker von Anton aufbauen]({{ '/projects/core-xy-drucker-aufbauen/' | relative_url }}) entstanden.
 
