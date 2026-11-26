@@ -4,7 +4,7 @@ date: 2026-10-19 09:45:40 +0200
 author: falko-richter
 original_url: https://35services.de/2026/jugend-hackt-congress-2026/
 original_site: 35services.de
-tags: [35services, jugend-hackt, lulzbot-mini, lulzbot-taz-6, axidraw, flexibles-filament]
+tags: [35services, jugend-hackt, lulzbot-mini, lulzbot-taz-6, axidraw, flexibles-filament, corsa]
 partners: [Jugend hackt]
 uuid: 811bae4b-9e7b-4549-b7a2-1b046ba511c4
 ---
@@ -16,7 +16,7 @@ uuid: 811bae4b-9e7b-4549-b7a2-1b046ba511c4
 
 **Update:** Aufzeichnungen der Talks und Panels und anderen Programmpunkte findet ihr unter [media.ccc.de/c/jh26congress](https://media.ccc.de/c/jh26congress)
 
-35Services hat mit Hardware und Freiwilligen auf den JugendHackt Congress unterstützt. Wir hoffen, dass die Finanzierung verlängert wird damit nach 13 Jahren nicht Schluss ist mit dieser tollen Institution.
+35Services hat mit Hardware im Corsa und Freiwilligen auf den JugendHackt Congress unterstützt. Wir hoffen, dass die Finanzierung verlängert wird damit nach 13 Jahren nicht Schluss ist mit dieser tollen Institution.
 
 ![Foto vom Jugend Hackt Congress 2026 (1/16)](/assets/images/news/jugend-hackt-congress-2026/01.jpg)
 ![Foto vom Jugend Hackt Congress 2026 (2/16)](/assets/images/news/jugend-hackt-congress-2026/02.jpg)
