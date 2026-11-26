@@ -571,7 +571,7 @@ form:
   submit_pr_new: 🚀 Als Pull Request anlegen
   submit_pr_edit: 🚀 Änderung als Pull Request
   submit_pr_into: "🚀 In #{number} speichern"
-  recycle: "♻️ PR recycling"
+  recycle: "♻️ PR"
   recycle_title: "Speichern hängt diese Änderung als weiteren Commit an deinen letzten offenen Pull Request #{number} an, statt einen neuen anzulegen."
   submit_pr_recycle: "♻️ An #{number} anhängen"
   fill_in: Bitte „{field}“ ausfüllen.
