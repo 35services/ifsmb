@@ -827,6 +827,8 @@ var NeuFormular = (function () {
     filesBtn.addEventListener("click", function () { direct.addFiles(); });
     filesEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-file-remove]"); if (b) direct.removeFile(+b.getAttribute("data-file-remove"));
+      var x = e.target.closest("[data-existing-remove]"); if (x) direct.removeExisting(+x.getAttribute("data-existing-remove"));
+      var u = e.target.closest("[data-existing-undo]"); if (u) direct.undoRemoveExisting(+u.getAttribute("data-existing-undo"));
     });
     fotosEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-photo-remove]"); if (b) { direct.removePhoto(+b.getAttribute("data-photo-remove")); return; }
@@ -1258,6 +1260,7 @@ var NeuFormular = (function () {
     speichereEntwurf();
     aktiv.gesendet = false;
     status.textContent = "";
+    if (filesEl) direct.showFiles(); // existing attachments: removed from the text → "wird gelöscht"
   }
   function erstesMarkdownBild(md) {
     var m = String(md || "").match(/!\[[^\]]*\]\(([^)\s]+)\)/);
@@ -1272,8 +1275,10 @@ var NeuFormular = (function () {
     if (aktiv.edit) {
       var marked = changedLines(aktiv.edit.source.replace(/\r\n/g, "\n"), text), count = marked.filter(Boolean).length;
       vorschau.innerHTML = text.split("\n").map(function (line, i) { return marked[i] ? '<mark class="changed-line">' + esc(line || " ") + "</mark>" : esc(line); }).join("\n");
-      submitBtn.disabled = !count;
-      submitBtn.title = count ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
+      // a change that only deletes lines marks nothing in the new text – compare the whole text
+      var changed = count > 0 || text !== aktiv.edit.source.replace(/\r\n/g, "\n");
+      submitBtn.disabled = !changed;
+      submitBtn.title = changed ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
     } else vorschau.textContent = text;
     if (!socialBox) return;
     var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
@@ -1796,10 +1801,46 @@ var NeuFormular = (function () {
         });
       });
     },
+    // Attachments the page already has (editing): every /assets/dateien/ file the loaded text points to.
+    // own: in this page's folder – only those are deleted from the repository when their embed leaves the text
+    // (files elsewhere may be used by other pages too; then only the embed goes).
+    existingFiles: function () {
+      if (!aktiv || !aktiv.edit || aktiv.w.encrypted) return [];
+      var src = String(aktiv.edit.source || ""), text = String(aktiv.w.text || ""), own = "/" + direct.fileFolder(), seen = {}, out = [];
+      var re = /!?\[[^\]]*\]\((\/assets\/dateien\/[^)\s]+)\)/g, m;
+      while ((m = re.exec(src))) {
+        var url = m[1];
+        if (seen[url]) continue;
+        seen[url] = true;
+        var line = src.split("\n").filter(function (l) { return l.indexOf("(" + url + ")") >= 0; })[0] || m[0];
+        out.push({ url: url, name: url.split("/").pop(), own: url.indexOf(own) === 0, used: text.indexOf(url) >= 0, line: line.trim() });
+      }
+      return out;
+    },
+    // existing own attachments whose embed is gone → deleted with the pull request
+    filesToDelete: function () { return direct.existingFiles().filter(function (f) { return f.own && !f.used; }); },
+    removeExisting: function (i) {
+      var f = direct.existingFiles()[i]; if (!f) return;
+      var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("(" + f.url + ")") < 0; });
+      setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
+    },
+    undoRemoveExisting: function (i) {
+      var f = direct.existingFiles()[i]; if (!f || f.used) return;
+      direct.insertBlock(f.line);
+    },
     showFiles: function () {
-      var files = (aktiv && aktiv.files) || [];
-      if (!files.length) { filesEl.innerHTML = ""; return; }
+      var files = (aktiv && aktiv.files) || [], existing = direct.existingFiles();
+      if (!files.length && !existing.length) { filesEl.innerHTML = ""; return; }
       filesEl.innerHTML = '<p class="media-title"><strong>📎 ' + esc(t("form.files_title", null, "Dateien")) + "</strong></p><ul class=\"media-files\">"
+        + existing.map(function (f, i) {
+          var label = f.used ? '<span class="muted small">' + esc(t("form.file_existing", null, "schon auf der Seite")) + "</span>"
+            : '<strong class="small">' + esc(f.own ? t("form.file_will_delete", null, "🗑️ wird mit dem Pull Request gelöscht") : t("form.file_unlinked", null, "nicht mehr eingebunden (Datei bleibt, sie liegt nicht im Ordner dieser Seite)")) + "</strong>";
+          return '<li class="media-file' + (f.used ? "" : " media-unused") + '" data-existing-file="' + esc(f.name) + '"><code>' + esc(f.name) + "</code> " + label
+            + (f.used
+              ? ' <button type="button" class="btn btn-small btn-ghost" data-existing-remove="' + i + '" aria-label="' + esc(t("form.file_delete", null, "Datei entfernen")) + '" title="' + esc(t("form.file_delete", null, "Datei entfernen")) + '">✕</button>'
+              : ' <button type="button" class="btn btn-small btn-ghost" data-existing-undo="' + i + '">' + esc(t("form.file_undo", null, "↩︎ Zurückholen")) + "</button>")
+            + "</li>";
+        }).join("")
         + files.map(function (f, i) {
           var used = direct.fileUsed(f);
           return '<li class="media-file' + (used ? "" : " media-unused") + '"><code>' + esc(f.name) + "</code> <span class=\"muted small\">"
@@ -1836,6 +1877,7 @@ var NeuFormular = (function () {
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
       var folder = direct.folder(), files = [], parent = null, body = "";
       var attachments = aktiv.w.encrypted ? [] : (aktiv.files || []).filter(direct.fileUsed);
+      var removedFiles = direct.filesToDelete();
       function buildFilesAsync() {
         files = [{ path: path, text: newText }];
         if (!state.w.encrypted) {
@@ -1845,7 +1887,12 @@ var NeuFormular = (function () {
             if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
             if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
           });
-          return Promise.resolve();
+          if (!removedFiles.length) return Promise.resolve();
+          // attachments whose embed was removed: delete them too – only if they are (still) there on the target branch
+          var dir = removedFiles[0].url.slice(1, removedFiles[0].url.lastIndexOf("/"));
+          return GitHubApi.listFolder(dir, state.prBase && state.prBase.branch).then(function (names) {
+            removedFiles.forEach(function (f) { if (names.indexOf(f.name) >= 0) files.push({ path: f.url.slice(1), delete: true }); });
+          });
         }
         // Encrypted page: encrypt all gallery photos as .blob files (never upload unencrypted .jpg/-600w.jpg),
         // upload social_media_preview_image (-social.jpg) unencrypted if chosen, and migrate any existing
@@ -1969,6 +2016,7 @@ var NeuFormular = (function () {
         body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf " + siteHost() + " von @" + u.login
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
+          + (removedFiles.length ? "**Gelöschte Dateien:** " + removedFiles.map(function (f) { return "`" + f.name + "`"; }).join(", ") + "\n\n" : "")
           + (attachments.length ? "**Dateien:** " + attachments.map(function (f) { return "`" + f.name + "` (" + (f.size / 1048576).toFixed(1) + " MB" + (f.shrunk ? ", im Browser neu aufgenommen: max. 1080p, ohne Metadaten" : "") + ")"; }).join(", ") + "\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")

@@ -1257,7 +1257,7 @@ kbd { display: inline-block; font-family: var(--mono); font-size: .8em; line-hei
 .media-files { list-style: none; margin: 0; padding: 0; display: grid; gap: .3rem; }
 .media-file { border: 1px solid var(--line); border-radius: 8px; padding: .3rem .5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; }
 .media-file code { word-break: break-all; }
-.media-file [data-file-remove] { margin-left: auto; }
+.media-file [data-file-remove], .media-file [data-existing-remove], .media-file [data-existing-undo] { margin-left: auto; }
 .media-title { margin: 0; }
 .media-slots, .media-photos { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
 .media-slot { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .1rem .5rem; padding: .35rem .5rem; border: 2px dashed var(--muted); border-radius: 8px; }

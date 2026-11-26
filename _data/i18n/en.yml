@@ -548,6 +548,11 @@ form:
   add_files_title: "Insert an STL, 3MF, MP4 or MP3 at the cursor"
   new_files: New files
   files_title: Files
+  file_existing: already on the page
+  file_will_delete: "🗑️ will be deleted with the pull request"
+  file_unlinked: "no longer embedded (the file stays – it isn't in this page's folder)"
+  file_delete: Remove file
+  file_undo: "↩︎ Undo"
   files_encrypted: "Files don't work on encrypted pages yet – photos only."
   file_type: "only STL, 3MF, MP4 (or MOV), MP3 or M4A"
   file_added: "inserted – feel free to change the description in [ ]. It is uploaded with the pull request."
