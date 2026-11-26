@@ -5,11 +5,12 @@ status: aktuell
 personal: true
 start: 2026-11-11
 period: seit November 2026
-event_tag: lastenanhaenger-theater
+event_tag: lastenanhanger-vom-theater
 team:
   - falko-richter
 partners:
   - 35 services e. V.
+location: Premnitzer Str. 12, 12681 Berlin-Bezirk Marzahn-Hellersdorf
 uuid: bf70675e-50ab-432d-bf51-fdfd51f49556
 ---
 
