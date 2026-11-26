@@ -387,7 +387,7 @@ var NeuFormular = (function () {
   var EDIT_HASH = /^#(bearbeiten|edit)$/; // <page>#bearbeiten opens the edit form directly (_includes/edit-buttons.html)
   var d = null, form, links, mehrBox, vorschau, socialBox, socialImg, socialTitel, socialBeschr, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
   var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder, edit, path }
-  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl;
+  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl, filesBtn, filesEl;
 
   function alleFelder(schema) {
     return schema.felder.reduce(function (a, z) { return a.concat(z); }, []).concat([{ name: "datei", intern: true, folgt: schema.datei }]);
@@ -793,10 +793,12 @@ var NeuFormular = (function () {
       + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
       + '<div class="neu-social-text"><span class="neu-social-domain">' + esc(siteHost()) + '</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
       + '<div class="form-photos" aria-label="' + esc(t("form.new_photos", null, "Neue Fotos")) + '"></div>'
+      + '<div class="form-files" aria-label="' + esc(t("form.new_files", null, "Neue Dateien")) + '"></div>'
       + '<ol class="neu-schritte small"></ol></aside></div>'
       + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen></button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-github>' + esc(t("github.connect", null, "🔑 GitHub verbinden")) + '</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>' + esc(t("form.add_photos", null, "📷 Fotos hinzufügen")) + '</button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-files hidden title="' + esc(t("form.add_files_title", null, "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen")) + '">' + esc(t("form.add_files", null, "📎 Datei")) + '</button>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
       + '<button type="submit" class="btn" data-submit></button></div></form>');
     form = d.querySelector("form");
@@ -818,8 +820,14 @@ var NeuFormular = (function () {
     githubBtn = d.querySelector("[data-github]");
     fotosBtn = d.querySelector("[data-photos]");
     fotosEl = d.querySelector(".form-photos");
+    filesBtn = d.querySelector("[data-files]");
+    filesEl = d.querySelector(".form-files");
     githubBtn.addEventListener("click", function () { direct.connectDialog(); });
     fotosBtn.addEventListener("click", function () { direct.addPhotos(); });
+    filesBtn.addEventListener("click", function () { direct.addFiles(); });
+    filesEl.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-file-remove]"); if (b) direct.removeFile(+b.getAttribute("data-file-remove"));
+    });
     fotosEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-photo-remove]"); if (b) { direct.removePhoto(+b.getAttribute("data-photo-remove")); return; }
       var t = e.target.closest("[data-toggle]"); if (t) direct.toggle(+t.closest("[data-photo]").getAttribute("data-photo"), t.getAttribute("data-toggle"));
@@ -844,6 +852,13 @@ var NeuFormular = (function () {
 
     form.addEventListener("input", aenderung);
     form.addEventListener("change", aenderung);
+    // remember where the cursor is in the text, so "📎 Datei" puts the embed there (the file dialog takes the focus)
+    ["keyup", "click", "select", "input", "focusout"].forEach(function (ev) {
+      form.addEventListener(ev, function (e) {
+        var ta = e.target;
+        if (ta && ta.tagName === "TEXTAREA" && ta.name === "text") ta.setAttribute("data-cursor", String(ta.selectionEnd));
+      });
+    });
     // Enter in a one-line field must not send the form
     form.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT" && e.target.type !== "submit") e.preventDefault(); });
     form.addEventListener("submit", function (e) { e.preventDefault(); anlegen(); });
@@ -1133,8 +1148,20 @@ var NeuFormular = (function () {
       icon: '<svg viewBox="0 0 18 18"><path ' + STROKE + ' d="M5,3v5a4,4,0,0,0,8,0V3"></path><line ' + STROKE + ' x1="4" x2="14" y1="15.5" y2="15.5"></line></svg>',
       action: function (o) { toggleUnderline(o.editor.textarea); }
     };
+    var attach = {
+      name: "attach", actionId: "insertAttachment", title: t("form.add_files_title", null, "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen"),
+      icon: '<svg viewBox="0 0 18 18"><path ' + STROKE + ' d="M12.5,8.5l-4.6,4.6a2.6,2.6,0,0,1-3.7-3.7l5.3-5.3a1.8,1.8,0,0,1,2.5,2.5L6.9,11.7a0.9,0.9,0,0,1-1.3-1.3L10.2,5.8"></path></svg>',
+      action: function (o) {
+        var ta = o.editor.textarea;
+        if (ta.name !== "text") return;
+        ta.setAttribute("data-cursor", String(ta.selectionEnd));
+        direct.addFiles();
+      }
+    };
     var i = buttons.indexOf(T.italic);
     buttons.splice(i < 0 ? 2 : i + 1, 0, T.strikethrough, underline);
+    if (T.link) { var li = buttons.indexOf(T.link); buttons.splice(li < 0 ? buttons.length : li + 1, 0, attach); }
+    else buttons.push(attach);
     return buttons;
   }
   function onEditorKeydown(e, editor) {
@@ -1316,6 +1343,11 @@ var NeuFormular = (function () {
   // With a GitHub token the submit button creates the pull request itself: the file (new or only the changed lines,
   // like before) plus new photos in one commit on a new branch. Without a token everything stays as it was
   // (copy → GitHub's editor). Photos need the token, because they can't be pasted into GitHub's editor.
+  // attachments ("📎 Datei"): 3D models, videos, audio – embedded where the cursor is, listed under the post
+  // (_plugins/galerie.rb); videos bigger than 1080p or not MP4 are shrunk in the browser (video-verkleinern.js)
+  var FILE_ACCEPT = ".stl,.3mf,.mp4,.m4v,.mov,.webm,.mp3,.m4a";
+  var FILE_RE = /\.(stl|3mf|mp4|m4v|mov|webm|mp3|m4a)$/i, VIDEO_RE = /\.(mp4|m4v|mov|webm)$/i;
+  var MAX_FILE_BYTES = 60 * 1024 * 1024;
   var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen", seite: "seiten", uebersicht: "seiten" };
   var direct = {
     active: function () { return !!(window.GitHubApi && GitHubApi.connected()); },
@@ -1561,6 +1593,7 @@ var NeuFormular = (function () {
       if (on) GitHubApi.whoAmI().then(function (me) { if (direct.active()) githubBtn.textContent = "🔑 @" + me.login; }, function () {});
       githubBtn.title = on ? t("github.connected_title", null, "Mit GitHub verbunden – Pull Requests direkt von hier") : t("github.connect_title", null, "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)");
       fotosBtn.hidden = !direct.slots().length;
+      filesBtn.hidden = !direct.canAttach();
       if (on) {
         submitBtn.textContent = aktiv.prBase ? t("form.submit_pr_into", { number: aktiv.prBase.number }, "🚀 In #" + aktiv.prBase.number + " speichern") : aktiv.edit ? t("form.submit_pr_edit", null, "🚀 Änderung als Pull Request") : t("form.submit_pr_new", null, "🚀 Als Pull Request anlegen");
         stepsEl.innerHTML = "<li>" + esc(aktiv.edit ? t("form.steps_pr_edit", null, "„Als Pull Request“ legt einen neuen Branch mit der geänderten Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")
@@ -1568,6 +1601,7 @@ var NeuFormular = (function () {
           + "<li>" + esc(t("form.steps_pr_review", null, "Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.")) + "</li>";
       }
       direct.showPhotos();
+      direct.showFiles();
     },
     // Media panel: one card per photo with a toggle per use; cards can also be dragged onto a use.
     // Above: the uses of this form with what is in them right now (also images already in the file).
@@ -1604,6 +1638,7 @@ var NeuFormular = (function () {
     clearPhotos: function () {
       (aktiv && aktiv.photos || []).forEach(function (p) { URL.revokeObjectURL(p.preview); if (p.social) URL.revokeObjectURL(p.social.preview); });
       if (aktiv) aktiv.photos = []; if (fotosEl) fotosEl.innerHTML = "";
+      if (aktiv) aktiv.files = []; if (filesEl) filesEl.innerHTML = "";
     },
     removePhoto: function (i) {
       var p = aktiv.photos[i];
@@ -1653,6 +1688,134 @@ var NeuFormular = (function () {
       });
       input.click();
     },
+    // ---------- attachments (📎) ----------
+    fileFolder: function () { return direct.folder().replace(/^assets\/images\//, "assets/dateien/"); },
+    fileUrl: function (f) { return "/" + f.folder + f.name; },
+    fileUsed: function (f) { return String(aktiv.w.text || "").indexOf(direct.fileUrl(f)) >= 0; },
+    // "Mein Modell (v2).3MF" → "mein-modell-v2.3mf"; videos that get shrunk become .mp4
+    fileName: function (name, ext) {
+      var m = String(name).match(/\.([a-z0-9]+)$/i), base = String(name).replace(/\.[^.]+$/, "");
+      return F.slugify(base, "datei") + "." + (ext || (m ? m[1].toLowerCase() : "bin"));
+    },
+    // a free name in the folder: existing files on GitHub, in open PRs and added in this form → "-2", "-3" …
+    freeFileName: function (folder, name) {
+      return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
+        var taken = res[0].concat(res[1]).concat((aktiv.files || []).filter(function (f) { return f.folder === folder; }).map(function (f) { return f.name; }));
+        var base = name.replace(/\.[^.]+$/, ""), ext = name.slice(base.length), n = 1, out = name;
+        while (taken.indexOf(out) >= 0) out = base + "-" + (++n) + ext;
+        return out;
+      });
+    },
+    // the Markdown text field (OverType's textarea or the plain one)
+    textArea: function () {
+      var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
+      return ed ? ed.textarea : form.elements.text;
+    },
+    // put a block (an embed line) at the cursor as its own paragraph – at the end of the line the cursor is in;
+    // without a cursor in the text (never clicked into it) at the end
+    insertBlock: function (line) {
+      var ta = direct.textArea(), text = String(aktiv.w.text || "");
+      var pos = ta && ta.getAttribute("data-cursor") != null ? Math.min(+ta.getAttribute("data-cursor"), text.length) : text.length;
+      var eol = text.indexOf("\n", pos); pos = eol < 0 ? text.length : eol;
+      var before = text.slice(0, pos), after = text.slice(pos);
+      var pre = !before.trim() ? "" : /\n\n$/.test(before) ? "" : /\n$/.test(before) ? "\n" : "\n\n";
+      var post = /^\n\n/.test(after) ? "" : /^\n/.test(after) ? "\n" : "\n\n";
+      var end0 = pos;
+      if (!after.trim()) { post = "\n"; end0 = text.length; after = ""; } // at the end: replace trailing blank lines
+      var ins = pre + line + post;
+      if (ta) {
+        ta.focus();
+        ta.setSelectionRange(pos, end0);
+        // insertText keeps undo (⌘Z) working; fallback for browsers without it
+        if (!(document.execCommand && document.execCommand("insertText", false, ins) && ta.value.indexOf(line) >= 0)) {
+          ta.value = before + ins + after;
+          ta.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        var end = before.length + ins.length - post.length;
+        ta.setSelectionRange(end, end);
+        ta.setAttribute("data-cursor", String(end));
+        if (aktiv.w.text !== ta.value) { aktiv.w.text = ta.value; nachAenderung(); }
+      } else setText(before + ins + after);
+    },
+    canAttach: function () { return direct.slots().some(function (sl) { return sl.id === "gallery"; }) && !(aktiv.w && aktiv.w.encrypted); },
+    addFiles: function () {
+      if (aktiv.w && aktiv.w.encrypted) { status.textContent = t("form.files_encrypted", null, "Dateien gehen auf verschlüsselten Seiten noch nicht – nur Fotos."); return; }
+      if (!direct.canAttach()) return;
+      if (!direct.active()) { direct.connectDialog(function () { direct.addFiles(); }); return; }
+      var input = F.el('<input type="file" accept="' + FILE_ACCEPT + '" multiple hidden>');
+      document.body.appendChild(input);
+      input.addEventListener("change", function () {
+        var picked = Array.prototype.slice.call(input.files || []), folder = direct.fileFolder(), state = aktiv;
+        input.remove();
+        picked.reduce(function (chain, file) {
+          return chain.then(function () { if (aktiv === state) return direct.addFile(file, folder); });
+        }, Promise.resolve()).catch(function (err) { direct.showError(err); });
+      });
+      input.click();
+    },
+    addFile: function (file, folder) {
+      if (!FILE_RE.test(file.name)) { status.textContent = "⚠️ " + file.name + ": " + t("form.file_type", null, "nur STL, 3MF, MP4 (oder MOV), MP3 oder M4A"); return Promise.resolve(); }
+      var ready = VIDEO_RE.test(file.name) ? direct.prepareVideo(file) : Promise.resolve(file);
+      return ready.then(function (blob) {
+        if (!blob) return;
+        if (blob.size > MAX_FILE_BYTES) throw Object.assign(new Error(file.name + ": " + Math.round(blob.size / 1048576) + " MB – höchstens " + Math.round(MAX_FILE_BYTES / 1048576) + " MB pro Datei."), { kind: "info" });
+        var name = direct.fileName(file.name, blob !== file ? "mp4" : null);
+        return direct.freeFileName(folder, name).then(function (free) {
+          var f = { folder: folder, name: free, blob: blob, size: blob.size, original: file.name, shrunk: blob !== file };
+          aktiv.files.push(f);
+          var alt = file.name.replace(/\.[^.]+$/, "").replace(/[\[\]]/g, "");
+          direct.insertBlock("![" + alt + "](" + direct.fileUrl(f) + ")");
+          direct.showFiles();
+          status.textContent = "📎 " + free + " " + t("form.file_added", null, "eingefügt – Beschreibung in [ ] gern anpassen. Hochgeladen wird mit dem Pull Request.");
+        });
+      }).catch(function (err) { status.textContent = "⚠️ " + ((err && err.message) || err); });
+    },
+    // videos are always recorded again in the browser (takes as long as the video): at most 1080p, MP4, no metadata
+    // (phones store the location in videos)
+    prepareVideo: function (file) {
+      return window.ladeSkripte(["video-verkleinern.js"]).then(function () {
+        var V = window.VideoVerkleinern;
+        return V.check(file, MAX_FILE_BYTES).then(function (info) {
+          if (!info.needed) return file;
+          var label = "🎬 " + file.name + ": " + info.reason + " – wird als MP4 " + (function (s) { return s.width + "×" + s.height; })(V.targetSize(info.width, info.height)) + " neu aufgenommen";
+          status.textContent = label + " … (Tab bitte offen lassen)";
+          filesBtn.disabled = submitBtn.disabled = true;
+          return V.shrink(file, {
+            maxBytes: MAX_FILE_BYTES,
+            onProgress: function (k) { status.textContent = label + " … " + Math.round(k * 100) + " % (Tab bitte offen lassen)"; },
+            start: function (go) {
+              status.textContent = label + ". ";
+              var b = F.el('<button type="button" class="btn btn-small">▶ Verkleinern starten</button>');
+              b.addEventListener("click", function () { b.remove(); go(); });
+              status.appendChild(b);
+            }
+          }).then(function (blob) {
+            filesBtn.disabled = submitBtn.disabled = false;
+            return blob;
+          }, function (err) { filesBtn.disabled = submitBtn.disabled = false; throw err; });
+        });
+      });
+    },
+    showFiles: function () {
+      var files = (aktiv && aktiv.files) || [];
+      if (!files.length) { filesEl.innerHTML = ""; return; }
+      filesEl.innerHTML = '<p class="media-title"><strong>📎 ' + esc(t("form.files_title", null, "Dateien")) + "</strong></p><ul class=\"media-files\">"
+        + files.map(function (f, i) {
+          var used = direct.fileUsed(f);
+          return '<li class="media-file' + (used ? "" : " media-unused") + '"><code>' + esc(f.name) + "</code> <span class=\"muted small\">"
+            + (f.size / 1048576).toFixed(1).replace(".", ",") + " MB" + (f.shrunk ? " · neu aufgenommen aus " + esc(f.original) : "") + "</span>"
+            + (used ? "" : ' <strong class="small">Nicht mehr im Text – wird nicht hochgeladen</strong>')
+            + ' <button type="button" class="btn btn-small btn-ghost" data-file-remove="' + i + '" aria-label="Datei entfernen">✕</button></li>';
+        }).join("") + "</ul>";
+    },
+    removeFile: function (i) {
+      var f = aktiv.files[i]; if (!f) return;
+      var url = direct.fileUrl(f);
+      var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("](" + url + ")") < 0; });
+      setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
+      aktiv.files.splice(i, 1);
+      direct.showFiles();
+    },
     submit: function () {
       var newText = dateiInhalt(), path, title, u;
       // sent already and nothing changed since → no second pull request with the same content
@@ -1672,9 +1835,11 @@ var NeuFormular = (function () {
       var slots = direct.slots(), photos = aktiv.photos.filter(direct.used), unused = aktiv.photos.length - photos.length;
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
       var folder = direct.folder(), files = [], parent = null, body = "";
+      var attachments = aktiv.w.encrypted ? [] : (aktiv.files || []).filter(direct.fileUsed);
       function buildFilesAsync() {
         files = [{ path: path, text: newText }];
         if (!state.w.encrypted) {
+          attachments.forEach(function (f) { files.push({ path: direct.fileUrl(f).slice(1), blob: f.blob }); });
           usage.forEach(function (u) {
             var base = direct.url(u.p).slice(1);
             if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
@@ -1778,6 +1943,11 @@ var NeuFormular = (function () {
               if (state.w.encrypted) state.w.text = String(state.w.text || "").split(direct.url(m.from, v)).join(direct.url(m.to, v));
             });
           });
+          // attachments follow the file name too (same name, new folder; a free name if it is taken there)
+          return direct.relocateFiles(attachments).then(function (fmoved) {
+            fmoved.forEach(function (m) { newText = newText.split(m.from).join(m.to); });
+          });
+        }).then(function () {
           var checkTarget = state.w.encrypted ? state.w.text : newText;
           return direct.checkMissingImages(state, checkTarget, photos);
         });
@@ -1799,8 +1969,10 @@ var NeuFormular = (function () {
         body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf " + siteHost() + " von @" + u.login
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
+          + (attachments.length ? "**Dateien:** " + attachments.map(function (f) { return "`" + f.name + "` (" + (f.size / 1048576).toFixed(1) + " MB" + (f.shrunk ? ", im Browser neu aufgenommen: max. 1080p, ohne Metadaten" : "") + ")"; }).join(", ") + "\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
+          + (attachments.length ? "- [ ] Dateien: Videos ohne erkennbare Kindergesichter, keine fremden Dateien ohne Erlaubnis\n" : "")
           + "- [ ] Checks („Prüfen“) sind grün\n";
         return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase, parent: parent });
       }).then(function (pr) {
@@ -1890,6 +2062,19 @@ var NeuFormular = (function () {
           return { from: from, to: { folder: folder, name: p.name } };
         });
       });
+    },
+    relocateFiles: function (list) {
+      var target = direct.fileFolder(), moving = list.filter(function (f) { return f.folder !== target; });
+      return moving.reduce(function (chain, f) {
+        return chain.then(function (out) {
+          var from = direct.fileUrl(f);
+          return direct.freeFileName(target, f.name).then(function (free) {
+            f.folder = target; f.name = free;
+            aktiv.w.text = String(aktiv.w.text || "").split(from).join(direct.fileUrl(f));
+            return out.concat([{ from: from, to: direct.fileUrl(f) }]);
+          });
+        });
+      }, Promise.resolve([]));
     },
     // images the text/fields newly point to must exist: in the photo pool, on the target branch or already before (K46 –
     // after a reload the pool is empty but the lines are still in the text)
@@ -2079,7 +2264,7 @@ var NeuFormular = (function () {
     var schema = TYPEN[daten.typ];
     if (!schema) { window.open(link.href, "_blank", "noopener"); return; }
     if (!d) baueDialog();
-    aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), vorgabe: daten.werte, beruehrt: {}, gesendet: false, photos: [],
+    aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), vorgabe: daten.werte, beruehrt: {}, gesendet: false, photos: [], files: [],
       schluessel: STORE + daten.typ + ":" + location.pathname };
     var entwurf = ladeEntwurf();
     aktiv.w = Object.assign(anfangswerte(schema, daten.werte), entwurf && entwurf.w);
@@ -2113,7 +2298,7 @@ var NeuFormular = (function () {
       if (!loaded) throw new Error("no front matter");
       if (!d) baueDialog();
       var folder = data.path.split("/").slice(0, -1).join("/");
-      aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], edit: loaded, path: data.path,
+      aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], files: [], edit: loaded, path: data.path,
         url: data.url || (typeof location !== "undefined" ? location.pathname : ""), schluessel: "ifsmb-edit:" + data.path };
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
       var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
