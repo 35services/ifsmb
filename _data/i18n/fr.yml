@@ -545,6 +545,13 @@ form:
   social_preview: Aperçu sur les réseaux sociaux (WhatsApp, Signal, X …)
   new_photos: Nouvelles photos
   add_photos: 📷 Ajouter des photos
+  add_files: "📎 Fichier"
+  add_files_title: "Insérer un STL, 3MF, MP4 ou MP3 à la position du curseur"
+  new_files: Nouveaux fichiers
+  files_title: Fichiers
+  files_encrypted: "Les fichiers ne sont pas encore possibles sur les pages chiffrées – seulement des photos."
+  file_type: "seulement STL, 3MF, MP4 (ou MOV), MP3 ou M4A"
+  file_added: "inséré – vous pouvez adapter la description entre [ ]. Il est envoyé avec la pull request."
   template_link: Modèle avec tous les champs ↗
   view_on_github: Voir sur GitHub ↗
   discard: ↩️ Annuler les modifications
@@ -647,3 +654,18 @@ microdata:
   uuid: "Identifiant (uuid)"
   name: "Nom"
   more: "Qu’est-ce que c’est ? →"
+
+files:
+  title: "📎 Fichiers"
+
+modell3d:
+  label: "Modèle 3D"
+  drag: "Faire glisser pour tourner, défiler ou pincer pour zoomer"
+  plate_label: "Plateau"
+  plate: "Plateau {n}"
+  plates_all: "Tous les plateaux"
+  filament: "Filament {n}"
+  reset: "↺ Vue"
+  loading: "Chargement de la vue 3D …"
+  failed: "Impossible d’afficher la vue 3D – téléchargez le fichier ci-dessous."
+  load: "🧊 Charger la vue 3D ({size})"
