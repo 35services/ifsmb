@@ -13,7 +13,7 @@ tags: [core-xy-anton, corexy, 3d-drucker, 35services]
 uuid: cdb7e1ec-a083-423f-be0b-82650163e9d1
 ---
 
-Anton aus der Werkstatt braucht diesen **Core-XY-Drucker** nicht mehr – und vor allem brauchte er den Platz in seinem Wohnzimmer zurück. Also hat [Falko]({{ '/team/falko-richter/' | relative_url }}) den Drucker im Oktober 2026 bei ihm abgeholt; das Foto zeigt ihn, wie er mit dem Rahmen auf der Rückbank losfährt.
+Anton aus der Werkstatt braucht diesen **Core-XY-Drucker** nicht mehr – und vor allem brauchte er den Platz in seinem Wohnzimmer zurück. Also hat [Falko]({{ '/team/falko-richter/' | relative_url }}) den Drucker im Oktober 2026 bei ihm abgeholt; das Foto zeigt ihn, wie er mit dem Drucker im Corsa los fährt.
 
 Vielleicht bauen wir ihn bei 35services **komplett auf** – daraus ist die Projektidee [Core-XY-Drucker von Anton aufbauen]({{ '/projects/core-xy-drucker-aufbauen/' | relative_url }}) entstanden.
 
