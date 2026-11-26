@@ -210,3 +210,16 @@ test("SafeMarkdown: Renders {: .gallery} blocks as <div class='gallery'> with li
   assert.ok(html.includes('<a class="lightbox" href="blob:mock://img1"><img src="blob:mock://img1" alt="Foto 1" loading="lazy"></a>'));
   assert.ok(html.includes('<a class="lightbox" href="blob:mock://img2"><img src="blob:mock://img2" alt="Foto 2" loading="lazy"></a>'));
 });
+
+test("SafeMarkdown: Renders Markdown tables like kramdown (header, alignment, escaped pipes, HTML escaped)", () => {
+  const md = "Vorher\n\n| Teil | Anzahl | Preis |\n|:-----|:-----:|------:|\n| Rahmen <b onclick=x> | `a|b` | 2 \\| 3 € |\n| **fett** | 2 | [Link](https://example.org) |\n\n| ohne | Kopf |\n| a | b |\n";
+  const html = SafeMarkdown.render(md);
+  assert.ok(html.includes("<p>Vorher</p>\n<table>\n<thead>"), "table starts its own block after a paragraph");
+  assert.ok(html.includes('<th style="text-align: left">Teil</th><th style="text-align: center">Anzahl</th><th style="text-align: right">Preis</th>'));
+  assert.ok(html.includes('<td style="text-align: left">Rahmen &lt;b onclick=x&gt;</td>'), "HTML in cells stays escaped");
+  assert.ok(html.includes('<td style="text-align: center"><code>a|b</code></td>'), "pipe inside a code span doesn't split");
+  assert.ok(html.includes('<td style="text-align: right">2 | 3 €</td>'), "\\| is a literal pipe");
+  assert.ok(html.includes("<strong>fett</strong>") && html.includes('<a href="https://example.org"'), "inline Markdown in cells");
+  assert.ok(html.includes("<table>\n<tbody>\n<tr><td>ohne</td><td>Kopf</td></tr>"), "without separator row all rows are body rows");
+  assert.ok(!html.includes("<b onclick"), "no raw HTML");
+});
