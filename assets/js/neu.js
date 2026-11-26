@@ -799,7 +799,7 @@ var NeuFormular = (function () {
       + '<button type="button" class="btn btn-small btn-ghost" data-github>' + esc(t("github.connect", null, "🔑 GitHub verbinden")) + '</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>' + esc(t("form.add_photos", null, "📷 Fotos hinzufügen")) + '</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-files hidden title="' + esc(t("form.add_files_title", null, "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen")) + '">' + esc(t("form.add_files", null, "📎 Datei")) + '</button>'
-      + '<label class="form-recycle small" hidden><input type="checkbox" data-recycle> ' + esc(t("form.recycle", null, "♻️ PR recycling")) + ' <span class="muted" data-recycle-target></span></label>'
+      + '<label class="form-recycle small" hidden><input type="checkbox" data-recycle> ' + esc(t("form.recycle", null, "♻️ PR")) + ' <span class="muted" data-recycle-target></span></label>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
       + '<button type="submit" class="btn" data-submit></button></div></form>');
     form = d.querySelector("form");

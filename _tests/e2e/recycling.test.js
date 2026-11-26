@@ -34,7 +34,7 @@ test("♻️ angehakt: neuer Beitrag landet als Commit in Alices letztem offenen
   seedPull("bob", "web/bob-x", "_posts/2026-11-03-bob.md", "PR von Bob"); // newer, but not hers
   const alice = await env.person("token-alice");
   await alice.openNew("/news/", "beitrag");
-  assert.match(await recycleBox(alice), /♻️ PR recycling.*#2 Neuester PR von Alice/s);
+  assert.match(await recycleBox(alice), /♻️.*#2 Neuester PR von Alice/s); // label text from _data/i18n (form.recycle)
   assert.equal(await alice.page.evaluate(() => document.querySelector("#neu-dialog [data-recycle]").checked), false, "aus, bis man es anhakt");
   await tick(alice, true);
   await alice.page.waitFor(() => /♻️ An #2 anhängen/.test(document.querySelector("#neu-dialog [data-submit]").textContent));
