@@ -1,5 +1,5 @@
 ---
-title: "Tag der offenen Tür am Gymnasium Tiergarten"
+title: Tag der offenen Tür am Gymnasium Tiergarten 2026
 start: 2026-12-04 16:00
 end: 2026-12-04 19:00
 all_day: false
