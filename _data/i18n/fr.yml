@@ -564,6 +564,9 @@ form:
   submit_pr_new: 🚀 Créer une pull request
   submit_pr_edit: 🚀 Proposer en pull request
   submit_pr_into: "🚀 Enregistrer dans #{number}"
+  recycle: "♻️ Recyclage de PR"
+  recycle_title: "L’enregistrement ajoute cette modification comme commit supplémentaire à ta dernière pull request ouverte #{number} au lieu d’en créer une nouvelle."
+  submit_pr_recycle: "♻️ Ajouter à #{number}"
   fill_in: Merci de remplir « {field} ».
   unchanged: Rien n’a encore changé.
   unchanged_short: Rien n’a encore changé
