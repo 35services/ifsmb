@@ -24,3 +24,16 @@ Viel erreicht im Zusatztermin 💪💪💪 Aus Blender mehrfarbig gedruckt. Manu
 ![Manueller Filamentwechsel an den A1 Mini](/assets/images/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/02.jpg)
 ![Fake Spritzguss](/assets/images/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/01.jpg)
 {: .gallery}
+
+## Dinge aus der Druckwerkstatt:
+* https://www.printables.com/model/143185-gingerbread-house-kit-card/files in Farbe:
+
+![V2_Gingerbread-House_Kit](/assets/dateien/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/v2-gingerbread-house-kit.3mf)
+
+[make_ornament.py](https://github.com/falkorichter/2d/blob/main/ornament/make_ornament.py) ausprobiert am Logo der Schule:
+
+![bildmarke_ornament](/assets/dateien/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/bildmarke-ornament.3mf)
+
+![Rosalind 1](/assets/dateien/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/rosalind-1.3mf)
+
+![cropped-Bildmarke-Schwarz](/assets/dateien/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/cropped-bildmarke-schwarz.3mf)
