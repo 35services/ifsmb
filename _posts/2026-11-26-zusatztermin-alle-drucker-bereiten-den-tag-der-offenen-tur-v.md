@@ -1,12 +1,14 @@
 ---
 title: Zusatztermin - Alle Drucker bereiten den Tag der offenen Tür vor!
 date: 2026-11-26 20:57:00 +0100
-personal: true
 author: falko-richter
 tags: [rosalind-franklin-gym]
 social_media_preview_image: /assets/images/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/06-social.jpg
+linked: [/calendar/2026-11-26-zusatztermin-am-26-november-15-17-uhr/, /calendar/2026-11-28-tag-der-offenen-tuer-rosalind-franklin-gymnasium/, /partners/rosalind-franklin-gymnasium/, /equipment/drucker-rosalind-franklin-gymnasium/]
 uuid: a8c50b09-ceec-4df4-8446-93de7eb2a7a0
 ---
+
+Viel erreicht im Zusatztermin 💪💪💪 Aus Blender mehrfarbig gedruckt. Manuell Filament gewechselt für Mehrfarbdruck an den A1 und gute Unterhaltungen!
 
 ![Und die KI hat eine Figur für eine Schachfigur konstruiert. Leider bedingt gut druckbar.](/assets/images/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/13.jpg)
 ![...](/assets/images/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/12.jpg)
