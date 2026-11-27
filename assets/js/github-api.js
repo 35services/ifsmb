@@ -257,6 +257,16 @@ var GitHubApi = (function () {
       return names;
     }, function () { return []; });
   }
+  // "♻️ PR recycling": the newest open pull request of the connected person in this repository (not from a fork) –
+  // later changes from the forms can be added to it as more commits. → { number, title, url, branch } or null
+  function lastOwnPull() {
+    return Promise.all([whoAmI(), openPulls(true)]).then(function (res) {
+      var me = res[0], mine = res[1].filter(function (pr) { return pr.user === me.login && pr.sameRepo; });
+      if (!me.canPush || !mine.length) return null;
+      mine.sort(function (a, b) { return String(b.createdAt).localeCompare(String(a.createdAt)) || b.number - a.number; });
+      return { number: mine[0].number, title: mine[0].title, url: mine[0].url, branch: mine[0].branch };
+    });
+  }
   // state of one pull request → { number, url, branch, state: "open" | "closed", merged }
   function getPull(number) {
     return call("GET", "/repos/" + repo() + "/pulls/" + number).then(function (pr) {
@@ -415,7 +425,7 @@ var GitHubApi = (function () {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
     canPushKnown: canPushKnown, ensureFork: ensureFork, compareUrl: compareUrl,
     whoAmI: whoAmI, readFile: readFile, readBinaryFile: readBinaryFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
-    namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
+    namesInOpenPulls: namesInOpenPulls, lastOwnPull: lastOwnPull, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
     finishPullRequest: finishPullRequest, pullMergeState: pullMergeState, commitChecks: commitChecks, openIssues: openIssues,
     assignIssue: assignIssue
   };

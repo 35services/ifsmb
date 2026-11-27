@@ -548,6 +548,11 @@ form:
   add_files_title: "Insert an STL, 3MF, MP4 or MP3 at the cursor"
   new_files: New files
   files_title: Files
+  file_existing: already on the page
+  file_will_delete: "🗑️ will be deleted with the pull request"
+  file_unlinked: "no longer embedded (the file stays – it isn't in this page's folder)"
+  file_delete: Remove file
+  file_undo: "↩︎ Undo"
   files_encrypted: "Files don't work on encrypted pages yet – photos only."
   file_type: "only STL, 3MF, MP4 (or MOV), MP3 or M4A"
   file_added: "inserted – feel free to change the description in [ ]. It is uploaded with the pull request."
@@ -563,6 +568,9 @@ form:
   submit_pr_new: 🚀 Create as pull request
   submit_pr_edit: 🚀 Change as pull request
   submit_pr_into: "🚀 Save into #{number}"
+  recycle: "♻️ PR recycling"
+  recycle_title: "Saving adds this change as another commit to your newest open pull request #{number} instead of opening a new one."
+  submit_pr_recycle: "♻️ Add to #{number}"
   fill_in: Please fill in “{field}”.
   unchanged: Nothing changed yet.
   unchanged_short: Nothing changed yet
