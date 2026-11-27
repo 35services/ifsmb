@@ -549,6 +549,7 @@ form:
   add_files_title: "Insérer un STL, 3MF, MP4 ou MP3 à la position du curseur"
   new_files: Nouveaux fichiers
   files_title: Fichiers
+  files_photos_title: Photos et fichiers
   file_existing: déjà sur la page
   file_will_delete: "🗑️ sera supprimé avec la pull request"
   file_unlinked: "n’est plus intégré (le fichier reste – il n’est pas dans le dossier de cette page)"

@@ -84,32 +84,60 @@ test("📎 Datei wieder aus dem Text gelöscht → wird nicht hochgeladen", asyn
 
 function hasFfmpeg() { try { execFileSync("ffmpeg", ["-version"], { stdio: "ignore" }); return true; } catch (e) { return false; } }
 
-test("📎 4K-Video mit Standort → im Browser als 1080p-MP4 ohne Metadaten neu aufgenommen", async (t) => {
+test("📎 4K-Video mit Standort → als 1080p-MP4 ohne Metadaten, oder (wenn der Browser nicht kann) im Original – nie ein Fehler", async (t) => {
   if (!hasFfmpeg()) { t.skip("ffmpeg fehlt"); return; }
   const alice = await env.person("token-alice");
   await alice.openNew("/news/", "beitrag");
-  const canRecord = await alice.page.evaluate(() => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported("video/mp4"));
-  if (!canRecord) { t.skip("Chrome nimmt hier kein MP4 auf"); return; }
   const src = path.join(env.tmp, "clip-4k.mov");
   execFileSync("ffmpeg", ["-loglevel", "error", "-y", "-f", "lavfi", "-i", "testsrc2=size=3840x2160:rate=30:duration=2",
     "-f", "lavfi", "-i", "sine=frequency=440:duration=2", "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-metadata", "location=+52.5200+013.4050/", src]);
   assert.match(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format_tags", "-of", "default", src]).toString(), /location/i, "Testvideo hat Standort");
   await alice.fill({ title: "E2E Video", text: "Video:\n" });
   await attach(alice, [src]);
-  await alice.page.waitFor(() => /clip-4k\.mp4\)/.test(document.querySelector('#neu-dialog [name="text"]').value), [], { timeout: 30000, message: "Video nicht eingefügt" });
+  await alice.page.waitFor(() => /clip-4k\.(mp4|mov)\)/.test(document.querySelector('#neu-dialog [name="text"]').value), [], { timeout: 30000, message: "Video nicht eingefügt" }).catch(async (e) => { e.message += " – Status: " + await alice.status(); throw e; });
+  const status = await alice.status();
   await alice.submit();
   await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
   const pr = env.control.state().pulls[0];
-  const file = pr.files.find((f) => /clip-4k\.mp4$/.test(f.filename));
+  const file = pr.files.find((f) => /clip-4k\.(mp4|mov)$/.test(f.filename));
   assert.ok(file, JSON.stringify(pr.files.map((f) => f.filename)));
+  const bytes = Buffer.from(env.control.readFile({ ref: pr.head.ref, path: file.filename }).base64, "base64");
+  if (/\.mov$/.test(file.filename)) {
+    // the browser could not convert (no MP4 recording, encoder won't start …): the original, with a warning
+    t.diagnostic("nicht verkleinert: " + status);
+    assert.ok(bytes.equals(fs.readFileSync(src)), "Original unverändert hochgeladen");
+    assert.match(status, /Original/, status);
+    assert.match(pr.body, /Video im Original hochgeladen: Standort/);
+    return;
+  }
   const out = path.join(env.tmp, "out.mp4");
-  fs.writeFileSync(out, Buffer.from(env.control.readFile({ ref: pr.head.ref, path: file.filename }).base64, "base64"));
+  fs.writeFileSync(out, bytes);
   const probe = execFileSync("ffprobe", ["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height,codec_name", "-of", "csv=p=0", out]).toString().trim();
-  assert.match(probe, /^h264,1920,1080$/, probe);
+  // H.264 where Chrome has an encoder for it (macOS, Windows); Chrome on Linux (CI) records MP4 with VP9
+  assert.match(probe, /^(h264|vp9),1920,1080$/, probe);
   const audio = execFileSync("ffprobe", ["-v", "error", "-select_streams", "a:0", "-show_entries", "stream=codec_name", "-of", "csv=p=0", out]).toString().trim();
-  assert.equal(audio, "aac", "Ton bleibt erhalten");
+  assert.match(audio, /^(aac|opus)$/, "Ton bleibt erhalten (AAC, oder Opus wenn Chrome nur die einfache MP4-Variante startet)");
   const tags = execFileSync("ffprobe", ["-v", "error", "-show_entries", "format_tags", "-of", "default", out]).toString();
   assert.doesNotMatch(tags, /location|52\.52/i, "Standort ist entfernt: " + tags);
+});
+
+test("📎 Video, das der Browser nicht verkleinern kann → wird im Original hochgeladen (mit Hinweis)", async () => {
+  const alice = await env.person("token-alice");
+  await alice.openNew("/news/", "beitrag");
+  // pretend this browser cannot record MP4 at all
+  await alice.page.evaluate(() => { if (window.MediaRecorder) window.MediaRecorder.isTypeSupported = () => false; });
+  const src = path.join(env.tmp, "kaputt.mp4");
+  fs.writeFileSync(src, Buffer.from("kein echtes Video"));
+  await alice.fill({ title: "E2E Video Original", text: "Video:\n" });
+  await attach(alice, [src]);
+  await alice.page.waitFor(() => /kaputt\.mp4\)/.test(document.querySelector('#neu-dialog [name="text"]').value), [], { timeout: 15000, message: "Video nicht eingefügt" });
+  assert.match(await alice.status(), /Original/);
+  await alice.submit();
+  await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+  const pr = env.control.state().pulls[0];
+  const file = pr.files.find((f) => /kaputt\.mp4$/.test(f.filename));
+  assert.ok(file);
+  assert.equal(Buffer.from(env.control.readFile({ ref: pr.head.ref, path: file.filename }).base64, "base64").toString(), "kein echtes Video");
 });
 
 // ✏️ a page that already has attachments: the panel lists them, ✕ removes the embed and deletes the file in the PR,
@@ -149,6 +177,40 @@ test("✏️ vorhandene Dateien: ✕ entfernt Einbettung und löscht die Datei i
     assert.ok(!/erstes\.3mf|fremd\.stl/.test(text), text);
     assert.match(text, /!\[Zweites Modell\]\(\/assets\/dateien\/news\/[^)]+\/zweites\.stl\)/);
     assert.match(pr.body, /\*\*Gelöschte Dateien:\*\* `erstes\.3mf`/);
+  } finally {
+    fs.writeFileSync(sitePath, before);
+  }
+});
+
+test("✏️ vorhandene Fotos: ✕ entfernt das Bild und löscht NN.jpg + NN-600w.jpg, -social bleibt solange als Vorschaubild genutzt", async () => {
+  const page = editPage("beitrag");
+  const slug = page.path.replace(/^_posts\/\d{4}-\d{2}-\d{2}-|\.md$/g, "");
+  const dir = "assets/images/news/" + slug + "/";
+  const original = fs.readFileSync(path.join(ROOT, page.path), "utf8");
+  const fm = original.match(/^---\n[\s\S]*?\n---\n/)[0].replace(/^social_media_preview_image:.*\n/m, "").replace(/\n---\n$/, "\nsocial_media_preview_image: /" + dir + "01-social.jpg\n---\n");
+  const seeded = fm + "\nText.\n\n![Erstes Foto](/" + dir + "01.jpg)\n![Zweites Foto](/" + dir + "02.jpg)\n{: .gallery}\n\nEnde.\n";
+  const png = fs.readFileSync(env.makePng("x.png"));
+  const seed = { [page.path]: seeded };
+  ["01.jpg", "01-600w.jpg", "01-social.jpg", "02.jpg", "02-600w.jpg"].forEach((n) => { seed[dir + n] = { base64: png.toString("base64") }; });
+  env.control.seed({ files: seed });
+  const sitePath = path.join(ROOT, "_site/source", page.path);
+  const before = fs.readFileSync(sitePath, "utf8");
+  fs.writeFileSync(sitePath, seeded);
+  try {
+    const alice = await env.person("token-alice");
+    await alice.openEdit(page.url);
+    await alice.page.waitFor(() => document.querySelectorAll("#neu-dialog [data-existing-file]").length === 2, [], { message: "vorhandene Fotos fehlen" });
+    const click = (name) => alice.page.evaluate((n) => { [...document.querySelectorAll("#neu-dialog [data-existing-file]")].find((li) => li.getAttribute("data-existing-file") === n).querySelector("button").click(); }, name);
+    await click("01.jpg");
+    await click("02.jpg");
+    await alice.page.waitFor(() => !/\.jpg\)/.test(document.querySelector('#neu-dialog [name="text"]').value));
+    const text = await alice.value("text");
+    assert.ok(!/\{: \.gallery\}/.test(text), "leere Galerie-Markierung entfernt: " + text);
+    await alice.submit();
+    await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+    const pr = env.control.state().pulls[0];
+    assert.deepEqual(pr.files.map((f) => [f.filename, f.status]).sort(),
+      [[dir + "01-600w.jpg", "removed"], [dir + "01.jpg", "removed"], [dir + "02-600w.jpg", "removed"], [dir + "02.jpg", "removed"], [page.path, "modified"]].sort());
   } finally {
     fs.writeFileSync(sitePath, before);
   }

@@ -2,7 +2,7 @@
 
 Alles, worauf ifsmb.de angewiesen ist – im Browser, beim Bauen, in den Tests und in lokalen Skripten. Regeln in `CLAUDE.md` unter „Abhängigkeiten“: **Was hier nicht steht, wird nicht benutzt.** Neue, aktualisierte und entfernte Einträge kommen mit genauer Version auch ins `CHANGELOG.md` und in die PR-Beschreibung.
 
-Stand: 26.11.2026
+Stand: 27.11.2026
 
 ## 1. Im Browser (wird an Besucher*innen ausgeliefert)
 
@@ -170,7 +170,7 @@ Stand: 26.11.2026
 |---|---|---|---|
 | Python 3 + Pillow | aktuell installierte | `_scripts/pr_vorschau.py` (Screenshots), Bildbearbeitung für Beiträge (Metadaten entfernen, verkleinern) | mit `python3 -I` aufrufen |
 | Google Chrome (headless) | aktuell installierte | `_scripts/pr_vorschau.py`, E2E-Tests (siehe 3.) | Pfad über `$CHROME` änderbar |
-| ffmpeg + ffprobe | 7.1 getestet (`brew install ffmpeg`) | E2E-Test „📎 4K-Video → 1080p“ (`_tests/e2e/attachments.test.js`: erzeugt ein 4K-Testvideo und prüft das Ergebnis); Videos für Beiträge von Hand verkleinern | optional: ohne ffmpeg (oder wenn Chrome kein MP4 aufnimmt) wird der eine Test übersprungen. Die Formulare selbst brauchen kein ffmpeg – sie verkleinern Videos mit Bordmitteln des Browsers (`MediaRecorder`, `assets/js/video-verkleinern.js`) |
+| ffmpeg + ffprobe | 7.1 getestet (`brew install ffmpeg`) | E2E-Test „📎 4K-Video → 1080p“ (`_tests/e2e/attachments.test.js`: erzeugt ein 4K-Testvideo und prüft das Ergebnis); Videos für Beiträge von Hand verkleinern | optional: ohne ffmpeg (oder wenn Chrome kein MP4 aufnimmt) wird der eine Test übersprungen. **In CI** installiert `.github/workflows/e2e.yml` das Ubuntu-Paket (`apt-get install ffmpeg`, ⚠️ Version nicht festgelegt – steht im Log des Schritts „ffmpeg installieren“). Die Formulare selbst brauchen kein ffmpeg – sie verkleinern Videos mit Bordmitteln des Browsers (`MediaRecorder`, `assets/js/video-verkleinern.js`) |
 | OpenSCAD | 2021.01 getestet | `_logo/badge/` (Badge zum Drucken) | – |
 | SF Mono Heavy (Schrift von macOS) | mit macOS | `_logo/badge/ifsmb-badge.scad` (nur für Namen auf Badges) | liegt nicht im Repo; andere Systeme: `name_font` |
 | Python 3 (ohne Zusatzpakete) | – | `_logo/badge/wordmark_from_svg.py`, `export_colored.py` | – |
@@ -182,4 +182,5 @@ Bekannte Lücken – nicht stillschweigend lassen, sondern hier abhaken, wenn er
 - [ ] **`Gemfile.lock` ist in `.gitignore`** – CI und lokal können verschiedene Jekyll-/Gem-Versionen bekommen. Vorschlag: `Gemfile.lock` einchecken.
 - [ ] **GitHub Actions nur mit Major-Tag** (`@v4` …) – Vorschlag: auf Commit-SHA festlegen (mit Kommentar zur Version).
 - [ ] **Node-Version in CI nicht festgelegt** (`pruefen.yml`, `pages.yml`) – Vorschlag: `actions/setup-node` mit fester Version wie in `e2e.yml` (dort 22.12.0).
+- [ ] **ffmpeg-Version in CI nicht festgelegt** (`e2e.yml` installiert das Ubuntu-Paket von `ubuntu-latest`) – nur für den einen Video-Test; bei Problemen eine feste statische Version holen.
 - [ ] **Chrome-Version für die E2E-Tests nicht festgelegt** (lokal und auf `ubuntu-latest` die installierte) – bisher unkritisch, das DevTools-Protokoll ist stabil; bei Problemen in CI eine feste Version installieren (z. B. Chrome for Testing).

@@ -556,6 +556,7 @@ form:
   add_files_title: "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen"
   new_files: Neue Dateien
   files_title: Dateien
+  files_photos_title: Fotos und Dateien
   file_existing: schon auf der Seite
   file_will_delete: "🗑️ wird mit dem Pull Request gelöscht"
   file_unlinked: "nicht mehr eingebunden (Datei bleibt, sie liegt nicht im Ordner dieser Seite)"
