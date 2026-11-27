@@ -387,7 +387,7 @@ var NeuFormular = (function () {
   var EDIT_HASH = /^#(bearbeiten|edit)$/; // <page>#bearbeiten opens the edit form directly (_includes/edit-buttons.html)
   var d = null, form, links, mehrBox, vorschau, socialBox, socialImg, socialTitel, socialBeschr, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
   var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder, edit, path }
-  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl, filesBtn, filesEl;
+  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl, filesBtn, filesEl, recycleBox;
 
   function alleFelder(schema) {
     return schema.felder.reduce(function (a, z) { return a.concat(z); }, []).concat([{ name: "datei", intern: true, folgt: schema.datei }]);
@@ -799,6 +799,7 @@ var NeuFormular = (function () {
       + '<button type="button" class="btn btn-small btn-ghost" data-github>' + esc(t("github.connect", null, "🔑 GitHub verbinden")) + '</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>' + esc(t("form.add_photos", null, "📷 Fotos hinzufügen")) + '</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-files hidden title="' + esc(t("form.add_files_title", null, "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen")) + '">' + esc(t("form.add_files", null, "📎 Datei")) + '</button>'
+      + '<label class="form-recycle small" hidden><input type="checkbox" data-recycle> ' + esc(t("form.recycle", null, "♻️ PR")) + ' <span class="muted" data-recycle-target></span></label>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
       + '<button type="submit" class="btn" data-submit></button></div></form>');
     form = d.querySelector("form");
@@ -821,12 +822,19 @@ var NeuFormular = (function () {
     fotosBtn = d.querySelector("[data-photos]");
     fotosEl = d.querySelector(".form-photos");
     filesBtn = d.querySelector("[data-files]");
+    recycleBox = d.querySelector(".form-recycle");
+    recycleBox.querySelector("[data-recycle]").addEventListener("change", function (e) {
+      try { localStorage.setItem(RECYCLE_KEY, e.target.checked ? "1" : "0"); } catch (x) { /* storage blocked */ }
+      direct.update();
+    });
     filesEl = d.querySelector(".form-files");
     githubBtn.addEventListener("click", function () { direct.connectDialog(); });
     fotosBtn.addEventListener("click", function () { direct.addPhotos(); });
     filesBtn.addEventListener("click", function () { direct.addFiles(); });
     filesEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-file-remove]"); if (b) direct.removeFile(+b.getAttribute("data-file-remove"));
+      var x = e.target.closest("[data-existing-remove]"); if (x) direct.removeExisting(+x.getAttribute("data-existing-remove"));
+      var u = e.target.closest("[data-existing-undo]"); if (u) direct.undoRemoveExisting(+u.getAttribute("data-existing-undo"));
     });
     fotosEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-photo-remove]"); if (b) { direct.removePhoto(+b.getAttribute("data-photo-remove")); return; }
@@ -1258,6 +1266,7 @@ var NeuFormular = (function () {
     speichereEntwurf();
     aktiv.gesendet = false;
     status.textContent = "";
+    if (filesEl) direct.showFiles(); // existing attachments: removed from the text → "wird gelöscht"
   }
   function erstesMarkdownBild(md) {
     var m = String(md || "").match(/!\[[^\]]*\]\(([^)\s]+)\)/);
@@ -1272,8 +1281,10 @@ var NeuFormular = (function () {
     if (aktiv.edit) {
       var marked = changedLines(aktiv.edit.source.replace(/\r\n/g, "\n"), text), count = marked.filter(Boolean).length;
       vorschau.innerHTML = text.split("\n").map(function (line, i) { return marked[i] ? '<mark class="changed-line">' + esc(line || " ") + "</mark>" : esc(line); }).join("\n");
-      submitBtn.disabled = !count;
-      submitBtn.title = count ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
+      // a change that only deletes lines marks nothing in the new text – compare the whole text
+      var changed = count > 0 || text !== aktiv.edit.source.replace(/\r\n/g, "\n");
+      submitBtn.disabled = !changed;
+      submitBtn.title = changed ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
     } else vorschau.textContent = text;
     if (!socialBox) return;
     var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
@@ -1348,6 +1359,8 @@ var NeuFormular = (function () {
   var FILE_ACCEPT = ".stl,.3mf,.mp4,.m4v,.mov,.webm,.mp3,.m4a";
   var FILE_RE = /\.(stl|3mf|mp4|m4v|mov|webm|mp3|m4a)$/i, VIDEO_RE = /\.(mp4|m4v|mov|webm)$/i;
   var MAX_FILE_BYTES = 60 * 1024 * 1024;
+  // "♻️ PR recycling": the choice is remembered in this browser (only the checkbox, not the pull request)
+  var RECYCLE_KEY = "ifsmb-pr-recycling";
   var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen", seite: "seiten", uebersicht: "seiten" };
   var direct = {
     active: function () { return !!(window.GitHubApi && GitHubApi.connected()); },
@@ -1595,13 +1608,56 @@ var NeuFormular = (function () {
       fotosBtn.hidden = !direct.slots().length;
       filesBtn.hidden = !direct.canAttach();
       if (on) {
-        submitBtn.textContent = aktiv.prBase ? t("form.submit_pr_into", { number: aktiv.prBase.number }, "🚀 In #" + aktiv.prBase.number + " speichern") : aktiv.edit ? t("form.submit_pr_edit", null, "🚀 Änderung als Pull Request") : t("form.submit_pr_new", null, "🚀 Als Pull Request anlegen");
+        var rc = direct.recycleTarget();
+        submitBtn.textContent = aktiv.prBase ? t("form.submit_pr_into", { number: aktiv.prBase.number }, "🚀 In #" + aktiv.prBase.number + " speichern")
+          : rc ? t("form.submit_pr_recycle", { number: rc.number }, "♻️ An #" + rc.number + " anhängen") : aktiv.edit ? t("form.submit_pr_edit", null, "🚀 Änderung als Pull Request") : t("form.submit_pr_new", null, "🚀 Als Pull Request anlegen");
         stepsEl.innerHTML = "<li>" + esc(aktiv.edit ? t("form.steps_pr_edit", null, "„Als Pull Request“ legt einen neuen Branch mit der geänderten Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")
           : t("form.steps_pr_new", null, "„Als Pull Request“ legt einen neuen Branch mit der neuen Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")) + "</li>"
           + "<li>" + esc(t("form.steps_pr_review", null, "Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.")) + "</li>";
       }
       direct.showPhotos();
       direct.showFiles();
+      direct.showRecycling();
+    },
+    // ---------- ♻️ PR recycling: add this change to your newest open pull request instead of opening another ----------
+    recycleOn: function () {
+      var box = recycleBox && recycleBox.querySelector("[data-recycle]");
+      return !!(box && box.checked && !recycleBox.hidden);
+    },
+    // the pull request the form would add to (checkbox on, a candidate found, not already in a PR)
+    recycleTarget: function () { return aktiv && !aktiv.prBase && direct.recycleOn() ? aktiv.recycleCandidate || null : null; },
+    showRecycling: function () {
+      if (!recycleBox || !aktiv) return;
+      var state = aktiv, box = recycleBox.querySelector("[data-recycle]"), label = recycleBox.querySelector("[data-recycle-target]");
+      if (!direct.active() || state.prBase) { recycleBox.hidden = true; return; }
+      var c = state.recycleCandidate;
+      recycleBox.hidden = !c;
+      if (c) {
+        label.innerHTML = '→ <a href="' + esc(c.url) + '" target="_blank" rel="noopener">#' + c.number + "</a> " + esc(c.title);
+        recycleBox.title = t("form.recycle_title", { number: c.number }, "Speichern hängt diese Änderung als weiteren Commit an deinen letzten offenen Pull Request #" + c.number + " an, statt einen neuen anzulegen.");
+        try { box.checked = localStorage.getItem(RECYCLE_KEY) === "1"; } catch (x) { /* storage blocked */ }
+      }
+      if (state.recycleLooked) return;
+      state.recycleLooked = true; // once per form; after sending the form is in the PR anyway
+      GitHubApi.lastOwnPull().then(function (pr) {
+        if (aktiv !== state) return;
+        state.recycleCandidate = pr;
+        direct.update();
+      }, function () { /* no candidate – the box stays hidden */ });
+    },
+    // just before sending: is the pull request still open? Then the form saves into it (prBase), else a new one
+    applyRecycling: function (state) {
+      var c = direct.recycleTarget();
+      if (!c) return Promise.resolve();
+      return GitHubApi.getPull(c.number).then(function (pr) {
+        if (pr.state !== "open") {
+          state.recycleCandidate = null; state.recycleLooked = false;
+          status.textContent = "♻️ #" + c.number + " ist schon " + (pr.merged ? "gemergt" : "geschlossen") + " – es wird ein neuer Pull Request.";
+          return;
+        }
+        state.prBase = { number: c.number, url: c.url, branch: pr.branch };
+        state.recycled = true;
+      });
     },
     // Media panel: one card per photo with a toggle per use; cards can also be dragged onto a use.
     // Above: the uses of this form with what is in them right now (also images already in the file).
@@ -1796,10 +1852,46 @@ var NeuFormular = (function () {
         });
       });
     },
+    // Attachments the page already has (editing): every /assets/dateien/ file the loaded text points to.
+    // own: in this page's folder – only those are deleted from the repository when their embed leaves the text
+    // (files elsewhere may be used by other pages too; then only the embed goes).
+    existingFiles: function () {
+      if (!aktiv || !aktiv.edit || aktiv.w.encrypted) return [];
+      var src = String(aktiv.edit.source || ""), text = String(aktiv.w.text || ""), own = "/" + direct.fileFolder(), seen = {}, out = [];
+      var re = /!?\[[^\]]*\]\((\/assets\/dateien\/[^)\s]+)\)/g, m;
+      while ((m = re.exec(src))) {
+        var url = m[1];
+        if (seen[url]) continue;
+        seen[url] = true;
+        var line = src.split("\n").filter(function (l) { return l.indexOf("(" + url + ")") >= 0; })[0] || m[0];
+        out.push({ url: url, name: url.split("/").pop(), own: url.indexOf(own) === 0, used: text.indexOf(url) >= 0, line: line.trim() });
+      }
+      return out;
+    },
+    // existing own attachments whose embed is gone → deleted with the pull request
+    filesToDelete: function () { return direct.existingFiles().filter(function (f) { return f.own && !f.used; }); },
+    removeExisting: function (i) {
+      var f = direct.existingFiles()[i]; if (!f) return;
+      var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("(" + f.url + ")") < 0; });
+      setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
+    },
+    undoRemoveExisting: function (i) {
+      var f = direct.existingFiles()[i]; if (!f || f.used) return;
+      direct.insertBlock(f.line);
+    },
     showFiles: function () {
-      var files = (aktiv && aktiv.files) || [];
-      if (!files.length) { filesEl.innerHTML = ""; return; }
+      var files = (aktiv && aktiv.files) || [], existing = direct.existingFiles();
+      if (!files.length && !existing.length) { filesEl.innerHTML = ""; return; }
       filesEl.innerHTML = '<p class="media-title"><strong>📎 ' + esc(t("form.files_title", null, "Dateien")) + "</strong></p><ul class=\"media-files\">"
+        + existing.map(function (f, i) {
+          var label = f.used ? '<span class="muted small">' + esc(t("form.file_existing", null, "schon auf der Seite")) + "</span>"
+            : '<strong class="small">' + esc(f.own ? t("form.file_will_delete", null, "🗑️ wird mit dem Pull Request gelöscht") : t("form.file_unlinked", null, "nicht mehr eingebunden (Datei bleibt, sie liegt nicht im Ordner dieser Seite)")) + "</strong>";
+          return '<li class="media-file' + (f.used ? "" : " media-unused") + '" data-existing-file="' + esc(f.name) + '"><code>' + esc(f.name) + "</code> " + label
+            + (f.used
+              ? ' <button type="button" class="btn btn-small btn-ghost" data-existing-remove="' + i + '" aria-label="' + esc(t("form.file_delete", null, "Datei entfernen")) + '" title="' + esc(t("form.file_delete", null, "Datei entfernen")) + '">✕</button>'
+              : ' <button type="button" class="btn btn-small btn-ghost" data-existing-undo="' + i + '">' + esc(t("form.file_undo", null, "↩︎ Zurückholen")) + "</button>")
+            + "</li>";
+        }).join("")
         + files.map(function (f, i) {
           var used = direct.fileUsed(f);
           return '<li class="media-file' + (used ? "" : " media-unused") + '"><code>' + esc(f.name) + "</code> <span class=\"muted small\">"
@@ -1836,6 +1928,7 @@ var NeuFormular = (function () {
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
       var folder = direct.folder(), files = [], parent = null, body = "";
       var attachments = aktiv.w.encrypted ? [] : (aktiv.files || []).filter(direct.fileUsed);
+      var removedFiles = direct.filesToDelete();
       function buildFilesAsync() {
         files = [{ path: path, text: newText }];
         if (!state.w.encrypted) {
@@ -1845,7 +1938,12 @@ var NeuFormular = (function () {
             if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
             if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
           });
-          return Promise.resolve();
+          if (!removedFiles.length) return Promise.resolve();
+          // attachments whose embed was removed: delete them too – only if they are (still) there on the target branch
+          var dir = removedFiles[0].url.slice(1, removedFiles[0].url.lastIndexOf("/"));
+          return GitHubApi.listFolder(dir, state.prBase && state.prBase.branch).then(function (names) {
+            removedFiles.forEach(function (f) { if (names.indexOf(f.name) >= 0) files.push({ path: f.url.slice(1), delete: true }); });
+          });
         }
         // Encrypted page: encrypt all gallery photos as .blob files (never upload unencrypted .jpg/-600w.jpg),
         // upload social_media_preview_image (-social.jpg) unencrypted if chosen, and migrate any existing
@@ -1933,7 +2031,7 @@ var NeuFormular = (function () {
         }).catch(function (err) { direct.showError(err); }).then(function () { submitBtn.disabled = false; submitBtn.textContent = label; direct.update(); });
         return;
       }
-      GitHubApi.whoAmI().then(function (me) {
+      direct.applyRecycling(state).then(function () { return GitHubApi.whoAmI(); }).then(function (me) {
         u = me;
         // photos follow the file name: if it changed after adding them, move them – with free numbers in the new folder (K26)
         return direct.relocate(photos, folder).then(function (moved) {
@@ -1954,8 +2052,9 @@ var NeuFormular = (function () {
       }).then(function () {
         return buildFilesAsync();
       }).then(function () {
-        if (!state.edit) return GitHubApi.readFile(path).then(function (cur) {
-          if (cur != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
+        if (!state.edit) return Promise.all([GitHubApi.readFile(path), state.prBase ? GitHubApi.readFile(path, state.prBase.branch) : null]).then(function (cur) {
+          if (cur[0] != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
+          if (cur[1] != null) throw new Error("Die Datei " + path + " gibt es in #" + state.prBase.number + " schon – bitte den Dateinamen ändern.");
           return GitHubApi.openPullsForFile(path);
         }).then(function (prs) {
           if (prs && prs.length) throw new Error("Pull Request #" + prs[0].number + " („" + prs[0].title + "“) legt " + path + " schon an – bitte dort weitermachen oder den Dateinamen ändern.");
@@ -1969,6 +2068,7 @@ var NeuFormular = (function () {
         body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf " + siteHost() + " von @" + u.login
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
+          + (removedFiles.length ? "**Gelöschte Dateien:** " + removedFiles.map(function (f) { return "`" + f.name + "`"; }).join(", ") + "\n\n" : "")
           + (attachments.length ? "**Dateien:** " + attachments.map(function (f) { return "`" + f.name + "` (" + (f.size / 1048576).toFixed(1) + " MB" + (f.shrunk ? ", im Browser neu aufgenommen: max. 1080p, ohne Metadaten" : "") + ")"; }).join(", ") + "\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
@@ -1980,6 +2080,8 @@ var NeuFormular = (function () {
         direct.sentOk(state, pr, newText, path);
       }).catch(function (err) {
         if (aktiv !== state) return;
+        // ♻️ nothing was sent: back to "own pull request" with the checkbox, so the next try decides again
+        if (state.recycled && !err.conflicts && !(err.kind === "conflict" && /fast.forward/i.test(err.message))) { state.prBase = null; state.recycled = false; }
         // the branch with the commit exists, but the pull request didn't come back: next click finishes it (K41/K42)
         if (err.pendingBranch) {
           state.pending = { branch: err.pendingBranch, fork: err.pendingFork || null, title: title, body: body, text: newText };
@@ -2006,6 +2108,7 @@ var NeuFormular = (function () {
     // success: stay in this pull request – further changes become more commits there, not a second PR (K17–K19)
     sentOk: function (state, pr, text, path) {
       loescheEntwurf();
+      state.recycled = false;
       state.gesendet = true; state.retries = 0;
       var savedPlain = state.crypto && state.crypto.unlocked ? state.w.text : null;
       var savedPw = state.crypto ? state.crypto.password : "";
