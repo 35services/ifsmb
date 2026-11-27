@@ -105,7 +105,8 @@ test("📎 4K-Video mit Standort → im Browser als 1080p-MP4 ohne Metadaten neu
   const out = path.join(env.tmp, "out.mp4");
   fs.writeFileSync(out, Buffer.from(env.control.readFile({ ref: pr.head.ref, path: file.filename }).base64, "base64"));
   const probe = execFileSync("ffprobe", ["-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height,codec_name", "-of", "csv=p=0", out]).toString().trim();
-  assert.match(probe, /^h264,1920,1080$/, probe);
+  // H.264 where Chrome has an encoder for it (macOS, Windows); Chrome on Linux (CI) records MP4 with VP9
+  assert.match(probe, /^(h264|vp9),1920,1080$/, probe);
   const audio = execFileSync("ffprobe", ["-v", "error", "-select_streams", "a:0", "-show_entries", "stream=codec_name", "-of", "csv=p=0", out]).toString().trim();
   assert.match(audio, /^(aac|opus)$/, "Ton bleibt erhalten (AAC, oder Opus wenn Chrome nur die einfache MP4-Variante startet)");
   const tags = execFileSync("ffprobe", ["-v", "error", "-show_entries", "format_tags", "-of", "default", out]).toString();
