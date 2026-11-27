@@ -827,6 +827,11 @@ var NeuFormular = (function () {
       try { localStorage.setItem(RECYCLE_KEY, e.target.checked ? "1" : "0"); } catch (x) { /* storage blocked */ }
       direct.update();
     });
+    recycleBox.addEventListener("change", function (e) {
+      if (!e.target.matches("[data-recycle-select]") || !aktiv) return;
+      aktiv.recycleCandidate = (aktiv.recycleCandidates || []).filter(function (pr) { return String(pr.number) === e.target.value; })[0] || aktiv.recycleCandidate;
+      direct.update();
+    });
     filesEl = d.querySelector(".form-files");
     githubBtn.addEventListener("click", function () { direct.connectDialog(); });
     fotosBtn.addEventListener("click", function () { direct.addPhotos(); });
@@ -1361,6 +1366,8 @@ var NeuFormular = (function () {
   var MAX_FILE_BYTES = 60 * 1024 * 1024;
   // "♻️ PR recycling": the choice is remembered in this browser (only the checkbox, not the pull request)
   var RECYCLE_KEY = "ifsmb-pr-recycling";
+  // the pull request this browser last saved into from a form – offered first for "♻️" (number only)
+  var LAST_PR_KEY = "ifsmb-letzter-pr";
   var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen", seite: "seiten", uebersicht: "seiten" };
   var direct = {
     active: function () { return !!(window.GitHubApi && GitHubApi.connected()); },
@@ -1630,18 +1637,26 @@ var NeuFormular = (function () {
       if (!recycleBox || !aktiv) return;
       var state = aktiv, box = recycleBox.querySelector("[data-recycle]"), label = recycleBox.querySelector("[data-recycle-target]");
       if (!direct.active() || state.prBase) { recycleBox.hidden = true; return; }
-      var c = state.recycleCandidate;
+      var c = state.recycleCandidate, list = state.recycleCandidates || [];
       recycleBox.hidden = !c;
       if (c) {
-        label.innerHTML = '→ <a href="' + esc(c.url) + '" target="_blank" rel="noopener">#' + c.number + "</a> " + esc(c.title);
+        // one candidate: its title; several: a choice (the one this browser last saved into is preselected)
+        label.innerHTML = list.length > 1
+          ? '→ <select data-recycle-select aria-label="' + esc(t("form.recycle_choose", null, "Pull Request auswählen")) + '">' + list.map(function (pr) {
+            return '<option value="' + pr.number + '"' + (pr.number === c.number ? " selected" : "") + ">#" + pr.number + " " + esc(pr.title) + "</option>";
+          }).join("") + '</select> <a href="' + esc(c.url) + '" target="_blank" rel="noopener" title="#' + c.number + '">↗</a>'
+          : '→ <a href="' + esc(c.url) + '" target="_blank" rel="noopener">#' + c.number + "</a> " + esc(c.title);
         recycleBox.title = t("form.recycle_title", { number: c.number }, "Speichern hängt diese Änderung als weiteren Commit an deinen letzten offenen Pull Request #" + c.number + " an, statt einen neuen anzulegen.");
         try { box.checked = localStorage.getItem(RECYCLE_KEY) === "1"; } catch (x) { /* storage blocked */ }
       }
       if (state.recycleLooked) return;
       state.recycleLooked = true; // once per form; after sending the form is in the PR anyway
-      GitHubApi.lastOwnPull().then(function (pr) {
+      GitHubApi.ownFormPulls().then(function (list) {
         if (aktiv !== state) return;
-        state.recycleCandidate = pr;
+        var last = null;
+        try { last = +localStorage.getItem(LAST_PR_KEY) || null; } catch (x) { /* storage blocked */ }
+        state.recycleCandidates = list;
+        state.recycleCandidate = list.filter(function (pr) { return pr.number === last; })[0] || list[0] || null;
         direct.update();
       }, function () { /* no candidate – the box stays hidden */ });
     },
@@ -2141,6 +2156,7 @@ var NeuFormular = (function () {
         return;
       }
       state.sent = { text: text, url: pr.url, number: pr.number };
+      try { localStorage.setItem(LAST_PR_KEY, String(pr.number)); } catch (x) { /* storage blocked */ }
       direct.clearPhotos();
       var branch = pr.branch || (state.prBase && state.prBase.branch);
       state.prBase = { number: pr.number, url: pr.url, branch: branch };

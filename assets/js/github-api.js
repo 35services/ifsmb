@@ -261,14 +261,16 @@ var GitHubApi = (function () {
   // later changes from the forms can be added to it as more commits. → { number, title, url, branch } or null
   // Only pull requests the forms made (branch "web/…", see branchName): a code change someone opened by hand under
   // the same account must not get content commits mixed in.
-  function lastOwnPull() {
+  // ownFormPulls: all of them, newest first → [{ number, title, url, branch }] (the form offers a choice)
+  function ownFormPulls() {
     return Promise.all([whoAmI(), openPulls(true)]).then(function (res) {
       var me = res[0], mine = res[1].filter(function (pr) { return pr.user === me.login && pr.sameRepo && /^web\//.test(pr.branch); });
-      if (!me.canPush || !mine.length) return null;
+      if (!me.canPush) return [];
       mine.sort(function (a, b) { return String(b.createdAt).localeCompare(String(a.createdAt)) || b.number - a.number; });
-      return { number: mine[0].number, title: mine[0].title, url: mine[0].url, branch: mine[0].branch };
+      return mine.map(function (pr) { return { number: pr.number, title: pr.title, url: pr.url, branch: pr.branch }; });
     });
   }
+  function lastOwnPull() { return ownFormPulls().then(function (list) { return list[0] || null; }); }
   // state of one pull request → { number, url, branch, state: "open" | "closed", merged }
   function getPull(number) {
     return call("GET", "/repos/" + repo() + "/pulls/" + number).then(function (pr) {
@@ -427,7 +429,7 @@ var GitHubApi = (function () {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
     canPushKnown: canPushKnown, ensureFork: ensureFork, compareUrl: compareUrl,
     whoAmI: whoAmI, readFile: readFile, readBinaryFile: readBinaryFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
-    namesInOpenPulls: namesInOpenPulls, lastOwnPull: lastOwnPull, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
+    namesInOpenPulls: namesInOpenPulls, lastOwnPull: lastOwnPull, ownFormPulls: ownFormPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
     finishPullRequest: finishPullRequest, pullMergeState: pullMergeState, commitChecks: commitChecks, openIssues: openIssues,
     assignIssue: assignIssue
   };
