@@ -1366,6 +1366,8 @@ var NeuFormular = (function () {
   var FILE_ACCEPT = ".stl,.3mf,.mp4,.m4v,.mov,.webm,.mp3,.m4a";
   var FILE_RE = /\.(stl|3mf|mp4|m4v|mov|webm|mp3|m4a)$/i, VIDEO_RE = /\.(mp4|m4v|mov|webm)$/i;
   var MAX_FILE_BYTES = 60 * 1024 * 1024;
+  // a video the browser could not convert goes up as it is – up to just under GitHub's limit of 100 MB per file
+  var MAX_ORIGINAL_BYTES = 95 * 1024 * 1024;
   // "♻️ PR recycling": the choice is remembered in this browser (only the checkbox, not the pull request)
   var RECYCLE_KEY = "ifsmb-pr-recycling";
   var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen", seite: "seiten", uebersicht: "seiten" };
@@ -1824,21 +1826,36 @@ var NeuFormular = (function () {
       var ready = VIDEO_RE.test(file.name) ? direct.prepareVideo(file) : Promise.resolve(file);
       return ready.then(function (blob) {
         if (!blob) return;
-        if (blob.size > MAX_FILE_BYTES) throw Object.assign(new Error(file.name + ": " + Math.round(blob.size / 1048576) + " MB – höchstens " + Math.round(MAX_FILE_BYTES / 1048576) + " MB pro Datei."), { kind: "info" });
+        var asIs = blob === file && VIDEO_RE.test(file.name), limit = asIs ? MAX_ORIGINAL_BYTES : MAX_FILE_BYTES;
+        if (blob.size > limit) {
+          throw Object.assign(new Error(file.name + ": " + Math.round(blob.size / 1048576) + " MB – höchstens " + Math.round(limit / 1048576) + " MB pro Datei"
+            + (asIs ? " (GitHub nimmt keine Dateien über 100 MB; das Video ließ sich im Browser nicht verkleinern – bitte kürzen oder vorher verkleinern)." : ".")), { kind: "info" });
+        }
         var name = direct.fileName(file.name, blob !== file ? "mp4" : null);
         return direct.freeFileName(folder, name).then(function (free) {
-          var f = { folder: folder, name: free, blob: blob, size: blob.size, original: file.name, shrunk: blob !== file };
+          var f = { folder: folder, name: free, blob: blob, size: blob.size, original: file.name, shrunk: blob !== file, asIs: asIs ? (direct.videoFailure || "nicht verkleinert") : "" };
           aktiv.files.push(f);
           var alt = file.name.replace(/\.[^.]+$/, "").replace(/[\[\]]/g, "");
           direct.insertBlock("![" + alt + "](" + direct.fileUrl(f) + ")");
           direct.showFiles();
-          status.textContent = "📎 " + free + " " + t("form.file_added", null, "eingefügt – Beschreibung in [ ] gern anpassen. Hochgeladen wird mit dem Pull Request.");
+          status.textContent = "📎 " + free + " " + t("form.file_added", null, "eingefügt – Beschreibung in [ ] gern anpassen. Hochgeladen wird mit dem Pull Request.")
+            + (f.asIs ? " ⚠️ Video im Original (" + f.asIs + ") – evtl. mit Standort in den Metadaten." : "");
         });
       }).catch(function (err) { status.textContent = "⚠️ " + ((err && err.message) || err); });
     },
     // videos are always recorded again in the browser (takes as long as the video): at most 1080p, MP4, no metadata
     // (phones store the location in videos)
+    // If anything goes wrong (browser can't open or record the video, encoder won't start …), the video goes up as it
+    // is, 4K included – an upload never fails because of the conversion (direct.videoFailure says why, for the list).
     prepareVideo: function (file) {
+      direct.videoFailure = "";
+      return direct.convertVideo(file).catch(function (err) {
+        filesBtn.disabled = submitBtn.disabled = false;
+        direct.videoFailure = (err && err.message) || "Fehler beim Verkleinern";
+        return file;
+      });
+    },
+    convertVideo: function (file) {
       return window.ladeSkripte(["video-verkleinern.js"]).then(function () {
         var V = window.VideoVerkleinern;
         return V.check(file, MAX_FILE_BYTES).then(function (info) {
@@ -1923,6 +1940,7 @@ var NeuFormular = (function () {
           var used = direct.fileUsed(f);
           return '<li class="media-file' + (used ? "" : " media-unused") + '"><code>' + esc(f.name) + "</code> <span class=\"muted small\">"
             + (f.size / 1048576).toFixed(1).replace(".", ",") + " MB" + (f.shrunk ? " · neu aufgenommen aus " + esc(f.original) : "") + "</span>"
+            + (f.asIs ? ' <span class="small" title="' + esc(f.asIs) + '">⚠️ Original, nicht verkleinert</span>' : "")
             + (used ? "" : ' <strong class="small">Nicht mehr im Text – wird nicht hochgeladen</strong>')
             + ' <button type="button" class="btn btn-small btn-ghost" data-file-remove="' + i + '" aria-label="Datei entfernen">✕</button></li>';
         }).join("") + "</ul>";
@@ -2107,10 +2125,11 @@ var NeuFormular = (function () {
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
           + (removedFiles.length ? "**Gelöschte Dateien:** " + removedFiles.map(function (f) { return "`" + f.name + "`"; }).join(", ") + "\n\n" : "")
-          + (attachments.length ? "**Dateien:** " + attachments.map(function (f) { return "`" + f.name + "` (" + (f.size / 1048576).toFixed(1) + " MB" + (f.shrunk ? ", im Browser neu aufgenommen: max. 1080p, ohne Metadaten" : "") + ")"; }).join(", ") + "\n\n" : "")
+          + (attachments.length ? "**Dateien:** " + attachments.map(function (f) { return "`" + f.name + "` (" + (f.size / 1048576).toFixed(1) + " MB" + (f.shrunk ? ", im Browser neu aufgenommen: max. 1080p, ohne Metadaten" : f.asIs ? ", ⚠️ Original – im Browser nicht verkleinert: " + f.asIs : "") + ")"; }).join(", ") + "\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
           + (attachments.length ? "- [ ] Dateien: Videos ohne erkennbare Kindergesichter, keine fremden Dateien ohne Erlaubnis\n" : "")
+          + (attachments.some(function (f) { return f.asIs; }) ? "- [ ] Video im Original hochgeladen: Standort in den Metadaten prüfen (z. B. `ffprobe`), ggf. mit ffmpeg verkleinern (`-map_metadata -1`)\n" : "")
           + "- [ ] Checks („Prüfen“) sind grün\n";
         return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase, parent: parent });
       }).then(function (pr) {

@@ -121,7 +121,7 @@
   // An image line pointing to a 3D model, audio or video (like _plugins/galerie.rb on normal pages):
   // .3mf/.stl → <figure class="modell-3d"> for assets/js/model3d.js, .mp3/.m4a/.ogg/.wav → audio, .mp4/.webm → video.
   // data-format tells model3d.js the type, because a decrypted attachment is a blob: URL without a file name.
-  var MEDIA_RE = /\.(3mf|stl|mp3|m4a|ogg|wav|mp4|webm)$/i;
+  var MEDIA_RE = /\.(3mf|stl|mp3|m4a|ogg|wav|mp4|webm|mov|m4v)$/i;
   function mediaBlock(alt, src, attachments) {
     var m = src.match(MEDIA_RE);
     if (!m) return "";
@@ -129,7 +129,7 @@
     if (!/^(https?:\/\/|blob:|\/)/.test(url)) return "";
     var a = escapeHtml(alt), u = escapeHtml(url), cap = alt.trim() ? "<figcaption>" + a + "</figcaption>" : "";
     if (ext === "3mf" || ext === "stl") return '<figure class="modell-3d" data-model="' + u + '" data-format="' + ext + '" data-alt="' + a + '">' + cap + "</figure>";
-    if (ext === "mp4" || ext === "webm") return '<video class="post-video" controls preload="metadata" playsinline src="' + u + '"' + (alt.trim() ? ' aria-label="' + a + '"' : "") + "></video>";
+    if (ext === "mp4" || ext === "webm" || ext === "mov" || ext === "m4v") return '<video class="post-video" controls preload="metadata" playsinline src="' + u + '"' + (alt.trim() ? ' aria-label="' + a + '"' : "") + "></video>";
     return '<figure class="post-audio"><audio controls preload="metadata" src="' + u + '"' + (alt.trim() ? ' aria-label="' + a + '"' : "") + "></audio>" + cap + "</figure>";
   }
 
