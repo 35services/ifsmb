@@ -34,5 +34,12 @@ jobs:
           node-version: "22.12.0"
       - name: Chrome-Version
         run: google-chrome --version
+      # ffmpeg/ffprobe for the video test in _tests/e2e/attachments.test.js (makes a 4K clip, checks the 1080p result);
+      # Ubuntu's package – the version is printed here and in DEPENDENCIES.md
+      - name: ffmpeg installieren
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends ffmpeg
+          ffmpeg -version | head -1
       - name: Formulare im Browser testen (E2E gegen Fake-GitHub)
         run: _scripts/test_e2e.sh
