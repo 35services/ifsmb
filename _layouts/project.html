@@ -72,7 +72,7 @@ layout: default
     {%- comment -%}Todos of this project (todos/todo-<person>.md, filtered by `projects` or the event_tag) – loaded by JS on click.{%- endcomment -%}
     <h2 id="todos" data-i18n="todos.heading">{{ "todos.heading" | t }}</h2>
     {%- assign tk_titel = "Todos – " | append: page.title -%}
-    {% include todos-knopf.html projekt=page.slug tag=page.event_tag team=page.team titel=tk_titel label_key="todos.project_button" %}
+    {% ifpage /todos/ %}{% include todos-knopf.html projekt=page.slug tag=page.event_tag team=page.team titel=tk_titel label_key="todos.project_button" %}{% endifpage %}
     {%- comment -%}Stand / Updates: manuelle `updates` und alle Beiträge mit dem event_tag als eine Zeitleiste – so kann jede*r aus dem Team mit einem kleinen Beitrag zum Projekt beitragen.{%- endcomment -%}
     {%- assign tl_keys = "" | split: "" -%}
     {%- for u in page.updates -%}{%- capture k %}{{ u.date | date: "%Y-%m-%d" }} 00:00|u|{{ forloop.index0 }}{% endcapture %}{%- assign tl_keys = tl_keys | push: k -%}{%- endfor -%}
@@ -147,6 +147,6 @@ layout: default
     {% endif %}
     {% endif %}
     {% include verbindungen.html %}
-    {% if page.personal %}<a href="{{ '/projects/personal/' | relative_url }}" class="back-link" data-i18n="project.back_personal">{{ "project.back_personal" | t }}</a>{% else %}<a href="{{ '/projects/' | relative_url }}" class="back-link" data-i18n="project.back">{{ "project.back" | t }}</a>{% endif %}
+    {% ifpage /projects/ %}{% if page.personal %}<a href="{{ '/projects/personal/' | relative_url }}" class="back-link" data-i18n="project.back_personal">{{ "project.back_personal" | t }}</a>{% else %}<a href="{{ '/projects/' | relative_url }}" class="back-link" data-i18n="project.back">{{ "project.back" | t }}</a>{% endif %}{% endifpage %}
   </article>
 </main>
