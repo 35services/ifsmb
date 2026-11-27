@@ -223,3 +223,16 @@ test("SafeMarkdown: Renders Markdown tables like kramdown (header, alignment, es
   assert.ok(html.includes("<table>\n<tbody>\n<tr><td>ohne</td><td>Kopf</td></tr>"), "without separator row all rows are body rows");
   assert.ok(!html.includes("<b onclick"), "no raw HTML");
 });
+
+test("SafeMarkdown: 3D-Modelle, Audio, Video als eigene Zeile + „📎 Dateien“ am Ende (entschlüsselte Anhänge)", () => {
+  const md = "Text\n\n![Modell <x>](/assets/dateien/news/a/m.3mf)\n\n![Ton](/assets/dateien/news/a/t.mp3)\n\n![Clip](/assets/dateien/news/a/c.mp4)\n";
+  const html = SafeMarkdown.render(md, { "/assets/dateien/news/a/m.3mf": "blob:m", "/assets/dateien/news/a/t.mp3": "blob:t", "/assets/dateien/news/a/c.mp4": "blob:c" });
+  assert.ok(html.includes('<figure class="modell-3d" data-model="blob:m" data-format="3mf" data-alt="Modell &lt;x&gt;"><figcaption>Modell &lt;x&gt;</figcaption></figure>'), html);
+  assert.ok(html.includes('<audio controls preload="metadata" src="blob:t" aria-label="Ton">'), html);
+  assert.ok(html.includes('<video class="post-video" controls preload="metadata" playsinline src="blob:c" aria-label="Clip">'), html);
+  assert.ok(html.includes('<a href="blob:m" download="m.3mf">m.3mf</a>'), html);
+  assert.ok(!/<script|onerror/.test(html));
+  // a javascript: URL never becomes a model or download
+  const bad = SafeMarkdown.render("![x](javascript:alert(1).stl)\n");
+  assert.ok(!bad.includes("javascript:"), bad);
+});

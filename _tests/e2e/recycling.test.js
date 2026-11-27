@@ -105,3 +105,31 @@ test("♻️ kein eigener offener PR → kein Haken", async () => {
   await new Promise((r) => setTimeout(r, 1500)); // the lookup is asynchronous
   assert.equal(await alice.page.evaluate(() => document.querySelector("#neu-dialog .form-recycle").hidden), true);
 });
+
+test("♻️ nur PRs aus dem Formular (Branch web/…): ein von Hand angelegter PR wird nie angeboten", async () => {
+  seedPull("alice", "web/alice-formular", "_posts/2026-11-02-neu.md", "PR aus dem Formular");
+  seedPull("alice", "feature-von-hand", "assets/js/x.js", "Code-Änderung von Hand"); // newer, same person
+  const alice = await env.person("token-alice");
+  await alice.openNew("/news/", "beitrag");
+  assert.match(await recycleBox(alice), /#1 PR aus dem Formular/);
+});
+
+test("♻️ mehrere eigene Formular-PRs → Auswahl; vorausgewählt ist der, in den dieser Browser zuletzt gespeichert hat", async () => {
+  seedPull("alice", "web/alice-a", "_posts/2026-11-01-a.md", "PR A");
+  seedPull("alice", "web/alice-b", "_posts/2026-11-02-b.md", "PR B (neuester)");
+  const alice = await env.person("token-alice");
+  await alice.page.evaluate(() => localStorage.setItem("ifsmb-letzter-pr", "1")); // last saved into #1 from this browser
+  await alice.openNew("/news/", "beitrag");
+  await recycleBox(alice);
+  const options = await alice.page.evaluate(() => [...document.querySelectorAll("#neu-dialog [data-recycle-select] option")].map((o) => o.textContent + (o.selected ? " *" : "")));
+  assert.deepEqual(options, ["#2 PR B (neuester)", "#1 PR A *"]);
+  await tick(alice, true);
+  await alice.page.waitFor(() => /An #1 anhängen/.test(document.querySelector("#neu-dialog [data-submit]").textContent));
+  // choose the other one
+  await alice.page.evaluate(() => { const s = document.querySelector("#neu-dialog [data-recycle-select]"); s.value = "2"; s.dispatchEvent(new Event("change", { bubbles: true })); });
+  await alice.page.waitFor(() => /An #2 anhängen/.test(document.querySelector("#neu-dialog [data-submit]").textContent));
+  await alice.fill({ title: "E2E Auswahl", text: "Text.\n" });
+  await alice.submit();
+  await alice.waitStatus(/Pull Request #2.*ergänzt/, { timeout: 20000 });
+  assert.equal(await alice.page.evaluate(() => localStorage.getItem("ifsmb-letzter-pr")), "2", "gemerkt für das nächste Mal");
+});

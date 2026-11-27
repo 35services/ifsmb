@@ -364,6 +364,12 @@
       if (viewBox) viewBox.hidden = false;
       contentBox.innerHTML = html;
       contentBox.hidden = false;
+      // 3D models in the decrypted content: load the viewer (same as on normal pages) and start it for them
+      if (contentBox.querySelector(".modell-3d") && typeof window !== "undefined") {
+        var go = function () { if (window.Modell3DInit) window.Modell3DInit(contentBox); };
+        if (window.Modell3DInit) go();
+        else if (window.ladeSkripte) window.ladeSkripte(["model3d.js"]).then(go).catch(function () {});
+      }
       if (lockBtn) lockBtn.hidden = false;
       if (errorEl) errorEl.hidden = true;
     }
