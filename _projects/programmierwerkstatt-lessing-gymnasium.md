@@ -21,6 +21,13 @@ Im Herbst 2025 hat Falko am Lessing-Gymnasium eine **Programmierwerkstatt** von 
 - **Programmieren mit [Scratch](https://scratch.mit.edu/):** Was sind Sprites und Audio-Schnipsel? Kleine Routinen lesen und verstehen – und lernen, Wiederholungen im Code zu vermeiden.
 - **Fortgeschrittene Themen** als Ideen für später: Cloud-Variablen, Highscore, Einstellungs-Bildschirm, Modulo, saubere Klick-Behandlung, Kommentare und „Clean Code“, Nachrichten zwischen Figuren schicken.
 
+Am Anfang der AG haben wir mit einem kurzen [Vorstellungsvideo]({{ '/news/2025/10/01/vorstellungsvideo-programmierwerkstatt-lessing-gymnasium/' | relative_url }}) in der Schule Werbung gemacht:
+
+<a class="video-link" href="https://www.youtube.com/watch?v=g7Fhp1XMXIE" target="_blank" rel="noopener">
+  <img src="/assets/images/news/vorstellungsvideo-programmierwerkstatt-lessing-gymnasium/youtube-g7Fhp1XMXIE.jpg" alt="Vorschaubild des Videos: der Scratch-Editor mit Code-Blöcken für ein Labyrinth-Spiel, rechts die Bühne mit gezeichnetem Labyrinth, „START“ und „ZIEL“, unten rechts Falko im Kamerabild" loading="lazy">
+  <span class="video-play">▶ Video auf YouTube ansehen</span>
+</a>
+
 Als Material hat Falko Tipps wie [inf-schule.de](https://inf-schule.de/) und [appcamps.de](https://appcamps.de/), Lernkarten und mehrere Bücher zu Scratch gesammelt.
 
 Alle Notizen stehen im Beitrag [Programmier Werkstatt am Lessing Gymnasium]({{ '/news/2025/10/09/programmier-werkstatt-am-lessing-gymnasium/' | relative_url }}).
