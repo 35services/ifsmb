@@ -9,7 +9,8 @@ search: false
 {%- comment -%}
   Full-text search with Pagefind (https://pagefind.app). The index (/pagefind/) is only created after `jekyll build`
   (see .github/workflows/pages.yml and README) – with plain `jekyll serve` it is missing and the note below shows.
-  ?q=… starts a search right away.
+  ?q=… or #… starts a search right away (/search/#Serpentine); while typing, the address becomes /search/#<term>, so a
+  search can be shared as a link. Changing #… in the address bar searches again.
   Federation: connected instances (_config.yml federation, plus ?instanz=https://… added by the visitor) are only
   contacted with ?verbund=1, i.e. after a click – their Pagefind index (fulltext_search in <instance>/meta_graph.json)
   is merged in with mergeIndex. Without that click everything comes from this site, no external requests.
@@ -106,8 +107,30 @@ search: false
           return result;
         }
       });
-      var q = params.get("q");
+      // #term (or ?q=term): search right away; an anchor that is an element on the page is not a search term
+      function hashTerm() {
+        var h = location.hash.slice(1);
+        try { h = decodeURIComponent(h.replace(/\+/g, " ")); } catch (e) { /* keep as it is */ }
+        return h && !document.getElementById(h) ? h : "";
+      }
+      var q = params.get("q") || hashTerm(), lastTerm = q || "";
       if (q) ui.triggerSearch(q);
+      window.addEventListener("hashchange", function () {
+        var h = hashTerm();
+        if (h && h !== lastTerm) { lastTerm = h; ui.triggerSearch(h); }
+      });
+      // typing: keep the term in the address (#…, without a new history entry) so the search can be shared
+      var timer = null;
+      document.getElementById("search").addEventListener("input", function (e) {
+        if (!e.target.matches("input[type=text], input[type=search], .pagefind-ui__search-input")) return;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          var term = e.target.value.trim();
+          lastTerm = term;
+          var url = location.pathname + location.search + (term ? "#" + encodeURIComponent(term).replace(/%20/g, "+") : "");
+          if (history.replaceState) history.replaceState(null, "", url);
+        }, 400);
+      });
     });
   });
 </script>
