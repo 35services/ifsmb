@@ -1,6 +1,6 @@
 // assets/js/crypto-page.js
-// Client-side decryption for encrypted Markdown posts and .blob attachments.
-// Passwords cached per page in localStorage ("ifsmb-crypto:<uuid>").
+// Client-side decryption and encryption for encrypted Markdown pages and .blob attachments.
+// Passwords cached per page in localStorage ("ifsmb-crypto:<uuid>") and in memory for the current tab.
 (function (root, factory) {
   if (typeof module !== "undefined" && module.exports) module.exports = factory(root);
   else root.CryptoPage = factory(root);
@@ -8,6 +8,7 @@
   "use strict";
 
   var activeObjectUrls = [];
+  var unlockedPasswords = {};
 
   function base64ToBytes(b64) {
     var bin = atob(b64);
@@ -30,6 +31,16 @@
       return crypto.subtle;
     }
     throw new Error("WebCrypto SubtleCrypto is not available in this environment.");
+  }
+
+  function randomBytes(len) {
+    var arr = new Uint8Array(len);
+    if (typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(arr);
+    } else if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      crypto.getRandomValues(arr);
+    }
+    return arr;
   }
 
   function deriveKey(password, saltBytes, iterations) {
@@ -70,6 +81,121 @@
     }
   }
 
+  // Extract and parse <script type="application/json" class="encrypted-data">...</script> from a page body.
+  function parseEncryptedBody(text) {
+    var m = String(text || "").trim().match(/^<script\s+type=["']application\/json["']\s+class=["']encrypted-data["']\s*>\s*([\s\S]*?)\s*<\/script>$/i);
+    if (!m) return null;
+    try {
+      var p = JSON.parse(m[1]);
+      return p && p.kdf && p.kdf.salt && p.iv && p.data ? p : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function formatEncryptedBody(payload) {
+    return '<script type="application/json" class="encrypted-data">\n' + JSON.stringify(payload, null, 2) + "\n</script>";
+  }
+
+  function getUnlockedPassword(key) {
+    if (!key) return null;
+    if (unlockedPasswords[key]) return unlockedPasswords[key];
+    try {
+      var saved = localStorage.getItem("ifsmb-crypto:" + key);
+      if (saved) return saved;
+    } catch (e) {}
+    return null;
+  }
+
+  function setUnlockedPassword(key, password, remember) {
+    if (!key || !password) return;
+    unlockedPasswords[key] = password;
+    if (remember) {
+      try { localStorage.setItem("ifsmb-crypto:" + key, password); } catch (e) {}
+    }
+  }
+
+  function clearUnlockedPassword(key) {
+    if (!key) return;
+    delete unlockedPasswords[key];
+    try { localStorage.removeItem("ifsmb-crypto:" + key); } catch (e) {}
+  }
+
+  // Decrypt only the Markdown text from a payload (without fetching .blob attachments).
+  function decryptMarkdown(payload, password) {
+    if (!payload || !payload.kdf || !payload.iv || !payload.data) {
+      return Promise.reject(new Error("Ungültige verschlüsselte Daten."));
+    }
+    var salt = base64ToBytes(payload.kdf.salt);
+    var iterations = payload.kdf.iterations || 600000;
+    var iv = base64ToBytes(payload.iv);
+    var ciphertext = base64ToBytes(payload.data);
+
+    return deriveKey(password, salt, iterations).then(function (key) {
+      return decryptData(ciphertext, iv, key).then(function (decryptedBytes) {
+        return new TextDecoder("utf-8").decode(decryptedBytes);
+      });
+    });
+  }
+
+  // Encrypt raw binary bytes into .blob format (12-byte random IV + AES-GCM ciphertext + 16-byte auth tag).
+  function encryptBytesToBlob(plainBytes, key) {
+    var iv = randomBytes(12);
+    var input = plainBytes instanceof Uint8Array ? plainBytes : new Uint8Array(plainBytes);
+    return encryptData(input, iv, key).then(function (cipherBuf) {
+      var out = new Uint8Array(12 + cipherBuf.byteLength);
+      out.set(iv, 0);
+      out.set(new Uint8Array(cipherBuf), 12);
+      return out;
+    });
+  }
+
+  // Encrypt Markdown text into an encrypted payload and <script class="encrypted-data"> block.
+  // When keepKdf is true and existingPayload has kdf.salt, reuses the salt/iterations so existing .blob attachments
+  // remain decryptable with the same key while generating a fresh random 12-byte IV for the Markdown ciphertext.
+  // extraAttachments is an optional array of { name, blob, mime } to include in payload.attachments.
+  function encryptMarkdownPayload(markdownText, password, existingPayload, keepKdf, extraAttachments) {
+    var enc = new TextEncoder();
+    var reuse = !!(keepKdf && existingPayload && existingPayload.kdf && existingPayload.kdf.salt);
+    var salt = reuse ? base64ToBytes(existingPayload.kdf.salt) : randomBytes(16);
+    var iterations = (reuse && existingPayload.kdf.iterations) ? existingPayload.kdf.iterations : 600000;
+
+    var baseAtts = (existingPayload && Array.isArray(existingPayload.attachments)) ? existingPayload.attachments.slice() : [];
+    var seenNames = {};
+    var mergedAtts = [];
+    baseAtts.concat(extraAttachments || []).forEach(function (a) {
+      if (!a || !a.name || seenNames[a.name]) return;
+      seenNames[a.name] = true;
+      mergedAtts.push({
+        name: a.name,
+        blob: a.blob || (a.name + ".blob"),
+        mime: a.mime || "application/octet-stream"
+      });
+    });
+
+    return deriveKey(password, salt, iterations).then(function (key) {
+      var iv = randomBytes(12);
+      var plainBytes = enc.encode(markdownText || "");
+      return encryptData(plainBytes, iv, key).then(function (cipherBytes) {
+        var payload = {
+          v: (existingPayload && existingPayload.v) || 1,
+          kdf: {
+            salt: bytesToBase64(salt),
+            iterations: iterations
+          },
+          iv: bytesToBase64(iv),
+          data: bytesToBase64(new Uint8Array(cipherBytes)),
+          attachments: mergedAtts
+        };
+        return {
+          payload: payload,
+          block: formatEncryptedBody(payload),
+          key: key
+        };
+      });
+    });
+  }
+
   // Decrypts a binary .blob file:
   // Blob file format: first 12 bytes = IV, followed by AES-GCM ciphertext + 16-byte auth tag.
   function decryptBlobFile(arrayBuffer, key, mime) {
@@ -107,7 +233,6 @@
 
         var attPromises = attachments.map(function (att) {
           var blobPath = att.blob;
-          // If relative, resolve against basePath
           if (!/^https?:\/\/|^\//.test(blobPath)) {
             blobPath = basePath + blobPath;
           }
@@ -141,15 +266,12 @@
 
   // Encrypt helper for creating encrypted payload and .blob files
   function encryptPage(markdownText, password, attachmentsToEncrypt) {
-    var subtle = getSubtle();
     var enc = new TextEncoder();
-    var salt = (typeof crypto !== "undefined" && crypto.getRandomValues)
-      ? crypto.getRandomValues(new Uint8Array(16))
-      : new Uint8Array(16);
+    var salt = randomBytes(16);
     var iterations = 600000;
 
     return deriveKey(password, salt, iterations).then(function (key) {
-      var iv = crypto.getRandomValues(new Uint8Array(12));
+      var iv = randomBytes(12);
       var plainBytes = enc.encode(markdownText);
 
       return encryptData(plainBytes, iv, key).then(function (cipherBytes) {
@@ -165,8 +287,7 @@
         };
 
         var attPromises = (attachmentsToEncrypt || []).map(function (att) {
-          // att: { name: "foto.jpg", data: ArrayBuffer | Uint8Array, mime: "image/jpeg" }
-          var attIv = crypto.getRandomValues(new Uint8Array(12));
+          var attIv = randomBytes(12);
           var attBytes = new Uint8Array(att.data);
           return encryptData(attBytes, attIv, key).then(function (attCipher) {
             var blobBytes = new Uint8Array(12 + attCipher.byteLength);
@@ -200,7 +321,7 @@
   // DOM controller for pages with .encrypted-container
   function initContainer(container) {
     var uuid = container.getAttribute("data-uuid");
-    var basePath = container.getAttribute("data-base-path") || location.pathname;
+    var basePath = container.getAttribute("data-base-path") || (typeof location !== "undefined" ? location.pathname : "");
     var dataEl = container.querySelector(".encrypted-data");
     if (!dataEl) return;
 
@@ -220,8 +341,9 @@
     var rememberCheck = container.querySelector(".encrypted-remember");
     var errorEl = container.querySelector(".encrypted-error");
     var lockBtn = container.querySelector(".encrypted-lock-btn");
+    var editBtn = container.querySelector(".encrypted-edit-btn");
 
-    var storageKey = "ifsmb-crypto:" + (uuid || location.pathname);
+    var pageKey = uuid || basePath;
 
     function showLocked(errMessage) {
       revokeUrls();
@@ -242,6 +364,12 @@
       if (viewBox) viewBox.hidden = false;
       contentBox.innerHTML = html;
       contentBox.hidden = false;
+      // 3D models in the decrypted content: load the viewer (same as on normal pages) and start it for them
+      if (contentBox.querySelector(".modell-3d") && typeof window !== "undefined") {
+        var go = function () { if (window.Modell3DInit) window.Modell3DInit(contentBox); };
+        if (window.Modell3DInit) go();
+        else if (window.ladeSkripte) window.ladeSkripte(["model3d.js"]).then(go).catch(function () {});
+      }
       if (lockBtn) lockBtn.hidden = false;
       if (errorEl) errorEl.hidden = true;
     }
@@ -250,16 +378,15 @@
       if (!password) return Promise.reject(new Error("Kein Passwort angegeben"));
       return decryptPage(payload, password, basePath)
         .then(function (res) {
-          if (remember) {
-            try { localStorage.setItem(storageKey, password); } catch (e) {}
-          }
+          setUnlockedPassword(pageKey, password, remember);
+          if (basePath && basePath !== pageKey) setUnlockedPassword(basePath, password, false);
           var mdRenderer = (root && root.SafeMarkdown) || (typeof window !== "undefined" && window.SafeMarkdown);
           var html = mdRenderer ? mdRenderer.render(res.markdown, res.attachments) : res.markdown;
           showUnlocked(html);
         })
         .catch(function (err) {
           console.error("CryptoPage unlock error:", err);
-          try { localStorage.removeItem(storageKey); } catch (e) {}
+          clearUnlockedPassword(pageKey);
           var msg = (err && (err.name === "OperationError" || /mac check/i.test(err.message)))
             ? "Falsches Passwort."
             : (err && err.message) || "Fehler beim Entschlüsseln.";
@@ -279,14 +406,28 @@
 
     if (lockBtn) {
       lockBtn.addEventListener("click", function () {
-        try { localStorage.removeItem(storageKey); } catch (e) {}
+        clearUnlockedPassword(pageKey);
+        if (basePath) clearUnlockedPassword(basePath);
         showLocked();
       });
     }
 
-    // Auto-unlock if password is cached in localStorage
-    var savedPw = null;
-    try { savedPw = localStorage.getItem(storageKey); } catch (e) {}
+    if (editBtn) {
+      var pageEditLink = typeof document !== "undefined" ? document.querySelector("a[data-edit]") : null;
+      if (!pageEditLink) {
+        editBtn.hidden = true;
+      } else {
+        editBtn.addEventListener("click", function () {
+          pageEditLink.click();
+        });
+      }
+    }
+
+    // Expose unlock callback on the DOM element so the ✏️ form can unlock the page view too when unlocked there
+    container._cryptoTryUnlock = tryUnlock;
+
+    // Auto-unlock if password is cached
+    var savedPw = getUnlockedPassword(pageKey);
     if (savedPw) {
       tryUnlock(savedPw, true).catch(function () {
         showLocked();
@@ -310,6 +451,14 @@
     decryptBlobFile: decryptBlobFile,
     decryptPage: decryptPage,
     encryptPage: encryptPage,
+    parseEncryptedBody: parseEncryptedBody,
+    formatEncryptedBody: formatEncryptedBody,
+    decryptMarkdown: decryptMarkdown,
+    encryptMarkdownPayload: encryptMarkdownPayload,
+    encryptBytesToBlob: encryptBytesToBlob,
+    getUnlockedPassword: getUnlockedPassword,
+    setUnlockedPassword: setUnlockedPassword,
+    clearUnlockedPassword: clearUnlockedPassword,
     init: init,
     initContainer: initContainer,
     base64ToBytes: base64ToBytes,

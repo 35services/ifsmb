@@ -20,6 +20,7 @@ personal: {{ include.personal | default: false }}   # true = aus einem privaten 
 solution:   # wenn gelöst: wie, in Markdown – erscheint unter „Lösung“
 theme:   # Aussehen der Seite, leer = wie die ganze Website; ifsmb, offene-werkstaetten, rfflabs oder slop (Liste: _data/themes.yml) – Besucher*innen können unten auf der Seite selbst wählen
 social_media_preview_image:   # Vorschaubild beim Teilen (1200×630 px, ohne Metadaten), z. B. /assets/images/og-….jpg
+encrypted: false   # true = Inhalt der Seite im Browser mit Passwort verschlüsseln
 uuid: UUID-NEU   # zufällige Kennung für die Gelesen-Markierung – wird beim Klick erzeugt, nicht ändern
 ---
 

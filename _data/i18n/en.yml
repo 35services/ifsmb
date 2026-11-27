@@ -24,7 +24,6 @@ nav:
   projects: Projects
   project_ideas: Project ideas
   challenges: Challenges
-  todos: Todos
   offer: What we offer
   funding: Funding for Makespaces
   equipment: Equipment
@@ -545,6 +544,18 @@ form:
   social_preview: Social media preview (WhatsApp, Signal, X …)
   new_photos: New photos
   add_photos: 📷 Add photos
+  add_files: "📎 File"
+  add_files_title: "Insert an STL, 3MF, MP4 or MP3 at the cursor"
+  new_files: New files
+  files_title: Files
+  files_photos_title: Photos and files
+  file_existing: already on the page
+  file_will_delete: "🗑️ will be deleted with the pull request"
+  file_unlinked: "no longer embedded (the file stays – it isn't in this page's folder)"
+  file_delete: Remove file
+  file_undo: "↩︎ Undo"
+  file_type: "only STL, 3MF, MP4 (or MOV), MP3 or M4A"
+  file_added: "inserted – feel free to change the description in [ ]. It is uploaded with the pull request."
   template_link: Template with all fields ↗
   view_on_github: View on GitHub ↗
   discard: ↩️ Discard changes
@@ -557,6 +568,10 @@ form:
   submit_pr_new: 🚀 Create as pull request
   submit_pr_edit: 🚀 Change as pull request
   submit_pr_into: "🚀 Save into #{number}"
+  recycle: "♻️ PR recycling"
+  recycle_title: "Saving adds this change as another commit to your newest open pull request #{number} instead of opening a new one."
+  recycle_choose: Choose pull request
+  submit_pr_recycle: "♻️ Add to #{number}"
   fill_in: Please fill in “{field}”.
   unchanged: Nothing changed yet.
   unchanged_short: Nothing changed yet
@@ -647,3 +662,18 @@ microdata:
   uuid: "Identifier (uuid)"
   name: "Name"
   more: "What is this? →"
+
+files:
+  title: "📎 Files"
+
+modell3d:
+  label: "3D model"
+  drag: "Drag to rotate, scroll or pinch to zoom"
+  plate_label: "Build plate"
+  plate: "Plate {n}"
+  plates_all: "All plates"
+  filament: "Filament {n}"
+  reset: "↺ View"
+  loading: "Loading 3D view …"
+  failed: "The 3D view couldn't be shown – download the file below."
+  load: "🧊 Load 3D view ({size})"

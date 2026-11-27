@@ -285,7 +285,8 @@ Jede Seite kann ein eigenes Aussehen haben. Welches gilt, entscheidet (das erste
   `assets/css/themes.css`, Auswahl im Footer `assets/js/theme.js`.
 - `theme` ist keine Verbindung – es ändert nur das Aussehen, nicht die Inhalte oder die Links.
 - Neues Theme: Eintrag in `_data/themes.yml`, Block in `themes.css`, Auswahlwerte in `.pages.yml`,
-  Kommentar in den Vorlagen (`_includes/vorlagen/`) und `THEMES` in `assets/js/neu.js` –
+  Kommentar in den Vorlagen (`_includes/vorlagen/`); die ➕/✏️-Formulare lesen die Liste selbst (über
+  `_includes/formular-config.html`) –
   `ruby _scripts/test_formulare.rb` prüft, dass alles zusammenpasst, `check_site.rb` meldet unbekannte Werte.
 
 ## Einfache Seiten im ✏️-Formular
@@ -298,6 +299,25 @@ Seiten außerhalb der Sammlungen mit `layout: page` – und die Startseite `inde
 | HTML (`index.html` (Startseite), `team/index.html`, `partners/index.html`, `projects/index.html` …) | `uebersicht` | `title`, `lead`, `social_media_preview_image`, `theme` und das HTML selbst (unter „Weitere Felder“, wird vor dem Speichern geprüft) |
 
 Alle anderen Felder (`i18n_title`, `search` …) bleiben unverändert. `edit_form: false` im Front Matter lässt eine Seite beim GitHub-Editor. Vorlage für neue Markdown-Seiten: `_includes/vorlagen/seite.md`.
+
+## Mehrere Instanzen: `_data/instanz/`
+
+Dieselbe Code-Basis läuft als ifsmb.de und als weitere Instanzen (z. B. 35services.ifsmb.de). Was nur eine Instanz betrifft, steht nicht in den gemeinsamen Dateien, sondern in `_data/instanz/` – an derselben Stelle wie das Original:
+
+| Datei | wirkt auf | wie |
+|---|---|---|
+| `_data/instanz/i18n/de.yml` (en, fr) | `_data/i18n/de.yml` | nur die Schlüssel darin; muss es im Original geben, gleiche Platzhalter |
+| `_data/instanz/<name>.yml` | `_data/<name>.yml` | Hash: Schlüssel für Schlüssel, Liste: ersetzt |
+
+Beispiel für eine Instanz:
+
+```yaml
+# _data/instanz/i18n/de.yml
+footer:
+  disclaimer: Ein Angebot von 35services.
+```
+
+Links auf Seiten, die eine Instanz nicht hat (`/spenden/`, `/angebot/`, `/todos/` …), stehen in den Layouts in `{% ifpage … %}` und fallen dann weg (`_plugins/instanz.rb`).
 
 ## Sichtbarkeit
 

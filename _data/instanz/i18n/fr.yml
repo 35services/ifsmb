@@ -1,0 +1,34 @@
+# Textes uniquement pour 35services.ifsmb.de – posés clé par clé sur _data/i18n/fr.yml (_plugins/instanz.rb).
+footer:
+  disclaimer: Ce site appartient à l’association 35 services e. V. et utilise la technique web de l’Institut für spontane Makespace Buildung (ifsmb.de).
+pages:
+  news:
+    lead: Ce qui se passe chez 35services
+  personal_news:
+    intro: Ce ne sont pas des articles de l’association, mais des nouvelles personnelles de membres de notre {0}. Les actualités de l’association se trouvent sous {1}.
+  personal_projects:
+    intro: Ce ne sont pas des projets de l’association, mais des projets de Makespace privés de notre {0}. Les projets de l’association se trouvent sous {1}.
+  team:
+    lead: Les personnes derrière l’association.
+  challenges:
+    personal_intro: Des défis issus de projets de Makespace privés de l’équipe – pas des tâches de l’association.
+post:
+  personal_note: – des nouvelles privées de Makespace de l’équipe, pas un article de l’association.
+project:
+  personal_note: – un projet de Makespace privé de l’équipe, pas un projet de l’association.
+challenge:
+  personal_note: – issu d’un projet de Makespace privé, pas une tâche de l’association.
+event:
+  personal_note: – un rendez-vous de Makespace privé de l’équipe, pas un rendez-vous de l’association. Il ne figure pas dans l’agenda de l’association, seulement dans le profil.
+calendar:
+  title_institute: S’abonner à l’agenda de l’association
+feed:
+  title_institute: S’abonner aux actualités de l’association
+owner:
+  institute: Appartient à l’association
+equipment:
+  no_own_devices: L’association ne possède (encore) aucun appareil.
+team:
+  institute_projects: Projets dans l’association
+press:
+  about: À propos de l’association

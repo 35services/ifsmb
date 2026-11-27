@@ -31,9 +31,13 @@ layout: default
     {% if page.location %}
     <p class="event-location">📍 {% if page.location_url %}<a href="{{ page.location_url }}" target="_blank" rel="noopener">{{ page.location }}</a>{% else %}{{ page.location }}{% endif %}</p>
     {% endif %}
+    {% if page.encrypted %}
+      {% include encrypted.html %}
+    {% else %}
     <div class="prose">
       {{ content }}
     </div>
+    {% endif %}
     {% if page.gallery and page.gallery.size > 0 %}
     <div class="gallery event-gallery">
       {% for g in page.gallery %}
@@ -51,6 +55,6 @@ layout: default
     <p class="cal-subscribe">
       <a class="btn btn-ghost" href="{{ '/calendar/#abonnieren' | relative_url }}" data-i18n="event.subscribe_all">{{ "event.subscribe_all" | t }}</a>
     </p>
-    <a href="{{ '/calendar/' | relative_url }}" class="back-link" data-i18n="event.back">{{ "event.back" | t }}</a>
+    {% ifpage /calendar/ %}<a href="{{ '/calendar/' | relative_url }}" class="back-link" data-i18n="event.back">{{ "event.back" | t }}</a>{% endifpage %}
   </article>
 </main>

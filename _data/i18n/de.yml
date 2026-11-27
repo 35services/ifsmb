@@ -27,7 +27,6 @@ nav:
   projects: Projekte
   project_ideas: Projekt-Ideen
   challenges: Herausforderungen
-  todos: Todos
   offer: Angebot
   funding: Geld für Makespaces
   equipment: Ausstattung
@@ -553,6 +552,18 @@ form:
   social_preview: Social-Media-Vorschau (WhatsApp, Signal, X …)
   new_photos: Neue Fotos
   add_photos: 📷 Fotos hinzufügen
+  add_files: "📎 Datei"
+  add_files_title: "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen"
+  new_files: Neue Dateien
+  files_title: Dateien
+  files_photos_title: Fotos und Dateien
+  file_existing: schon auf der Seite
+  file_will_delete: "🗑️ wird mit dem Pull Request gelöscht"
+  file_unlinked: "nicht mehr eingebunden (Datei bleibt, sie liegt nicht im Ordner dieser Seite)"
+  file_delete: Datei entfernen
+  file_undo: "↩︎ Zurückholen"
+  file_type: "nur STL, 3MF, MP4 (oder MOV), MP3 oder M4A"
+  file_added: "eingefügt – Beschreibung in [ ] gern anpassen. Hochgeladen wird mit dem Pull Request."
   template_link: Vorlage mit allen Feldern ↗
   view_on_github: Auf GitHub ansehen ↗
   discard: ↩️ Änderungen verwerfen
@@ -565,6 +576,10 @@ form:
   submit_pr_new: 🚀 Als Pull Request anlegen
   submit_pr_edit: 🚀 Änderung als Pull Request
   submit_pr_into: "🚀 In #{number} speichern"
+  recycle: "♻️ PR"
+  recycle_title: "Speichern hängt diese Änderung als weiteren Commit an deinen letzten offenen Pull Request #{number} an, statt einen neuen anzulegen."
+  recycle_choose: Pull Request auswählen
+  submit_pr_recycle: "♻️ An #{number} anhängen"
   fill_in: Bitte „{field}“ ausfüllen.
   unchanged: Noch nichts geändert.
   unchanged_short: Noch nichts geändert
@@ -656,3 +671,18 @@ microdata:
   uuid: "Kennung (uuid)"
   name: "Name"
   more: "Was ist das? →"
+
+files:
+  title: "📎 Dateien"
+
+modell3d:
+  label: "3D-Modell"
+  drag: "Ziehen zum Drehen, scrollen oder mit zwei Fingern zoomen"
+  plate_label: "Druckplatte"
+  plate: "Platte {n}"
+  plates_all: "Alle Platten"
+  filament: "Filament {n}"
+  reset: "↺ Ansicht"
+  loading: "3D-Ansicht wird geladen …"
+  failed: "Die 3D-Ansicht ließ sich nicht anzeigen – unten herunterladen."
+  load: "🧊 3D-Ansicht laden ({size})"

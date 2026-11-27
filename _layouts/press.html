@@ -9,14 +9,18 @@ layout: default
       {% if page.subtitle %}<p class="lead">{{ page.subtitle }}</p>{% endif %}
       {% include stichworte.html tags=page.tags %}
     </header>
+    {% if page.encrypted %}
+      {% include encrypted.html %}
+    {% else %}
     <div class="prose">
       {{ content }}
     </div>
+    {% endif %}
     {% include verbindungen.html %}
     <hr class="divider">
     <h2 data-i18n="press.about">{{ "press.about" | t }}</h2>
     <p>{{ site.data.press.short_profile }}</p>
     {% include pressekontakt.html %}
-    {% assign has_press_page = '/press/' | page_exists %}{% if has_press_page %}<a href="{{ '/press/' | relative_url }}" class="back-link" data-i18n="press.back">{{ "press.back" | t }}</a>{% endif %}
+    {% ifpage /press/ %}<a href="{{ '/press/' | relative_url }}" class="back-link" data-i18n="press.back">{{ "press.back" | t }}</a>{% endifpage %}
   </article>
 </main>

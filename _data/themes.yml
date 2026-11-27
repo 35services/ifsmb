@@ -1,7 +1,8 @@
 # Themes (look of the site). The visitor's choice (footer, localStorage "ifsmb-theme", ?theme=<id>) beats the
 # page's `theme:` front matter, which beats `theme:` in _config.yml. Styles: assets/css/themes.css (html[data-theme]).
 # The first entry is the default look. New theme: add it here, in assets/css/themes.css, in .pages.yml (options of
-# every `theme` field), in the templates (_includes/vorlagen/) and in THEMES in assets/js/neu.js.
+# every `theme` field) and in the templates (_includes/vorlagen/). The ➕/✏️ forms read this list (via
+# _includes/formular-config.html), nothing to change in assets/js/neu.js.
 - id: ifsmb
   name: IfsMB (Standard)
 - id: offene-werkstaetten

@@ -124,8 +124,8 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="{{ '/' | relative_url }}">
-        <span class="brand-mark">35services &amp; IfsMB</span>
-        <span class="brand-name">35 services e. V.<br>Institut für spontane Makespace Buildung</span>
+        <span class="brand-mark">{{ site.short_title | default: site.title }}</span>
+        <span class="brand-name">{{ site.brand_name | default: site.title }}</span>
       </a>
       <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="{{ 'nav.open_menu' | t }}" data-i18n-attr="aria-label:nav.open_menu">
       <label for="nav-toggle" class="nav-burger" aria-hidden="true"><span></span></label>
@@ -165,18 +165,14 @@
   </div>
   {% endif %}
 
-  {%- comment -%}Optional pages: an instance (e.g. a federated copy) may not have them – link only where they exist.{%- endcomment -%}
-  {%- assign has_donate = '/spenden/' | page_exists -%}
-  {%- assign has_archive = '/projects/archive/' | page_exists -%}
-  {%- assign has_offer = '/angebot/' | page_exists %}
   <footer class="site-footer">
     <div class="container footer-inner">
       <p><strong>{{ site.title }}</strong><br><span data-i18n="site.description">{{ site.description }}</span></p>
       <p>
-        {% if has_donate %}<a href="{{ '/spenden/' | relative_url }}" data-i18n="footer.donate">{{ "footer.donate" | t }}</a> ·{% endif %}
-        <a href="{{ '/impressum/' | relative_url }}" data-i18n="footer.imprint">{{ "footer.imprint" | t }}</a> ·
-        <a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="footer.machine_readable">{{ "footer.machine_readable" | t }}</a> ·
-        {% if has_archive %}<a href="{{ '/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·{% endif %}
+        {% ifpage /spenden/ %}<a href="{{ '/spenden/' | relative_url }}" data-i18n="footer.donate">{{ "footer.donate" | t }}</a> ·{% endifpage %}
+        {% ifpage /impressum/ %}<a href="{{ '/impressum/' | relative_url }}" data-i18n="footer.imprint">{{ "footer.imprint" | t }}</a> ·{% endifpage %}
+        {% ifpage /maschinenlesbar/ %}<a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="footer.machine_readable">{{ "footer.machine_readable" | t }}</a> ·{% endifpage %}
+        {% ifpage /projects/archive/ %}<a href="{{ '/projects/archive/' | relative_url }}" data-i18n="footer.past_projects">{{ "footer.past_projects" | t }}</a> ·{% endifpage %}
         <a href="https://github.com/{{ site.repository }}" target="_blank" rel="noopener" data-i18n="footer.source">{{ "footer.source" | t }}</a>
       </p>
       {%- comment -%}Project documentation for contributors – rendered by GitHub (the files are excluded from the site).{%- endcomment -%}
@@ -187,7 +183,7 @@
         <a href="{{ doc_base }}DATA_STRUCTURES.md" target="_blank" rel="noopener" data-i18n="footer.data_structures">{{ "footer.data_structures" | t }}</a> ·
         <a href="{{ doc_base }}DEPENDENCIES.md" target="_blank" rel="noopener" data-i18n="footer.dependencies">{{ "footer.dependencies" | t }}</a>
       </p>
-      <p class="footer-note"><span data-i18n="footer.disclaimer">{{ "footer.disclaimer" | t }}</span>{% if has_offer %} <a href="{{ '/angebot/' | relative_url }}#warum-ein-institut" data-i18n="footer.why_institute">{{ "footer.why_institute" | t }}</a>{% endif %}</p>
+      <p class="footer-note"><span data-i18n="footer.disclaimer">{{ "footer.disclaimer" | t }}</span>{% ifpage /angebot/ %} <a href="{{ '/angebot/' | relative_url }}#warum-ein-institut" data-i18n="footer.why_institute">{{ "footer.why_institute" | t }}</a>{% endifpage %}</p>
       <p class="footer-note" data-i18n="footer.no_cookies">{{ "footer.no_cookies" | t }}</p>
       {%- comment -%}UI language switch (assets/js/i18n.js shows it; without JS the page stays German){%- endcomment %}
       <p class="language-switch" data-language-switch hidden>
@@ -200,21 +196,20 @@
         <span class="language-switch-note muted" data-i18n="language.note">{{ "language.note" | t }}</span>
       </p>
       {%- assign page_theme_name = site.data.themes | where: "id", page_theme | map: "name" | first %}
-      {%- capture theme_params %}{"name":{{ page_theme_name | jsonify }}}{% endcapture %}
       <p class="theme-picker" data-theme-picker hidden>
         <label for="theme-select" data-i18n="theme.label">{{ "theme.label" | t }}</label>
         <select id="theme-select">
-          <option value="" data-i18n="theme.like_page" data-i18n-params="{{ theme_params | escape }}">{{ "theme.like_page" | t: "name", page_theme_name }}</option>
+          <option value="" data-i18n="theme.like_page" data-i18n-params="{{ "name" | i18n_params: page_theme_name }}">{{ "theme.like_page" | t: "name", page_theme_name }}</option>
           {%- for t in site.data.themes %}
           <option value="{{ t.id }}">{{ t.name }}</option>
           {%- endfor %}
         </select>
-        <a href="{{ '/impressum/' | relative_url }}#theme-wahl" data-i18n="theme.what_is_this">{{ "theme.what_is_this" | t }}</a>
+        {% ifpage /impressum/ %}<a href="{{ '/impressum/' | relative_url }}#theme-wahl" data-i18n="theme.what_is_this">{{ "theme.what_is_this" | t }}</a>{% endifpage %}
       </p>
     </div>
   </footer>
 
-  {% if has_donate and page.url != '/spenden/' %}
+  {% unless page.url == '/spenden/' %}{% ifpage /spenden/ %}
   <a href="{{ '/spenden/' | relative_url }}" class="badge-donate" aria-label="{{ 'footer.donate' | t }}" data-i18n-attr="aria-label:footer.donate">
     <span class="badge-donate-text">❤️<br><span data-i18n="footer.donate">{{ "footer.donate" | t }}</span></span>
     <span class="badge-donate-icon" style="--i: 0" aria-hidden="true">🖨️</span>
@@ -224,7 +219,7 @@
     <span class="badge-donate-icon" style="--i: 4" aria-hidden="true">🖥️</span>
     <span class="badge-donate-icon" style="--i: 5" aria-hidden="true">🖱️</span>
   </a>
-  {% endif %}
+  {% endifpage %}{% endunless %}
 
   {% include microdata.html page=page %}
   <script>
@@ -264,10 +259,11 @@
 
   <script>
     (function () {
-      var links = Array.prototype.slice.call(document.querySelectorAll('a.lightbox'));
-      if (!links.length) return;
-      var box = document.getElementById('lightbox'), img = box.querySelector('img'), cap = box.querySelector('figcaption'), i = 0, x0 = null;
+      var box = document.getElementById('lightbox'), img = box.querySelector('img'), cap = box.querySelector('figcaption'), links = [], i = 0, x0 = null;
+      function getLinks() { return Array.prototype.slice.call(document.querySelectorAll('a.lightbox')); }
       function show(n) {
+        links = getLinks();
+        if (!links.length) return;
         i = (n + links.length) % links.length;
         var thumb = links[i].querySelector('img');
         img.src = links[i].href;
@@ -277,7 +273,14 @@
         document.body.style.overflow = 'hidden';
       }
       function close() { box.hidden = true; img.src = ''; document.body.style.overflow = ''; }
-      links.forEach(function (a, n) { a.addEventListener('click', function (e) { e.preventDefault(); show(n); }); });
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a.lightbox');
+        if (!a) return;
+        e.preventDefault();
+        links = getLinks();
+        var idx = links.indexOf(a);
+        if (idx >= 0) show(idx);
+      });
       box.querySelector('.lb-close').onclick = close;
       box.querySelector('.lb-prev').onclick = function (e) { e.stopPropagation(); show(i - 1); };
       box.querySelector('.lb-next').onclick = function (e) { e.stopPropagation(); show(i + 1); };

@@ -3,7 +3,7 @@
   Password is saved per page in localStorage ("ifsmb-crypto:<uuid>").
   Attachments are stored as separate .blob files and decrypted into in-memory Blob URLs.
 {%- endcomment -%}
-<div class="encrypted-container" data-uuid="{{ page.uuid }}" data-base-path="{{ page.url | relative_url }}">
+<div class="encrypted-container" data-pagefind-ignore data-uuid="{{ page.uuid }}" data-base-path="{{ page.url | relative_url }}">
   <div class="encrypted-raw" hidden>
     {{ content }}
   </div>
@@ -30,9 +30,12 @@
   </div>
 
   <div class="encrypted-view" hidden>
-    <div class="encrypted-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border, #eee); font-size: 0.9rem;">
+    <div class="encrypted-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border, #eee); font-size: 0.9rem;">
       <span class="muted"><span aria-hidden="true">🔒</span> Verschlüsselter Inhalt · <strong>Entsperrt</strong></span>
-      <button type="button" class="btn btn-ghost encrypted-lock-btn" style="font-size: 0.85rem; padding: 0.3rem 0.7rem;">Wieder sperren</button>
+      <span style="display: flex; gap: 0.5rem; align-items: center;">
+        <button type="button" class="btn btn-ghost encrypted-edit-btn" style="font-size: 0.85rem; padding: 0.3rem 0.7rem;">✏️ Inhalt bearbeiten</button>
+        <button type="button" class="btn btn-ghost encrypted-lock-btn" style="font-size: 0.85rem; padding: 0.3rem 0.7rem;">Wieder sperren</button>
+      </span>
     </div>
     <div class="encrypted-content prose"></div>
   </div>

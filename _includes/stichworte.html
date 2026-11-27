@@ -1,9 +1,8 @@
 {%- assign st = include.tags -%}
 {%- if st and st.size > 0 -%}
-{%- assign has_tags_page = '/tags/' | page_exists -%}
 <ul class="tag-list">
   {%- for t in st %}
-  <li>{% if has_tags_page %}<a href="{{ '/tags/' | relative_url }}#{{ t }}">#{{ site.data.tags[t] | default: t }}</a>{% else %}<span>#{{ site.data.tags[t] | default: t }}</span>{% endif %}</li>
+  <li>{% ifpage /tags/ %}<a href="{{ '/tags/' | relative_url }}#{{ t }}">#{{ site.data.tags[t] | default: t }}</a>{% endifpage %}{% unlesspage /tags/ %}#{{ site.data.tags[t] | default: t }}{% endunlesspage %}</li>
   {%- endfor %}
 </ul>
 {%- endif -%}
