@@ -7,7 +7,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
-const { startEnv } = require("./lib/helpers.js");
+const { startEnv, editPage, ROOT } = require("./lib/helpers.js");
 
 let env;
 before(async () => { env = await startEnv(); });
@@ -110,4 +110,46 @@ test("📎 4K-Video mit Standort → im Browser als 1080p-MP4 ohne Metadaten neu
   assert.equal(audio, "aac", "Ton bleibt erhalten");
   const tags = execFileSync("ffprobe", ["-v", "error", "-show_entries", "format_tags", "-of", "default", out]).toString();
   assert.doesNotMatch(tags, /location|52\.52/i, "Standort ist entfernt: " + tags);
+});
+
+// ✏️ a page that already has attachments: the panel lists them, ✕ removes the embed and deletes the file in the PR,
+// "Zurückholen" brings it back. Uses a real post as the page, with its source replaced for this test.
+test("✏️ vorhandene Dateien: ✕ entfernt Einbettung und löscht die Datei im Pull Request, ↩︎ holt sie zurück", async () => {
+  const page = editPage("beitrag");
+  const slug = page.path.replace(/^_posts\/\d{4}-\d{2}-\d{2}-|\.md$/g, "");
+  const dir = "assets/dateien/news/" + slug + "/";
+  const original = fs.readFileSync(path.join(ROOT, page.path), "utf8");
+  const fm = original.match(/^---\n[\s\S]*?\n---\n/)[0];
+  const seeded = fm + "\nText.\n\n![Erstes Modell](/" + dir + "erstes.3mf)\n\n![Zweites Modell](/" + dir + "zweites.stl)\n\n![Fremd](/assets/dateien/news/anderer-beitrag/fremd.stl)\n\nEnde.\n";
+  env.control.seed({ files: { [page.path]: seeded, [dir + "erstes.3mf"]: { base64: "UEsDBA==" }, [dir + "zweites.stl"]: STL, "assets/dateien/news/anderer-beitrag/fremd.stl": STL } });
+  const sitePath = path.join(ROOT, "_site/source", page.path);
+  const before = fs.readFileSync(sitePath, "utf8");
+  fs.writeFileSync(sitePath, seeded);
+  try {
+    const alice = await env.person("token-alice");
+    await alice.openEdit(page.url);
+    await alice.page.waitFor(() => document.querySelectorAll("#neu-dialog [data-existing-file]").length === 3, [], { message: "vorhandene Dateien fehlen" });
+    const removeBtn = (name) => alice.page.evaluate((n) => { [...document.querySelectorAll("#neu-dialog [data-existing-file]")].find((li) => li.getAttribute("data-existing-file") === n).querySelector("button").click(); }, name);
+
+    await removeBtn("erstes.3mf");
+    await alice.page.waitFor(() => !/erstes\.3mf/.test(document.querySelector('#neu-dialog [name="text"]').value));
+    assert.match(await alice.page.text('#neu-dialog [data-existing-file="erstes.3mf"]'), /wird mit dem Pull Request gelöscht/);
+    assert.equal(await alice.page.evaluate(() => document.querySelector("#neu-dialog [data-submit]").disabled), false, "nur gelöscht ist auch eine Änderung");
+    await removeBtn("zweites.stl");
+    await removeBtn("zweites.stl"); // ↩︎ Zurückholen
+    await alice.page.waitFor(() => /zweites\.stl/.test(document.querySelector('#neu-dialog [name="text"]').value));
+    await removeBtn("fremd.stl");  // not in this page's folder: only the embed goes
+    assert.match(await alice.page.text('#neu-dialog [data-existing-file="fremd.stl"]'), /Datei bleibt/);
+
+    await alice.submit();
+    await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+    const pr = env.control.state().pulls[0];
+    assert.deepEqual(pr.files.map((f) => [f.filename, f.status]).sort(), [[dir + "erstes.3mf", "removed"], [page.path, "modified"]].sort());
+    const text = env.control.readFile({ ref: pr.head.ref, path: page.path }).text;
+    assert.ok(!/erstes\.3mf|fremd\.stl/.test(text), text);
+    assert.match(text, /!\[Zweites Modell\]\(\/assets\/dateien\/news\/[^)]+\/zweites\.stl\)/);
+    assert.match(pr.body, /\*\*Gelöschte Dateien:\*\* `erstes\.3mf`/);
+  } finally {
+    fs.writeFileSync(sitePath, before);
+  }
 });
