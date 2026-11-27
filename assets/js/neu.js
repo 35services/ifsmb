@@ -1855,38 +1855,55 @@ var NeuFormular = (function () {
     // Attachments the page already has (editing): every /assets/dateien/ file the loaded text points to.
     // own: in this page's folder – only those are deleted from the repository when their embed leaves the text
     // (files elsewhere may be used by other pages too; then only the embed goes).
+    // Photos too: every image under /assets/images/ in the loaded text (kind "photo"); it counts as used while the
+    // file still points to it anywhere (text or a field like image:), and deleting takes NN.jpg, -600w and -social.
     existingFiles: function () {
       if (!aktiv || !aktiv.edit || aktiv.w.encrypted) return [];
-      var src = String(aktiv.edit.source || ""), text = String(aktiv.w.text || ""), own = "/" + direct.fileFolder(), seen = {}, out = [];
-      var re = /!?\[[^\]]*\]\((\/assets\/dateien\/[^)\s]+)\)/g, m;
+      var src = String(aktiv.edit.source || ""), text = String(aktiv.w.text || ""), whole = dateiInhalt(), seen = {}, out = [];
+      var ownFiles = "/" + direct.fileFolder(), ownPhotos = "/" + direct.folder();
+      var re = /!?\[[^\]]*\]\((\/assets\/(?:dateien\/[^)\s]+|images\/[^)\s]+\.(?:jpe?g|png|webp|gif)))\)/gi, m;
       while ((m = re.exec(src))) {
-        var url = m[1];
+        var url = m[1], photo = /^\/assets\/images\//.test(url);
         if (seen[url]) continue;
         seen[url] = true;
         var line = src.split("\n").filter(function (l) { return l.indexOf("(" + url + ")") >= 0; })[0] || m[0];
-        out.push({ url: url, name: url.split("/").pop(), own: url.indexOf(own) === 0, used: text.indexOf(url) >= 0, line: line.trim() });
+        out.push({ url: url, name: url.split("/").pop(), kind: photo ? "photo" : "file", own: url.indexOf(photo ? ownPhotos : ownFiles) === 0,
+          used: (photo ? whole : text).indexOf(url) >= 0, line: line.trim() });
       }
       return out;
+    },
+    // repository paths to delete for an existing entry: a photo with its -600w and -social versions, unless the
+    // file still points to one of them (e.g. social_media_preview_image)
+    deletePaths: function (f) {
+      var rel = f.url.slice(1);
+      if (f.kind !== "photo") return [rel];
+      var whole = dateiInhalt(), base = rel.replace(/(-600w|-social)?(\.[a-z0-9]+)$/i, "$2");
+      return [base, base.replace(/(\.[a-z0-9]+)$/i, "-600w$1"), base.replace(/(\.[a-z0-9]+)$/i, "-social$1")]
+        .filter(function (p) { return whole.indexOf("/" + p) < 0; });
     },
     // existing own attachments whose embed is gone → deleted with the pull request
     filesToDelete: function () { return direct.existingFiles().filter(function (f) { return f.own && !f.used; }); },
     removeExisting: function (i) {
       var f = direct.existingFiles()[i]; if (!f) return;
       var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("(" + f.url + ")") < 0; });
+      // a gallery marker without images above it is left over → remove it
+      lines = lines.filter(function (l, k) { return !/^\{: \.gallery/.test(l) || /^!\[/.test(lines[k - 1] || ""); });
       setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
     },
     undoRemoveExisting: function (i) {
       var f = direct.existingFiles()[i]; if (!f || f.used) return;
-      direct.insertBlock(f.line);
+      direct.insertBlock(f.kind === "photo" && /^!\[/.test(f.line) ? f.line + "\n{: .gallery}" : f.line);
     },
     showFiles: function () {
       var files = (aktiv && aktiv.files) || [], existing = direct.existingFiles();
       if (!files.length && !existing.length) { filesEl.innerHTML = ""; return; }
-      filesEl.innerHTML = '<p class="media-title"><strong>📎 ' + esc(t("form.files_title", null, "Dateien")) + "</strong></p><ul class=\"media-files\">"
+      filesEl.innerHTML = '<p class="media-title"><strong>📎 ' + esc(existing.some(function (f) { return f.kind === "photo"; }) ? t("form.files_photos_title", null, "Fotos und Dateien") : t("form.files_title", null, "Dateien")) + "</strong></p><ul class=\"media-files\">"
         + existing.map(function (f, i) {
           var label = f.used ? '<span class="muted small">' + esc(t("form.file_existing", null, "schon auf der Seite")) + "</span>"
             : '<strong class="small">' + esc(f.own ? t("form.file_will_delete", null, "🗑️ wird mit dem Pull Request gelöscht") : t("form.file_unlinked", null, "nicht mehr eingebunden (Datei bleibt, sie liegt nicht im Ordner dieser Seite)")) + "</strong>";
-          return '<li class="media-file' + (f.used ? "" : " media-unused") + '" data-existing-file="' + esc(f.name) + '"><code>' + esc(f.name) + "</code> " + label
+          return '<li class="media-file' + (f.used ? "" : " media-unused") + '" data-existing-file="' + esc(f.name) + '">'
+            + (f.kind === "photo" ? '<img class="media-file-thumb" src="' + esc(f.url) + '" alt="" loading="lazy">' : "")
+            + "<code>" + esc(f.name) + "</code> " + label
             + (f.used
               ? ' <button type="button" class="btn btn-small btn-ghost" data-existing-remove="' + i + '" aria-label="' + esc(t("form.file_delete", null, "Datei entfernen")) + '" title="' + esc(t("form.file_delete", null, "Datei entfernen")) + '">✕</button>'
               : ' <button type="button" class="btn btn-small btn-ghost" data-existing-undo="' + i + '">' + esc(t("form.file_undo", null, "↩︎ Zurückholen")) + "</button>")
@@ -1939,11 +1956,14 @@ var NeuFormular = (function () {
             if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
           });
           if (!removedFiles.length) return Promise.resolve();
-          // attachments whose embed was removed: delete them too – only if they are (still) there on the target branch
-          var dir = removedFiles[0].url.slice(1, removedFiles[0].url.lastIndexOf("/"));
-          return GitHubApi.listFolder(dir, state.prBase && state.prBase.branch).then(function (names) {
-            removedFiles.forEach(function (f) { if (names.indexOf(f.name) >= 0) files.push({ path: f.url.slice(1), delete: true }); });
-          });
+          // photos/attachments whose embed was removed: delete them too – only if they are (still) there on the target branch
+          var paths = [].concat.apply([], removedFiles.map(direct.deletePaths)), byDir = {};
+          paths.forEach(function (p) { var d0 = p.slice(0, p.lastIndexOf("/")); (byDir[d0] = byDir[d0] || []).push(p); });
+          return Promise.all(Object.keys(byDir).map(function (d0) {
+            return GitHubApi.listFolder(d0, state.prBase && state.prBase.branch).then(function (names) {
+              byDir[d0].forEach(function (p) { if (names.indexOf(p.slice(d0.length + 1)) >= 0) files.push({ path: p, delete: true }); });
+            });
+          }));
         }
         // Encrypted page: encrypt all gallery photos as .blob files (never upload unencrypted .jpg/-600w.jpg),
         // upload social_media_preview_image (-social.jpg) unencrypted if chosen, and migrate any existing

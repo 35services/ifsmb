@@ -17,11 +17,11 @@
   var MAX_SHORT_SIDE = 1080, VIDEO_BPS = 5000000, MIN_VIDEO_BPS = 1500000, AUDIO_BPS = 128000;
   var TYPES = ["video/mp4;codecs=avc1.640028,mp4a.40.2", "video/mp4;codecs=avc1.4d0028,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4"];
 
-  function mp4Type() {
-    if (typeof MediaRecorder === "undefined" || !MediaRecorder.isTypeSupported) return null;
-    for (var i = 0; i < TYPES.length; i++) if (MediaRecorder.isTypeSupported(TYPES[i])) return TYPES[i];
-    return null;
+  function mp4Types() {
+    if (typeof MediaRecorder === "undefined" || !MediaRecorder.isTypeSupported) return [];
+    return TYPES.filter(function (t) { return MediaRecorder.isTypeSupported(t); });
   }
+  function mp4Type() { return mp4Types()[0] || null; }
 
   // target size: shorter side at most 1080, both even (H.264)
   function targetSize(w, h) {
@@ -49,10 +49,21 @@
     });
   }
 
+  // isTypeSupported says yes, but the (hardware) encoder may still refuse to start for a profile ("Encoder
+  // initialization failed", seen with Chrome 158 on macOS) – then the next type is tried with a fresh video element
   function shrink(file, opts) {
     opts = opts || {};
-    var type = mp4Type();
-    if (!type) return Promise.reject(new Error("Dieser Browser kann Videos nicht als MP4 verkleinern. Bitte Chrome, Edge oder Safari nehmen – oder das Video vorher auf 1080p verkleinern."));
+    var types = mp4Types();
+    if (!types.length) return Promise.reject(new Error("Dieser Browser kann Videos nicht als MP4 verkleinern. Bitte Chrome, Edge oder Safari nehmen – oder das Video vorher auf 1080p verkleinern."));
+    return types.reduce(function (chain, type) {
+      return chain.catch(function (err) {
+        if (err && !err.encoderStart) throw err;
+        return record(file, opts, type);
+      });
+    }, Promise.reject(Object.assign(new Error("start"), { encoderStart: true })));
+  }
+
+  function record(file, opts, type) {
     return metadata(file).then(function (m) {
       var size = targetSize(m.width, m.height), duration = m.duration || 1;
       // bit rate: 5 Mbit/s at 1080p, lower for long videos so the file stays under maxBytes
@@ -101,7 +112,11 @@
           finish();
           if (!blob.size) fail(new Error("Beim Verkleinern ist kein Video entstanden.")); else ok(blob);
         };
-        rec.onerror = function (e) { finish(new Error("Fehler beim Verkleinern: " + ((e.error && e.error.message) || "unbekannt"))); };
+        rec.onerror = function (e) {
+          var err = new Error("Fehler beim Verkleinern: " + ((e.error && e.error.message) || "unbekannt"));
+          if (!chunks.length && v.currentTime < 2) err.encoderStart = true; // nothing recorded yet: try the next type
+          finish(err);
+        };
         v.onended = function () { if (rec.state !== "inactive") rec.stop(); };
         v.onerror = function () { finish(new Error("Das Video ließ sich nicht abspielen.")); };
         function go() {
@@ -120,5 +135,5 @@
     });
   }
 
-  window.VideoVerkleinern = { check: check, shrink: shrink, targetSize: targetSize, mp4Type: mp4Type };
+  window.VideoVerkleinern = { check: check, shrink: shrink, targetSize: targetSize, mp4Type: mp4Type, mp4Types: mp4Types };
 })();
