@@ -2,7 +2,7 @@
 
 Alles, worauf ifsmb.de angewiesen ist – im Browser, beim Bauen, in den Tests und in lokalen Skripten. Regeln in `CLAUDE.md` unter „Abhängigkeiten“: **Was hier nicht steht, wird nicht benutzt.** Neue, aktualisierte und entfernte Einträge kommen mit genauer Version auch ins `CHANGELOG.md` und in die PR-Beschreibung.
 
-Stand: 23.11.2026
+Stand: 26.11.2026
 
 ## 1. Im Browser (wird an Besucher*innen ausgeliefert)
 
@@ -170,6 +170,7 @@ Stand: 23.11.2026
 |---|---|---|---|
 | Python 3 + Pillow | aktuell installierte | `_scripts/pr_vorschau.py` (Screenshots), Bildbearbeitung für Beiträge (Metadaten entfernen, verkleinern) | mit `python3 -I` aufrufen |
 | Google Chrome (headless) | aktuell installierte | `_scripts/pr_vorschau.py`, E2E-Tests (siehe 3.) | Pfad über `$CHROME` änderbar |
+| ffmpeg + ffprobe | 7.1 getestet (`brew install ffmpeg`) | E2E-Test „📎 4K-Video → 1080p“ (`_tests/e2e/attachments.test.js`: erzeugt ein 4K-Testvideo und prüft das Ergebnis); Videos für Beiträge von Hand verkleinern | optional: ohne ffmpeg (oder wenn Chrome kein MP4 aufnimmt) wird der eine Test übersprungen. Die Formulare selbst brauchen kein ffmpeg – sie verkleinern Videos mit Bordmitteln des Browsers (`MediaRecorder`, `assets/js/video-verkleinern.js`) |
 | OpenSCAD | 2021.01 getestet | `_logo/badge/` (Badge zum Drucken) | – |
 | SF Mono Heavy (Schrift von macOS) | mit macOS | `_logo/badge/ifsmb-badge.scad` (nur für Namen auf Badges) | liegt nicht im Repo; andere Systeme: `name_font` |
 | Python 3 (ohne Zusatzpakete) | – | `_logo/badge/wordmark_from_svg.py`, `export_colored.py` | – |

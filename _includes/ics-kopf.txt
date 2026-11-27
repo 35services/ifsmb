@@ -12,8 +12,9 @@ PRODID:-//{{ host }}//Kalender//DE{{ nl -}}
 CALSCALE:GREGORIAN{{ nl -}}
 METHOD:PUBLISH{{ nl -}}
 {%- if include.feed -%}
-{%- assign cal_name = "Institut für spontane Makespace Buildung" -%}
-{%- if include.name -%}{%- assign cal_name = include.name | prepend: "IfsMB – " | replace: '\', '\\' | replace: ';', '\;' | replace: ',', '\,' -%}{%- endif -%}
+{%- assign cal_name = site.title -%}
+{%- if include.name -%}{%- assign cal_prefix = site.short_title | default: site.title | append: " – " -%}{%- assign cal_name = include.name | prepend: cal_prefix -%}{%- endif -%}
+{%- assign cal_name = cal_name | replace: '\', '\\' | replace: ';', '\;' | replace: ',', '\,' -%}
 {%- assign line = "X-WR-CALNAME:" | append: cal_name -%}{%- include ics-line.txt line=line -%}
 X-WR-TIMEZONE:Europe/Berlin{{ nl -}}
 REFRESH-INTERVAL;VALUE=DURATION:PT6H{{ nl -}}

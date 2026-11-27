@@ -204,7 +204,7 @@ if CHECK_EXTERNAL
           http = Net::HTTP.new(uri.host, uri.port)
           http.use_ssl = uri.scheme == "https"
           http.open_timeout = http.read_timeout = 15
-          req = Net::HTTP::Get.new(uri.request_uri, "User-Agent" => "Mozilla/5.0 (ifsmb.de link check)")
+          req = Net::HTTP::Get.new(uri.request_uri, "User-Agent" => "Mozilla/5.0 (#{HOST} link check)")
           res = http.request(req)
           code = res.code.to_i
           break unless [301, 302, 303, 307, 308].include?(code) && res["location"]

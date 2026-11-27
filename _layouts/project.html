@@ -23,16 +23,20 @@ layout: default
       {%- endif %}
       {%- endif %}
     </header>
-    {% if page.image %}<img class="project-image" src="{{ page.image | relative_url }}" alt="{{ page.title }}">{% endif %}
+    {% if page.image and page.encrypted != true %}<img class="project-image" src="{{ page.image | relative_url }}" alt="{{ page.title }}">{% endif %}
     {% if page.personal %}
     {%- assign owners = "" | split: "" -%}{%- for slug in page.team -%}{%- assign m = site.team | where: "slug", slug | first -%}{%- if m -%}{%- assign owners = owners | push: m -%}{%- endif -%}{%- endfor %}
     <p class="personal-note"><span data-i18n="project.personal">{{ "project.personal" | t }}</span>{% if owners.size > 0 %} <span data-i18n="common.by">{{ "common.by" | t }}</span> {% for m in owners %}<a href="{{ m.url | relative_url }}">{{ m.title }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}{% endif %} <span data-i18n="project.personal_note">{{ "project.personal_note" | t }}</span></p>
     {% endif %}
     {% if page.status == 'idee' %}<p class="note" data-i18n="project.idea_note">{{ "project.idea_note" | t }}</p>{% endif %}
     {% if page.status == 'anfrage' %}<p class="note" data-i18n="project.inquiry_note">{{ "project.inquiry_note" | t }}</p>{% endif %}
+    {% if page.encrypted %}
+      {% include encrypted.html %}
+    {% else %}
     <div class="prose">
       {{ content }}
     </div>
+    {% endif %}
     {%- comment -%}Sub-projects (teil_von: <slug>) are listed here instead of the project overviews.{%- endcomment -%}
     {%- assign children = "" | split: "" -%}
     {%- for p in site.projects -%}{%- if p.part_of -%}{%- assign p_parents = p.part_of | join: "," | split: "," -%}{%- if p_parents contains page.slug -%}{%- assign children = children | push: p -%}{%- endif -%}{%- endif -%}{%- endfor -%}
@@ -68,7 +72,7 @@ layout: default
     {%- comment -%}Todos of this project (todos/todo-<person>.md, filtered by `projects` or the event_tag) – loaded by JS on click.{%- endcomment -%}
     <h2 id="todos" data-i18n="todos.heading">{{ "todos.heading" | t }}</h2>
     {%- assign tk_titel = "Todos – " | append: page.title -%}
-    {% include todos-knopf.html projekt=page.slug tag=page.event_tag team=page.team titel=tk_titel label_key="todos.project_button" %}
+    {% ifpage /todos/ %}{% include todos-knopf.html projekt=page.slug tag=page.event_tag team=page.team titel=tk_titel label_key="todos.project_button" %}{% endifpage %}
     {%- comment -%}Stand / Updates: manuelle `updates` und alle Beiträge mit dem event_tag als eine Zeitleiste – so kann jede*r aus dem Team mit einem kleinen Beitrag zum Projekt beitragen.{%- endcomment -%}
     {%- assign tl_keys = "" | split: "" -%}
     {%- for u in page.updates -%}{%- capture k %}{{ u.date | date: "%Y-%m-%d" }} 00:00|u|{{ forloop.index0 }}{% endcapture %}{%- assign tl_keys = tl_keys | push: k -%}{%- endfor -%}
@@ -143,6 +147,6 @@ layout: default
     {% endif %}
     {% endif %}
     {% include verbindungen.html %}
-    {% assign has_personal_page = '/projects/personal/' | page_exists %}{% assign has_projects_page = '/projects/' | page_exists %}{% if page.personal and has_personal_page %}<a href="{{ '/projects/personal/' | relative_url }}" class="back-link" data-i18n="project.back_personal">{{ "project.back_personal" | t }}</a>{% elsif has_projects_page %}<a href="{{ '/projects/' | relative_url }}" class="back-link" data-i18n="project.back">{{ "project.back" | t }}</a>{% endif %}
+    {% ifpage /projects/ %}{% if page.personal %}<a href="{{ '/projects/personal/' | relative_url }}" class="back-link" data-i18n="project.back_personal">{{ "project.back_personal" | t }}</a>{% else %}<a href="{{ '/projects/' | relative_url }}" class="back-link" data-i18n="project.back">{{ "project.back" | t }}</a>{% endif %}{% endifpage %}
   </article>
 </main>

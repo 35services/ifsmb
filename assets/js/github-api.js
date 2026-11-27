@@ -50,7 +50,11 @@ var GitHubApi = (function () {
   // (fine-grained tokens never reach another person's repository) and everyone else, who send through their own fork
   // (only a classic token may open a pull request from a fork via the API). Fine-grained tokens still work if pasted.
   function tokenUrl() {
-    return "https://github.com/settings/tokens/new?scopes=public_repo&description=" + encodeURIComponent("ifsmb.de bearbeiten");
+    return "https://github.com/settings/tokens/new?scopes=public_repo&description=" + encodeURIComponent(siteHost() + " bearbeiten");
+  }
+  // host of this site from _config.yml url (via _includes/formular-config.html), else the address bar's host
+  function siteHost() {
+    try { return (cfg().site || {}).host || location.host; } catch (e) { return location.host; }
   }
 
   // UI string (assets/js/i18n.js); German fallback without it. Commit messages and PR titles stay German.
@@ -183,6 +187,26 @@ var GitHubApi = (function () {
       }, function (e) { if (e.status === 404) return null; throw e; });
   }
 
+  // Current binary bytes of a file on the base branch or on ref (Uint8Array, or null if 404).
+  function readBinaryFile(path, ref) {
+    return call("GET", "/repos/" + repo() + "/contents/" + path.split("/").map(encodeURIComponent).join("/") + "?ref=" + encodeURIComponent(ref || baseBranch()))
+      .then(function (f) {
+        if (f && f.content) {
+          var bin = atob(String(f.content).replace(/\n/g, "")), bytes = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          return bytes;
+        }
+        if (f && f.sha) {
+          return call("GET", "/repos/" + repo() + "/git/blobs/" + encodeURIComponent(f.sha)).then(function (b) {
+            var bin2 = atob(String(b.content).replace(/\n/g, "")), bytes2 = new Uint8Array(bin2.length);
+            for (var j = 0; j < bin2.length; j++) bytes2[j] = bin2.charCodeAt(j);
+            return bytes2;
+          });
+        }
+        return null;
+      }, function (e) { if (e.status === 404) return null; throw e; });
+  }
+
   // File names in a folder on the base branch ([] if the folder doesn't exist yet)
   function listFolder(folder, ref) {
     var path = folder.replace(/\/$/, "").split("/").map(encodeURIComponent).join("/");
@@ -232,6 +256,16 @@ var GitHubApi = (function () {
       list.forEach(function (pr) { pr.files.forEach(function (f) { if (f.filename.indexOf(prefix) === 0 && f.filename.slice(prefix.length).indexOf("/") < 0) names.push(f.filename.slice(prefix.length)); }); });
       return names;
     }, function () { return []; });
+  }
+  // "♻️ PR recycling": the newest open pull request of the connected person in this repository (not from a fork) –
+  // later changes from the forms can be added to it as more commits. → { number, title, url, branch } or null
+  function lastOwnPull() {
+    return Promise.all([whoAmI(), openPulls(true)]).then(function (res) {
+      var me = res[0], mine = res[1].filter(function (pr) { return pr.user === me.login && pr.sameRepo; });
+      if (!me.canPush || !mine.length) return null;
+      mine.sort(function (a, b) { return String(b.createdAt).localeCompare(String(a.createdAt)) || b.number - a.number; });
+      return { number: mine[0].number, title: mine[0].title, url: mine[0].url, branch: mine[0].branch };
+    });
   }
   // state of one pull request → { number, url, branch, state: "open" | "closed", merged }
   function getPull(number) {
@@ -326,6 +360,9 @@ var GitHubApi = (function () {
       return o.files.reduce(function (p, f) {
         return p.then(function (list) {
           n++;
+          if (f.delete) {
+            return list.concat([{ path: f.path, mode: "100644", type: "blob", sha: null }]);
+          }
           step(tr("github.step_upload", { n: n, total: o.files.length }, "Datei " + n + " von " + o.files.length + " hochladen …"));
           var content = f.blob ? blobToBase64(f.blob).then(function (b) { return { content: b, encoding: "base64" }; })
             : Promise.resolve({ content: f.text, encoding: "utf-8" });
@@ -338,7 +375,7 @@ var GitHubApi = (function () {
       });
     }).then(function (tree) {
       return call("POST", r + "/git/commits", {
-        message: o.title + "\n\nAngelegt über das Formular auf ifsmb.de (" + location.pathname + ").",
+        message: o.title + "\n\nAngelegt über das Formular auf " + siteHost() + " (" + location.pathname + ").",
         tree: tree.sha, parents: [baseSha]
       });
     }).then(function (commit) {
@@ -387,8 +424,8 @@ var GitHubApi = (function () {
   return {
     token: token, setToken: setToken, logout: logout, connected: connected, tokenUrl: tokenUrl, repo: repo,
     canPushKnown: canPushKnown, ensureFork: ensureFork, compareUrl: compareUrl,
-    whoAmI: whoAmI, readFile: readFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
-    namesInOpenPulls: namesInOpenPulls, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
+    whoAmI: whoAmI, readFile: readFile, readBinaryFile: readBinaryFile, listFolder: listFolder, openPullsForFile: openPullsForFile, openPulls: openPulls,
+    namesInOpenPulls: namesInOpenPulls, lastOwnPull: lastOwnPull, getPull: getPull, headSha: headSha, createPullRequest: createPullRequest,
     finishPullRequest: finishPullRequest, pullMergeState: pullMergeState, commitChecks: commitChecks, openIssues: openIssues,
     assignIssue: assignIssue
   };

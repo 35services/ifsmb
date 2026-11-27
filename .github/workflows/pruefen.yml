@@ -31,8 +31,12 @@ jobs:
         run: ruby _scripts/test_formulare.rb
       - name: Links zu verbundenen Instanzen (Föderation) testen
         run: ruby _scripts/test_federation_links.rb
+      - name: Mehrere Instanzen (Überschreibungen, ifpage) testen
+        run: ruby _scripts/test_instanz.rb
       - name: Zusammenführen (Konflikte) testen
         run: node _scripts/test_merge.js
+      - name: Verschlüsselte Seiten (Markdown-Renderer, Krypto) testen
+        run: node --test _scripts/test_crypto.js
       - name: Seite bauen
         run: bundle exec jekyll build
       - name: Links und erreichbare Seiten prüfen

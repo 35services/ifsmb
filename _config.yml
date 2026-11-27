@@ -1,5 +1,10 @@
 title: 35 services e. V.
-short_title: IfsMB
+short_title: "35services & IfsMB"
+# Branding: everything site-specific lives here, not in layouts or scripts (another instance only changes this file).
+# Header next to short_title, HTML allowed; default: title
+brand_name: "35 services e. V.<br>Institut für spontane Makespace Buildung"
+# Who gets what the forms can't take yet (videos: „bitte an … schicken“); default: das Team
+contact_name: Falko
 description: Wir bauen Makespaces – spontan, gemeinsam und dort, wo Kinder und Jugendliche lernen.
 baseurl: ""
 url: "https://35services.ifsmb.de"

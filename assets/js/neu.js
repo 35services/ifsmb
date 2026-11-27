@@ -22,23 +22,6 @@ var NeuFormular = (function () {
   function typeName(typ, schema) { return TYPE_KEYS[typ] ? t("form.types." + TYPE_KEYS[typ], null, schema.titel) : schema.titel; }
   var esc = F.esc;
 
-  // ---------- client-side crypto loader ----------
-  function ladeCryptoPage() {
-    if (typeof window !== "undefined" && window.CryptoPage) return Promise.resolve(window.CryptoPage);
-    if (typeof window !== "undefined" && window.ladeSkripte) {
-      return window.ladeSkripte(["safe-markdown.js", "crypto-page.js"]).then(function () {
-        return window.CryptoPage;
-      });
-    }
-    if (typeof require !== "undefined") {
-      try {
-        var cp = require("./crypto-page.js");
-        return Promise.resolve(cp);
-      } catch (e) {}
-    }
-    return Promise.reject(new Error("CryptoPage nicht verfügbar"));
-  }
-
   // ---------- field factories ----------
   // Field: { typ, name, label, pflicht, platzhalter, hilfe, standard (value or function), folgt(w) (derived value until
   // the field is edited), mehr (under "Weitere Felder"), optionen, quelle, einzeln, liste (datalist from the index),
@@ -123,8 +106,26 @@ var NeuFormular = (function () {
   var partner = function (name, label, x) { return chips(name, label, "partner", Object.assign({ platzhalter: "Partner suchen …" }, x)); };
   var projekte = function (name, label, x) { return chips(name, label, "projekte", Object.assign({ platzhalter: "Projekt suchen …" }, x)); };
   var persoenlich = function (hilfe) { return haken("personal", "Persönlich", { hilfe: hilfe }); };
-  // look of the page (_data/themes.yml, assets/css/themes.css); "" = the site's default
-  var THEMES = [["", "Wie die ganze Website"], ["ifsmb", "IfsMB (Standard)"], ["offene-werkstaetten", "Offene Werkstätten"], ["rfflabs", "RFFLabs"], ["slop", "Slop ✨"]];
+  var verschluesselt = function () { return haken("encrypted", "🔒 Inhalt mit Passwort verschlüsseln (Ende-zu-Ende im Browser)"); };
+  // Site-specific values (title, url, host, contact_name) from _includes/formular-config.html – none are hard-coded here.
+  // Without a page (Node tests) there is no config: empty object, callers fall back.
+  function siteCfg() { try { return F.cfg().site || {}; } catch (e) { return {}; } }
+  function siteHost() { return siteCfg().host || (typeof location !== "undefined" ? location.host : ""); }
+  // look of the page: the list of _data/themes.yml ([id, name], via formular-config.html); "" = the site's default.
+  // In Node (tests) read _data/themes.yml directly – it only has `- id:` / `name:` lines.
+  function themeList() {
+    try { var c = F.cfg(); if (c.themes) return c.themes; } catch (e) { /* no page */ }
+    if (typeof require === "undefined") return [];
+    try {
+      var out = [], cur = null;
+      require("fs").readFileSync(require("path").join(__dirname, "../../_data/themes.yml"), "utf8").split("\n").forEach(function (l) {
+        var id = l.match(/^- id:\s*(\S+)/), name = l.match(/^\s+name:\s*"?(.*?)"?\s*$/);
+        if (id) out.push(cur = [id[1], id[1]]); else if (name && cur) cur[1] = name[1];
+      });
+      return out;
+    } catch (e) { return []; }
+  }
+  var THEMES = [["", "Wie die ganze Website"]].concat(themeList());
   var themeField = function () { return auswahl("theme", "🎨 Theme (Aussehen)", THEMES, { mehr: true, hilfe: "Besucher*innen können unten auf der Seite trotzdem selbst wählen" }); };
   var socialBild = function () { return text("social_media_preview_image", "Social-Media-Vorschaubild (1200×630 px)", { mehr: true, platzhalter: "/assets/images/og-….jpg – leer = erstes Bild oder Standard" }); };
 
@@ -171,6 +172,7 @@ var NeuFormular = (function () {
       verlinkt(),
         externeLinks(),
       persoenlich("Privates Projekt aus dem Team: nur im Teamprofil, nicht in den Listen des Instituts"),
+      verschluesselt(),
       inhalt("Ziel, Stand, was gebraucht wird …"),
       text("image", "Titelbild", { mehr: true, platzhalter: "/assets/images/projekte/<name>/01.jpg – ohne Metadaten" }),
       socialBild(),
@@ -189,6 +191,7 @@ var NeuFormular = (function () {
         stichworte({ hilfe: "Das event_tag eines Projekts zeigt den Beitrag auf der Projektseite" }),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("Text in Markdown. Fotos als Galerie: ![Was zu sehen ist](/assets/images/news/<dateiname>/01.jpg) und darunter {: .gallery}"),
         adresse("original_url", "Original-Adresse", { mehr: true, hilfe: "nur bei übernommenen Beiträgen" }),
         text("original_site", "Original-Website", { mehr: true, platzhalter: "z. B. 35services.de" }),
@@ -214,6 +217,7 @@ var NeuFormular = (function () {
         externeLinks(),
         [persoenlich("Privater Termin aus dem Team (braucht „Dabei“): nur im Teamprofil"),
           haken("project_only", "Nur auf der Projektseite", { hilfe: "interner Termin: vorher nicht im Kalender, danach normal" })],
+        verschluesselt(),
         inhalt("Was passiert, wer kann kommen, was mitbringen …"),
         text("date_label", "Text statt Datum", { mehr: true, platzhalter: "z. B. „Januar 2027 – genauer Termin folgt“" }),
         socialBild(),
@@ -250,6 +254,7 @@ var NeuFormular = (function () {
         stichworte({ hilfe: "Gerät, Gerätetyp, Besitzer*in, z. B. bambu-lab-a1-mini, 3d-drucker" }),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("Was das Gerät kann, Erfahrungen, Tipps …"),
         text("image", "Foto", { mehr: true, platzhalter: "eigenes Foto ohne Metadaten – keine Hersteller- oder Shopfotos" }),
         text("image_alt", "Beschreibung des Fotos", { mehr: true }),
@@ -278,6 +283,7 @@ var NeuFormular = (function () {
         verlinkt(),
         externeLinks(),
         persoenlich("Aus einem privaten Projekt im Team"),
+        verschluesselt(),
         inhalt("Was ist das Problem, was wurde schon probiert, was wird gebraucht?"),
         datum("solved_on", "Gelöst am", { mehr: true }),
         feld("langtext", "solution", "Lösung (Markdown)", { mehr: true, markdown: true, zeilen: 4 }),
@@ -294,6 +300,7 @@ var NeuFormular = (function () {
         verlinkt(),
         externeLinks(),
         haken("not_in_team", "Nicht auf /team/ auflisten (nur eigene Seite zum Verlinken)"),
+        verschluesselt(),
         inhalt("Was die Person macht und womit sie im Makespace hilft – keine Wohnadresse, keine privaten E-Mail-Adressen"),
         text("photo", "Foto", { mehr: true, platzhalter: "/assets/images/team/<kürzel>-480w.jpg – nur mit Erlaubnis" }),
         text("photo_credit", "Bildnachweis", { mehr: true, hilfe: "Pflicht bei Fremdfotos (Presse, Agentur)" }),
@@ -310,6 +317,7 @@ var NeuFormular = (function () {
         stichworte(),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("**Berlin, Datum** – Erster Absatz mit dem Wichtigsten: wer, was, wann, wo, warum."),
         text("contact_name", "Pressekontakt", { mehr: true, hilfe: "leer = Pressekontakt aus _data/press.yml" }),
         socialBild(),
@@ -339,6 +347,7 @@ var NeuFormular = (function () {
         text("lead", "Unterzeile", { platzhalter: "Ein Satz unter dem Titel" }),
         verlinkt(),
         externeLinks(),
+        verschluesselt(),
         inhalt("Text der Seite in Markdown"),
         socialBild(),
         themeField()
@@ -378,7 +387,7 @@ var NeuFormular = (function () {
   var EDIT_HASH = /^#(bearbeiten|edit)$/; // <page>#bearbeiten opens the edit form directly (_includes/edit-buttons.html)
   var d = null, form, links, mehrBox, vorschau, socialBox, socialImg, socialTitel, socialBeschr, dateiInput, ordnerEl, status, hinweisEl, vorlageLink;
   var aktiv = null; // { typ, schema, w (values), beruehrt (edited by hand), schluessel, gesendet, felder, edit, path }
-  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl;
+  var stepsEl, discardBtn, submitBtn, githubBtn, fotosBtn, fotosEl, filesBtn, filesEl, recycleBox;
 
   function alleFelder(schema) {
     return schema.felder.reduce(function (a, z) { return a.concat(z); }, []).concat([{ name: "datei", intern: true, folgt: schema.datei }]);
@@ -410,21 +419,237 @@ var NeuFormular = (function () {
   }
   function speichereEntwurf() {
     try {
-      localStorage.setItem(aktiv.schluessel, JSON.stringify({
-        w: aktiv.w,
-        beruehrt: aktiv.beruehrt,
-        source: aktiv.edit && aktiv.edit.source,
-        pr: aktiv.prBase || null,
-        savedAt: Date.now(),
-        isEncrypted: !!aktiv.isEncrypted,
-        cryptoPassword: aktiv.cryptoPassword || ""
-      }));
+      var wDraft = aktiv.w;
+      if (aktiv.crypto && (aktiv.w.encrypted || aktiv.crypto.wasEncrypted)) {
+        wDraft = Object.assign({}, aktiv.w, { text: aktiv.crypto.encryptedBlock || aktiv.crypto.initialEncryptedBlock || "" });
+      }
+      localStorage.setItem(aktiv.schluessel, JSON.stringify({ w: wDraft, beruehrt: aktiv.beruehrt, source: aktiv.edit && aktiv.edit.source, pr: aktiv.prBase || null, savedAt: Date.now() }));
     } catch (e) { /* storage blocked */ }
   }
   function ladeEntwurf() {
     try { return JSON.parse(localStorage.getItem(aktiv.schluessel) || "null"); } catch (e) { return null; }
   }
   function loescheEntwurf() { try { localStorage.removeItem(aktiv.schluessel); } catch (e) { /* storage blocked */ } }
+
+  // ---------- client-side encryption in the form (assets/js/crypto-page.js) ----------
+  function withCrypto() {
+    if (typeof window !== "undefined" && window.CryptoPage) return Promise.resolve(window.CryptoPage);
+    if (typeof window !== "undefined" && window.ladeSkripte) {
+      return window.ladeSkripte(["crypto-page.js"]).then(function () { return window.CryptoPage; });
+    }
+    if (typeof require === "function") return Promise.resolve(require("./crypto-page.js"));
+    return Promise.reject(new Error("CryptoPage nicht verfügbar."));
+  }
+  function parseEncryptedBlock(text) {
+    var m = String(text || "").trim().match(/^<script\s+type=["']application\/json["']\s+class=["']encrypted-data["']\s*>\s*([\s\S]*?)\s*<\/script>$/i);
+    if (!m) return null;
+    try {
+      var p = JSON.parse(m[1]);
+      return p && p.kdf && p.kdf.salt && p.iv && p.data ? p : null;
+    } catch (e) { return null; }
+  }
+  function initCryptoState(state, isEdit) {
+    var rawBody = isEdit && state.edit ? state.edit.w0.text : "";
+    var payload = isEdit ? parseEncryptedBlock(rawBody) : null;
+    state.crypto = {
+      wasEncrypted: !!payload,
+      unlocked: !payload,
+      initialPayload: payload,
+      initialEncryptedBlock: payload ? rawBody : null,
+      initialPlaintext: null,
+      initialPassword: "",
+      password: "",
+      encryptedBlock: payload ? rawBody : null,
+      encryptedForText: null,
+      encryptedForPw: null,
+      encryptedForAtts: null,
+      lastKey: null,
+      lastPayload: payload || null,
+      migratedPublicImages: [],
+      promise: null,
+      error: ""
+    };
+    if (payload) {
+      // keep plaintext field empty while locked so the raw JSON ciphertext is never edited as Markdown
+      state.w.text = "";
+    }
+  }
+  function mimeForPath(p) {
+    if (/\.png$/i.test(p)) return "image/png";
+    if (/\.webp$/i.test(p)) return "image/webp";
+    if (/\.gif$/i.test(p)) return "image/gif";
+    if (/\.svg$/i.test(p)) return "image/svg+xml";
+    if (/\.pdf$/i.test(p)) return "application/pdf";
+    return "image/jpeg";
+  }
+  // Collects local images (/assets/images/...) referenced in state.w.text (plus used photos in state.photos)
+  // that need to be listed as .blob attachments in the encrypted payload.
+  function collectEncryptedAttachments(state) {
+    if (!state || !state.w || !state.w.encrypted) return [];
+    var initialAtts = (state.crypto && state.crypto.initialPayload && Array.isArray(state.crypto.initialPayload.attachments))
+      ? state.crypto.initialPayload.attachments : [];
+    var alreadyInInitial = {};
+    initialAtts.forEach(function (a) { if (a && a.name) alreadyInInitial[a.name] = true; });
+    var found = [], seen = {};
+    function addPath(url) {
+      if (!url || seen[url] || alreadyInInitial[url]) return;
+      seen[url] = true;
+      found.push({ name: url, blob: url + ".blob", mime: mimeForPath(url) });
+    }
+    var md = String(state.w.text || ""), re = /!\[[^\]]*\]\((\/assets\/images\/[^\s)"'\]]+\.(?:jpe?g|png|webp|gif))\)/gi, m;
+    while ((m = re.exec(md))) addPath(m[1]);
+    (state.photos || []).forEach(function (p) {
+      var u = "/" + p.folder + p.name;
+      if (md.indexOf("](" + u + ")") >= 0) addPath(u);
+    });
+    return found;
+  }
+  // When encryption is enabled, public front-matter image fields (image, photo, logo)
+  // would leak unencrypted photos in the public front matter. Move any local image into the
+  // encrypted Markdown gallery and clear those public front-matter image fields.
+  // social_media_preview_image (-social.jpg) is intentionally kept unencrypted (with a warning in the UI)
+  // so social media / messenger link previews still work.
+  function migratePublicImagesToEncrypted(state) {
+    if (!state || !state.w || !state.w.encrypted || !state.crypto) return;
+    if (state.crypto.wasEncrypted && !state.crypto.unlocked) return;
+    var t = String(state.w.text || "").replace(/\s+$/, "");
+    function ensureInGallery(imgUrl, altText) {
+      if (!imgUrl || !/^\/assets\/images\//.test(imgUrl) || /\/og-preview\.jpg$/.test(imgUrl) || /-social\.jpg$/i.test(imgUrl)) return;
+      if (t.indexOf("](" + imgUrl + ")") >= 0) return;
+      var line = "![" + String(altText || state.w.title || "Bild").replace(/[\[\]]/g, "") + "](" + imgUrl + ")";
+      t = /\n\{: \.gallery[^}]*\}$/.test(t) && /\)\n\{: \.gallery[^}]*\}$/.test(t)
+        ? t.replace(/\n(\{: \.gallery[^}]*\})$/, "\n" + line + "\n$1")
+        : t + (t ? "\n\n" : "") + line + "\n{: .gallery}";
+    }
+    (state.photos || []).forEach(function (p) {
+      var u = "/" + p.folder + p.name;
+      if (state.w.image === u || state.w.photo === u || state.w.logo === u) {
+        ensureInGallery(u, p.alt);
+      }
+    });
+    ["image", "photo", "logo"].forEach(function (field) {
+      var val = state.w[field];
+      if (!val) return;
+      if (field === "image") ensureInGallery(val, state.w.image_alt || state.w.title);
+      if (/^\/assets\/images\//.test(val) && state.crypto.migratedPublicImages.indexOf(val) < 0) {
+        state.crypto.migratedPublicImages.push(val);
+      }
+      state.w[field] = "";
+      var inp = form && form.elements[field];
+      if (inp) inp.value = "";
+    });
+    if ("image_alt" in state.w && state.w.image_alt) {
+      state.w.image_alt = "";
+      var altInp = form && form.elements.image_alt;
+      if (altInp) altInp.value = "";
+    }
+    var newMd = t ? t + "\n" : "";
+    if (newMd.replace(/\s+$/, "") !== String(state.w.text || "").replace(/\s+$/, "")) {
+      state.w.text = newMd.replace(/\s+$/, "");
+      var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
+      if (ed) ed.setValue(state.w.text); else if (form && form.elements.text) form.elements.text.value = state.w.text;
+    }
+  }
+  function effectiveTextForSave(state) {
+    if (!state || !state.crypto) return state ? state.w.text : "";
+    var c = state.crypto;
+    if (state.w.encrypted) {
+      if (c.wasEncrypted && !c.unlocked) return c.initialEncryptedBlock;
+      var extraAtts = collectEncryptedAttachments(state);
+      if (c.wasEncrypted && c.unlocked && !extraAtts.length && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
+        return c.initialEncryptedBlock;
+      }
+      if (c.encryptedBlock) return c.encryptedBlock;
+      if (c.initialEncryptedBlock) return c.initialEncryptedBlock;
+      return '<script type="application/json" class="encrypted-data">\n  /* 🔒 Bitte Passwort eingeben, um den Inhalt zu verschlüsseln */\n</script>';
+    }
+    if (c.wasEncrypted && !c.unlocked) return c.initialEncryptedBlock;
+    return state.w.text;
+  }
+  function scheduleCryptoEncrypt(state) {
+    if (!state || !state.crypto || !state.w.encrypted) return Promise.resolve();
+    var c = state.crypto;
+    if (c.wasEncrypted && !c.unlocked) return Promise.resolve(c.initialEncryptedBlock);
+    if (!c.password) {
+      c.encryptedBlock = null;
+      c.encryptedForText = null;
+      c.encryptedForPw = null;
+      c.encryptedForAtts = null;
+      return Promise.resolve(null);
+    }
+    var extraAtts = collectEncryptedAttachments(state);
+    var attsKey = JSON.stringify(extraAtts);
+    if (c.wasEncrypted && !extraAtts.length && state.w.text === c.initialPlaintext && c.password === c.initialPassword) {
+      c.encryptedBlock = c.initialEncryptedBlock;
+      c.encryptedForText = state.w.text;
+      c.encryptedForPw = c.password;
+      c.encryptedForAtts = attsKey;
+      c.lastPayload = c.initialPayload;
+      if (aktiv === state && vorschau) zeigeVorschau();
+      return Promise.resolve(c.encryptedBlock);
+    }
+    if (c.encryptedBlock && c.encryptedForText === state.w.text && c.encryptedForPw === c.password && c.encryptedForAtts === attsKey && c.lastKey) {
+      return Promise.resolve(c.encryptedBlock);
+    }
+    var textToEnc = state.w.text, pwToEnc = c.password;
+    var keepKdf = !!(c.wasEncrypted && pwToEnc === c.initialPassword);
+    var p = withCrypto().then(function (CP) {
+      return CP.encryptMarkdownPayload(textToEnc, pwToEnc, c.initialPayload, keepKdf, extraAtts);
+    }).then(function (res) {
+      if (state.w.text === textToEnc && c.password === pwToEnc) {
+        c.encryptedBlock = res.block;
+        c.encryptedForText = textToEnc;
+        c.encryptedForPw = pwToEnc;
+        c.encryptedForAtts = attsKey;
+        c.lastKey = res.key;
+        c.lastPayload = res.payload;
+        if (aktiv === state && vorschau) zeigeVorschau();
+      }
+      return res.block;
+    });
+    c.promise = p;
+    return p;
+  }
+  function unlockCryptoForEdit(state, password, silent) {
+    if (!state || !state.crypto || !state.crypto.initialPayload || !password) {
+      return Promise.reject(new Error("Bitte Passwort eingeben."));
+    }
+    var c = state.crypto;
+    return withCrypto().then(function (CP) {
+      return CP.decryptMarkdown(c.initialPayload, password).then(function (plain) {
+        if (aktiv !== state) return plain;
+        var norm = String(plain || "").replace(/^\n+/, "").replace(/\s+$/, "");
+        c.unlocked = true;
+        c.error = "";
+        c.password = password;
+        c.initialPassword = password;
+        c.initialPlaintext = norm;
+        c.encryptedBlock = c.initialEncryptedBlock;
+        c.encryptedForText = norm;
+        c.encryptedForPw = password;
+        state.w.text = norm;
+        migratePublicImagesToEncrypted(state);
+        scheduleCryptoEncrypt(state);
+        CP.setUnlockedPassword(state.w.uuid || state.url, password, false);
+        if (typeof document !== "undefined") {
+          var pageContainer = document.querySelector(".encrypted-container");
+          if (pageContainer && typeof pageContainer._cryptoTryUnlock === "function") {
+            pageContainer._cryptoTryUnlock(password, false).catch(function () {});
+          }
+        }
+        baueFelder();
+        zeigeVorschau();
+        return norm;
+      });
+    }).catch(function (err) {
+      if (aktiv === state && !silent) {
+        c.error = "Falsches Passwort – der Inhalt konnte nicht entschlüsselt werden.";
+        var errEl = d && d.querySelector("[data-crypto-err]");
+        if (errEl) { errEl.textContent = c.error; errEl.hidden = false; }
+      }
+      throw err;
+    });
+  }
 
   // ---------- file ----------
   // random v4 UUID for the "read" marker (assets/js/gelesen.js); crypto.randomUUID needs a secure context
@@ -445,16 +670,12 @@ var NeuFormular = (function () {
       if (!w.uuid) w.uuid = neueUuid();
       paare.push(["uuid", w.uuid]);
     }
-    var isCrypto = (typeof aktiv !== "undefined" && aktiv && aktiv.isEncrypted) || (w && (w.encrypted === true || w.isEncrypted === true));
-    if (isCrypto) {
-      paare.push(["encrypted", true]);
-      paare.push(["search", false]);
-      var rest = (aktiv && aktiv.encryptedRest) || (w && w.encryptedRest) || "\n<script type=\"application/json\" class=\"encrypted-data\">\n/* Verschlüsselter Inhalt (wird beim Speichern erzeugt) */\n</script>\n";
-      return F.joinFile([F.yaml(paare)], rest);
-    }
     return schema.format === "yaml" ? F.yaml(paare) + "\n" : F.frontMatter(paare, w.text);
   }
-  function dateiInhalt() { return aktiv.edit ? editedText(aktiv.schema, aktiv.edit, aktiv.w) : dateiText(aktiv.schema, aktiv.w); }
+  function dateiInhalt() {
+    var wOut = aktiv.crypto ? Object.assign({}, aktiv.w, { text: effectiveTextForSave(aktiv) }) : aktiv.w;
+    return aktiv.edit ? editedText(aktiv.schema, aktiv.edit, wOut) : dateiText(aktiv.schema, wOut);
+  }
 
   // ---------- editing an existing file ----------
   function sameValue(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -486,17 +707,9 @@ var NeuFormular = (function () {
       var value = v === undefined ? undefined : f.typ === "links" ? v : toFieldValue(f, v);
       if (value === undefined) rawFields[f.name] = true; else w[f.name] = value;
     });
-    var isEncrypted = file.blocks.some(function (b) {
-      return b.key === "encrypted" && F.yamlValue(b.raw) === true;
-    }) || /<script\s+type=["']application\/json["']\s+class=["']encrypted-data["']>/.test(file.rest);
-    var cryptoPayload = null;
-    var cryptoMatch = file.rest.match(/<script\s+type=["']application\/json["']\s+class=["']encrypted-data["']>([\s\S]*?)<\/script>/);
-    if (cryptoMatch) {
-      try { cryptoPayload = JSON.parse(cryptoMatch[1]); } catch (e) {}
-    }
     w.text = file.rest.replace(/^\n+/, "").replace(/\s+$/, "");
     w.datei = path ? path.split("/").pop() : "";
-    return { source: source, file: file, w0: JSON.parse(JSON.stringify(w)), rawFields: rawFields, encrypted: isEncrypted, cryptoPayload: cryptoPayload };
+    return { source: source, file: file, w0: JSON.parse(JSON.stringify(w)), rawFields: rawFields };
   }
   // The file with the changed fields: unchanged blocks stay as they were, changed ones are written anew (or removed
   // when emptied), new fields go to the end of the front matter. The body only changes when the text was edited.
@@ -535,46 +748,11 @@ var NeuFormular = (function () {
       if (!w.uuid) w.uuid = neueUuid();
       blocks.push("uuid: " + w.uuid);
     }
-    // Handle encryption in front matter
-    var isCrypto = (typeof aktiv !== "undefined" && aktiv && aktiv.isEncrypted) || (w && (w.encrypted === true || w.isEncrypted === true));
-    if (isCrypto) {
-      var hasEncrypted = false;
-      blocks = blocks.map(function (b) {
-        if (/^encrypted\s*:/m.test(b)) {
-          hasEncrypted = true;
-          return "encrypted: true";
-        }
-        return b;
-      });
-      if (!hasEncrypted) {
-        var encIdx = blocks.length;
-        if (blocks.length && /^uuid\s*:/m.test(blocks[blocks.length - 1])) encIdx = blocks.length - 1;
-        blocks.splice(encIdx, 0, "encrypted: true");
-      }
-      var hasSearch = blocks.some(function (b) { return /^search\s*:/m.test(b); });
-      if (!hasSearch) {
-        var sIdx = blocks.length;
-        if (blocks.length && /^uuid\s*:/m.test(blocks[blocks.length - 1])) sIdx = blocks.length - 1;
-        blocks.splice(sIdx, 0, "search: false # Verschlüsselter Inhalt nicht im öffentlichen Suchindex");
-      }
-    } else if ((typeof aktiv !== "undefined" && aktiv && aktiv.edit && aktiv.edit.encrypted && !aktiv.isEncrypted) || (w && (w.encrypted === false || w.isEncrypted === false) && edit && edit.encrypted)) {
-      // User disabled encryption on an existing encrypted page
-      blocks = blocks.filter(function (b) {
-        return !/^encrypted\s*:/m.test(b);
-      });
-    }
-
-    var rest;
-    var encRest = (typeof aktiv !== "undefined" && aktiv && aktiv.encryptedRest) || (w && w.encryptedRest);
-    if (isCrypto && encRest) {
-      rest = encRest;
-    } else if (isCrypto && edit && edit.cryptoPayload && w.text === edit.w0.text) {
-      rest = edit.file.rest;
-    } else {
-      var body = String(w.text).replace(/^\n+/, "").replace(/\s+$/, ""), gap = (edit.file.rest.match(/^\n*/)[0] || "") || "\n\n";
-      if (!/\S/.test(edit.file.rest)) gap = "\n\n";
-      rest = w.text === edit.w0.text ? edit.file.rest : body ? gap + body + "\n" : "\n";
-    }
+    // a changed body keeps the file's own spacing after "---" (Markdown: an empty line, index.html: none) and the
+    // indentation of its first line – only line breaks around it are dropped, like readSource does
+    var body = String(w.text).replace(/^\n+/, "").replace(/\s+$/, ""), gap = (edit.file.rest.match(/^\n*/)[0] || "") || "\n\n";
+    if (!/\S/.test(edit.file.rest)) gap = "\n\n";
+    var rest = w.text === edit.w0.text ? edit.file.rest : body ? gap + body + "\n" : "\n";
     return F.joinFile(blocks, rest);
   }
   // Without DOM: the file after changing some values (tests). → { content, rawFields, values }
@@ -613,12 +791,15 @@ var NeuFormular = (function () {
       + '<pre class="neu-vorschau" aria-label="' + esc(t("form.file_preview", null, "Vorschau der Datei")) + '"></pre>'
       + '<details class="neu-social" open><summary>' + esc(t("form.social_preview", null, "Social-Media-Vorschau (WhatsApp, Signal, X …)")) + '</summary>'
       + '<div class="neu-social-karte"><img class="neu-social-bild" src="/assets/images/og-preview.jpg" alt="" loading="lazy">'
-      + '<div class="neu-social-text"><span class="neu-social-domain">ifsmb.de</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
+      + '<div class="neu-social-text"><span class="neu-social-domain">' + esc(siteHost()) + '</span><strong class="neu-social-titel"></strong><span class="neu-social-beschr"></span></div></div></details>'
       + '<div class="form-photos" aria-label="' + esc(t("form.new_photos", null, "Neue Fotos")) + '"></div>'
+      + '<div class="form-files" aria-label="' + esc(t("form.new_files", null, "Neue Dateien")) + '"></div>'
       + '<ol class="neu-schritte small"></ol></aside></div>'
       + '<div class="form-fuss"><button type="button" class="btn btn-small btn-ghost" data-verwerfen></button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-github>' + esc(t("github.connect", null, "🔑 GitHub verbinden")) + '</button>'
       + '<button type="button" class="btn btn-small btn-ghost" data-photos hidden>' + esc(t("form.add_photos", null, "📷 Fotos hinzufügen")) + '</button>'
+      + '<button type="button" class="btn btn-small btn-ghost" data-files hidden title="' + esc(t("form.add_files_title", null, "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen")) + '">' + esc(t("form.add_files", null, "📎 Datei")) + '</button>'
+      + '<label class="form-recycle small" hidden><input type="checkbox" data-recycle> ' + esc(t("form.recycle", null, "♻️ PR")) + ' <span class="muted" data-recycle-target></span></label>'
       + '<span class="muted small" data-status aria-live="polite"></span>'
       + '<button type="submit" class="btn" data-submit></button></div></form>');
     form = d.querySelector("form");
@@ -640,8 +821,21 @@ var NeuFormular = (function () {
     githubBtn = d.querySelector("[data-github]");
     fotosBtn = d.querySelector("[data-photos]");
     fotosEl = d.querySelector(".form-photos");
+    filesBtn = d.querySelector("[data-files]");
+    recycleBox = d.querySelector(".form-recycle");
+    recycleBox.querySelector("[data-recycle]").addEventListener("change", function (e) {
+      try { localStorage.setItem(RECYCLE_KEY, e.target.checked ? "1" : "0"); } catch (x) { /* storage blocked */ }
+      direct.update();
+    });
+    filesEl = d.querySelector(".form-files");
     githubBtn.addEventListener("click", function () { direct.connectDialog(); });
     fotosBtn.addEventListener("click", function () { direct.addPhotos(); });
+    filesBtn.addEventListener("click", function () { direct.addFiles(); });
+    filesEl.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-file-remove]"); if (b) direct.removeFile(+b.getAttribute("data-file-remove"));
+      var x = e.target.closest("[data-existing-remove]"); if (x) direct.removeExisting(+x.getAttribute("data-existing-remove"));
+      var u = e.target.closest("[data-existing-undo]"); if (u) direct.undoRemoveExisting(+u.getAttribute("data-existing-undo"));
+    });
     fotosEl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-photo-remove]"); if (b) { direct.removePhoto(+b.getAttribute("data-photo-remove")); return; }
       var t = e.target.closest("[data-toggle]"); if (t) direct.toggle(+t.closest("[data-photo]").getAttribute("data-photo"), t.getAttribute("data-toggle"));
@@ -666,14 +860,38 @@ var NeuFormular = (function () {
 
     form.addEventListener("input", aenderung);
     form.addEventListener("change", aenderung);
+    // remember where the cursor is in the text, so "📎 Datei" puts the embed there (the file dialog takes the focus)
+    ["keyup", "click", "select", "input", "focusout"].forEach(function (ev) {
+      form.addEventListener(ev, function (e) {
+        var ta = e.target;
+        if (ta && ta.tagName === "TEXTAREA" && ta.name === "text") ta.setAttribute("data-cursor", String(ta.selectionEnd));
+      });
+    });
     // Enter in a one-line field must not send the form
     form.addEventListener("keydown", function (e) { if (e.key === "Enter" && e.target.tagName === "INPUT" && e.target.type !== "submit") e.preventDefault(); });
     form.addEventListener("submit", function (e) { e.preventDefault(); anlegen(); });
     discardBtn.addEventListener("click", function () {
       loescheEntwurf();
       direct.clearPhotos();
-      if (aktiv.edit) { aktiv.w = JSON.parse(JSON.stringify(aktiv.edit.w0)); aktiv.beruehrt = allTouched(); }
-      else { aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe); aktiv.beruehrt = {}; }
+      if (aktiv.edit) {
+        aktiv.w = JSON.parse(JSON.stringify(aktiv.edit.w0));
+        aktiv.beruehrt = allTouched();
+        if (aktiv.crypto) {
+          if (aktiv.crypto.wasEncrypted && aktiv.crypto.unlocked) {
+            aktiv.w.text = aktiv.crypto.initialPlaintext;
+            aktiv.crypto.password = aktiv.crypto.initialPassword;
+            aktiv.crypto.encryptedBlock = aktiv.crypto.initialEncryptedBlock;
+            aktiv.crypto.encryptedForText = aktiv.crypto.initialPlaintext;
+            aktiv.crypto.encryptedForPw = aktiv.crypto.initialPassword;
+          } else {
+            initCryptoState(aktiv, true);
+          }
+        }
+      } else {
+        aktiv.w = anfangswerte(aktiv.schema, aktiv.vorgabe);
+        aktiv.beruehrt = {};
+        if (aktiv.crypto) initCryptoState(aktiv, false);
+      }
       folge(); baueFelder(); zeigeVorschau();
       status.textContent = aktiv.edit ? t("form.discarded", null, "Änderungen verworfen.") : t("form.restarted", null, "Neu angefangen.");
     });
@@ -691,138 +909,81 @@ var NeuFormular = (function () {
     if (!url) return [];
     var path = url.replace(/^https?:\/\/[^/]+/, "").replace(/index\.html$/, ""), bare = path.replace(/\/$/, "");
     var forms = [path, bare, bare + "/", bare + "/index.html"];
-    // this site's own address (site.url from _config.yml via _includes/formular-config.html) and the current origin
-    var site = typeof document !== "undefined" && F.cfg ? F.cfg().site : null;
-    var hosts = (site ? [site] : []).concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
+    var hosts = (siteCfg().url ? [siteCfg().url.replace(/\/$/, "")] : []).concat(typeof location !== "undefined" && location.origin ? [location.origin] : []);
     return forms.concat.apply(forms, hosts.map(function (h) { return forms.map(function (x) { return h + x; }); }));
-  }
-
-  function baueCryptoLockBox() {
-    var box = F.el('<div class="crypto-locked-box" style="margin-bottom: 0.75rem; padding: 0.85rem; border: 1.5px solid #d97706; border-radius: 8px; background: #fffbeb;">'
-      + '<p style="margin: 0 0 0.4rem 0; font-weight: bold; color: #92400e; font-size: 0.95rem;">🔒 Dieser Inhalt ist verschlüsselt.</p>'
-      + '<p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #78350f;">Bitte gib das Passwort ein, um den Klartext zu entschlüsseln und zu bearbeiten:</p>'
-      + '<div style="display: flex; gap: 0.5rem; align-items: center;">'
-      + '<input type="password" class="crypto-unlock-pw" placeholder="Passwort eingeben" style="flex: 1; padding: 0.45rem 0.6rem; border: 1.5px solid #d97706; border-radius: 6px; background: #fff; font-size: 0.95rem;">'
-      + '<button type="button" class="btn btn-small crypto-unlock-btn" style="white-space: nowrap; height: 38px;">Entsperren</button>'
-      + '</div><div class="crypto-unlock-err" hidden style="margin-top: 0.4rem; font-size: 0.85rem; color: #b91c1c; font-weight: 600;"></div></div>');
-    var pwInput = box.querySelector(".crypto-unlock-pw");
-    var btn = box.querySelector(".crypto-unlock-btn");
-    var errEl = box.querySelector(".crypto-unlock-err");
-
-    function unlock() {
-      var pw = pwInput.value.trim();
-      if (!pw) {
-        errEl.textContent = "Bitte Passwort eingeben.";
-        errEl.hidden = false;
-        return;
-      }
-      btn.disabled = true;
-      btn.textContent = "⏳ Prüfe …";
-      errEl.hidden = true;
-      var folder = aktiv.path ? aktiv.path.split("/").slice(0, -1).join("/") : "";
-      ladeCryptoPage().then(function (Crypto) {
-        return Crypto.decryptPage(aktiv.cryptoPayload, pw, folder);
-      }).then(function (dec) {
-        aktiv.w.text = dec.markdown;
-        aktiv.cryptoPassword = pw;
-        aktiv.cryptoLocked = false;
-        if (aktiv.w.uuid) {
-          try { localStorage.setItem("ifsmb-crypto:" + aktiv.w.uuid, pw); } catch (e) {}
-        }
-        var wrap = box.closest(".form-markdown-wrap");
-        box.remove();
-        if (wrap) {
-          var hiddenEditor = wrap.querySelector(".form-md, .form-feld");
-          if (hiddenEditor) hiddenEditor.hidden = false;
-        }
-        var ta = form && form.elements.text;
-        if (ta) {
-          ta.value = dec.markdown;
-          ta.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (editors.length && editors[0].textarea) {
-          editors[0].textarea.value = dec.markdown;
-          editors[0].textarea.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        var pwField = form && form.querySelector(".crypto-password-input");
-        if (pwField) pwField.value = pw;
-        nachAenderung();
-      }).catch(function (err) {
-        btn.disabled = false;
-        btn.textContent = "Entsperren";
-        errEl.textContent = (err && (err.name === "OperationError" || /mac check/i.test(err.message)))
-          ? "Falsches Passwort."
-          : ("Fehler: " + (err.message || err));
-        errEl.hidden = false;
-      });
-    }
-
-    btn.addEventListener("click", unlock);
-    pwInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        unlock();
-      }
-    });
-    return box;
-  }
-
-  function baueCryptoSettingsBox() {
-    var isChecked = !!(aktiv && aktiv.isEncrypted);
-    var box = F.el('<div class="form-crypto-settings" style="margin-top: 0.75rem; padding: 0.75rem 0.9rem; border: 1.5px solid var(--line, #e2e8f0); border-radius: 8px; background: var(--bg-alt, #f8fafc);">'
-      + '<label class="form-check" style="margin: 0; cursor: pointer;">'
-      + '<input type="checkbox" class="crypto-toggle-check"' + (isChecked ? " checked" : "") + '>'
-      + '<span>🔒 Inhalt verschlüsseln (Client-side Web Crypto)</span>'
-      + '<small class="form-hilfe">Der Markdown-Text wird im Browser mit AES-GCM verschlüsselt.</small>'
-      + '</label>'
-      + '<div class="crypto-fields"' + (isChecked ? "" : " hidden") + ' style="margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.5rem;">'
-      + '<div style="display: flex; gap: 0.5rem; align-items: flex-end;">'
-      + '<label class="form-feld" style="flex: 1; margin: 0;"><span>Passwort für die Verschlüsselung</span>'
-      + '<input type="password" class="crypto-password-input" placeholder="Passwort für diese Seite" value="' + esc((aktiv && aktiv.cryptoPassword) || "") + '">'
-      + '</label>'
-      + '<button type="button" class="btn btn-small crypto-pw-toggle" style="height: 38px; min-width: 40px;" title="Passwort anzeigen / verbergen">👁️</button>'
-      + '</div>'
-      + '<div class="crypto-git-note small"' + (aktiv && aktiv.edit && !aktiv.edit.encrypted ? "" : " hidden") + ' style="color: #92400e; background: #fffbeb; padding: 0.5rem 0.75rem; border-radius: 6px; border-left: 3px solid #d97706; line-height: 1.4;">'
-      + '⚠️ <strong>Hinweis zur Git-Historie:</strong> Diese Datei existierte zuvor unverschlüsselt. Frühere Versionen bleiben in der Git-Historie auf GitHub öffentlich einsehbar. Ab dieser Änderung ist der Inhalt verschlüsselt.'
-      + '</div></div></div>');
-
-    var chk = box.querySelector(".crypto-toggle-check");
-    var fields = box.querySelector(".crypto-fields");
-    var gitNote = box.querySelector(".crypto-git-note");
-    var pwInput = box.querySelector(".crypto-password-input");
-    var eyeBtn = box.querySelector(".crypto-pw-toggle");
-
-    chk.addEventListener("change", function () {
-      aktiv.isEncrypted = chk.checked;
-      fields.hidden = !chk.checked;
-      if (gitNote) gitNote.hidden = !(chk.checked && aktiv.edit && !aktiv.edit.encrypted);
-      if (chk.checked) {
-        if (!aktiv.cryptoPassword && pwInput.value) {
-          aktiv.cryptoPassword = pwInput.value;
-        } else if (aktiv.cryptoPassword && !pwInput.value) {
-          pwInput.value = aktiv.cryptoPassword;
-        }
-      }
-      nachAenderung();
-    });
-
-    pwInput.addEventListener("input", function () {
-      aktiv.cryptoPassword = pwInput.value;
-      nachAenderung();
-    });
-
-    eyeBtn.addEventListener("click", function () {
-      pwInput.type = pwInput.type === "password" ? "text" : "password";
-    });
-
-    return box;
   }
 
   // in edit mode a required field only stays required if the file had a value (old posts without date: …)
   function isRequired(f) { return f.pflicht && !(aktiv.edit && F.leer(aktiv.edit.w0[f.name])); }
+  function baueCryptoFeld(f) {
+    var c = aktiv.crypto || {}, w = !!aktiv.w.encrypted;
+    var lockedExisting = !!(c.wasEncrypted && !c.unlocked);
+    var wrap = F.el('<div class="form-feld form-crypto-wrap">'
+      + '<label class="form-check"><input type="checkbox" name="encrypted"' + (w ? " checked" : "") + (lockedExisting ? ' disabled title="Bitte zuerst das Passwort eingeben und entsperren"' : "") + "><span>" + esc(f.label) + "</span></label>"
+      + '<div class="form-crypto-box"></div></div>');
+    var box = wrap.querySelector(".form-crypto-box");
+    if (lockedExisting) {
+      box.innerHTML = '<div class="card small" style="margin-top: 0.5rem; padding: 0.85rem 1rem; border-left: 4px solid var(--accent, #e6a800);">'
+        + '<p style="margin: 0 0 0.5rem;"><strong>🔒 Verschlüsselte Seite entsperren</strong> – gib das Passwort ein, um den Klartext im Editor zu öffnen und zu bearbeiten:</p>'
+        + '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">'
+        + '<input type="password" data-crypto-unlock-pw placeholder="Passwort eingeben …" autocomplete="current-password" style="flex: 1; min-width: 180px;">'
+        + '<button type="button" class="btn btn-small" data-crypto-unlock-btn>🔓 Entschlüsseln &amp; Text bearbeiten</button>'
+        + "</div>"
+        + '<p class="small" data-crypto-err style="color: #b00; margin: 0.4rem 0 0;"' + (c.error ? "" : " hidden") + ">" + esc(c.error || "") + "</p>"
+        + '<small class="form-hilfe" style="display: block; margin-top: 0.4rem;">Titel, Stichworte und Verbindungen lassen sich auch ohne Passwort ändern – der verschlüsselte Inhalt bleibt dann unverändert.</small>'
+        + "</div>";
+      var unlockInput = box.querySelector("[data-crypto-unlock-pw]"), unlockBtn = box.querySelector("[data-crypto-unlock-btn]");
+      var doUnlock = function () {
+        var pw = unlockInput.value;
+        if (!pw) { unlockInput.focus(); return; }
+        unlockBtn.disabled = true;
+        unlockCryptoForEdit(aktiv, pw, false).catch(function () { unlockBtn.disabled = false; unlockInput.focus(); });
+      };
+      unlockBtn.addEventListener("click", doUnlock);
+      unlockInput.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); doUnlock(); } });
+    } else if (w) {
+      var noteHtml = (aktiv.edit && !c.wasEncrypted)
+        ? '<p class="note small" data-crypto-history-note style="margin: 0 0 0.6rem;">⚠️ <strong>Hinweis zur Git-Historie:</strong> Diese Seite war bisher unverschlüsselt veröffentlicht. Der frühere Klartext bleibt in älteren Git-Commits (und ggf. in Archiven oder Suchmaschinen) weiterhin öffentlich einsehbar. Nur der aktuelle Stand der Seite wird ab jetzt verschlüsselt ausgeliefert. Titel und Front-Matter-Felder bleiben sichtbar.</p>'
+        : (c.wasEncrypted
+          ? '<p class="small muted" style="margin: 0 0 0.5rem;">🔓 <strong>Klartext entsperrt:</strong> Du bearbeitest unten den entschlüsselten Markdown-Text. Beim Speichern wird er automatisch wieder verschlüsselt.</p>'
+          : '<p class="small muted" style="margin: 0 0 0.5rem;">🔒 Der Markdown-Text unten wird vor dem Speichern im Browser mit AES-GCM (256 Bit) verschlüsselt. Titel und Front-Matter-Felder bleiben öffentlich lesbar.</p>');
+      var socialWarnHtml = aktiv.w.social_media_preview_image
+        ? '<p class="note small" data-crypto-social-warn style="margin: 0 0 0.6rem;">⚠️ <strong>Social-Media-Vorschaubild unverschlüsselt:</strong> Das Vorschaubild (<code>' + esc(aktiv.w.social_media_preview_image) + '</code>) bleibt <strong>unverschlüsselt</strong> öffentlich sichtbar, damit Messenger (Signal, WhatsApp, Mastodon …) eine Link-Vorschau laden können.</p>'
+        : "";
+      box.innerHTML = '<div class="card small" style="margin-top: 0.5rem; padding: 0.85rem 1rem;">'
+        + noteHtml
+        + socialWarnHtml
+        + '<label class="form-feld" style="margin: 0;"><span>🔑 Passwort für die Verschlüsselung <span class="form-pflicht" aria-hidden="true">*</span></span>'
+        + '<span style="display: flex; gap: 0.4rem; align-items: center;">'
+        + '<input type="password" data-crypto-pw placeholder="Passwort für diese Seite …" autocomplete="new-password" style="flex: 1;" value="' + esc(c.password || "") + '">'
+        + '<button type="button" class="btn btn-small btn-ghost" data-crypto-toggle-pw title="Passwort anzeigen / verbergen" aria-label="Passwort anzeigen / verbergen">👁️</button>'
+        + "</span></label></div>";
+      var pwInput = box.querySelector("[data-crypto-pw]"), toggleBtn = box.querySelector("[data-crypto-toggle-pw]");
+      pwInput.addEventListener("input", function () {
+        if (!aktiv || !aktiv.crypto) return;
+        aktiv.crypto.password = pwInput.value;
+        scheduleCryptoEncrypt(aktiv);
+        aktiv.gesendet = false;
+        status.textContent = "";
+        zeigeVorschau();
+      });
+      toggleBtn.addEventListener("click", function () {
+        pwInput.type = pwInput.type === "password" ? "text" : "password";
+      });
+    } else if (c.wasEncrypted && c.unlocked) {
+      box.innerHTML = '<p class="note small" style="margin-top: 0.5rem;">🔓 <strong>Verschlüsselung wird aufgehoben:</strong> Beim Speichern wird der entschlüsselte Text wieder als normaler, öffentlicher Klartext gespeichert.</p>';
+    }
+    return wrap;
+  }
+
   function baueFeld(f) {
     if (aktiv.edit && aktiv.edit.rawFields[f.name]) {
       return F.el('<label class="form-feld"><span>' + esc(f.label) + '</span><input type="text" disabled value="(in der Datei als Liste/Objekt – bitte auf GitHub bearbeiten)"></label>');
+    }
+    if (f.name === "encrypted") return baueCryptoFeld(f);
+    if (f.name === "text" && aktiv.crypto && aktiv.crypto.wasEncrypted && !aktiv.crypto.unlocked) {
+      return F.el('<div class="form-feld" data-crypto-locked-text><span>' + esc(f.label) + '</span>'
+        + '<div class="note small" style="margin: 0;">🔒 Der Text dieser Seite ist verschlüsselt. Gib oben das Passwort ein und klicke auf „🔓 Entschlüsseln &amp; Text bearbeiten“, um den Klartext im Editor zu öffnen.</div></div>');
     }
     var w = aktiv.w[f.name], hilfe = f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "";
     var label = esc(f.label) + (isRequired(f) ? ' <span class="form-pflicht" aria-hidden="true">*</span>' : "");
@@ -847,17 +1008,6 @@ var NeuFormular = (function () {
     } else {
       var typ = { text: "text", adresse: "url", datum: "date", zeit: "datetime-local", zahl: "number" }[f.typ];
       eingabe = '<input type="' + typ + '"' + attr + (f.liste ? ' list="neu-liste-' + f.liste + '"' : "") + ' value="' + esc(w) + '">';
-    }
-    if (f.typ === "langtext" && f.markdown) {
-      var wrap = F.el('<div class="form-markdown-wrap"></div>');
-      if (aktiv && aktiv.isEncrypted && aktiv.cryptoLocked) {
-        wrap.appendChild(baueCryptoLockBox());
-      }
-      var taField = F.el('<label class="form-feld' + (f.klasse ? " " + f.klasse : "") + '"><span>' + label + "</span>" + eingabe + hilfe + "</label>");
-      if (aktiv && aktiv.isEncrypted && aktiv.cryptoLocked) taField.hidden = true;
-      wrap.appendChild(taField);
-      wrap.appendChild(baueCryptoSettingsBox());
-      return wrap;
     }
     return F.el('<label class="form-feld' + (f.klasse ? " " + f.klasse : "") + '"><span>' + label + "</span>" + eingabe + hilfe + "</label>");
   }
@@ -1006,8 +1156,20 @@ var NeuFormular = (function () {
       icon: '<svg viewBox="0 0 18 18"><path ' + STROKE + ' d="M5,3v5a4,4,0,0,0,8,0V3"></path><line ' + STROKE + ' x1="4" x2="14" y1="15.5" y2="15.5"></line></svg>',
       action: function (o) { toggleUnderline(o.editor.textarea); }
     };
+    var attach = {
+      name: "attach", actionId: "insertAttachment", title: t("form.add_files_title", null, "STL, 3MF, MP4 oder MP3 an der Cursor-Position einfügen"),
+      icon: '<svg viewBox="0 0 18 18"><path ' + STROKE + ' d="M12.5,8.5l-4.6,4.6a2.6,2.6,0,0,1-3.7-3.7l5.3-5.3a1.8,1.8,0,0,1,2.5,2.5L6.9,11.7a0.9,0.9,0,0,1-1.3-1.3L10.2,5.8"></path></svg>',
+      action: function (o) {
+        var ta = o.editor.textarea;
+        if (ta.name !== "text") return;
+        ta.setAttribute("data-cursor", String(ta.selectionEnd));
+        direct.addFiles();
+      }
+    };
     var i = buttons.indexOf(T.italic);
     buttons.splice(i < 0 ? 2 : i + 1, 0, T.strikethrough, underline);
+    if (T.link) { var li = buttons.indexOf(T.link); buttons.splice(li < 0 ? buttons.length : li + 1, 0, attach); }
+    else buttons.push(attach);
     return buttons;
   }
   function onEditorKeydown(e, editor) {
@@ -1043,7 +1205,6 @@ var NeuFormular = (function () {
       + esc(f.label) + '</span><button type="button" class="btn btn-ghost btn-small form-md-toggle" aria-pressed="' + visible
       + '" title="Werkzeugleiste ein- oder ausblenden">🛠️ <span class="form-md-toggle-text">Werkzeugleiste</span></button></div>'
       + '<div class="form-md-editor"></div>' + (f.hilfe ? '<small class="form-hilfe">' + esc(f.hilfe) + "</small>" : "") + "</div>");
-    if (aktiv.isEncrypted && aktiv.cryptoLocked) field.hidden = true;
     oldField.replaceWith(field);
     var editor = new window.OverType(field.querySelector(".form-md-editor"), {
       value: aktiv.w[f.name] || "",
@@ -1083,38 +1244,29 @@ var NeuFormular = (function () {
     if (v === aktiv.w[n]) return;
     aktiv.w[n] = v;
     aktiv.beruehrt[n] = v !== ""; // emptied → follows again
+    if (n === "encrypted") {
+      if (v) migratePublicImagesToEncrypted(aktiv);
+      baueFelder();
+      direct.showPhotos();
+      if (v) {
+        scheduleCryptoEncrypt(aktiv);
+        var pwField = form.querySelector("[data-crypto-pw]");
+        if (pwField && !pwField.value) pwField.focus();
+      }
+    }
     folge(t);
     nachAenderung();
   }
-  var encryptTimer = null;
-  function scheduleEncryptPreview() {
-    if (!aktiv || !aktiv.isEncrypted || !aktiv.cryptoPassword) return;
-    if (encryptTimer) clearTimeout(encryptTimer);
-    encryptTimer = setTimeout(function () {
-      if (!aktiv || !aktiv.isEncrypted || !aktiv.cryptoPassword) return;
-      ladeCryptoPage().then(function (Crypto) {
-        return Crypto.encryptPage(aktiv.w.text || "", aktiv.cryptoPassword, aktiv.cryptoAttachmentsToEncrypt || []);
-      }).then(function (res) {
-        if (!aktiv || !aktiv.isEncrypted) return;
-        if (aktiv.cryptoPayload && aktiv.cryptoPayload.attachments && !aktiv.cryptoAttachmentsToEncrypt) {
-          res.payload.attachments = aktiv.cryptoPayload.attachments;
-        }
-        aktiv.encryptedPayload = res.payload;
-        aktiv.encryptedBlobs = res.blobs;
-        aktiv.encryptedRest = "\n<script type=\"application/json\" class=\"encrypted-data\">\n" + JSON.stringify(res.payload, null, 2) + "\n</script>\n";
-        zeigeVorschau();
-      }).catch(function () {});
-    }, 350);
-  }
   function nachAenderung() {
     folge();
-    if (aktiv.isEncrypted && aktiv.cryptoPassword) {
-      scheduleEncryptPreview();
+    if (aktiv.w.encrypted && aktiv.crypto && (!aktiv.crypto.wasEncrypted || aktiv.crypto.unlocked)) {
+      scheduleCryptoEncrypt(aktiv);
     }
     zeigeVorschau();
     speichereEntwurf();
     aktiv.gesendet = false;
     status.textContent = "";
+    if (filesEl) direct.showFiles(); // existing attachments: removed from the text → "wird gelöscht"
   }
   function erstesMarkdownBild(md) {
     var m = String(md || "").match(/!\[[^\]]*\]\(([^)\s]+)\)/);
@@ -1129,77 +1281,72 @@ var NeuFormular = (function () {
     if (aktiv.edit) {
       var marked = changedLines(aktiv.edit.source.replace(/\r\n/g, "\n"), text), count = marked.filter(Boolean).length;
       vorschau.innerHTML = text.split("\n").map(function (line, i) { return marked[i] ? '<mark class="changed-line">' + esc(line || " ") + "</mark>" : esc(line); }).join("\n");
-      submitBtn.disabled = !count;
-      submitBtn.title = count ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
+      // a change that only deletes lines marks nothing in the new text – compare the whole text
+      var changed = count > 0 || text !== aktiv.edit.source.replace(/\r\n/g, "\n");
+      submitBtn.disabled = !changed;
+      submitBtn.title = changed ? "" : t("form.unchanged_short", null, "Noch nichts geändert");
     } else vorschau.textContent = text;
     if (!socialBox) return;
     var w = aktiv.w, istSeite = aktiv.schema.format !== "yaml";
     socialBox.hidden = !istSeite;
     if (!istSeite) return;
-    var bild = w.social_media_preview_image || (!w.image_is_illustration && !/\.svg$/i.test(w.image || "") && w.image) || w.photo || erstesMarkdownBild(w.text) || "/assets/images/og-preview.jpg";
+    var bild = w.social_media_preview_image || (!w.encrypted && ((!w.image_is_illustration && !/\.svg$/i.test(w.image || "") && w.image) || w.photo || erstesMarkdownBild(w.text))) || "/assets/images/og-preview.jpg";
     bild = direct.previewFor(bild); // photos not uploaded yet: show the local preview
     if (socialImg.getAttribute("src") !== bild) socialImg.src = bild;
     socialTitel.textContent = w.title || aktiv.schema.titel;
     var codeText = aktiv.felder.some(function (f) { return f.name === "text" && f.code; }); // HTML is no description
-    socialBeschr.textContent = (w.summary || w.subtitle || w.role || w.lead || (codeText ? "" : ersteTextzeile(w.text)) || "Institut für spontane Makespace Buildung").slice(0, 160);
+    socialBeschr.textContent = (w.summary || w.subtitle || w.role || w.lead || (codeText ? "" : ersteTextzeile(w.text)) || siteCfg().title || "").slice(0, 160);
   }
 
   function fehlt() {
     var leer = aktiv.felder.filter(function (f) { return isRequired(f) && f.typ === "chips" && !aktiv.w[f.name].length; })[0];
     if (leer) return t("form.fill_in", { field: leer.label.replace(/^\W+\s*/, "") }, "Bitte „" + leer.label.replace(/^\W+\s*/, "") + "“ ausfüllen.");
+    if (aktiv.w.encrypted && aktiv.crypto && (!aktiv.crypto.wasEncrypted || aktiv.crypto.unlocked) && !aktiv.crypto.password) {
+      var pwField = form && form.querySelector("[data-crypto-pw]");
+      if (pwField) pwField.focus();
+      return "Bitte ein Passwort für die Verschlüsselung eingeben.";
+    }
+    if (!aktiv.w.encrypted && aktiv.crypto && aktiv.crypto.wasEncrypted && !aktiv.crypto.unlocked) {
+      return "Bitte zuerst den verschlüsselten Inhalt mit dem Passwort entsperren.";
+    }
     return aktiv.schema.pruefe && aktiv.schema.pruefe(aktiv.w);
   }
   function anlegen() {
     var fehler = fehlt();
     if (fehler) { status.textContent = "⚠️ " + fehler; return; }
-    if (aktiv.isEncrypted) {
-      if (!aktiv.cryptoPassword) {
-        status.textContent = "⚠️ Bitte ein Passwort für die Verschlüsselung festlegen.";
-        var pwInput = form && form.querySelector(".crypto-password-input");
-        if (pwInput) pwInput.focus();
+    var state = aktiv;
+    function doSubmit() {
+      if (aktiv !== state) return;
+      if (direct.active()) { direct.submit(); return; }
+      if (aktiv.edit) {
+        var newText = dateiInhalt();
+        if (newText === aktiv.edit.source) { status.textContent = t("form.unchanged", null, "Noch nichts geändert."); return; }
+        F.kopierenUndOeffnen(newText, F.githubEdit(aktiv.path), status, function () { getSelection().selectAllChildren(vorschau); });
+        var copiedMsg = t("form.copied_github", null, "Kopiert – GitHub ist in einem neuen Tab offen.");
+        setTimeout(function () { if (status.textContent === copiedMsg) status.textContent = t("form.copied_paste", null, "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."); }, 50);
+        aktiv.gesendet = true;
         return;
       }
-      status.textContent = "🔒 Verschlüssele Inhalt …";
-      submitBtn.disabled = true;
-      ladeCryptoPage().then(function (Crypto) {
-        return Crypto.encryptPage(aktiv.w.text || "", aktiv.cryptoPassword, aktiv.cryptoAttachmentsToEncrypt || []);
-      }).then(function (res) {
-        if (aktiv.cryptoPayload && aktiv.cryptoPayload.attachments && !aktiv.cryptoAttachmentsToEncrypt) {
-          res.payload.attachments = aktiv.cryptoPayload.attachments;
-        }
-        aktiv.encryptedPayload = res.payload;
-        aktiv.encryptedBlobs = res.blobs;
-        aktiv.encryptedRest = "\n<script type=\"application/json\" class=\"encrypted-data\">\n" + JSON.stringify(res.payload, null, 2) + "\n</script>\n";
-        if (aktiv.w.uuid) {
-          try { localStorage.setItem("ifsmb-crypto:" + aktiv.w.uuid, aktiv.cryptoPassword); } catch (e) {}
-        }
-        submitBtn.disabled = false;
-        doAnlegen();
-      }).catch(function (err) {
-        submitBtn.disabled = false;
-        status.textContent = "⚠️ Fehler beim Verschlüsseln: " + (err.message || err);
-      });
-      return;
-    }
-    doAnlegen();
-  }
-  function doAnlegen() {
-    if (direct.active()) { direct.submit(); return; }
-    if (aktiv.edit) {
-      var newText = dateiInhalt();
-      if (newText === aktiv.edit.source) { status.textContent = t("form.unchanged", null, "Noch nichts geändert."); return; }
-      F.kopierenUndOeffnen(newText, F.githubEdit(aktiv.path), status, function () { getSelection().selectAllChildren(vorschau); });
-      var copiedMsg = t("form.copied_github", null, "Kopiert – GitHub ist in einem neuen Tab offen.");
-      setTimeout(function () { if (status.textContent === copiedMsg) status.textContent = t("form.copied_paste", null, "Kopiert – im GitHub-Editor alles markieren (⌘A / Strg+A) und einfügen (⌘V / Strg+V)."); }, 50);
+      var s = aktiv.schema, inhaltText = dateiInhalt(), datei = aktiv.w.datei.trim();
+      var url = F.githubNeu(s.ordner, datei, inhaltText), zuLang = url.length > 8000;
+      if (zuLang) url = F.githubNeu(s.ordner, datei);
+      F.kopierenUndOeffnen(inhaltText, url, status, function () { getSelection().selectAllChildren(vorschau); });
+      if (zuLang) status.textContent = t("form.too_long", null, "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.");
       aktiv.gesendet = true;
+    }
+    var needsAsyncCrypto = state.w.encrypted && state.crypto && (!state.crypto.wasEncrypted || state.crypto.unlocked) && (!state.crypto.encryptedBlock || state.crypto.encryptedForText !== state.w.text || state.crypto.encryptedForPw !== state.crypto.password);
+    if (!needsAsyncCrypto) {
+      doSubmit();
       return;
     }
-    var s = aktiv.schema, inhaltText = dateiInhalt(), datei = aktiv.w.datei.trim();
-    var url = F.githubNeu(s.ordner, datei, inhaltText), zuLang = url.length > 8000;
-    if (zuLang) url = F.githubNeu(s.ordner, datei);
-    F.kopierenUndOeffnen(inhaltText, url, status, function () { getSelection().selectAllChildren(vorschau); });
-    if (zuLang) status.textContent = t("form.too_long", null, "Die Datei ist zu lang für die Adresse – sie ist kopiert, bitte im GitHub-Editor einfügen.");
-    aktiv.gesendet = true;
+    submitBtn.disabled = true;
+    scheduleCryptoEncrypt(state).then(function () {
+      submitBtn.disabled = false;
+      doSubmit();
+    }, function (err) {
+      submitBtn.disabled = false;
+      status.textContent = "⚠️ " + ((err && err.message) || "Fehler beim Verschlüsseln.");
+    });
   }
 
 
@@ -1207,6 +1354,13 @@ var NeuFormular = (function () {
   // With a GitHub token the submit button creates the pull request itself: the file (new or only the changed lines,
   // like before) plus new photos in one commit on a new branch. Without a token everything stays as it was
   // (copy → GitHub's editor). Photos need the token, because they can't be pasted into GitHub's editor.
+  // attachments ("📎 Datei"): 3D models, videos, audio – embedded where the cursor is, listed under the post
+  // (_plugins/galerie.rb); videos bigger than 1080p or not MP4 are shrunk in the browser (video-verkleinern.js)
+  var FILE_ACCEPT = ".stl,.3mf,.mp4,.m4v,.mov,.webm,.mp3,.m4a";
+  var FILE_RE = /\.(stl|3mf|mp4|m4v|mov|webm|mp3|m4a)$/i, VIDEO_RE = /\.(mp4|m4v|mov|webm)$/i;
+  var MAX_FILE_BYTES = 60 * 1024 * 1024;
+  // "♻️ PR recycling": the choice is remembered in this browser (only the checkbox, not the pull request)
+  var RECYCLE_KEY = "ifsmb-pr-recycling";
   var IMAGE_FOLDERS = { beitrag: "news", termin: "kalender", projekt: "projekte", "projekt-vergangen": "projekte", geraet: "ausstattung", team: "team", partner: "partner", presse: "presse", herausforderung: "herausforderungen", seite: "seiten", uebersicht: "seiten" };
   var direct = {
     active: function () { return !!(window.GitHubApi && GitHubApi.connected()); },
@@ -1360,11 +1514,29 @@ var NeuFormular = (function () {
       if (!aktiv) return [];
       var has = function (n) { return aktiv.felder.some(function (f) { return f.name === n; }) && !(aktiv.edit && aktiv.edit.rawFields[n]); };
       var s = [];
-      if (!aktiv.schema.format && has("text") && aktiv.felder.some(function (f) { return f.name === "text" && f.markdown; })) s.push({ id: "gallery", label: "🖼️ Galerie im Text", hilfe: "mehrere Fotos, erscheinen als Galerie" });
-      if (has("image")) s.push({ id: "image", label: aktiv.typ === "geraet" ? "📸 Foto des Geräts" : "📸 Titelbild", feld: "image", alt: has("image_alt") && "image_alt" });
-      if (has("photo")) s.push({ id: "photo", label: "🙂 Profilfoto", feld: "photo" });
-      if (has("logo")) s.push({ id: "logo", label: "🏷️ Logo / Bild auf der Partnerkarte", feld: "logo" });
-      if (has("social_media_preview_image")) s.push({ id: "social", label: "📣 Social-Media-Vorschau", feld: "social_media_preview_image", social: true, hilfe: "wird auf 1200×630 zugeschnitten" });
+      if (!aktiv.schema.format && has("text") && aktiv.felder.some(function (f) { return f.name === "text" && f.markdown; })) {
+        s.push({
+          id: "gallery",
+          label: (aktiv.w && aktiv.w.encrypted) ? "🖼️ Galerie im Text (verschlüsselt als .blob)" : "🖼️ Galerie im Text",
+          hilfe: (aktiv.w && aktiv.w.encrypted) ? "Fotos werden im Browser als .blob-Dateien verschlüsselt" : "mehrere Fotos, erscheinen als Galerie"
+        });
+      }
+      // On encrypted pages, content photos go into the encrypted gallery (.blob), while social_media_preview_image
+      // remains available unencrypted with an explicit warning so link previews in messengers continue to work.
+      if (!(aktiv.w && aktiv.w.encrypted)) {
+        if (has("image")) s.push({ id: "image", label: aktiv.typ === "geraet" ? "📸 Foto des Geräts" : "📸 Titelbild", feld: "image", alt: has("image_alt") && "image_alt" });
+        if (has("photo")) s.push({ id: "photo", label: "🙂 Profilfoto", feld: "photo" });
+        if (has("logo")) s.push({ id: "logo", label: "🏷️ Logo / Bild auf der Partnerkarte", feld: "logo" });
+      }
+      if (has("social_media_preview_image")) s.push({
+        id: "social",
+        label: (aktiv.w && aktiv.w.encrypted) ? "📣 Social-Media-Vorschau (⚠️ unverschlüsselt)" : "📣 Social-Media-Vorschau",
+        feld: "social_media_preview_image",
+        social: true,
+        hilfe: (aktiv.w && aktiv.w.encrypted)
+          ? "⚠️ wird auf 1200×630 zugeschnitten und UNVERSCHLÜSSELT gespeichert (für Link-Vorschauen)"
+          : "wird auf 1200×630 zugeschnitten"
+      });
       return s;
     },
     previewFor: function (v) {
@@ -1385,6 +1557,11 @@ var NeuFormular = (function () {
       aktiv.w[name] = v; aktiv.beruehrt[name] = v !== "";
       var input = form.elements[name];
       if (input) { input.value = v; if (mehrBox.contains(input) && v) mehrBox.open = true; }
+      if (name === "social_media_preview_image" && aktiv.w.encrypted) {
+        var oldWrap = form.querySelector(".form-crypto-wrap");
+        var fEnc = aktiv.felder.filter(function (f) { return f.name === "encrypted"; })[0];
+        if (oldWrap && fEnc) oldWrap.replaceWith(baueCryptoFeld(fEnc));
+      }
       nachAenderung();
     },
     assign: function (p, slot) {
@@ -1429,13 +1606,58 @@ var NeuFormular = (function () {
       if (on) GitHubApi.whoAmI().then(function (me) { if (direct.active()) githubBtn.textContent = "🔑 @" + me.login; }, function () {});
       githubBtn.title = on ? t("github.connected_title", null, "Mit GitHub verbunden – Pull Requests direkt von hier") : t("github.connect_title", null, "Mit einem GitHub-Token Pull Requests direkt von hier erstellen (mit Fotos)");
       fotosBtn.hidden = !direct.slots().length;
+      filesBtn.hidden = !direct.canAttach();
       if (on) {
-        submitBtn.textContent = aktiv.prBase ? t("form.submit_pr_into", { number: aktiv.prBase.number }, "🚀 In #" + aktiv.prBase.number + " speichern") : aktiv.edit ? t("form.submit_pr_edit", null, "🚀 Änderung als Pull Request") : t("form.submit_pr_new", null, "🚀 Als Pull Request anlegen");
+        var rc = direct.recycleTarget();
+        submitBtn.textContent = aktiv.prBase ? t("form.submit_pr_into", { number: aktiv.prBase.number }, "🚀 In #" + aktiv.prBase.number + " speichern")
+          : rc ? t("form.submit_pr_recycle", { number: rc.number }, "♻️ An #" + rc.number + " anhängen") : aktiv.edit ? t("form.submit_pr_edit", null, "🚀 Änderung als Pull Request") : t("form.submit_pr_new", null, "🚀 Als Pull Request anlegen");
         stepsEl.innerHTML = "<li>" + esc(aktiv.edit ? t("form.steps_pr_edit", null, "„Als Pull Request“ legt einen neuen Branch mit der geänderten Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")
           : t("form.steps_pr_new", null, "„Als Pull Request“ legt einen neuen Branch mit der neuen Datei und allen verwendeten Fotos an und öffnet einen Pull Request.")) + "</li>"
           + "<li>" + esc(t("form.steps_pr_review", null, "Jemand aus dem Team sieht ihn durch und mergt ihn – dann ist alles nach ein paar Minuten auf der Website.")) + "</li>";
       }
       direct.showPhotos();
+      direct.showFiles();
+      direct.showRecycling();
+    },
+    // ---------- ♻️ PR recycling: add this change to your newest open pull request instead of opening another ----------
+    recycleOn: function () {
+      var box = recycleBox && recycleBox.querySelector("[data-recycle]");
+      return !!(box && box.checked && !recycleBox.hidden);
+    },
+    // the pull request the form would add to (checkbox on, a candidate found, not already in a PR)
+    recycleTarget: function () { return aktiv && !aktiv.prBase && direct.recycleOn() ? aktiv.recycleCandidate || null : null; },
+    showRecycling: function () {
+      if (!recycleBox || !aktiv) return;
+      var state = aktiv, box = recycleBox.querySelector("[data-recycle]"), label = recycleBox.querySelector("[data-recycle-target]");
+      if (!direct.active() || state.prBase) { recycleBox.hidden = true; return; }
+      var c = state.recycleCandidate;
+      recycleBox.hidden = !c;
+      if (c) {
+        label.innerHTML = '→ <a href="' + esc(c.url) + '" target="_blank" rel="noopener">#' + c.number + "</a> " + esc(c.title);
+        recycleBox.title = t("form.recycle_title", { number: c.number }, "Speichern hängt diese Änderung als weiteren Commit an deinen letzten offenen Pull Request #" + c.number + " an, statt einen neuen anzulegen.");
+        try { box.checked = localStorage.getItem(RECYCLE_KEY) === "1"; } catch (x) { /* storage blocked */ }
+      }
+      if (state.recycleLooked) return;
+      state.recycleLooked = true; // once per form; after sending the form is in the PR anyway
+      GitHubApi.lastOwnPull().then(function (pr) {
+        if (aktiv !== state) return;
+        state.recycleCandidate = pr;
+        direct.update();
+      }, function () { /* no candidate – the box stays hidden */ });
+    },
+    // just before sending: is the pull request still open? Then the form saves into it (prBase), else a new one
+    applyRecycling: function (state) {
+      var c = direct.recycleTarget();
+      if (!c) return Promise.resolve();
+      return GitHubApi.getPull(c.number).then(function (pr) {
+        if (pr.state !== "open") {
+          state.recycleCandidate = null; state.recycleLooked = false;
+          status.textContent = "♻️ #" + c.number + " ist schon " + (pr.merged ? "gemergt" : "geschlossen") + " – es wird ein neuer Pull Request.";
+          return;
+        }
+        state.prBase = { number: c.number, url: c.url, branch: pr.branch };
+        state.recycled = true;
+      });
     },
     // Media panel: one card per photo with a toggle per use; cards can also be dragged onto a use.
     // Above: the uses of this form with what is in them right now (also images already in the file).
@@ -1462,12 +1684,17 @@ var NeuFormular = (function () {
           + slots.map(function (sl) { return '<button type="button" class="media-chip" data-toggle="' + sl.id + '" aria-pressed="' + direct.uses(p, sl) + '">' + esc(sl.label) + "</button>"; }).join("")
           + '</div></div><button type="button" class="btn btn-small btn-ghost" data-photo-remove="' + i + '" aria-label="Foto entfernen">✕</button></li>';
       }).join("");
+      var socialWarn = (aktiv.w && aktiv.w.encrypted && aktiv.w.social_media_preview_image)
+        ? '<p class="note small" data-crypto-social-warn style="margin: 0.35rem 0;">⚠️ <strong>Hinweis:</strong> Das Social-Media-Vorschaubild (<code>' + esc(aktiv.w.social_media_preview_image) + '</code>) wird <strong>unverschlüsselt</strong> veröffentlicht, damit Messenger (Signal, WhatsApp, Mastodon …) eine Link-Vorschau anzeigen können.</p>'
+        : "";
       fotosEl.innerHTML = '<p class="media-title"><strong>📷 Fotos</strong> <span class="muted small">– antippen oder auf eine Verwendung ziehen</span></p>'
+        + socialWarn
         + '<ul class="media-slots">' + slotHtml + '</ul><ul class="media-photos">' + cards + "</ul>";
     },
     clearPhotos: function () {
       (aktiv && aktiv.photos || []).forEach(function (p) { URL.revokeObjectURL(p.preview); if (p.social) URL.revokeObjectURL(p.social.preview); });
       if (aktiv) aktiv.photos = []; if (fotosEl) fotosEl.innerHTML = "";
+      if (aktiv) aktiv.files = []; if (filesEl) filesEl.innerHTML = "";
     },
     removePhoto: function (i) {
       var p = aktiv.photos[i];
@@ -1476,11 +1703,11 @@ var NeuFormular = (function () {
       URL.revokeObjectURL(p.preview);
       direct.showPhotos();
     },
-    // next free number NN in the folder: existing files on GitHub + photos added in this form
+    // next free number NN in the folder: existing files on GitHub (incl. .blob) + photos added in this form
     nextNumber: function (folder) {
       var taken = (aktiv.photos || []).map(function (p) { return parseInt(p.name, 10); });
       return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
-        res[0].concat(res[1]).forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)$/i); if (m) taken.push(+m[1]); });
+        res[0].concat(res[1]).forEach(function (n) { var m = n.match(/^(\d+)(-\w+)?\.(jpe?g|png|webp)(\.blob)?$/i); if (m) taken.push(+m[1]); });
         return taken.reduce(function (a, b) { return Math.max(a, b); }, 0) + 1;
       });
     },
@@ -1517,6 +1744,170 @@ var NeuFormular = (function () {
       });
       input.click();
     },
+    // ---------- attachments (📎) ----------
+    fileFolder: function () { return direct.folder().replace(/^assets\/images\//, "assets/dateien/"); },
+    fileUrl: function (f) { return "/" + f.folder + f.name; },
+    fileUsed: function (f) { return String(aktiv.w.text || "").indexOf(direct.fileUrl(f)) >= 0; },
+    // "Mein Modell (v2).3MF" → "mein-modell-v2.3mf"; videos that get shrunk become .mp4
+    fileName: function (name, ext) {
+      var m = String(name).match(/\.([a-z0-9]+)$/i), base = String(name).replace(/\.[^.]+$/, "");
+      return F.slugify(base, "datei") + "." + (ext || (m ? m[1].toLowerCase() : "bin"));
+    },
+    // a free name in the folder: existing files on GitHub, in open PRs and added in this form → "-2", "-3" …
+    freeFileName: function (folder, name) {
+      return Promise.all([GitHubApi.listFolder(folder, aktiv.prBase && aktiv.prBase.branch), GitHubApi.namesInOpenPulls(folder)]).then(function (res) {
+        var taken = res[0].concat(res[1]).concat((aktiv.files || []).filter(function (f) { return f.folder === folder; }).map(function (f) { return f.name; }));
+        var base = name.replace(/\.[^.]+$/, ""), ext = name.slice(base.length), n = 1, out = name;
+        while (taken.indexOf(out) >= 0) out = base + "-" + (++n) + ext;
+        return out;
+      });
+    },
+    // the Markdown text field (OverType's textarea or the plain one)
+    textArea: function () {
+      var ed = editors.filter(function (e) { return e.textarea && e.textarea.name === "text"; })[0];
+      return ed ? ed.textarea : form.elements.text;
+    },
+    // put a block (an embed line) at the cursor as its own paragraph – at the end of the line the cursor is in;
+    // without a cursor in the text (never clicked into it) at the end
+    insertBlock: function (line) {
+      var ta = direct.textArea(), text = String(aktiv.w.text || "");
+      var pos = ta && ta.getAttribute("data-cursor") != null ? Math.min(+ta.getAttribute("data-cursor"), text.length) : text.length;
+      var eol = text.indexOf("\n", pos); pos = eol < 0 ? text.length : eol;
+      var before = text.slice(0, pos), after = text.slice(pos);
+      var pre = !before.trim() ? "" : /\n\n$/.test(before) ? "" : /\n$/.test(before) ? "\n" : "\n\n";
+      var post = /^\n\n/.test(after) ? "" : /^\n/.test(after) ? "\n" : "\n\n";
+      var end0 = pos;
+      if (!after.trim()) { post = "\n"; end0 = text.length; after = ""; } // at the end: replace trailing blank lines
+      var ins = pre + line + post;
+      if (ta) {
+        ta.focus();
+        ta.setSelectionRange(pos, end0);
+        // insertText keeps undo (⌘Z) working; fallback for browsers without it
+        if (!(document.execCommand && document.execCommand("insertText", false, ins) && ta.value.indexOf(line) >= 0)) {
+          ta.value = before + ins + after;
+          ta.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        var end = before.length + ins.length - post.length;
+        ta.setSelectionRange(end, end);
+        ta.setAttribute("data-cursor", String(end));
+        if (aktiv.w.text !== ta.value) { aktiv.w.text = ta.value; nachAenderung(); }
+      } else setText(before + ins + after);
+    },
+    canAttach: function () { return direct.slots().some(function (sl) { return sl.id === "gallery"; }) && !(aktiv.w && aktiv.w.encrypted); },
+    addFiles: function () {
+      if (aktiv.w && aktiv.w.encrypted) { status.textContent = t("form.files_encrypted", null, "Dateien gehen auf verschlüsselten Seiten noch nicht – nur Fotos."); return; }
+      if (!direct.canAttach()) return;
+      if (!direct.active()) { direct.connectDialog(function () { direct.addFiles(); }); return; }
+      var input = F.el('<input type="file" accept="' + FILE_ACCEPT + '" multiple hidden>');
+      document.body.appendChild(input);
+      input.addEventListener("change", function () {
+        var picked = Array.prototype.slice.call(input.files || []), folder = direct.fileFolder(), state = aktiv;
+        input.remove();
+        picked.reduce(function (chain, file) {
+          return chain.then(function () { if (aktiv === state) return direct.addFile(file, folder); });
+        }, Promise.resolve()).catch(function (err) { direct.showError(err); });
+      });
+      input.click();
+    },
+    addFile: function (file, folder) {
+      if (!FILE_RE.test(file.name)) { status.textContent = "⚠️ " + file.name + ": " + t("form.file_type", null, "nur STL, 3MF, MP4 (oder MOV), MP3 oder M4A"); return Promise.resolve(); }
+      var ready = VIDEO_RE.test(file.name) ? direct.prepareVideo(file) : Promise.resolve(file);
+      return ready.then(function (blob) {
+        if (!blob) return;
+        if (blob.size > MAX_FILE_BYTES) throw Object.assign(new Error(file.name + ": " + Math.round(blob.size / 1048576) + " MB – höchstens " + Math.round(MAX_FILE_BYTES / 1048576) + " MB pro Datei."), { kind: "info" });
+        var name = direct.fileName(file.name, blob !== file ? "mp4" : null);
+        return direct.freeFileName(folder, name).then(function (free) {
+          var f = { folder: folder, name: free, blob: blob, size: blob.size, original: file.name, shrunk: blob !== file };
+          aktiv.files.push(f);
+          var alt = file.name.replace(/\.[^.]+$/, "").replace(/[\[\]]/g, "");
+          direct.insertBlock("![" + alt + "](" + direct.fileUrl(f) + ")");
+          direct.showFiles();
+          status.textContent = "📎 " + free + " " + t("form.file_added", null, "eingefügt – Beschreibung in [ ] gern anpassen. Hochgeladen wird mit dem Pull Request.");
+        });
+      }).catch(function (err) { status.textContent = "⚠️ " + ((err && err.message) || err); });
+    },
+    // videos are always recorded again in the browser (takes as long as the video): at most 1080p, MP4, no metadata
+    // (phones store the location in videos)
+    prepareVideo: function (file) {
+      return window.ladeSkripte(["video-verkleinern.js"]).then(function () {
+        var V = window.VideoVerkleinern;
+        return V.check(file, MAX_FILE_BYTES).then(function (info) {
+          if (!info.needed) return file;
+          var label = "🎬 " + file.name + ": " + info.reason + " – wird als MP4 " + (function (s) { return s.width + "×" + s.height; })(V.targetSize(info.width, info.height)) + " neu aufgenommen";
+          status.textContent = label + " … (Tab bitte offen lassen)";
+          filesBtn.disabled = submitBtn.disabled = true;
+          return V.shrink(file, {
+            maxBytes: MAX_FILE_BYTES,
+            onProgress: function (k) { status.textContent = label + " … " + Math.round(k * 100) + " % (Tab bitte offen lassen)"; },
+            start: function (go) {
+              status.textContent = label + ". ";
+              var b = F.el('<button type="button" class="btn btn-small">▶ Verkleinern starten</button>');
+              b.addEventListener("click", function () { b.remove(); go(); });
+              status.appendChild(b);
+            }
+          }).then(function (blob) {
+            filesBtn.disabled = submitBtn.disabled = false;
+            return blob;
+          }, function (err) { filesBtn.disabled = submitBtn.disabled = false; throw err; });
+        });
+      });
+    },
+    // Attachments the page already has (editing): every /assets/dateien/ file the loaded text points to.
+    // own: in this page's folder – only those are deleted from the repository when their embed leaves the text
+    // (files elsewhere may be used by other pages too; then only the embed goes).
+    existingFiles: function () {
+      if (!aktiv || !aktiv.edit || aktiv.w.encrypted) return [];
+      var src = String(aktiv.edit.source || ""), text = String(aktiv.w.text || ""), own = "/" + direct.fileFolder(), seen = {}, out = [];
+      var re = /!?\[[^\]]*\]\((\/assets\/dateien\/[^)\s]+)\)/g, m;
+      while ((m = re.exec(src))) {
+        var url = m[1];
+        if (seen[url]) continue;
+        seen[url] = true;
+        var line = src.split("\n").filter(function (l) { return l.indexOf("(" + url + ")") >= 0; })[0] || m[0];
+        out.push({ url: url, name: url.split("/").pop(), own: url.indexOf(own) === 0, used: text.indexOf(url) >= 0, line: line.trim() });
+      }
+      return out;
+    },
+    // existing own attachments whose embed is gone → deleted with the pull request
+    filesToDelete: function () { return direct.existingFiles().filter(function (f) { return f.own && !f.used; }); },
+    removeExisting: function (i) {
+      var f = direct.existingFiles()[i]; if (!f) return;
+      var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("(" + f.url + ")") < 0; });
+      setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
+    },
+    undoRemoveExisting: function (i) {
+      var f = direct.existingFiles()[i]; if (!f || f.used) return;
+      direct.insertBlock(f.line);
+    },
+    showFiles: function () {
+      var files = (aktiv && aktiv.files) || [], existing = direct.existingFiles();
+      if (!files.length && !existing.length) { filesEl.innerHTML = ""; return; }
+      filesEl.innerHTML = '<p class="media-title"><strong>📎 ' + esc(t("form.files_title", null, "Dateien")) + "</strong></p><ul class=\"media-files\">"
+        + existing.map(function (f, i) {
+          var label = f.used ? '<span class="muted small">' + esc(t("form.file_existing", null, "schon auf der Seite")) + "</span>"
+            : '<strong class="small">' + esc(f.own ? t("form.file_will_delete", null, "🗑️ wird mit dem Pull Request gelöscht") : t("form.file_unlinked", null, "nicht mehr eingebunden (Datei bleibt, sie liegt nicht im Ordner dieser Seite)")) + "</strong>";
+          return '<li class="media-file' + (f.used ? "" : " media-unused") + '" data-existing-file="' + esc(f.name) + '"><code>' + esc(f.name) + "</code> " + label
+            + (f.used
+              ? ' <button type="button" class="btn btn-small btn-ghost" data-existing-remove="' + i + '" aria-label="' + esc(t("form.file_delete", null, "Datei entfernen")) + '" title="' + esc(t("form.file_delete", null, "Datei entfernen")) + '">✕</button>'
+              : ' <button type="button" class="btn btn-small btn-ghost" data-existing-undo="' + i + '">' + esc(t("form.file_undo", null, "↩︎ Zurückholen")) + "</button>")
+            + "</li>";
+        }).join("")
+        + files.map(function (f, i) {
+          var used = direct.fileUsed(f);
+          return '<li class="media-file' + (used ? "" : " media-unused") + '"><code>' + esc(f.name) + "</code> <span class=\"muted small\">"
+            + (f.size / 1048576).toFixed(1).replace(".", ",") + " MB" + (f.shrunk ? " · neu aufgenommen aus " + esc(f.original) : "") + "</span>"
+            + (used ? "" : ' <strong class="small">Nicht mehr im Text – wird nicht hochgeladen</strong>')
+            + ' <button type="button" class="btn btn-small btn-ghost" data-file-remove="' + i + '" aria-label="Datei entfernen">✕</button></li>';
+        }).join("") + "</ul>";
+    },
+    removeFile: function (i) {
+      var f = aktiv.files[i]; if (!f) return;
+      var url = direct.fileUrl(f);
+      var lines = String(aktiv.w.text || "").split("\n").filter(function (l) { return l.indexOf("](" + url + ")") < 0; });
+      setText(lines.join("\n").replace(/\n{3,}/g, "\n\n"));
+      aktiv.files.splice(i, 1);
+      direct.showFiles();
+    },
     submit: function () {
       var newText = dateiInhalt(), path, title, u;
       // sent already and nothing changed since → no second pull request with the same content
@@ -1536,18 +1927,94 @@ var NeuFormular = (function () {
       var slots = direct.slots(), photos = aktiv.photos.filter(direct.used), unused = aktiv.photos.length - photos.length;
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
       var folder = direct.folder(), files = [], parent = null, body = "";
-      function buildFiles() { // after relocating: the file itself + every used variant of every used photo
+      var attachments = aktiv.w.encrypted ? [] : (aktiv.files || []).filter(direct.fileUsed);
+      var removedFiles = direct.filesToDelete();
+      function buildFilesAsync() {
         files = [{ path: path, text: newText }];
-        if (aktiv.isEncrypted && aktiv.encryptedBlobs && aktiv.encryptedBlobs.length) {
-          var attachFolder = "assets/attachments/" + path.split("/").pop().replace(/\.md$/, "") + "/";
-          aktiv.encryptedBlobs.forEach(function (eb) {
-            files.push({ path: attachFolder + eb.filename, blob: new Blob([eb.data]) });
+        if (!state.w.encrypted) {
+          attachments.forEach(function (f) { files.push({ path: direct.fileUrl(f).slice(1), blob: f.blob }); });
+          usage.forEach(function (u) {
+            var base = direct.url(u.p).slice(1);
+            if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
+            if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
+          });
+          if (!removedFiles.length) return Promise.resolve();
+          // attachments whose embed was removed: delete them too – only if they are (still) there on the target branch
+          var dir = removedFiles[0].url.slice(1, removedFiles[0].url.lastIndexOf("/"));
+          return GitHubApi.listFolder(dir, state.prBase && state.prBase.branch).then(function (names) {
+            removedFiles.forEach(function (f) { if (names.indexOf(f.name) >= 0) files.push({ path: f.url.slice(1), delete: true }); });
           });
         }
-        usage.forEach(function (u) {
-          var base = direct.url(u.p).slice(1);
-          if (u.plain) { files.push({ path: base, blob: u.p.full }); files.push({ path: base.replace(/\.jpg$/, "-600w.jpg"), blob: u.p.thumb }); }
-          if (u.social && u.p.social) files.push({ path: base.replace(/\.jpg$/, "-social.jpg"), blob: u.p.social.full });
+        // Encrypted page: encrypt all gallery photos as .blob files (never upload unencrypted .jpg/-600w.jpg),
+        // upload social_media_preview_image (-social.jpg) unencrypted if chosen, and migrate any existing
+        // unencrypted local gallery/title images referenced in the page to .blob files + delete their .jpg files.
+        if (state.crypto && state.crypto.wasEncrypted && !state.crypto.unlocked) return Promise.resolve();
+        return scheduleCryptoEncrypt(state).then(function () {
+          newText = dateiInhalt();
+          files[0].text = newText;
+          var key = state.crypto && state.crypto.lastKey;
+          if (!key) return;
+          return withCrypto().then(function (CP) {
+            var newPhotoUrls = {}, keptSocialRel = state.w.social_media_preview_image ? state.w.social_media_preview_image.replace(/^\//, "") : "";
+            var newPhotoPromises = usage.map(function (u) {
+              var fullUrl = direct.url(u.p), base = fullUrl.slice(1);
+              if (u.social && u.p.social) {
+                var socialPath = base.replace(/\.jpg$/, "-social.jpg");
+                files.push({ path: socialPath, blob: u.p.social.full });
+                keptSocialRel = socialPath;
+              }
+              if (!u.plain) return Promise.resolve();
+              newPhotoUrls[fullUrl] = true;
+              var blobPath = base + ".blob";
+              return u.p.full.arrayBuffer().then(function (buf) {
+                return CP.encryptBytesToBlob(buf, key);
+              }).then(function (encBytes) {
+                files.push({ path: blobPath, blob: new Blob([encBytes], { type: "application/octet-stream" }) });
+              });
+            });
+            return Promise.all(newPhotoPromises).then(function () {
+              var extraAtts = collectEncryptedAttachments(state).filter(function (a) { return !newPhotoUrls[a.name]; });
+              var ref = state.prBase && state.prBase.branch;
+              var toDeleteByDir = {};
+              function markForDelete(imgUrl) {
+                if (!imgUrl || !/^\/assets\/images\//.test(imgUrl) || /\/og-preview\.jpg$/.test(imgUrl)) return;
+                var rel = imgUrl.slice(1), slash = rel.lastIndexOf("/");
+                if (slash < 0) return;
+                var dir = rel.slice(0, slash), fname = rel.slice(slash + 1);
+                var baseName = fname.replace(/(-600w|-social)?(\.[a-zA-Z0-9]+)$/, "$2");
+                var list = toDeleteByDir[dir] = toDeleteByDir[dir] || [];
+                [fname, baseName, baseName.replace(/(\.[a-zA-Z0-9]+)$/, "-600w$1"), baseName.replace(/(\.[a-zA-Z0-9]+)$/, "-social$1")].forEach(function (cand) {
+                  if (dir + "/" + cand === keptSocialRel) return;
+                  if (list.indexOf(cand) < 0) list.push(cand);
+                });
+              }
+              ((state.crypto && state.crypto.migratedPublicImages) || []).forEach(markForDelete);
+              if (state.w.social_media_preview_image) markForDelete(state.w.social_media_preview_image);
+              var migratePromises = extraAtts.map(function (att) {
+                var relPath = att.name.slice(1);
+                markForDelete(att.name);
+                return GitHubApi.readBinaryFile(relPath, ref).then(function (bytes) {
+                  if (!bytes) return;
+                  return CP.encryptBytesToBlob(bytes, key).then(function (encBytes) {
+                    files.push({ path: att.blob.slice(1), blob: new Blob([encBytes], { type: "application/octet-stream" }) });
+                  });
+                });
+              });
+              return Promise.all(migratePromises).then(function () {
+                var dirs = Object.keys(toDeleteByDir);
+                if (!dirs.length) return;
+                return Promise.all(dirs.map(function (dir) {
+                  return GitHubApi.listFolder(dir, ref).then(function (existingNames) {
+                    toDeleteByDir[dir].forEach(function (cand) {
+                      if (existingNames.indexOf(cand) >= 0) {
+                        files.push({ path: dir + "/" + cand, delete: true });
+                      }
+                    });
+                  });
+                }));
+              });
+            });
+          });
         });
       }
       if (unused) status.textContent = unused + " Foto(s) werden nirgends verwendet und nicht hochgeladen.";
@@ -1564,17 +2031,30 @@ var NeuFormular = (function () {
         }).catch(function (err) { direct.showError(err); }).then(function () { submitBtn.disabled = false; submitBtn.textContent = label; direct.update(); });
         return;
       }
-      GitHubApi.whoAmI().then(function (me) {
+      direct.applyRecycling(state).then(function () { return GitHubApi.whoAmI(); }).then(function (me) {
         u = me;
         // photos follow the file name: if it changed after adding them, move them – with free numbers in the new folder (K26)
         return direct.relocate(photos, folder).then(function (moved) {
-          moved.forEach(function (m) { ["", "-600w", "-social"].forEach(function (v) { newText = newText.split(direct.url(m.from, v)).join(direct.url(m.to, v)); }); });
-          return direct.checkMissingImages(state, newText, photos);
+          moved.forEach(function (m) {
+            ["", "-600w", "-social"].forEach(function (v) {
+              newText = newText.split(direct.url(m.from, v)).join(direct.url(m.to, v));
+              if (state.w.encrypted) state.w.text = String(state.w.text || "").split(direct.url(m.from, v)).join(direct.url(m.to, v));
+            });
+          });
+          // attachments follow the file name too (same name, new folder; a free name if it is taken there)
+          return direct.relocateFiles(attachments).then(function (fmoved) {
+            fmoved.forEach(function (m) { newText = newText.split(m.from).join(m.to); });
+          });
+        }).then(function () {
+          var checkTarget = state.w.encrypted ? state.w.text : newText;
+          return direct.checkMissingImages(state, checkTarget, photos);
         });
       }).then(function () {
-        buildFiles();
-        if (!state.edit) return GitHubApi.readFile(path).then(function (cur) {
-          if (cur != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
+        return buildFilesAsync();
+      }).then(function () {
+        if (!state.edit) return Promise.all([GitHubApi.readFile(path), state.prBase ? GitHubApi.readFile(path, state.prBase.branch) : null]).then(function (cur) {
+          if (cur[0] != null) throw new Error("Die Datei " + path + " gibt es schon – bitte den Dateinamen ändern.");
+          if (cur[1] != null) throw new Error("Die Datei " + path + " gibt es in #" + state.prBase.number + " schon – bitte den Dateinamen ändern.");
           return GitHubApi.openPullsForFile(path);
         }).then(function (prs) {
           if (prs && prs.length) throw new Error("Pull Request #" + prs[0].number + " („" + prs[0].title + "“) legt " + path + " schon an – bitte dort weitermachen oder den Dateinamen ändern.");
@@ -1585,11 +2065,14 @@ var NeuFormular = (function () {
           parent = prep.parent;
         });
       }).then(function () {
-        body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf ifsmb.de von @" + u.login
+        body = (state.edit ? "Änderung an `" + path + "`" : "Neue Datei `" + path + "`") + " – über das Formular auf " + siteHost() + " von @" + u.login
           + " ([Seite](" + location.origin + location.pathname + ")).\n\n"
           + (photos.length ? "**Fotos:** " + photos.length + " (im Browser vorbereitet: verkleinert auf max. 1600 px + 600w-Vorschau, ohne Metadaten/GPS)\n\n" : "")
+          + (removedFiles.length ? "**Gelöschte Dateien:** " + removedFiles.map(function (f) { return "`" + f.name + "`"; }).join(", ") + "\n\n" : "")
+          + (attachments.length ? "**Dateien:** " + attachments.map(function (f) { return "`" + f.name + "` (" + (f.size / 1048576).toFixed(1) + " MB" + (f.shrunk ? ", im Browser neu aufgenommen: max. 1080p, ohne Metadaten" : "") + ")"; }).join(", ") + "\n\n" : "")
           + "### Vor dem Mergen prüfen\n\n- [ ] Text: Makespace statt Makerspace, keine Wohnadressen, keine fremden E-Mail-Adressen\n"
           + (photos.length ? "- [ ] Fotos: keine erkennbaren Kindergesichter, Kennzeichen, Namen oder Zugangscodes\n" : "")
+          + (attachments.length ? "- [ ] Dateien: Videos ohne erkennbare Kindergesichter, keine fremden Dateien ohne Erlaubnis\n" : "")
           + "- [ ] Checks („Prüfen“) sind grün\n";
         return GitHubApi.createPullRequest({ title: title, body: body, files: files, branchHint: path.split("/").pop(), onStep: step, pr: state.prBase, parent: parent });
       }).then(function (pr) {
@@ -1597,6 +2080,8 @@ var NeuFormular = (function () {
         direct.sentOk(state, pr, newText, path);
       }).catch(function (err) {
         if (aktiv !== state) return;
+        // ♻️ nothing was sent: back to "own pull request" with the checkbox, so the next try decides again
+        if (state.recycled && !err.conflicts && !(err.kind === "conflict" && /fast.forward/i.test(err.message))) { state.prBase = null; state.recycled = false; }
         // the branch with the commit exists, but the pull request didn't come back: next click finishes it (K41/K42)
         if (err.pendingBranch) {
           state.pending = { branch: err.pendingBranch, fork: err.pendingFork || null, title: title, body: body, text: newText };
@@ -1623,15 +2108,31 @@ var NeuFormular = (function () {
     // success: stay in this pull request – further changes become more commits there, not a second PR (K17–K19)
     sentOk: function (state, pr, text, path) {
       loescheEntwurf();
+      state.recycled = false;
       state.gesendet = true; state.retries = 0;
+      var savedPlain = state.crypto && state.crypto.unlocked ? state.w.text : null;
+      var savedPw = state.crypto ? state.crypto.password : "";
+      function syncEditAfterSave() {
+        state.edit = readSource(state.schema, text, path) || state.edit;
+        state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+        initCryptoState(state, true);
+        if (state.crypto.wasEncrypted && savedPlain != null && savedPw) {
+          state.crypto.unlocked = true;
+          state.crypto.password = savedPw;
+          state.crypto.initialPassword = savedPw;
+          state.crypto.initialPlaintext = savedPlain;
+          state.crypto.encryptedForText = savedPlain;
+          state.crypto.encryptedForPw = savedPw;
+          state.w.text = savedPlain;
+        }
+      }
       // through the person's own fork (no push access, #186): the branch lives in the fork, so the next send starts a new
       // branch instead of reading this one from the repository; without a number GitHub's compare page opens the PR
       if (pr.fork) {
         state.sent = { text: text, url: pr.url || pr.compareUrl, number: pr.number || null };
         direct.clearPhotos();
         if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
-        state.edit = readSource(state.schema, text, path) || state.edit;
-        state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+        syncEditAfterSave();
         baueFelder(); zeigeVorschau();
         status.innerHTML = pr.number
           ? "✅ " + t("github.sent_fork_html", { link: '<a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a>", fork: esc(pr.fork) }, '<a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist angelegt (aus deinem Fork " + esc(pr.fork) + ") – danke!")
@@ -1644,8 +2145,7 @@ var NeuFormular = (function () {
       var branch = pr.branch || (state.prBase && state.prBase.branch);
       state.prBase = { number: pr.number, url: pr.url, branch: branch };
       if (!state.edit) { state.path = path; dateiInput.readOnly = true; }
-      state.edit = readSource(state.schema, text, path) || state.edit;
-      state.w = JSON.parse(JSON.stringify(state.edit.w0)); state.beruehrt = allTouched();
+      syncEditAfterSave();
       baueFelder(); zeigeVorschau();
       direct.showPrMode("Gespeichert in #" + pr.number + ".");
       status.innerHTML = '✅ <a href="' + esc(pr.url) + '" target="_blank" rel="noopener">Pull Request #' + pr.number + "</a> ist " + (pr.updated ? "ergänzt" : "angelegt") + " – danke! Weitere Änderungen landen im selben Pull Request.";
@@ -1666,6 +2166,19 @@ var NeuFormular = (function () {
         });
       });
     },
+    relocateFiles: function (list) {
+      var target = direct.fileFolder(), moving = list.filter(function (f) { return f.folder !== target; });
+      return moving.reduce(function (chain, f) {
+        return chain.then(function (out) {
+          var from = direct.fileUrl(f);
+          return direct.freeFileName(target, f.name).then(function (free) {
+            f.folder = target; f.name = free;
+            aktiv.w.text = String(aktiv.w.text || "").split(from).join(direct.fileUrl(f));
+            return out.concat([{ from: from, to: direct.fileUrl(f) }]);
+          });
+        });
+      }, Promise.resolve([]));
+    },
     // images the text/fields newly point to must exist: in the photo pool, on the target branch or already before (K46 –
     // after a reload the pool is empty but the lines are still in the text)
     checkMissingImages: function (state, text, photos) {
@@ -1677,7 +2190,10 @@ var NeuFormular = (function () {
       var dirs = {}; paths.forEach(function (x) { var d0 = x.slice(0, x.lastIndexOf("/")); (dirs[d0] = dirs[d0] || []).push(x); });
       return Promise.all(Object.keys(dirs).map(function (d0) {
         return GitHubApi.listFolder(d0, state.prBase && state.prBase.branch).then(function (names) {
-          return dirs[d0].filter(function (x) { return names.indexOf(x.slice(d0.length + 1)) < 0; });
+          return dirs[d0].filter(function (x) {
+            var fn = x.slice(d0.length + 1);
+            return names.indexOf(fn) < 0 && names.indexOf(fn + ".blob") < 0;
+          });
         });
       })).then(function (lists) {
         var missing = [].concat.apply([], lists);
@@ -1851,17 +2367,12 @@ var NeuFormular = (function () {
     var schema = TYPEN[daten.typ];
     if (!schema) { window.open(link.href, "_blank", "noopener"); return; }
     if (!d) baueDialog();
-    aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), vorgabe: daten.werte, beruehrt: {}, gesendet: false, photos: [],
+    aktiv = { typ: daten.typ, schema: schema, felder: alleFelder(schema), vorgabe: daten.werte, beruehrt: {}, gesendet: false, photos: [], files: [],
       schluessel: STORE + daten.typ + ":" + location.pathname };
     var entwurf = ladeEntwurf();
     aktiv.w = Object.assign(anfangswerte(schema, daten.werte), entwurf && entwurf.w);
-    if (entwurf) {
-      aktiv.beruehrt = entwurf.beruehrt || {};
-      if (entwurf.isEncrypted !== undefined) {
-        aktiv.isEncrypted = entwurf.isEncrypted;
-        if (entwurf.cryptoPassword) aktiv.cryptoPassword = entwurf.cryptoPassword;
-      }
-    }
+    if (entwurf) aktiv.beruehrt = entwurf.beruehrt || {};
+    initCryptoState(aktiv, false);
     folge();
 
     setMode(false);
@@ -1890,67 +2401,74 @@ var NeuFormular = (function () {
       if (!loaded) throw new Error("no front matter");
       if (!d) baueDialog();
       var folder = data.path.split("/").slice(0, -1).join("/");
-      aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], edit: loaded, path: data.path,
+      aktiv = { typ: data.type, schema: schema, felder: alleFelder(schema), gesendet: false, photos: [], files: [], edit: loaded, path: data.path,
         url: data.url || (typeof location !== "undefined" ? location.pathname : ""), schluessel: "ifsmb-edit:" + data.path };
       aktiv.beruehrt = allTouched(); // nothing is derived while editing (file name, event_tag, end …)
-
-      var decryptPromise = Promise.resolve();
-      if (loaded.encrypted && loaded.cryptoPayload) {
-        aktiv.isEncrypted = true;
-        aktiv.cryptoPayload = loaded.cryptoPayload;
-        var savedPw = null;
-        try {
-          if (loaded.w0.uuid) savedPw = localStorage.getItem("ifsmb-crypto:" + loaded.w0.uuid);
-        } catch (e) {}
-        if (savedPw) {
-          decryptPromise = ladeCryptoPage().then(function (Crypto) {
-            return Crypto.decryptPage(loaded.cryptoPayload, savedPw, folder);
-          }).then(function (dec) {
-            loaded.w0.text = dec.markdown;
-            aktiv.cryptoPassword = savedPw;
-            aktiv.cryptoLocked = false;
-          }).catch(function (err) {
-            console.warn("Auto-decrypt failed:", err);
-            aktiv.cryptoLocked = true;
-            loaded.w0.text = "";
-          });
-        } else {
-          aktiv.cryptoLocked = true;
-          loaded.w0.text = "";
-        }
+      var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
+      aktiv.w = draftFits ? Object.assign(JSON.parse(JSON.stringify(loaded.w0)), draft.w) : JSON.parse(JSON.stringify(loaded.w0));
+      initCryptoState(aktiv, true);
+      // a draft that no longer fits (the page changed since, or it belongs to an open PR) is never thrown away: it is
+      // carried over onto the current state below (direct.restoreDraft), with a conflict box if both changed the same thing
+      setMode(true);
+      d.titel(t("form.edit_title", { type: typeName(data.type, schema) }, "✏️ " + schema.titel + " bearbeiten"));
+      hinweisEl.textContent = t("form.edit_hint", { path: data.path }, "Änderungen an " + data.path + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.");
+      hinweisEl.hidden = false;
+      vorlageLink.href = F.githubFile(data.path);
+      ordnerEl.textContent = folder + "/";
+      baueFelder();
+      zeigeVorschau();
+      if (aktiv.crypto && aktiv.crypto.wasEncrypted) {
+        var stateForUnlock = aktiv;
+        withCrypto().then(function (CP) {
+          if (aktiv !== stateForUnlock) return;
+          var savedPw = CP.getUnlockedPassword(stateForUnlock.w.uuid) || CP.getUnlockedPassword(stateForUnlock.url);
+          if (savedPw) return unlockCryptoForEdit(stateForUnlock, savedPw, true);
+        }).catch(function () {});
       }
+      status.textContent = draftFits ? t("form.draft_restored", null, "Entwurf wiederhergestellt.") : "";
+      if (!d.open) d.showModal();
+      if (draft && !draftFits && draft.source) direct.restoreDraft(draft);
+      if (!EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search + "#bearbeiten");
+      F.ladeIndex();
+      var hasToken = false;
+      try { hasToken = !!(sessionStorage.getItem("ifsmb-github-token") || localStorage.getItem("ifsmb-github-token")); } catch (e) { /* storage blocked */ }
+      if (hasToken && window.ladeSkripte) window.ladeSkripte(["github-api.js"]).then(function () { direct.update(); direct.checkOpenPulls(); }).catch(function () {});
+      else direct.checkOpenPulls();
+    });
+  }
 
-      return decryptPromise.then(function () {
-        var draft = ladeEntwurf(), draftFits = draft && draft.source === source && !draft.pr;
-        aktiv.w = draftFits ? Object.assign(JSON.parse(JSON.stringify(loaded.w0)), draft.w) : JSON.parse(JSON.stringify(loaded.w0));
-        if (draftFits && draft.isEncrypted !== undefined) {
-          aktiv.isEncrypted = draft.isEncrypted;
-          if (draft.cryptoPassword) aktiv.cryptoPassword = draft.cryptoPassword;
-        }
-        // a draft that no longer fits (the page changed since, or it belongs to an open PR) is never thrown away: it is
-        // carried over onto the current state below (direct.restoreDraft), with a conflict box if both changed the same thing
-        setMode(true);
-        d.titel(t("form.edit_title", { type: typeName(data.type, schema) }, "✏️ " + schema.titel + " bearbeiten"));
-        hinweisEl.textContent = t("form.edit_hint", { path: data.path }, "Änderungen an " + data.path + " – nur geänderte Zeilen werden neu geschrieben, alles andere bleibt wie es ist.");
-        hinweisEl.hidden = false;
-        vorlageLink.href = F.githubFile(data.path);
-        ordnerEl.textContent = folder + "/";
-        baueFelder();
-        zeigeVorschau();
-        status.textContent = draftFits ? t("form.draft_restored", null, "Entwurf wiederhergestellt.") : "";
-        if (!d.open) d.showModal();
-        if (draft && !draftFits && draft.source) direct.restoreDraft(draft);
-        if (!EDIT_HASH.test(location.hash)) history.replaceState(history.state, "", location.pathname + location.search + "#bearbeiten");
-        F.ladeIndex();
-        var hasToken = false;
-        try { hasToken = !!(sessionStorage.getItem("ifsmb-github-token") || localStorage.getItem("ifsmb-github-token")); } catch (e) { /* storage blocked */ }
-        if (hasToken && window.ladeSkripte) window.ladeSkripte(["github-api.js"]).then(function () { direct.update(); direct.checkOpenPulls(); }).catch(function () {});
-        else direct.checkOpenPulls();
+  // Headless helpers for automated tests (_scripts/test_crypto.js):
+  // 1) Decrypt an encrypted source file for editing in the form → Promise<{ values, plaintext, payload }>
+  function decryptFileForEdit(type, source, password, path) {
+    var schema = TYPEN[type], editObj = readSource(schema, source, path);
+    if (!editObj) return Promise.reject(new Error("Kein Front Matter"));
+    var payload = parseEncryptedBlock(editObj.w0.text);
+    if (!payload) return Promise.reject(new Error("Kein verschlüsselter Block in der Datei"));
+    return withCrypto().then(function (CP) {
+      return CP.decryptMarkdown(payload, password).then(function (plain) {
+        var norm = String(plain || "").replace(/^\n+/, "").replace(/\s+$/, "");
+        var values = Object.assign({}, editObj.w0, { text: norm });
+        return { values: values, plaintext: norm, payload: payload };
+      });
+    });
+  }
+  // 2) Encrypt an existing (unencrypted or already encrypted) file with changes and a password → Promise<{ content, payload }>
+  function encryptEditedFile(type, source, changes, password, path) {
+    var schema = TYPEN[type], editObj = readSource(schema, source, path);
+    if (!editObj) return Promise.reject(new Error("Kein Front Matter"));
+    var existingPayload = parseEncryptedBlock(editObj.w0.text);
+    var w = Object.assign(JSON.parse(JSON.stringify(editObj.w0)), changes || {}, { encrypted: true });
+    var keepKdf = !!existingPayload;
+    return withCrypto().then(function (CP) {
+      return CP.encryptMarkdownPayload(w.text, password, existingPayload, keepKdf).then(function (res) {
+        var wOut = Object.assign({}, w, { text: res.block });
+        return { content: editedText(schema, editObj, wOut), payload: res.payload };
       });
     });
   }
 
-  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, readSource: readSource, editedText: editedText, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder, checkHtml: checkHtml,
+  return { oeffnen: oeffnen, edit: edit, datei: datei, editedFile: editedFile, decryptFileForEdit: decryptFileForEdit,
+    encryptEditedFile: encryptEditedFile, TYPEN: TYPEN, THEMES: THEMES, alleFelder: alleFelder, checkHtml: checkHtml,
     connect: function () { return direct.connectDialog(); } };
 })();
 if (typeof module !== "undefined") module.exports = NeuFormular;

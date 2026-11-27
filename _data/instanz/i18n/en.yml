@@ -1,0 +1,34 @@
+# Texts only for 35services.ifsmb.de – laid key by key over _data/i18n/en.yml (_plugins/instanz.rb).
+footer:
+  disclaimer: This site belongs to 35 services e. V. and uses the website technology of the Institut für spontane Makespace Buildung (ifsmb.de).
+pages:
+  news:
+    lead: What’s happening at 35services
+  personal_news:
+    intro: These aren’t posts by the association but personal updates from people on our {0}. The association’s news is under {1}.
+  personal_projects:
+    intro: These aren’t projects of the association but private Makespace projects from our {0}. The association’s projects are under {1}.
+  team:
+    lead: The people behind the association.
+  challenges:
+    personal_intro: Challenges from private Makespace projects in the team – not tasks of the association.
+post:
+  personal_note: – a private Makespace update from the team, not a post by the association.
+project:
+  personal_note: – a private Makespace project from the team, not a project of the association.
+challenge:
+  personal_note: – from a private Makespace project, not a task of the association.
+event:
+  personal_note: – a private Makespace event from the team, not an event of the association. It isn’t in the association’s calendar, only in the team profile.
+calendar:
+  title_institute: Subscribe to the association’s calendar
+feed:
+  title_institute: Follow the association’s news
+owner:
+  institute: Owned by the association
+equipment:
+  no_own_devices: The association doesn’t own any devices (yet).
+team:
+  institute_projects: Projects at the association
+press:
+  about: About the association

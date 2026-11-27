@@ -4,7 +4,7 @@ layout: page
 title: Team
 i18n_title: pages.team.title
 i18n_lead: pages.team.lead
-lead: Die Menschen hinter dem Institut.
+lead: Die Menschen hinter dem Verein.
 ---
 {% assign members = site.team | where_exp: "m", "m.not_in_team != true" | sort: "order" %}
 <div class="grid-3">

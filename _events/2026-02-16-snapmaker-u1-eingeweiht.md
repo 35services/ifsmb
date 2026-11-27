@@ -7,6 +7,10 @@ location_url: https://kurt-tucholsky-grundschule.de/
 summary: Der spendenfinanzierte 4-Kopf-Drucker wird geliefert, von den Kindern der AG aufgebaut und druckt über Nacht seinen ersten 4-Farb-Drachen.
 tags: [ktg, u1, 35services]
 team: [falko-richter, gregor-dill]
+links:
+  - title: Snapmaker U1 mit Einhausung von 35services
+    url: https://35services.ifsmb.de/equipment/snapmaker-u1/
+    category: equipment
 uuid: 394024b3-e1e2-45eb-a214-57a928be7e7a
 ---
 

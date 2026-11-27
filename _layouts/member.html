@@ -28,9 +28,13 @@ layout: default
         {%- endif %}
       </div>
     </header>
+    {% if page.encrypted %}
+      {% include encrypted.html %}
+    {% else %}
     <div class="prose">
       {{ content }}
     </div>
+    {% endif %}
     {%- assign member_badge = site.data.badges | where: "team", page.slug | first -%}
     {% if member_badge %}
     <h2 id="badge" data-i18n="team.badge">{{ "team.badge" | t }}</h2>
@@ -86,7 +90,7 @@ layout: default
     {% if page.not_in_team != true or has_todo_file %}
     <h2 id="todos" data-i18n="todos.heading">{{ "todos.heading" | t }}</h2>
     {%- assign tk_titel = "Todos von " | append: page.title -%}
-    {% include todos-knopf.html person=page.slug titel=tk_titel label_key="todos.person_button" label_name=page.title %}
+    {% ifpage /todos/ %}{% include todos-knopf.html person=page.slug titel=tk_titel label_key="todos.person_button" label_name=page.title %}{% endifpage %}
     {% endif %}
     {%- include termine-auswahl.html res=page art="team" -%}
     {%- assign member_events = termine_auswahl -%}
@@ -130,6 +134,6 @@ layout: default
     </ul>
     {% endif %}
     {% include verbindungen.html %}
-    <a href="{{ '/team/' | relative_url }}" class="back-link" data-i18n="team.back">{{ "team.back" | t }}</a>
+    {% ifpage /team/ %}<a href="{{ '/team/' | relative_url }}" class="back-link" data-i18n="team.back">{{ "team.back" | t }}</a>{% endifpage %}
   </article>
 </main>

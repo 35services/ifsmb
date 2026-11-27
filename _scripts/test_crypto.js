@@ -2,10 +2,9 @@
 // Unit tests for SafeMarkdown and CryptoPage (Node.js 22+)
 const assert = require("node:assert");
 const test = require("node:test");
-const fs = require("node:fs");
-const path = require("node:path");
 const SafeMarkdown = require("../assets/js/safe-markdown.js");
 const CryptoPage = require("../assets/js/crypto-page.js");
+const NeuFormular = require("../assets/js/neu.js");
 
 test("SafeMarkdown: HTML escaping and basic formatting", () => {
   const md = `# Titel <script>alert(1)</script>
@@ -100,13 +99,7 @@ Dies ist ein interner Test.
 
   global.fetch = async (url) => {
     const filename = url.split("/").pop();
-    let data = blobStore[filename];
-    if (!data) {
-      const relPath = path.join(__dirname, "..", url.replace(/^\//, ""));
-      if (fs.existsSync(relPath)) {
-        data = fs.readFileSync(relPath);
-      }
-    }
+    const data = blobStore[filename];
     if (!data) return { ok: false, status: 404 };
     return {
       ok: true,
@@ -152,59 +145,81 @@ Dies ist ein interner Test.
   );
 });
 
-test("NeuFormular: Encrypted editing and encrypting existing files", async () => {
-  const NeuFormular = require("../assets/js/neu.js");
-  const fs = require("fs");
-  const path = require("path");
-
-  // 1. readSource detects encrypted post and extracts cryptoPayload
-  const encryptedPath = path.join(__dirname, "../_posts/2026-11-25-vertraulicher-bericht.md");
-  const encryptedSource = fs.readFileSync(encryptedPath, "utf8");
-  const schema = NeuFormular.TYPEN.beitrag;
-  const loaded = NeuFormular.readSource(schema, encryptedSource, "_posts/2026-11-25-vertraulicher-bericht.md");
-
-  assert.equal(loaded.encrypted, true, "readSource detects encrypted: true");
-  assert.ok(loaded.cryptoPayload, "readSource extracts cryptoPayload");
-  assert.equal(loaded.cryptoPayload.v, 1);
-
-  // Decrypt the extracted payload with geheim123
-  const dec = await CryptoPage.decryptPage(loaded.cryptoPayload, "geheim123", "");
-  assert.ok(dec.markdown.includes("Streng vertraulicher Projektbericht"), "Decrypts plain text successfully");
-
-  // 2. Encrypt an existing unencrypted page
-  const plainSource = `---
-title: "Bisher unverschlüsselter Beitrag"
-date: 2026-03-16 10:00:00 +0100
-author: falko-richter
-uuid: 42a57b16-245a-4ded-8d8a-e6c0839ecb6f
+test("NeuFormular: Encrypt an existing unencrypted page and edit its plain text when encrypted", async () => {
+  const existingUnencrypted = `---
+title: "Internes Werkstatt-Protokoll"
+summary: "Notizen zum Aufbau"
+status: aktuell
+start: 2026-11-25
+uuid: 550e8400-e29b-41d4-a716-446655440000
 ---
 
-Offener Text vor der Verschlüsselung.
+## Offene Punkte
+
+- Schlüsselübergabe am Freitag
+- Zugangsdaten nur vor Ort
 `;
-  const plainLoaded = NeuFormular.readSource(schema, plainSource, "test.md");
-  assert.equal(plainLoaded.encrypted, false, "readSource detects unencrypted page");
+  const password = "werkstatt-passwort-2026";
 
-  // Encrypt plain text with new password
-  const newPw = "neues-geheimnis-789";
-  const newText = "Neuer geheimer Inhalt!";
-  const encRes = await CryptoPage.encryptPage(newText, newPw);
-  const encryptedRest = "\n<script type=\"application/json\" class=\"encrypted-data\">\n" + JSON.stringify(encRes.payload, null, 2) + "\n</script>\n";
+  // 1. Encrypt existing unencrypted page via NeuFormular.encryptEditedFile
+  const encRes = await NeuFormular.encryptEditedFile("projekt", existingUnencrypted, {}, password, "_projects/werkstatt-protokoll.md");
+  assert.ok(encRes.content.includes("encrypted: true"), "Front matter must include encrypted: true");
+  assert.ok(encRes.content.includes('class="encrypted-data"'), "Body must contain encrypted-data script block");
+  assert.ok(!encRes.content.includes("Schlüsselübergabe"), "Plaintext must not appear in encrypted file");
+  assert.ok(encRes.content.includes("uuid: 550e8400-e29b-41d4-a716-446655440000"), "Existing front matter fields stay intact");
 
-  const output = NeuFormular.editedText(schema, plainLoaded, {
-    ...plainLoaded.w0,
-    text: newText,
-    encrypted: true,
-    encryptedRest: encryptedRest
-  });
+  // 2. Decrypt the encrypted file for editing in the ✏️ form
+  const decForEdit = await NeuFormular.decryptFileForEdit("projekt", encRes.content, password, "_projects/werkstatt-protokoll.md");
+  assert.equal(decForEdit.values.title, "Internes Werkstatt-Protokoll");
+  assert.equal(decForEdit.values.encrypted, true);
+  assert.ok(decForEdit.plaintext.includes("## Offene Punkte\n\n- Schlüsselübergabe am Freitag"));
 
-  assert.ok(output.includes("encrypted: true"), "Output has encrypted: true in front matter");
-  assert.ok(output.includes("search: false"), "Output has search: false in front matter");
-  assert.ok(output.includes('<script type="application/json" class="encrypted-data">'), "Output contains encrypted data block");
-  assert.ok(!output.includes("Neuer geheimer Inhalt!"), "Plain text is NOT in output file");
+  // 3. Edit the decrypted plain text and re-encrypt (keeping KDF salt so any .blob attachments remain valid)
+  const updatedPlaintext = decForEdit.plaintext + "\n- Alarmcode geändert";
+  const reEncRes = await NeuFormular.encryptEditedFile(
+    "projekt",
+    encRes.content,
+    { text: updatedPlaintext, summary: "Aktualisierte Notizen" },
+    password,
+    "_projects/werkstatt-protokoll.md"
+  );
+  assert.equal(reEncRes.payload.kdf.salt, encRes.payload.kdf.salt, "KDF salt preserved when password is unchanged");
+  assert.notEqual(reEncRes.payload.iv, encRes.payload.iv, "Fresh IV generated on re-encryption");
+  assert.ok(reEncRes.content.includes("summary: Aktualisierte Notizen"));
+  assert.ok(!reEncRes.content.includes("Alarmcode"), "Updated plaintext must not leak in file");
 
-  // Verify that the resulting output file can be decrypted with newPw
-  const verifyLoaded = NeuFormular.readSource(schema, output, "test.md");
-  assert.equal(verifyLoaded.encrypted, true);
-  const verifyDec = await CryptoPage.decryptPage(verifyLoaded.cryptoPayload, newPw, "");
-  assert.equal(verifyDec.markdown, newText, "Re-decrypted text matches modified text");
+  // 4. Verify decrypted updated content matches
+  const decAfterEdit = await NeuFormular.decryptFileForEdit("projekt", reEncRes.content, password, "_projects/werkstatt-protokoll.md");
+  assert.equal(decAfterEdit.plaintext, updatedPlaintext);
+});
+
+test("SafeMarkdown: Renders {: .gallery} blocks as <div class='gallery'> with lightbox links", () => {
+  const md = `Hier sind die Fotos:
+
+![Foto 1](/assets/images/projekte/test/01.jpg)
+![Foto 2](/assets/images/projekte/test/02.jpg)
+{: .gallery}
+`;
+  const attachments = {
+    "/assets/images/projekte/test/01.jpg": "blob:mock://img1",
+    "/assets/images/projekte/test/02.jpg": "blob:mock://img2"
+  };
+  const html = SafeMarkdown.render(md, attachments);
+  assert.ok(!html.includes("{: .gallery}"), "Gallery IAL must not render as text");
+  assert.ok(html.includes('<div class="gallery">'), "Gallery wrapper div rendered");
+  assert.ok(html.includes('<a class="lightbox" href="blob:mock://img1"><img src="blob:mock://img1" alt="Foto 1" loading="lazy"></a>'));
+  assert.ok(html.includes('<a class="lightbox" href="blob:mock://img2"><img src="blob:mock://img2" alt="Foto 2" loading="lazy"></a>'));
+});
+
+test("SafeMarkdown: Renders Markdown tables like kramdown (header, alignment, escaped pipes, HTML escaped)", () => {
+  const md = "Vorher\n\n| Teil | Anzahl | Preis |\n|:-----|:-----:|------:|\n| Rahmen <b onclick=x> | `a|b` | 2 \\| 3 € |\n| **fett** | 2 | [Link](https://example.org) |\n\n| ohne | Kopf |\n| a | b |\n";
+  const html = SafeMarkdown.render(md);
+  assert.ok(html.includes("<p>Vorher</p>\n<table>\n<thead>"), "table starts its own block after a paragraph");
+  assert.ok(html.includes('<th style="text-align: left">Teil</th><th style="text-align: center">Anzahl</th><th style="text-align: right">Preis</th>'));
+  assert.ok(html.includes('<td style="text-align: left">Rahmen &lt;b onclick=x&gt;</td>'), "HTML in cells stays escaped");
+  assert.ok(html.includes('<td style="text-align: center"><code>a|b</code></td>'), "pipe inside a code span doesn't split");
+  assert.ok(html.includes('<td style="text-align: right">2 | 3 €</td>'), "\\| is a literal pipe");
+  assert.ok(html.includes("<strong>fett</strong>") && html.includes('<a href="https://example.org"'), "inline Markdown in cells");
+  assert.ok(html.includes("<table>\n<tbody>\n<tr><td>ohne</td><td>Kopf</td></tr>"), "without separator row all rows are body rows");
+  assert.ok(!html.includes("<b onclick"), "no raw HTML");
 });
