@@ -80,7 +80,7 @@
   Overview of open pull requests and issues (/mitmachen/offen/, assets/js/open-work.js) – the button only shows up
   for people connected with GitHub; it is in the HTML of every page so the page is reachable for the link check.
 {%- endcomment %}
-<a class="btn btn-ghost btn-small" data-open-work-link href="{{ '/mitmachen/offen/' | relative_url }}" title="{{ 'open_work.button_title' | t }}" data-i18n-attr="title:open_work.button_title" style="display: none" data-i18n="open_work.button">{{ "open_work.button" | t }}</a>
+{% ifpage /mitmachen/offen/ %}<a class="btn btn-ghost btn-small" data-open-work-link href="{{ '/mitmachen/offen/' | relative_url }}" title="{{ 'open_work.button_title' | t }}" data-i18n-attr="title:open_work.button_title" style="display: none" data-i18n="open_work.button">{{ "open_work.button" | t }}</a>{% endifpage %}
 <script>
   (function () {
     var connected = false;

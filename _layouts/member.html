@@ -87,7 +87,7 @@ layout: default
     {% if page.not_in_team != true or has_todo_file %}
     <h2 id="todos" data-i18n="todos.heading">{{ "todos.heading" | t }}</h2>
     {%- assign tk_titel = "Todos von " | append: page.title -%}
-    {% include todos-knopf.html person=page.slug titel=tk_titel label_key="todos.person_button" label_name=page.title %}
+    {% ifpage /todos/ %}{% include todos-knopf.html person=page.slug titel=tk_titel label_key="todos.person_button" label_name=page.title %}{% endifpage %}
     {% endif %}
     {%- include termine-auswahl.html res=page art="team" -%}
     {%- assign member_events = termine_auswahl -%}
@@ -131,6 +131,6 @@ layout: default
     </ul>
     {% endif %}
     {% include verbindungen.html %}
-    <a href="{{ '/team/' | relative_url }}" class="back-link" data-i18n="team.back">{{ "team.back" | t }}</a>
+    {% ifpage /team/ %}<a href="{{ '/team/' | relative_url }}" class="back-link" data-i18n="team.back">{{ "team.back" | t }}</a>{% endifpage %}
   </article>
 </main>
