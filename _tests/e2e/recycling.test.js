@@ -105,3 +105,11 @@ test("♻️ kein eigener offener PR → kein Haken", async () => {
   await new Promise((r) => setTimeout(r, 1500)); // the lookup is asynchronous
   assert.equal(await alice.page.evaluate(() => document.querySelector("#neu-dialog .form-recycle").hidden), true);
 });
+
+test("♻️ nur PRs aus dem Formular (Branch web/…): ein von Hand angelegter PR wird nie angeboten", async () => {
+  seedPull("alice", "web/alice-formular", "_posts/2026-11-02-neu.md", "PR aus dem Formular");
+  seedPull("alice", "feature-von-hand", "assets/js/x.js", "Code-Änderung von Hand"); // newer, same person
+  const alice = await env.person("token-alice");
+  await alice.openNew("/news/", "beitrag");
+  assert.match(await recycleBox(alice), /#1 PR aus dem Formular/);
+});

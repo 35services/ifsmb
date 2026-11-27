@@ -259,9 +259,11 @@ var GitHubApi = (function () {
   }
   // "♻️ PR recycling": the newest open pull request of the connected person in this repository (not from a fork) –
   // later changes from the forms can be added to it as more commits. → { number, title, url, branch } or null
+  // Only pull requests the forms made (branch "web/…", see branchName): a code change someone opened by hand under
+  // the same account must not get content commits mixed in.
   function lastOwnPull() {
     return Promise.all([whoAmI(), openPulls(true)]).then(function (res) {
-      var me = res[0], mine = res[1].filter(function (pr) { return pr.user === me.login && pr.sameRepo; });
+      var me = res[0], mine = res[1].filter(function (pr) { return pr.user === me.login && pr.sameRepo && /^web\//.test(pr.branch); });
       if (!me.canPush || !mine.length) return null;
       mine.sort(function (a, b) { return String(b.createdAt).localeCompare(String(a.createdAt)) || b.number - a.number; });
       return { number: mine[0].number, title: mine[0].title, url: mine[0].url, branch: mine[0].branch };
