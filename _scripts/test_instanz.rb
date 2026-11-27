@@ -3,7 +3,27 @@
 # Tests for _plugins/instanz.rb (several sites from one code base): overrides from _data/instanz/ and {% ifpage %}.
 #   ruby _scripts/test_instanz.rb   (läuft in „Prüfen“)
 require "minitest/autorun"
-require "jekyll"
+begin
+  require "jekyll"
+rescue LoadError
+  # outside Bundler (as in „Prüfen“): the plugin only needs these – {% ifpage %} rendering is then tested via Instanz.page?
+  module Jekyll
+    module Errors
+      class FatalException < StandardError; end
+    end
+    module Hooks
+      def self.register(*) = nil
+    end
+  end
+  module Liquid
+    class Block
+      def initialize(*); end
+    end
+    class Template
+      def self.register_tag(*) = nil
+    end
+  end
+end
 require_relative "../_plugins/instanz"
 
 class InstanzTest < Minitest::Test
@@ -57,7 +77,17 @@ class InstanzTest < Minitest::Test
     Liquid::Template.parse(template).render!({}, registers: { site: s })
   end
 
+  def test_page_check
+    s = site({}, ["/spenden/", "/", "/news/2026/x/"])
+    Instanz.reset(s)
+    assert Instanz.page?(s, "/spenden/")
+    assert Instanz.page?(s, "/spenden"), "ohne Schrägstrich am Ende"
+    assert Instanz.page?(s, "/spenden/#anker"), "Anker zählt nicht"
+    refute Instanz.page?(s, "/angebot/")
+  end
+
   def test_ifpage_and_unlesspage
+    skip "Liquid nur mit Bundler (bundle exec ruby _scripts/test_instanz.rb)" unless Liquid::Template.respond_to?(:parse)
     t = "{% ifpage /spenden/ %}L{% endifpage %}{% unlesspage /spenden/ %}T{% endunlesspage %}"
     assert_equal "L", render(t, ["/spenden/", "/"])
     assert_equal "T", render(t, ["/"])

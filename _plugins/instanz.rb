@@ -85,6 +85,10 @@ module Instanz
     @page_urls&.delete(site.object_id)
   end
 
+  def page?(site, url)
+    page_urls(site).key?(normalize(url))
+  end
+
   # {% ifpage /address/ %} … {% endifpage %}
   class IfPage < Liquid::Block
     def initialize(tag_name, markup, tokens)
@@ -94,7 +98,7 @@ module Instanz
 
     def render(context)
       site = context.registers[:site]
-      Instanz.page_urls(site).key?(Instanz.normalize(@url)) == want ? super : ''
+      Instanz.page?(site, @url) == want ? super : ''
     end
 
     def want
