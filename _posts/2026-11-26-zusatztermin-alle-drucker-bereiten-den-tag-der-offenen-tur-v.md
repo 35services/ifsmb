@@ -26,7 +26,7 @@ Viel erreicht im Zusatztermin 💪💪💪 Aus Blender mehrfarbig gedruckt. Manu
 {: .gallery}
 
 ## Dinge aus der Druckwerkstatt:
-* https://www.printables.com/model/143185-gingerbread-house-kit-card/files in Farbe:
+* [printables.com/model/143185-gingerbread-house-kit-card/files](https://www.printables.com/model/143185-gingerbread-house-kit-card/files) in Farbe:
 
 ![V2_Gingerbread-House_Kit](/assets/dateien/news/zusatztermin-alle-drucker-bereiten-den-tag-der-offenen-tur-v/v2-gingerbread-house-kit.3mf)
 

@@ -21,7 +21,7 @@
       <dt data-i18n="microdata.name">{{ "microdata.name" | t }}</dt>
       <dd lang="de">{{ md_p.title }}</dd>
     </dl>
-    <p class="small"><a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="microdata.more">{{ "microdata.more" | t }}</a></p>
+    {% ifpage /maschinenlesbar/ %}<p class="small"><a href="{{ '/maschinenlesbar/' | relative_url }}" data-i18n="microdata.more">{{ "microdata.more" | t }}</a></p>{% endifpage %}
   </details>
 </div>
 {%- endif -%}
