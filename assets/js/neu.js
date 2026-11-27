@@ -480,6 +480,12 @@ var NeuFormular = (function () {
     if (/\.gif$/i.test(p)) return "image/gif";
     if (/\.svg$/i.test(p)) return "image/svg+xml";
     if (/\.pdf$/i.test(p)) return "application/pdf";
+    if (/\.3mf$/i.test(p)) return "model/3mf";
+    if (/\.stl$/i.test(p)) return "model/stl";
+    if (/\.(mp4|m4v)$/i.test(p)) return "video/mp4";
+    if (/\.webm$/i.test(p)) return "video/webm";
+    if (/\.mp3$/i.test(p)) return "audio/mpeg";
+    if (/\.m4a$/i.test(p)) return "audio/mp4";
     return "image/jpeg";
   }
   // Collects local images (/assets/images/...) referenced in state.w.text (plus used photos in state.photos)
@@ -496,7 +502,8 @@ var NeuFormular = (function () {
       seen[url] = true;
       found.push({ name: url, blob: url + ".blob", mime: mimeForPath(url) });
     }
-    var md = String(state.w.text || ""), re = /!\[[^\]]*\]\((\/assets\/images\/[^\s)"'\]]+\.(?:jpe?g|png|webp|gif))\)/gi, m;
+    // photos and 📎 attachments (/assets/dateien/: 3D models, audio, video)
+    var md = String(state.w.text || ""), re = /!\[[^\]]*\]\((\/assets\/(?:images\/[^\s)"'\]]+\.(?:jpe?g|png|webp|gif)|dateien\/[^\s)"'\]]+))\)/gi, m;
     while ((m = re.exec(md))) addPath(m[1]);
     (state.photos || []).forEach(function (p) {
       var u = "/" + p.folder + p.name;
@@ -1793,9 +1800,12 @@ var NeuFormular = (function () {
         if (aktiv.w.text !== ta.value) { aktiv.w.text = ta.value; nachAenderung(); }
       } else setText(before + ins + after);
     },
-    canAttach: function () { return direct.slots().some(function (sl) { return sl.id === "gallery"; }) && !(aktiv.w && aktiv.w.encrypted); },
+    // on encrypted pages too (uploaded as .blob) – but only once the content is unlocked
+    canAttach: function () {
+      var c = aktiv.crypto;
+      return direct.slots().some(function (sl) { return sl.id === "gallery"; }) && !(aktiv.w && aktiv.w.encrypted && c && c.wasEncrypted && !c.unlocked);
+    },
     addFiles: function () {
-      if (aktiv.w && aktiv.w.encrypted) { status.textContent = t("form.files_encrypted", null, "Dateien gehen auf verschlüsselten Seiten noch nicht – nur Fotos."); return; }
       if (!direct.canAttach()) return;
       if (!direct.active()) { direct.connectDialog(function () { direct.addFiles(); }); return; }
       var input = F.el('<input type="file" accept="' + FILE_ACCEPT + '" multiple hidden>');
@@ -1944,7 +1954,7 @@ var NeuFormular = (function () {
       var slots = direct.slots(), photos = aktiv.photos.filter(direct.used), unused = aktiv.photos.length - photos.length;
       var usage = photos.map(function (p) { return { p: p, plain: slots.some(function (sl) { return !sl.social && direct.uses(p, sl); }), social: slots.some(function (sl) { return sl.social && direct.uses(p, sl); }) }; });
       var folder = direct.folder(), files = [], parent = null, body = "";
-      var attachments = aktiv.w.encrypted ? [] : (aktiv.files || []).filter(direct.fileUsed);
+      var attachments = (aktiv.files || []).filter(direct.fileUsed);
       var removedFiles = direct.filesToDelete();
       function buildFilesAsync() {
         files = [{ path: path, text: newText }];
@@ -1992,12 +2002,20 @@ var NeuFormular = (function () {
                 files.push({ path: blobPath, blob: new Blob([encBytes], { type: "application/octet-stream" }) });
               });
             });
-            return Promise.all(newPhotoPromises).then(function () {
+            // 📎 attachments: encrypted like the photos (.blob next to where the file would be), never as plain files
+            var newFilePromises = attachments.map(function (f) {
+              var url = direct.fileUrl(f);
+              newPhotoUrls[url] = true;
+              return f.blob.arrayBuffer().then(function (buf) { return CP.encryptBytesToBlob(buf, key); }).then(function (encBytes) {
+                files.push({ path: url.slice(1) + ".blob", blob: new Blob([encBytes], { type: "application/octet-stream" }) });
+              });
+            });
+            return Promise.all(newPhotoPromises.concat(newFilePromises)).then(function () {
               var extraAtts = collectEncryptedAttachments(state).filter(function (a) { return !newPhotoUrls[a.name]; });
               var ref = state.prBase && state.prBase.branch;
               var toDeleteByDir = {};
               function markForDelete(imgUrl) {
-                if (!imgUrl || !/^\/assets\/images\//.test(imgUrl) || /\/og-preview\.jpg$/.test(imgUrl)) return;
+                if (!imgUrl || !/^\/assets\/(images|dateien)\//.test(imgUrl) || /\/og-preview\.jpg$/.test(imgUrl)) return;
                 var rel = imgUrl.slice(1), slash = rel.lastIndexOf("/");
                 if (slash < 0) return;
                 var dir = rel.slice(0, slash), fname = rel.slice(slash + 1);

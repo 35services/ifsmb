@@ -187,3 +187,29 @@ test("✏️ vorhandene Fotos: ✕ entfernt das Bild und löscht NN.jpg + NN-600
     fs.writeFileSync(sitePath, before);
   }
 });
+
+test("🔒 📎 STL auf verschlüsseltem Beitrag → nur als verschlüsselte .blob-Datei, im Payload gelistet", async () => {
+  const stl = path.join(env.tmp, "geheim.stl");
+  fs.writeFileSync(stl, STL);
+  const alice = await env.person("token-alice");
+  await alice.openNew("/news/", "beitrag");
+  await alice.fill({ title: "E2E Geheimes Modell", text: "Vertraulich.\n", encrypted: true });
+  await alice.page.waitForSelector("#neu-dialog [data-crypto-pw]");
+  await alice.page.fill("#neu-dialog [data-crypto-pw]", "geheim-e2e-2026");
+  await alice.page.waitFor(() => !document.querySelector("#neu-dialog [data-files]").hidden, [], { message: "📎 auf verschlüsselter Seite fehlt" });
+  await attach(alice, [stl]);
+  await alice.page.waitFor(() => /geheim\.stl\.blob/.test(document.querySelector("#neu-dialog .neu-vorschau").textContent), [], { message: "Payload listet die .blob-Datei nicht" });
+  await alice.submit();
+  await alice.waitStatus(/Pull Request #1.*angelegt/, { timeout: 20000 });
+  const pr = env.control.state().pulls[0];
+  const post = pr.files.find((f) => f.filename.startsWith("_posts/")).filename;
+  const slug = post.replace(/^_posts\/\d{4}-\d{2}-\d{2}-|\.md$/g, "");
+  const file = "assets/dateien/news/" + slug + "/geheim.stl";
+  assert.deepEqual(pr.files.map((f) => f.filename).sort(), [post, file + ".blob"].sort(), "keine unverschlüsselte .stl");
+  const md = env.control.readFile({ ref: pr.head.ref, path: post }).text;
+  assert.ok(!md.includes("Vertraulich") && !md.includes("geheim.stl)"), "Klartext nicht im Markdown");
+  assert.ok(md.includes('"/' + file + '.blob"'), "Payload listet den Anhang");
+  assert.ok(md.includes('"model/stl"'), "mit MIME-Typ");
+  const blob = Buffer.from(env.control.readFile({ ref: pr.head.ref, path: file + ".blob" }).base64, "base64");
+  assert.ok(!blob.toString("latin1").includes("solid"), "verschlüsselt, kein STL-Text");
+});

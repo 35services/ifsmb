@@ -410,7 +410,7 @@
     stage.innerHTML = '<span class="muted small">' + t("loading", null, "3D-Ansicht wird geladen …") + "</span>";
     fetch(url)
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
-      .then(function (buf) { return /\.3mf$/i.test(url) ? parse3mf(buf) : parseStl(buf); })
+      .then(function (buf) { return (fig.getAttribute("data-format") || url).match(/3mf$/i) ? parse3mf(buf) : parseStl(buf); })
       .then(function (model) { show(fig, model); })
       .catch(function (err) {
         if (window.console) console.warn("Modell3D:", url, err);
@@ -419,12 +419,14 @@
       });
   }
 
-  function init() {
-    var figs = document.querySelectorAll(".modell-3d[data-model]");
+  // root: the page, or content added later (decrypted pages, assets/js/crypto-page.js → window.Modell3DInit)
+  function init(root) {
+    var figs = (root && root.querySelectorAll ? root : document).querySelectorAll(".modell-3d[data-model]:not([data-init])");
     var io = "IntersectionObserver" in window && new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { if (e.isIntersecting) { io.unobserve(e.target); load(e.target); } });
     }, { rootMargin: "200px" });
     Array.prototype.forEach.call(figs, function (fig) {
+      fig.setAttribute("data-init", "1");
       var stage = document.createElement("div");
       stage.className = "modell-3d-stage";
       fig.insertBefore(stage, fig.firstChild);
@@ -440,6 +442,7 @@
     });
   }
   window.Modell3DParse = { parse3mf: parse3mf, parseStl: parseStl }; // for tests
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  window.Modell3DInit = init;
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { init(); });
   else init();
 })();

@@ -118,6 +118,36 @@
     return out.join("\n");
   }
 
+  // An image line pointing to a 3D model, audio or video (like _plugins/galerie.rb on normal pages):
+  // .3mf/.stl → <figure class="modell-3d"> for assets/js/model3d.js, .mp3/.m4a/.ogg/.wav → audio, .mp4/.webm → video.
+  // data-format tells model3d.js the type, because a decrypted attachment is a blob: URL without a file name.
+  var MEDIA_RE = /\.(3mf|stl|mp3|m4a|ogg|wav|mp4|webm)$/i;
+  function mediaBlock(alt, src, attachments) {
+    var m = src.match(MEDIA_RE);
+    if (!m) return "";
+    var ext = m[1].toLowerCase(), url = resolveAttachment(src, attachments);
+    if (!/^(https?:\/\/|blob:|\/)/.test(url)) return "";
+    var a = escapeHtml(alt), u = escapeHtml(url), cap = alt.trim() ? "<figcaption>" + a + "</figcaption>" : "";
+    if (ext === "3mf" || ext === "stl") return '<figure class="modell-3d" data-model="' + u + '" data-format="' + ext + '" data-alt="' + a + '">' + cap + "</figure>";
+    if (ext === "mp4" || ext === "webm") return '<video class="post-video" controls preload="metadata" playsinline src="' + u + '"' + (alt.trim() ? ' aria-label="' + a + '"' : "") + "></video>";
+    return '<figure class="post-audio"><audio controls preload="metadata" src="' + u + '"' + (alt.trim() ? ' aria-label="' + a + '"' : "") + "></audio>" + cap + "</figure>";
+  }
+
+  // "📎 Dateien" at the end: every /assets/dateien/ file the text points to, as a download (like on normal pages)
+  function downloads(md, attachments) {
+    var re = /\]\((\/assets\/dateien\/[^)\s]+)\)/g, m, seen = {}, items = [];
+    while ((m = re.exec(md))) {
+      var src = m[1];
+      if (seen[src]) continue;
+      seen[src] = true;
+      var url = resolveAttachment(src, attachments), name = src.split("/").pop();
+      if (!/^(https?:\/\/|blob:|\/)/.test(url)) continue;
+      items.push('<li><a href="' + escapeHtml(url) + '" download="' + escapeHtml(name) + '">' + escapeHtml(name) + '</a> <span class="muted small">' + escapeHtml(name.split(".").pop().toUpperCase()) + "</span></li>");
+    }
+    if (!items.length) return "";
+    return '<section class="post-dateien"><h2 data-i18n="files.title">📎 Dateien</h2><ul>\n' + items.join("\n") + "\n</ul></section>";
+  }
+
   function render(md, attachments) {
     attachments = attachments || {};
     var lines = (md || "").replace(/\r\n/g, "\n").split("\n");
@@ -239,6 +269,13 @@
         continue;
       }
 
+      // 3D model, audio or video on its own line
+      var media = trimmed.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
+      if (media) {
+        var block = mediaBlock(media[1], media[2], attachments);
+        if (block) { closeList(); html.push(block); continue; }
+      }
+
       // Paragraph
       closeList();
       html.push("<p>" + renderInline(line, attachments) + "</p>");
@@ -249,6 +286,8 @@
       html.push("<pre><code>" + escapeHtml(codeBuf.join("\n")) + "</code></pre>");
     }
 
+    var files = downloads(md, attachments);
+    if (files) html.push(files);
     return html.join("\n");
   }
 
