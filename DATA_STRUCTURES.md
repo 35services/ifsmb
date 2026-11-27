@@ -300,6 +300,25 @@ Seiten außerhalb der Sammlungen mit `layout: page` – und die Startseite `inde
 
 Alle anderen Felder (`i18n_title`, `search` …) bleiben unverändert. `edit_form: false` im Front Matter lässt eine Seite beim GitHub-Editor. Vorlage für neue Markdown-Seiten: `_includes/vorlagen/seite.md`.
 
+## Mehrere Instanzen: `_data/instanz/`
+
+Dieselbe Code-Basis läuft als ifsmb.de und als weitere Instanzen (z. B. 35services.ifsmb.de). Was nur eine Instanz betrifft, steht nicht in den gemeinsamen Dateien, sondern in `_data/instanz/` – an derselben Stelle wie das Original:
+
+| Datei | wirkt auf | wie |
+|---|---|---|
+| `_data/instanz/i18n/de.yml` (en, fr) | `_data/i18n/de.yml` | nur die Schlüssel darin; muss es im Original geben, gleiche Platzhalter |
+| `_data/instanz/<name>.yml` | `_data/<name>.yml` | Hash: Schlüssel für Schlüssel, Liste: ersetzt |
+
+Beispiel für eine Instanz:
+
+```yaml
+# _data/instanz/i18n/de.yml
+footer:
+  disclaimer: Ein Angebot von 35services.
+```
+
+Links auf Seiten, die eine Instanz nicht hat (`/spenden/`, `/angebot/`, `/todos/` …), stehen in den Layouts in `{% ifpage … %}` und fallen dann weg (`_plugins/instanz.rb`).
+
 ## Sichtbarkeit
 
 ```

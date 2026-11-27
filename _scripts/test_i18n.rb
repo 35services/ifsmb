@@ -23,9 +23,21 @@ PLURAL_FORMS = %w[zero one two few many other].freeze
 module I18nData
   module_function
 
+  # the texts as the site uses them: _data/i18n/<language>.yml with this instance's _data/instanz/i18n/<language>.yml
+  # over it (key by key, see _plugins/instanz.rb)
   def file(language)
     @files ||= {}
-    @files[language] ||= YAML.safe_load(File.read(File.join(ROOT, "_data/i18n/#{language}.yml")))
+    @files[language] ||= begin
+      core = YAML.safe_load(File.read(File.join(ROOT, "_data/i18n/#{language}.yml")))
+      over = File.join(ROOT, "_data/instanz/i18n/#{language}.yml")
+      File.exist?(over) ? deep_merge(core, YAML.safe_load(File.read(over)) || {}) : core
+    end
+  end
+
+  def deep_merge(base, over)
+    return over unless base.is_a?(Hash) && over.is_a?(Hash)
+
+    base.merge(over) { |_k, a, b| deep_merge(a, b) }
   end
 
   def plural?(value)

@@ -55,6 +55,6 @@ layout: default
     <p class="cal-subscribe">
       <a class="btn btn-ghost" href="{{ '/calendar/#abonnieren' | relative_url }}" data-i18n="event.subscribe_all">{{ "event.subscribe_all" | t }}</a>
     </p>
-    <a href="{{ '/calendar/' | relative_url }}" class="back-link" data-i18n="event.back">{{ "event.back" | t }}</a>
+    {% ifpage /calendar/ %}<a href="{{ '/calendar/' | relative_url }}" class="back-link" data-i18n="event.back">{{ "event.back" | t }}</a>{% endifpage %}
   </article>
 </main>

@@ -30,11 +30,11 @@ module Galerie
   IMG_RE = /<img\b([^>]*?)\s*\/?>/m.freeze
   ATTR_RE = /([a-zA-Z-]+)="([^"]*)"/.freeze
   GALLERY_RE = %r{<p class="(gallery(?:\s[^"]*)?)">(.*?)</p>}m.freeze
-  VIDEO_RE = %r{<p>\s*(<img\b[^>]*?src="[^"]+\.(?:mp4|webm)"[^>]*?/?>)\s*</p>}m.freeze
+  VIDEO_RE = %r{<p>\s*(<img\b[^>]*?src="[^"]+\.(?:mp4|webm|mov|m4v)"[^>]*?/?>)\s*</p>}mi.freeze
   AUDIO_RE = %r{<p>\s*(<img\b[^>]*?src="[^"]+\.(?:mp3|m4a|ogg|wav)"[^>]*?/?>)\s*</p>}mi.freeze
   MODEL_RE = %r{<p>\s*(<img\b[^>]*?src="[^"]+\.(?:stl|3mf)"[^>]*?/?>)\s*</p>}mi.freeze
   FILES_DIR = '/assets/dateien/'
-  TYPE_NAMES = { 'stl' => 'STL', '3mf' => '3MF', 'mp4' => 'Video (MP4)', 'webm' => 'Video (WebM)', 'mp3' => 'Audio (MP3)',
+  TYPE_NAMES = { 'stl' => 'STL', '3mf' => '3MF', 'mp4' => 'Video (MP4)', 'webm' => 'Video (WebM)', 'mov' => 'Video (MOV)', 'm4v' => 'Video (M4V)', 'mp3' => 'Audio (MP3)',
                  'm4a' => 'Audio (M4A)', 'ogg' => 'Audio (OGG)', 'wav' => 'Audio (WAV)', 'pdf' => 'PDF', 'zip' => 'ZIP' }.freeze
   SIZE_CLASSES = %w[gallery-single gallery-small].freeze
 
