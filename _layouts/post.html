@@ -33,6 +33,6 @@ layout: default
     </div>
     {% endif %}
     {% include verbindungen.html %}
-    {% if page.personal %}<a href="{{ '/news/personal/' | relative_url }}" class="back-link" data-i18n="post.back_personal">{{ "post.back_personal" | t }}</a>{% else %}<a href="{{ '/news/' | relative_url }}" class="back-link" data-i18n="post.back">{{ "post.back" | t }}</a>{% endif %}
+    {% ifpage /news/ %}{% if page.personal %}<a href="{{ '/news/personal/' | relative_url }}" class="back-link" data-i18n="post.back_personal">{{ "post.back_personal" | t }}</a>{% else %}<a href="{{ '/news/' | relative_url }}" class="back-link" data-i18n="post.back">{{ "post.back" | t }}</a>{% endif %}{% endifpage %}
   </article>
 </main>
