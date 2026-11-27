@@ -4,7 +4,7 @@ category: Laser
 status: in-aussicht
 owner_partner: [Philippe Bietenholz]
 location_partner: Philippe Bietenholz
-linked: [/projects/blockface-klassensatz/, /projects/ifsmb-de/]
+linked: [/projects/blockface-klassensatz/, /projects/ifsmb-de/, /news/2026/03/04/laser-von-philippe-mit-dem-fahrrad-abgeholt/]
 image: /assets/images/ausstattung/creality-a1-pro/01.jpg
 image_alt: Laser bei 35services
 social_media_preview_image: /assets/images/ausstattung/creality-a1-pro/01-social.jpg
